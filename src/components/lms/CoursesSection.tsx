@@ -266,12 +266,12 @@ export default function CoursesSection() {
                     <span className="text-xs text-gray-500 ml-1 line-through">${Math.round(course.price * 1.6)}</span>
                   </div>
                   <motion.a
-                    href={`/checkout?course=${encodeURIComponent(course.title)}`}
+                    href="/courses"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-xs font-semibold px-4 py-2 rounded-xl"
                   >
-                    Enroll <ArrowRight size={12} />
+                    View Details <ArrowRight size={12} />
                   </motion.a>
                 </div>
               </div>

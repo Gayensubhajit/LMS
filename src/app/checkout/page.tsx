@@ -1,13 +1,23 @@
-import SimplePage from "@/components/lms/SimplePage";
+import { notFound } from "next/navigation";
+import CheckoutClient from "@/components/lms/CheckoutClient";
+import { getCourseBySlug } from "@/lib/courses-data";
 
-export default function CheckoutPage() {
-  return (
-    <SimplePage
-      title="Checkout"
-      description="You are one step away from enrollment. Confirm your course details and continue with secure checkout."
-      ctaLabel="Continue to Sign Up"
-      ctaHref="/auth/sign-up"
-    />
-  );
+export default async function CheckoutPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ slug?: string; plan?: string }>;
+}) {
+  const params = await searchParams;
+  const slug = params.slug ?? "";
+  const course = getCourseBySlug(slug);
+  if (!course) return notFound();
+
+  const requestedPlan = params.plan;
+  const initialPlan =
+    requestedPlan === "3month" || requestedPlan === "6month" || requestedPlan === "1month"
+      ? requestedPlan
+      : "1month";
+
+  return <CheckoutClient course={course} initialPlan={initialPlan} />;
 }
 

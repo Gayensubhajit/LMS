@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import Navbar from "@/components/lms/Navbar";
 import HeroSection from "@/components/lms/HeroSection";
+import TrustedBySectionPremium from "@/components/lms/TrustedBySectionPremium";
 import WhyChooseUs from "@/components/lms/WhyChooseUs";
 import RoadmapSection from "@/components/lms/RoadmapSection";
 import CoursesSection from "@/components/lms/CoursesSection";
@@ -29,6 +30,7 @@ export default function Home() {
       <div className="relative z-10">
         <Navbar />
         <HeroSection />
+        <TrustedBySectionPremium />
         <WhyChooseUs />
         <RoadmapSection />
         <CoursesSection />

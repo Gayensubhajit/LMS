@@ -172,16 +172,29 @@ export default function InstructorsSection() {
                 {/* Social + View */}
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2">
-                    <button className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-blue-400 hover:border-blue-500/30 transition-colors">
+                    <a
+                      href={`https://twitter.com/search?q=${encodeURIComponent(inst.name)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-blue-400 hover:border-blue-500/30 transition-colors"
+                    >
                       <Twitter size={12} />
-                    </button>
-                    <button className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-blue-500 hover:border-blue-500/30 transition-colors">
+                    </a>
+                    <a
+                      href={`https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(inst.name)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-blue-500 hover:border-blue-500/30 transition-colors"
+                    >
                       <Linkedin size={12} />
-                    </button>
+                    </a>
                   </div>
-                  <button className="flex items-center gap-1 text-xs text-violet-400 hover:text-violet-300 font-medium">
+                  <a
+                    href={`/instructors?profile=${encodeURIComponent(inst.name)}`}
+                    className="flex items-center gap-1 text-xs text-violet-400 hover:text-violet-300 font-medium"
+                  >
                     View Profile <ArrowRight size={11} />
-                  </button>
+                  </a>
                 </div>
               </div>
             </motion.div>
@@ -194,9 +207,12 @@ export default function InstructorsSection() {
           transition={{ duration: 0.5, delay: 0.7 }}
           className="text-center mt-12"
         >
-          <button className="inline-flex items-center gap-2 border border-violet-500/30 text-violet-300 px-8 py-3.5 rounded-2xl text-sm font-semibold hover:bg-violet-600/10 transition-colors">
+          <a
+            href="/instructors"
+            className="inline-flex items-center gap-2 border border-violet-500/30 text-violet-300 px-8 py-3.5 rounded-2xl text-sm font-semibold hover:bg-violet-600/10 transition-colors"
+          >
             Meet All 50+ Instructors <ArrowRight size={16} />
-          </button>
+          </a>
         </motion.div>
       </div>
     </section>

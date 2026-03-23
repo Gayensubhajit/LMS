@@ -1,6 +1,7 @@
 "use client";
 
 import { BookOpen, Twitter, Github, Linkedin, Instagram, Youtube, Zap, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const footerLinks = {
   Platform: ["Courses", "Roadmaps", "AI Mentor", "Community", "Certifications"],
@@ -10,12 +11,34 @@ const footerLinks = {
 };
 
 const socials = [
-  { icon: Twitter, label: "Twitter", color: "hover:text-sky-400" },
-  { icon: Github, label: "GitHub", color: "hover:text-gray-300" },
-  { icon: Linkedin, label: "LinkedIn", color: "hover:text-blue-500" },
-  { icon: Instagram, label: "Instagram", color: "hover:text-pink-500" },
-  { icon: Youtube, label: "YouTube", color: "hover:text-red-500" },
+  { icon: Twitter, label: "Twitter", color: "hover:text-sky-400", href: "https://twitter.com" },
+  { icon: Github, label: "GitHub", color: "hover:text-gray-300", href: "https://github.com" },
+  { icon: Linkedin, label: "LinkedIn", color: "hover:text-blue-500", href: "https://linkedin.com" },
+  { icon: Instagram, label: "Instagram", color: "hover:text-pink-500", href: "https://instagram.com" },
+  { icon: Youtube, label: "YouTube", color: "hover:text-red-500", href: "https://youtube.com" },
 ];
+
+const footerRouteMap: Record<string, string> = {
+  Courses: "/courses",
+  Roadmaps: "/roadmap",
+  "AI Mentor": "/support",
+  Community: "/features",
+  Certifications: "/features",
+  "About Us": "/features",
+  Careers: "/features",
+  Blog: "/features",
+  Press: "/features",
+  Partners: "/features",
+  Documentation: "/features",
+  "Help Center": "/support",
+  Webinars: "/features",
+  Newsletter: "/auth/sign-up",
+  Affiliate: "/features",
+  "Privacy Policy": "/legal/privacy",
+  "Terms of Service": "/legal/terms",
+  "Cookie Policy": "/legal/cookies",
+  "Refund Policy": "/legal/terms",
+};
 
 export default function Footer() {
   return (
@@ -41,9 +64,12 @@ export default function Footer() {
               placeholder="your@email.com"
               className="flex-1 sm:w-64 bg-white/5 border border-violet-500/20 text-white placeholder-gray-500 text-sm px-4 py-2.5 rounded-xl focus:outline-none focus:border-violet-500/60 transition-colors"
             />
-            <button className="flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap hover:shadow-[0_0_20px_rgba(124,58,237,0.4)] transition-shadow">
+            <Link
+              href="/auth/sign-up"
+              className="flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap hover:shadow-[0_0_20px_rgba(124,58,237,0.4)] transition-shadow"
+            >
               Subscribe <ArrowRight size={14} />
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -64,13 +90,16 @@ export default function Footer() {
             {/* Socials */}
             <div className="flex gap-3">
               {socials.map((social) => (
-                <button
+                <a
                   key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noreferrer"
                   aria-label={social.label}
                   className={`w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 ${social.color} transition-colors hover:border-violet-500/30`}
                 >
                   <social.icon size={14} />
-                </button>
+                </a>
               ))}
             </div>
           </div>
@@ -82,12 +111,12 @@ export default function Footer() {
               <ul className="space-y-2.5">
                 {links.map((link) => (
                   <li key={link}>
-                    <a
-                      href="#"
+                    <Link
+                      href={footerRouteMap[link] ?? "/features"}
                       className="text-sm text-gray-500 hover:text-gray-300 transition-colors"
                     >
                       {link}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -101,9 +130,9 @@ export default function Footer() {
             © 2026 EduNova, Inc. All rights reserved.
           </div>
           <div className="flex items-center gap-6 text-xs text-gray-600">
-            <a href="#" className="hover:text-gray-400 transition-colors">Privacy</a>
-            <a href="#" className="hover:text-gray-400 transition-colors">Terms</a>
-            <a href="#" className="hover:text-gray-400 transition-colors">Cookies</a>
+            <Link href="/legal/privacy" className="hover:text-gray-400 transition-colors">Privacy</Link>
+            <Link href="/legal/terms" className="hover:text-gray-400 transition-colors">Terms</Link>
+            <Link href="/legal/cookies" className="hover:text-gray-400 transition-colors">Cookies</Link>
             <div className="flex items-center gap-1.5">
               <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
               <span>All systems operational</span>

@@ -75,7 +75,8 @@ export default function CTASection() {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <motion.button
+              <motion.a
+                href="/auth/sign-up"
                 whileHover={{
                   scale: 1.05,
                   boxShadow: "0 0 60px rgba(124,58,237,0.7), 0 0 100px rgba(124,58,237,0.3)",
@@ -93,14 +94,15 @@ export default function CTASection() {
                 Start Free Trial Now
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </motion.button>
+              </motion.a>
 
-              <motion.button
+              <motion.a
+                href="/courses"
                 whileHover={{ scale: 1.04 }}
                 className="flex items-center gap-2 border border-violet-500/40 text-violet-300 font-semibold px-8 py-4 rounded-2xl text-lg hover:bg-violet-600/10 transition-colors"
               >
                 Browse Courses
-              </motion.button>
+              </motion.a>
             </div>
 
             {/* Trust badges */}

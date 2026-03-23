@@ -48,25 +48,23 @@
 
 :root {
   --radius: 0.625rem;
-
-  /* Light theme defaults */
-  --background: #f7f7ff;
-  --foreground: #0b0b16;
-  --card: #ffffff;
-  --card-foreground: #0b0b16;
-  --popover: #ffffff;
-  --popover-foreground: #0b0b16;
+  --background: #08080f;
+  --foreground: #f0f0ff;
+  --card: #0f0f1a;
+  --card-foreground: #f0f0ff;
+  --popover: #0f0f1a;
+  --popover-foreground: #f0f0ff;
   --primary: #7c3aed;
   --primary-foreground: #ffffff;
-  --secondary: #f0efff;
-  --secondary-foreground: #5a5a9a;
-  --muted: #f0efff;
-  --muted-foreground: #6b6b9e;
+  --secondary: #1a1a2e;
+  --secondary-foreground: #a0a0c0;
+  --muted: #1a1a2e;
+  --muted-foreground: #6060a0;
   --accent: #7c3aed;
   --accent-foreground: #ffffff;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: rgba(124, 58, 237, 0.25);
-  --input: rgba(124, 58, 237, 0.12);
+  --border: rgba(124, 58, 237, 0.2);
+  --input: rgba(124, 58, 237, 0.15);
   --ring: #7c3aed;
 
   --chart-1: #7c3aed;
@@ -75,13 +73,13 @@
   --chart-4: #e879f9;
   --chart-5: #f0abfc;
 
-  --sidebar: #ffffff;
-  --sidebar-foreground: #0b0b16;
+  --sidebar: #0f0f1a;
+  --sidebar-foreground: #f0f0ff;
   --sidebar-primary: #7c3aed;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #f0efff;
-  --sidebar-accent-foreground: #0b0b16;
-  --sidebar-border: rgba(124, 58, 237, 0.25);
+  --sidebar-accent: #1a1a2e;
+  --sidebar-accent-foreground: #f0f0ff;
+  --sidebar-border: rgba(124, 58, 237, 0.2);
   --sidebar-ring: #7c3aed;
 
   /* LMS Custom vars */

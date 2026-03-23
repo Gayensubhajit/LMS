@@ -3,13 +3,12 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, BookOpen, Zap } from "lucide-react";
-import ThemeToggle from "@/components/lms/ThemeToggle";
 
 const navLinks = [
-  { label: "Courses", href: "#courses" },
-  { label: "Roadmap", href: "#roadmap" },
-  { label: "Instructors", href: "#instructors" },
-  { label: "Pricing", href: "#pricing" },
+  { label: "Courses", href: "/courses" },
+  { label: "Roadmap", href: "/roadmap" },
+  { label: "Instructors", href: "/instructors" },
+  { label: "Pricing", href: "/pricing" },
 ];
 
 export default function Navbar() {
@@ -36,7 +35,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between h-18 py-4">
         {/* Logo */}
         <motion.a
-          href="#"
+          href="/"
           className="flex items-center gap-2 group"
           whileHover={{ scale: 1.02 }}
         >
@@ -69,21 +68,22 @@ export default function Navbar() {
 
         {/* CTA Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <ThemeToggle />
-          <motion.button
+          <motion.a
+            href="/auth/sign-in"
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
             className="text-sm text-gray-300 hover:text-white px-4 py-2 transition-colors"
           >
             Sign In
-          </motion.button>
-          <motion.button
+          </motion.a>
+          <motion.a
+            href="/auth/sign-up"
             whileHover={{ scale: 1.04, boxShadow: "0 0 25px rgba(124,58,237,0.6)" }}
             whileTap={{ scale: 0.96 }}
             className="text-sm font-semibold bg-gradient-to-r from-violet-600 to-purple-600 text-white px-5 py-2.5 rounded-xl shadow-[0_0_15px_rgba(124,58,237,0.3)] transition-all duration-300"
           >
             Start Free Trial
-          </motion.button>
+          </motion.a>
         </div>
 
         {/* Mobile Hamburger */}
@@ -105,10 +105,7 @@ export default function Navbar() {
             className="md:hidden bg-background/95 backdrop-blur-xl border-b border-purple-500/20 px-6 pb-6"
           >
             <div className="flex flex-col gap-4 pt-4">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-300">Theme</span>
-                    <ThemeToggle />
-                  </div>
+              {/* Theme toggle removed (dark mode forced) */}
               {navLinks.map((link) => (
                 <a
                   key={link.label}
@@ -119,9 +116,13 @@ export default function Navbar() {
                   {link.label}
                 </a>
               ))}
-              <button className="w-full bg-gradient-to-r from-violet-600 to-purple-600 text-white py-3 rounded-xl font-semibold mt-2">
+              <a
+                href="/auth/sign-up"
+                onClick={() => setMobileOpen(false)}
+                className="w-full text-center bg-gradient-to-r from-violet-600 to-purple-600 text-white py-3 rounded-xl font-semibold mt-2"
+              >
                 Start Free Trial
-              </button>
+              </a>
             </div>
           </motion.div>
         )}

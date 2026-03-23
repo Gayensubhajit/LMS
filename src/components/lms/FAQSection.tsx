@@ -130,12 +130,18 @@ export default function FAQSection() {
           <h3 className="text-lg font-bold text-white mb-2">Still have questions?</h3>
           <p className="text-gray-400 text-sm mb-4">Our team is here to help 24/7.</p>
           <div className="flex items-center justify-center gap-3">
-            <button className="bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:shadow-[0_0_25px_rgba(124,58,237,0.5)] transition-shadow">
+            <a
+              href="/support?tab=chat"
+              className="bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:shadow-[0_0_25px_rgba(124,58,237,0.5)] transition-shadow"
+            >
               Chat with Us
-            </button>
-            <button className="border border-violet-500/30 text-violet-300 text-sm font-semibold px-6 py-2.5 rounded-xl hover:bg-violet-600/10 transition-colors">
+            </a>
+            <a
+              href="/support?tab=email"
+              className="border border-violet-500/30 text-violet-300 text-sm font-semibold px-6 py-2.5 rounded-xl hover:bg-violet-600/10 transition-colors"
+            >
               Email Support
-            </button>
+            </a>
           </div>
         </motion.div>
       </div>

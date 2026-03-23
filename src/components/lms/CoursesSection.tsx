@@ -265,13 +265,14 @@ export default function CoursesSection() {
                     <span className="text-xl font-black text-white">${course.price}</span>
                     <span className="text-xs text-gray-500 ml-1 line-through">${Math.round(course.price * 1.6)}</span>
                   </div>
-                  <motion.button
+                  <motion.a
+                    href={`/checkout?course=${encodeURIComponent(course.title)}`}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     className="flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-xs font-semibold px-4 py-2 rounded-xl"
                   >
                     Enroll <ArrowRight size={12} />
-                  </motion.button>
+                  </motion.a>
                 </div>
               </div>
             </motion.div>
@@ -285,12 +286,13 @@ export default function CoursesSection() {
           transition={{ duration: 0.5, delay: 0.8 }}
           className="text-center mt-12"
         >
-          <motion.button
+          <motion.a
+            href="/courses"
             whileHover={{ scale: 1.04 }}
             className="inline-flex items-center gap-2 border border-violet-500/40 text-violet-300 px-8 py-3.5 rounded-2xl text-sm font-semibold hover:bg-violet-600/10 transition-colors"
           >
             Browse All 100+ Courses <ArrowRight size={16} />
-          </motion.button>
+          </motion.a>
         </motion.div>
       </div>
     </section>

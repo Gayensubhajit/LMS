@@ -108,10 +108,10 @@ export default function ParticleBackground() {
       const isDark = document.documentElement.classList.contains("dark");
       const fadeAlpha = isDark ? 0.18 : 0.28;
 
-      // Fade frame for smooth trails
+      // Fade frame for smooth trails (theme-aware background fade)
       ctx.fillStyle = isDark
         ? `rgba(8, 8, 15, ${fadeAlpha})`
-        : `rgba(247, 247, 255, ${fadeAlpha})`;
+        : `rgba(15, 15, 26, ${fadeAlpha})`;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       // Auto-disable cursor attraction after a moment of inactivity.

@@ -147,13 +147,14 @@ export default function WhyChooseUs() {
           transition={{ duration: 0.6, delay: 0.7 }}
           className="text-center mt-14"
         >
-          <motion.button
+          <motion.a
+            href="/features"
             whileHover={{ scale: 1.04, boxShadow: "0 0 40px rgba(124,58,237,0.5)" }}
             whileTap={{ scale: 0.97 }}
             className="bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold px-10 py-4 rounded-2xl text-base"
           >
             Explore All Features →
-          </motion.button>
+          </motion.a>
         </motion.div>
       </div>
     </section>

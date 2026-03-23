@@ -202,7 +202,8 @@ export default function PricingSection() {
                 </div>
 
                 {/* CTA */}
-                <motion.button
+                <motion.a
+                  href={`/auth/sign-up?plan=${encodeURIComponent(plan.name)}&billing=${billing}`}
                   whileHover={{
                     scale: 1.03,
                     boxShadow: plan.highlight ? `0 0 30px ${plan.glow}` : undefined,
@@ -216,7 +217,7 @@ export default function PricingSection() {
                 >
                   {plan.highlight && <Zap size={14} className="inline mr-1.5" />}
                   {plan.cta}
-                </motion.button>
+                </motion.a>
 
                 {/* Features */}
                 <div className="space-y-3">

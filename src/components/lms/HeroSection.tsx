@@ -133,7 +133,8 @@ export default function HeroSection() {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-wrap items-center gap-4 justify-center lg:justify-start mb-10"
             >
-              <motion.button
+              <motion.a
+                href="/auth/sign-up"
                 whileHover={{
                   scale: 1.05,
                   boxShadow: "0 0 40px rgba(124,58,237,0.6), 0 0 80px rgba(124,58,237,0.2)",
@@ -144,9 +145,10 @@ export default function HeroSection() {
                 <span className="relative z-10">Start Learning Free</span>
                 <ArrowRight size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />
                 <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </motion.button>
+              </motion.a>
 
-              <motion.button
+              <motion.a
+                href="/demo"
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.96 }}
                 className="flex items-center gap-3 text-white group"
@@ -159,7 +161,7 @@ export default function HeroSection() {
                   <div className="text-sm font-semibold">Watch Demo</div>
                   <div className="text-xs text-gray-400">2 min preview</div>
                 </div>
-              </motion.button>
+              </motion.a>
             </motion.div>
 
             {/* Stats */}

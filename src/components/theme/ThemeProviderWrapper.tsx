@@ -10,7 +10,7 @@ export function ThemeProviderWrapper({
 }) {
   return (
     <ThemeProvider
-      attribute="class"
+      attribute="data-theme"
       defaultTheme="dark"
       enableSystem={false}
       disableTransitionOnChange

@@ -48,6 +48,50 @@
 
 :root {
   --radius: 0.625rem;
+
+  /* Light theme defaults */
+  --background: #f7f7ff;
+  --foreground: #0b0b16;
+  --card: #ffffff;
+  --card-foreground: #0b0b16;
+  --popover: #ffffff;
+  --popover-foreground: #0b0b16;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --secondary: #f0efff;
+  --secondary-foreground: #5a5a9a;
+  --muted: #f0efff;
+  --muted-foreground: #6b6b9e;
+  --accent: #7c3aed;
+  --accent-foreground: #ffffff;
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: rgba(124, 58, 237, 0.25);
+  --input: rgba(124, 58, 237, 0.12);
+  --ring: #7c3aed;
+
+  --chart-1: #7c3aed;
+  --chart-2: #a855f7;
+  --chart-3: #c084fc;
+  --chart-4: #e879f9;
+  --chart-5: #f0abfc;
+
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0b0b16;
+  --sidebar-primary: #7c3aed;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f0efff;
+  --sidebar-accent-foreground: #0b0b16;
+  --sidebar-border: rgba(124, 58, 237, 0.25);
+  --sidebar-ring: #7c3aed;
+
+  /* LMS Custom vars */
+  --purple-glow: rgba(124, 58, 237, 0.4);
+  --pink-glow: rgba(232, 121, 249, 0.3);
+  --blue-glow: rgba(59, 130, 246, 0.3);
+}
+
+.dark {
+  /* Dark theme overrides */
   --background: #08080f;
   --foreground: #f0f0ff;
   --card: #0f0f1a;
@@ -79,11 +123,6 @@
   --sidebar-accent-foreground: #f0f0ff;
   --sidebar-border: rgba(124, 58, 237, 0.2);
   --sidebar-ring: #7c3aed;
-
-  /* LMS Custom vars */
-  --purple-glow: rgba(124, 58, 237, 0.4);
-  --pink-glow: rgba(232, 121, 249, 0.3);
-  --blue-glow: rgba(59, 130, 246, 0.3);
 }
 
 @layer base {
@@ -91,8 +130,8 @@
     @apply border-border outline-ring/50;
   }
   body {
-    background-color: #08080f;
-    color: #f0f0ff;
+    background-color: var(--background);
+    color: var(--foreground);
     font-family: var(--font-sans), system-ui, sans-serif;
     overflow-x: hidden;
   }

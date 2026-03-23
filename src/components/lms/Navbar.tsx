@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, BookOpen, Zap } from "lucide-react";
+import ThemeToggle from "@/components/lms/ThemeToggle";
 
 const navLinks = [
   { label: "Courses", href: "#courses" },
@@ -28,7 +29,7 @@ export default function Navbar() {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
         scrolled
-          ? "bg-[#08080f]/90 backdrop-blur-xl border-b border-purple-500/20 shadow-[0_4px_30px_rgba(124,58,237,0.15)]"
+          ? "bg-background/90 backdrop-blur-xl border-b border-purple-500/20 shadow-[0_4px_30px_rgba(124,58,237,0.15)]"
           : "bg-transparent"
       }`}
     >
@@ -68,6 +69,7 @@ export default function Navbar() {
 
         {/* CTA Buttons */}
         <div className="hidden md:flex items-center gap-3">
+          <ThemeToggle />
           <motion.button
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.96 }}
@@ -100,9 +102,13 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-[#0d0d1f]/95 backdrop-blur-xl border-b border-purple-500/20 px-6 pb-6"
+            className="md:hidden bg-background/95 backdrop-blur-xl border-b border-purple-500/20 px-6 pb-6"
           >
             <div className="flex flex-col gap-4 pt-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-300">Theme</span>
+                    <ThemeToggle />
+                  </div>
               {navLinks.map((link) => (
                 <a
                   key={link.label}

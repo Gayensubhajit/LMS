@@ -12,6 +12,7 @@ import PricingSection from "@/components/lms/PricingSection";
 import FAQSection from "@/components/lms/FAQSection";
 import CTASection from "@/components/lms/CTASection";
 import Footer from "@/components/lms/Footer";
+import AssistantWidget from "@/components/lms/AssistantWidget";
 
 const ParticleBackground = dynamic(
   () => import("@/components/lms/ParticleBackground"),
@@ -20,7 +21,7 @@ const ParticleBackground = dynamic(
 
 export default function Home() {
   return (
-    <main className="relative min-h-screen bg-[#08080f] overflow-x-hidden">
+    <main className="relative min-h-screen bg-background overflow-x-hidden">
       {/* Particle background */}
       <ParticleBackground />
 
@@ -38,6 +39,7 @@ export default function Home() {
         <CTASection />
         <Footer />
       </div>
+      <AssistantWidget />
     </main>
   );
 }

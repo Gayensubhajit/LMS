@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { BookOpen, ChevronDown, MessageSquare, PlayCircle, Star, UserRound } from "lucide-react";
 import type { Course } from "@/lib/courses-data";
+import EnrollmentModal from "./EnrollmentModal";
 
 const planConfig = [
   { key: "oneMonth", label: "1 Month", valueKey: "oneMonth" as const, desc: "Best for quick upskilling" },
@@ -32,6 +33,7 @@ const instructorProfiles: Record<string, { role: string; bio: string; learners: 
 export default function CourseDetailsClient({ course }: { course: Course }) {
   const [tab, setTab] = useState<"overview" | "syllabus" | "reviews">("overview");
   const [openModuleIndex, setOpenModuleIndex] = useState<number | null>(0);
+  const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
 
   const modules = useMemo(() => {
     // Build a simple curriculum from course skills.
@@ -259,40 +261,14 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
 
           <aside className="glass-card rounded-3xl border border-violet-500/20 p-6 h-fit sticky top-8">
             <h2 className="text-xl font-black text-white mb-2">Enroll in this course</h2>
-            <p className="text-sm text-gray-500 mb-4">Choose your subscription duration</p>
+            <p className="text-sm text-gray-500 mb-6">Choose your subscription duration and get started today</p>
 
-            <div className="space-y-3 mb-6">
-              {planConfig.map((plan) => (
-                <div key={plan.key} className="rounded-xl border border-violet-500/20 bg-white/5 p-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-semibold text-white">{plan.label}</span>
-                    <span className="text-base font-black text-white">${course.price[plan.valueKey]}</span>
-                  </div>
-                  <p className="text-xs text-gray-500">{plan.desc}</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="space-y-2">
-              <Link
-                href={`/checkout?slug=${encodeURIComponent(course.slug)}&plan=1month`}
-                className="w-full text-center inline-flex items-center justify-center bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold px-4 py-3 rounded-xl"
-              >
-                Enroll Now (1 Month)
-              </Link>
-              <Link
-                href={`/checkout?slug=${encodeURIComponent(course.slug)}&plan=3month`}
-                className="w-full text-center inline-flex items-center justify-center border border-violet-500/30 text-violet-300 font-semibold px-4 py-3 rounded-xl"
-              >
-                Enroll 3 Months
-              </Link>
-              <Link
-                href={`/checkout?slug=${encodeURIComponent(course.slug)}&plan=6month`}
-                className="w-full text-center inline-flex items-center justify-center border border-violet-500/30 text-violet-300 font-semibold px-4 py-3 rounded-xl"
-              >
-                Enroll 6 Months
-              </Link>
-            </div>
+            <button
+              onClick={() => setIsEnrollModalOpen(true)}
+              className="w-full bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold px-4 py-3 rounded-xl hover:from-violet-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              Enroll Now
+            </button>
 
             <div className="mt-5 pt-4 border-t border-violet-500/15 text-xs text-gray-500 space-y-2">
               <div className="flex items-center gap-2">
@@ -307,6 +283,13 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
           </aside>
         </section>
       </div>
+
+      {/* Enrollment Modal */}
+      <EnrollmentModal
+        course={course}
+        isOpen={isEnrollModalOpen}
+        onClose={() => setIsEnrollModalOpen(false)}
+      />
     </main>
   );
 }

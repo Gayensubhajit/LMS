@@ -25,6 +25,7 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   turbopack: {
+    root: __dirname,
     rules: {
       "*.{jsx,tsx}": {
         loaders: [loaderPath]

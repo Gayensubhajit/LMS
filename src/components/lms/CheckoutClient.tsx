@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import type { Course } from "@/lib/courses-data";
+import { addEnrollment } from "@/lib/mock-enrollments";
 
 type Plan = "1month" | "3month" | "6month";
 
@@ -58,6 +59,12 @@ export default function CheckoutClient({
     setProcessing(true);
     await new Promise((resolve) => setTimeout(resolve, 1400));
     setProcessing(false);
+    addEnrollment({
+      slug: course.slug,
+      title: course.title,
+      plan,
+      amount: total,
+    });
     setCompleted(true);
   };
 
@@ -72,16 +79,16 @@ export default function CheckoutClient({
           </p>
           <div className="flex flex-wrap gap-3">
             <Link
-              href="/courses"
+              href="/my-courses"
               className="inline-flex items-center justify-center bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold px-6 py-3 rounded-xl"
             >
-              Browse More Courses
+              Go to My Courses
             </Link>
             <Link
-              href="/"
+              href={`/learn/${course.slug}`}
               className="inline-flex items-center justify-center border border-violet-500/30 text-violet-300 font-semibold px-6 py-3 rounded-xl"
             >
-              Back to Home
+              Start Learning
             </Link>
           </div>
         </div>

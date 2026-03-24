@@ -2,9 +2,14 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, BookOpen, Zap, Search, TrendingUp, Sparkles } from "lucide-react";
+import {
+  Menu, X, BookOpen, Zap, Search, TrendingUp, Sparkles,
+  User, GraduationCap, Settings, LogOut, ShoppingBag, Award, HelpCircle,
+} from "lucide-react";
 import { coursesData } from "@/lib/courses-data";
 import { useRouter } from "next/navigation";
+import { useUser, useClerk } from "@clerk/nextjs";
+import { backendRequest } from "@/lib/backend-client";
 
 const navLinks = [
   { label: "Courses", href: "/courses" },
@@ -33,24 +38,41 @@ const categoryColors: Record<string, { bg: string; text: string }> = {
   Marketing:   { bg: "rgba(16,185,129,0.15)", text: "#34d399" },
 };
 
+const profileMenuItems = [
+  { label: "Profile",          href: "/profile",     icon: User },
+  { label: "My Learning",      href: "/my-courses",  icon: GraduationCap },
+  { label: "My Purchases",     href: "/my-courses",  icon: ShoppingBag },
+  { label: "Settings",         href: "/settings",    icon: Settings },
+  { label: "Accomplishments",  href: "/accomplishments", icon: Award },
+  { label: "Help Center",      href: "/support",     icon: HelpCircle },
+];
+
 export default function Navbar() {
   const router = useRouter();
+  const { user, isLoaded } = useUser();
+  const { signOut } = useClerk();
+
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [mobileQuery, setMobileQuery] = useState("");
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [hasEnrollments, setHasEnrollments] = useState(false);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
 
+  // Scroll effect
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close dropdown when clicking outside
+  // Close search dropdown when clicking outside
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
@@ -62,34 +84,51 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  // Live course results
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      if (profileRef.current && !profileRef.current.contains(e.target as Node)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  // Check enrollments to show "My Learning" link
+  useEffect(() => {
+    if (!isLoaded || !user?.id) return;
+    backendRequest<{ ok: boolean; items: unknown[] }>("/dashboard/my-courses", {
+      clerkUserId: user.id,
+    })
+      .then((res) => setHasEnrollments(res.items.length > 0))
+      .catch(() => setHasEnrollments(false));
+  }, [isLoaded, user?.id]);
+
+  // Live course search results
   const results = query.trim()
-    ? coursesData.filter(
-        (c) =>
-          c.title.toLowerCase().includes(query.toLowerCase()) ||
-          c.category.toLowerCase().includes(query.toLowerCase()) ||
-          c.skills.some((s) => s.toLowerCase().includes(query.toLowerCase()))
-      ).slice(0, 6)
+    ? coursesData
+        .filter(
+          (c) =>
+            c.title.toLowerCase().includes(query.toLowerCase()) ||
+            c.category.toLowerCase().includes(query.toLowerCase()) ||
+            c.skills.some((s) => s.toLowerCase().includes(query.toLowerCase()))
+        )
+        .slice(0, 6)
     : [];
 
   const isPopularMode = query.trim() === "";
   const showDropdown = searchFocused;
-  // For keyboard navigation flattened list
   const keyboardItems = isPopularMode
     ? popularSearches.map((p) => p.term)
     : results.map((r) => r.title);
 
-  // When a popular chip is clicked → fill query and show results
-  const handlePopularClick = useCallback(
-    (term: string) => {
-      setQuery(term);
-      setHighlightedIndex(-1);
-      inputRef.current?.focus();
-    },
-    []
-  );
+  const handlePopularClick = useCallback((term: string) => {
+    setQuery(term);
+    setHighlightedIndex(-1);
+    inputRef.current?.focus();
+  }, []);
 
-  // When a live result is clicked → navigate to the course
   const handleResultClick = useCallback(
     (courseTitle: string) => {
       const matched = coursesData.find((c) => c.title === courseTitle);
@@ -135,6 +174,13 @@ export default function Navbar() {
     }
   };
 
+  // Avatar initials
+  const initials = user
+    ? (user.firstName?.[0] ?? "") + (user.lastName?.[0] ?? "") || user.emailAddresses[0]?.emailAddress[0]?.toUpperCase() || "?"
+    : "";
+
+  const avatarUrl = user?.imageUrl;
+
   return (
     <motion.nav
       initial={{ y: -80, opacity: 0 }}
@@ -170,6 +216,21 @@ export default function Navbar() {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 group-hover:w-full transition-all duration-300 rounded-full" />
             </motion.a>
           ))}
+
+          {/* My Learning — only when signed in AND has enrollments */}
+          {isLoaded && user && hasEnrollments && (
+            <motion.a
+              href="/my-courses"
+              className="text-sm text-violet-300 hover:text-violet-200 transition-colors relative group whitespace-nowrap font-medium"
+              whileHover={{ y: -1 }}
+              initial={{ opacity: 0, x: -6 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              My Learning
+              <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 rounded-full" />
+            </motion.a>
+          )}
         </div>
 
         {/* ── Search Bar ── */}
@@ -225,18 +286,15 @@ export default function Navbar() {
                   backdropFilter: "blur(24px)",
                 }}
               >
-                {/* ── Popular Suggestions (empty state) ── */}
+                {/* Popular Suggestions */}
                 {isPopularMode && (
                   <div className="p-4">
-                    {/* Header */}
                     <div className="flex items-center gap-2 mb-3">
                       <TrendingUp size={13} className="text-violet-400" />
                       <span className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
                         Trending Topics
                       </span>
                     </div>
-
-                    {/* Rich suggestion rows */}
                     <ul className="space-y-1">
                       {popularSearches.map((p, idx) => {
                         const col = categoryColors[p.category] ?? { bg: "rgba(124,58,237,0.15)", text: "#c084fc" };
@@ -254,25 +312,15 @@ export default function Navbar() {
                                 border: isHighlighted ? "1px solid rgba(124,58,237,0.3)" : "1px solid transparent",
                               }}
                             >
-                              {/* Emoji icon */}
-                              <div
-                                className="w-9 h-9 rounded-lg flex items-center justify-center text-lg flex-shrink-0"
-                                style={{ background: col.bg }}
-                              >
+                              <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg flex-shrink-0" style={{ background: col.bg }}>
                                 {p.emoji}
                               </div>
-
-                              {/* Term + category */}
                               <div className="flex-1 min-w-0">
                                 <p className="text-white text-sm font-semibold leading-none mb-1">{p.term}</p>
                                 <p className="text-gray-500 text-xs">{p.category}</p>
                               </div>
-
-                              {/* Badge */}
-                              <span
-                                className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap"
-                                style={{ background: col.bg, color: col.text }}
-                              >
+                              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap"
+                                style={{ background: col.bg, color: col.text }}>
                                 {p.badge}
                               </span>
                             </button>
@@ -280,19 +328,14 @@ export default function Navbar() {
                         );
                       })}
                     </ul>
-
-                    {/* Footer hint */}
-                    <div
-                      className="mt-3 pt-3 flex items-center gap-2"
-                      style={{ borderTop: "1px solid rgba(124,58,237,0.15)" }}
-                    >
+                    <div className="mt-3 pt-3 flex items-center gap-2" style={{ borderTop: "1px solid rgba(124,58,237,0.15)" }}>
                       <Sparkles size={11} className="text-violet-500" />
                       <p className="text-gray-600 text-xs">Click a topic to see matching courses instantly</p>
                     </div>
                   </div>
                 )}
 
-                {/* ── Live Results ── */}
+                {/* Live Results */}
                 {!isPopularMode && (
                   <div>
                     <div className="px-4 pt-3 pb-2 flex items-center justify-between">
@@ -304,7 +347,6 @@ export default function Navbar() {
                       </div>
                       <span className="text-gray-600 text-xs">{results.length} found</span>
                     </div>
-
                     {results.length === 0 ? (
                       <div className="px-4 py-6 text-center">
                         <p className="text-gray-500 text-sm">No courses match &ldquo;{query}&rdquo;</p>
@@ -328,15 +370,10 @@ export default function Navbar() {
                                   border: isHighlighted ? "1px solid rgba(124,58,237,0.3)" : "1px solid transparent",
                                 }}
                               >
-                                {/* Emoji */}
-                                <div
-                                  className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
-                                  style={{ background: col.bg, border: `1px solid ${col.text}30` }}
-                                >
+                                <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                                  style={{ background: col.bg, border: `1px solid ${col.text}30` }}>
                                   {course.emoji}
                                 </div>
-
-                                {/* Details */}
                                 <div className="flex-1 min-w-0">
                                   <p className="text-white text-sm font-semibold leading-snug truncate">{course.title}</p>
                                   <div className="flex items-center gap-2 mt-0.5">
@@ -347,12 +384,8 @@ export default function Navbar() {
                                     <span className="text-yellow-400 text-xs">★ {course.rating}</span>
                                   </div>
                                 </div>
-
-                                {/* Category pill */}
-                                <span
-                                  className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
-                                  style={{ background: col.bg, color: col.text }}
-                                >
+                                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
+                                  style={{ background: col.bg, color: col.text }}>
                                   {course.category}
                                 </span>
                               </button>
@@ -361,12 +394,7 @@ export default function Navbar() {
                         })}
                       </ul>
                     )}
-
-                    {/* View all footer */}
-                    <div
-                      className="px-4 py-3 flex items-center justify-between"
-                      style={{ borderTop: "1px solid rgba(124,58,237,0.15)" }}
-                    >
+                    <div className="px-4 py-3 flex items-center justify-between" style={{ borderTop: "1px solid rgba(124,58,237,0.15)" }}>
                       <span className="text-gray-600 text-xs">Press Enter to search all</span>
                       <button
                         type="button"
@@ -388,18 +416,110 @@ export default function Navbar() {
           </AnimatePresence>
         </div>
 
-        {/* CTA Buttons */}
+        {/* ── Right Side: Auth ── */}
         <div className="hidden md:flex items-center gap-3 flex-shrink-0">
-          <motion.a href="/auth/sign-in" whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
-            className="text-sm text-gray-300 hover:text-white px-4 py-2 transition-colors">
-            Sign In
-          </motion.a>
-          <motion.a href="/auth/sign-up"
-            whileHover={{ scale: 1.04, boxShadow: "0 0 25px rgba(124,58,237,0.6)" }}
-            whileTap={{ scale: 0.96 }}
-            className="text-sm font-semibold bg-gradient-to-r from-violet-600 to-purple-600 text-white px-5 py-2.5 rounded-xl shadow-[0_0_15px_rgba(124,58,237,0.3)] transition-all duration-300 whitespace-nowrap">
-            Start Free Trial
-          </motion.a>
+          {/* Not signed in */}
+          {isLoaded && !user && (
+            <>
+              <motion.a href="/auth/sign-in" whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}
+                className="text-sm text-gray-300 hover:text-white px-4 py-2 transition-colors">
+                Sign In
+              </motion.a>
+              <motion.a href="/auth/sign-up"
+                whileHover={{ scale: 1.04, boxShadow: "0 0 25px rgba(124,58,237,0.6)" }}
+                whileTap={{ scale: 0.96 }}
+                className="text-sm font-semibold bg-gradient-to-r from-violet-600 to-purple-600 text-white px-5 py-2.5 rounded-xl shadow-[0_0_15px_rgba(124,58,237,0.3)] transition-all duration-300 whitespace-nowrap">
+                Start Free Trial
+              </motion.a>
+            </>
+          )}
+
+          {/* Signed in — Profile Avatar */}
+          {isLoaded && user && (
+            <div ref={profileRef} className="relative">
+              <button
+                onClick={() => setProfileOpen((o) => !o)}
+                className="flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-white/5 transition-colors group"
+              >
+                {/* Avatar */}
+                <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-violet-500/40 group-hover:border-violet-400/70 transition-colors flex items-center justify-center"
+                  style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}>
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt={initials} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-white text-sm font-bold">{initials}</span>
+                  )}
+                </div>
+                <span className="text-gray-300 text-sm font-medium hidden lg:block">
+                  {user.firstName ?? user.emailAddresses[0]?.emailAddress.split("@")[0]}
+                </span>
+                <svg className={`w-3.5 h-3.5 text-gray-500 transition-transform duration-200 ${profileOpen ? "rotate-180" : ""}`}
+                  viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}>
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+
+              {/* Profile Dropdown */}
+              <AnimatePresence>
+                {profileOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                    transition={{ duration: 0.15, ease: "easeOut" }}
+                    className="absolute right-0 top-full mt-2 w-56 rounded-2xl overflow-hidden z-50"
+                    style={{
+                      background: "rgba(10,10,22,0.98)",
+                      border: "1px solid rgba(124,58,237,0.3)",
+                      boxShadow: "0 20px 60px rgba(0,0,0,0.8), 0 0 40px rgba(124,58,237,0.1)",
+                      backdropFilter: "blur(24px)",
+                    }}
+                  >
+                    {/* User info header */}
+                    <div className="px-4 py-3 border-b border-white/[0.06]">
+                      <p className="text-white text-sm font-semibold truncate">
+                        {user.fullName ?? user.emailAddresses[0]?.emailAddress.split("@")[0]}
+                      </p>
+                      <p className="text-gray-500 text-xs truncate mt-0.5">
+                        {user.emailAddresses[0]?.emailAddress}
+                      </p>
+                    </div>
+
+                    {/* Menu items */}
+                    <div className="py-1.5">
+                      {profileMenuItems.map((item) => {
+                        const Icon = item.icon;
+                        // Only show My Learning if enrolled
+                        if (item.label === "My Learning" && !hasEnrollments) return null;
+                        return (
+                          <a
+                            key={item.label}
+                            href={item.href}
+                            onClick={() => setProfileOpen(false)}
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-300 hover:text-white hover:bg-violet-500/10 transition-all duration-150"
+                          >
+                            <Icon size={15} className="text-gray-500 flex-shrink-0" />
+                            {item.label}
+                          </a>
+                        );
+                      })}
+                    </div>
+
+                    {/* Sign out */}
+                    <div className="py-1.5 border-t border-white/[0.06]">
+                      <button
+                        onClick={() => { setProfileOpen(false); void signOut({ redirectUrl: "/" }); }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-150"
+                      >
+                        <LogOut size={15} className="flex-shrink-0" />
+                        Log Out
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
 
         {/* Mobile Hamburger */}
@@ -447,10 +567,28 @@ export default function Navbar() {
                   {link.label}
                 </a>
               ))}
-              <a href="/auth/sign-up" onClick={() => setMobileOpen(false)}
-                className="w-full text-center bg-gradient-to-r from-violet-600 to-purple-600 text-white py-3 rounded-xl font-semibold mt-2">
-                Start Free Trial
-              </a>
+
+              {/* My Learning in mobile */}
+              {isLoaded && user && hasEnrollments && (
+                <a href="/my-courses" onClick={() => setMobileOpen(false)}
+                  className="text-violet-300 hover:text-violet-200 text-base py-1 border-b border-purple-500/10 font-medium">
+                  My Learning
+                </a>
+              )}
+
+              {isLoaded && user ? (
+                <button
+                  onClick={() => { setMobileOpen(false); void signOut({ redirectUrl: "/" }); }}
+                  className="w-full text-center border border-red-500/30 text-red-400 py-3 rounded-xl font-semibold mt-2"
+                >
+                  Log Out
+                </button>
+              ) : (
+                <a href="/auth/sign-up" onClick={() => setMobileOpen(false)}
+                  className="w-full text-center bg-gradient-to-r from-violet-600 to-purple-600 text-white py-3 rounded-xl font-semibold mt-2">
+                  Start Free Trial
+                </a>
+              )}
             </div>
           </motion.div>
         )}

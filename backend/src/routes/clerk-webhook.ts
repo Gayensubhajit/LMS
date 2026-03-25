@@ -27,7 +27,9 @@ function getFullName(payload: ClerkWebhookPayload): string | null {
 }
 
 export async function handleClerkWebhook(req: Request, res: Response) {
+  console.log(">>> Received Clerk Webhook");
   if (!env.CLERK_WEBHOOK_SECRET) {
+    console.error("!!! CLERK_WEBHOOK_SECRET missing");
     return res.status(500).json({
       ok: false,
       error: "CLERK_WEBHOOK_SECRET is not configured"
@@ -39,6 +41,7 @@ export async function handleClerkWebhook(req: Request, res: Response) {
   const svixSignature = req.header("svix-signature");
 
   if (!svixId || !svixTimestamp || !svixSignature) {
+    console.error("!!! Missing Svix headers", { svixId, svixTimestamp, svixSignature });
     return res.status(400).json({
       ok: false,
       error: "Missing Svix headers"
@@ -61,7 +64,9 @@ export async function handleClerkWebhook(req: Request, res: Response) {
       "svix-timestamp": svixTimestamp,
       "svix-signature": svixSignature
     }) as ClerkWebhookPayload;
-  } catch {
+    console.log(">>> Webhook verified successfully, event type:", payload.type);
+  } catch (err) {
+    console.error("!!! Webhook signature verification failed:", err);
     return res.status(400).json({
       ok: false,
       error: "Webhook signature verification failed"

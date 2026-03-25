@@ -116,45 +116,148 @@ dashboardRouter.get("/my-courses", async (req, res) => {
   });
 });
 
-dashboardRouter.get("/overview", async (req, res) => {
+
+// ── Roadmap Logic ─────────────────────────────────────────────────────────
+
+type RoadmapStageConfig = {
+  no: number;
+  courseSlugs: string[];
+};
+
+const ROADMAP_CONFIG: Record<string, RoadmapStageConfig[]> = {
+  dev: [
+    { no: 1, courseSlugs: ["full-stack-development-accelerator"] },
+    { no: 2, courseSlugs: ["react-nextjs-mastery-2026"] },
+    { no: 3, courseSlugs: ["react-nextjs-mastery-2026"] }, // Stage 3 focus: Next.js focus
+    { no: 4, courseSlugs: ["full-stack-development-accelerator"] }, // Stage 4 focus: Backend/Databases
+    { no: 5, courseSlugs: ["system-design-for-frontend-engineers"] },
+    { no: 6, courseSlugs: ["full-stack-development-accelerator"] }, // Stage 6 focus: Deployment
+  ],
+  design: [
+    { no: 1, courseSlugs: ["complete-ui-ux-design-bootcamp"] },
+    { no: 2, courseSlugs: ["complete-ui-ux-design-bootcamp"] },
+    { no: 3, courseSlugs: ["ux-research-interview-lab"] },
+    { no: 4, courseSlugs: ["mobile-app-design-with-figma"] },
+    { no: 5, courseSlugs: ["advanced-motion-design-framer"] },
+    { no: 6, courseSlugs: ["complete-ui-ux-design-bootcamp"] },
+  ],
+  ai: [
+    { no: 1, courseSlugs: ["python-for-data-analysis"] },
+    { no: 2, courseSlugs: ["ai-machine-learning-for-designers"] },
+    { no: 3, courseSlugs: ["no-code-ai-automation"] },
+    { no: 4, courseSlugs: ["ai-machine-learning-for-designers"] },
+    { no: 5, courseSlugs: ["full-stack-development-accelerator"] },
+  ],
+  biz: [
+    { no: 1, courseSlugs: ["product-management-fundamentals"] },
+    { no: 2, courseSlugs: ["growth-marketing-playbook"] },
+    { no: 3, courseSlugs: ["python-for-data-analysis"] },
+    { no: 4, courseSlugs: ["product-management-fundamentals"] },
+  ],
+};
+
+dashboardRouter.get("/roadmap", async (req, res) => {
   const user = await getUserFromHeader(req, res);
   if (!user) return;
 
-  const activeEnrollmentCount = await prisma.enrollment.count({
-    where: {
-      userId: user.id,
-      status: EnrollmentStatus.ACTIVE,
-      expiresAt: { gt: new Date() }
-    }
-  });
+  const pathId = req.query.pathId as string;
+  if (!pathId || !ROADMAP_CONFIG[pathId]) {
+    return res.status(400).json({ ok: false, error: "Invalid pathId" });
+  }
 
-  const completedLessons = await prisma.progress.count({
-    where: {
-      userId: user.id,
-      isCompleted: true
-    }
-  });
+  const stages = ROADMAP_CONFIG[pathId];
+  const results = [];
 
-  const nextExpiringEnrollment = await prisma.enrollment.findFirst({
-    where: {
-      userId: user.id,
-      status: EnrollmentStatus.ACTIVE,
-      expiresAt: { gt: new Date() }
-    },
-    orderBy: { expiresAt: "asc" },
+  // Get all user enrollments for comparison
+  const enrollments = await prisma.enrollment.findMany({
+    where: { userId: user.id },
     select: {
-      expiresAt: true,
-      course: { select: { slug: true, title: true } }
+      course: { select: { slug: true, id: true } },
+      status: true
     }
   });
+
+  const enrolledSlugs = new Set(enrollments.map(e => e.course.slug));
+  const enrollmentMap = new Map(enrollments.map(e => [e.course.slug, e]));
+
+  let previousStageDone = true;
+
+  for (const stage of stages) {
+    let status: "done" | "current" | "locked" = "locked";
+    let progressPercent = 0;
+
+    const stageCourses = stage.courseSlugs;
+    const isEnrolled = stageCourses.some(slug => enrolledSlugs.has(slug));
+
+    if (isEnrolled) {
+      // Check if all lessons in all courses for this stage are completed
+      let allCompleted = true;
+      let totalLessonsInStage = 0;
+      let completedLessonsInStage = 0;
+
+      for (const slug of stageCourses) {
+        const enrollment = enrollmentMap.get(slug);
+        if (!enrollment) {
+          allCompleted = false;
+          continue;
+        }
+
+        const course = await prisma.course.findUnique({
+          where: { slug },
+          include: {
+            sections: { include: { lessons: true } }
+          }
+        });
+
+        if (!course) continue;
+
+        const lessons = course.sections.flatMap(s => s.lessons);
+        totalLessonsInStage += lessons.length;
+
+        const progress = await prisma.progress.findMany({
+          where: {
+            userId: user.id,
+            lessonId: { in: lessons.map(l => l.id) },
+            isCompleted: true
+          }
+        });
+
+        completedLessonsInStage += progress.length;
+        if (progress.length < lessons.length) {
+          allCompleted = false;
+        }
+      }
+
+      progressPercent = totalLessonsInStage > 0 ? Math.round((completedLessonsInStage / totalLessonsInStage) * 100) : 0;
+
+      if (allCompleted && totalLessonsInStage > 0) {
+        status = "done";
+      } else {
+        status = "current";
+      }
+    } else {
+      // Not enrolled
+      if (previousStageDone) {
+        // We could mark it as 'unlockable' if we wanted, but for now 'locked'
+        status = "locked";
+      } else {
+        status = "locked";
+      }
+    }
+
+    results.push({
+      no: stage.no,
+      status,
+      progressPercent
+    });
+
+    previousStageDone = status === "done";
+  }
 
   return res.status(200).json({
     ok: true,
-    item: {
-      activeEnrollmentCount,
-      completedLessons,
-      nextExpiringEnrollment
-    }
+    pathId,
+    stages: results
   });
 });
 

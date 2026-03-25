@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -12,11 +12,30 @@ import {
   ArrowRight,
   BookOpen,
   Zap,
-  Star,
+  Star as StarIcon,
+  PlayCircle,
+  X,
+  Loader2,
+  Search,
 } from "lucide-react";
 import { Montserrat } from "next/font/google";
+import { useUser } from "@clerk/nextjs";
+import Navbar from "@/components/lms/Navbar";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
+
+export type RoadmapStepStatus = "locked" | "current" | "done";
+
+interface BackendRoadmapResponse {
+  [pathId: string]: {
+    stages: {
+      stepNo: number;
+      courseSlug: string;
+      status: RoadmapStepStatus;
+      progressPercent: number;
+    }[];
+  };
+}
 
 // ── Data ──────────────────────────────────────────────────────────────────
 const PATHS = [
@@ -267,7 +286,7 @@ const PATHS = [
   },
 ];
 
-// ── Status helpers ─────────────────────────────────────────────────────────
+// ── Status helpers ──────────────────────────────────────────────────────────
 function StepIcon({ status, color }: { status: string; color: string }) {
   if (status === "done") return <CheckCircle size={18} style={{ color }} />;
   if (status === "current")
@@ -275,348 +294,705 @@ function StepIcon({ status, color }: { status: string; color: string }) {
   return <Lock size={16} className="text-gray-700" />;
 }
 
+// Maps sidebar category → which ROADMAP_CATEGORIES title(s) it highlights
+const SIDEBAR_CATS: { label: string; match: string | null }[] = [
+  { label: "All Roadmaps",          match: null },
+  { label: "Role Based",            match: "Role Based Roadmaps" },
+  { label: "Skill Based",           match: "Skill Based Roadmaps" },
+  { label: "Frameworks & Tools",    match: "Frameworks & Tools Roadmap" },
+  { label: "Best Practices",        match: "Best Practices" },
+];
+
+const ROADMAP_CATEGORIES = [
+  {
+    title: "Role Based Roadmaps",
+    items: [
+      { id: "frontend", label: "Frontend", status: "coming_soon" },
+      { id: "backend", label: "Backend", status: "coming_soon" },
+      { id: "dev", label: "Full Stack", status: "ready" },
+      { id: "devops", label: "DevOps", status: "coming_soon" },
+      { id: "design", label: "UI/UX Design", status: "ready" },
+      { id: "data_analyst", label: "Data Analyst", status: "coming_soon" },
+      { id: "ai", label: "AI Engineer", status: "ready" },
+      { id: "biz", label: "Product Manager", status: "ready" },
+      { id: "android", label: "Android", status: "coming_soon" },
+      { id: "ios", label: "iOS", status: "coming_soon" },
+      { id: "blockchain", label: "Blockchain", status: "coming_soon" },
+      { id: "qa", label: "QA Engineer", status: "coming_soon" },
+      { id: "cloud_architect", label: "Cloud Architect", status: "coming_soon" },
+      { id: "game_dev", label: "Game Developer", status: "coming_soon" },
+      { id: "tech_writer", label: "Technical Writer", status: "coming_soon" },
+      { id: "machine_learning", label: "Machine Learning", status: "coming_soon" },
+      { id: "devsecops", label: "DevSecOps", status: "coming_soon" },
+      { id: "sre", label: "Site Reliability", status: "coming_soon" },
+      { id: "engineering_manager", label: "Engineering Manager", status: "coming_soon" },
+      { id: "dev_rel", label: "Developer Relations", status: "coming_soon" },
+      { id: "cyber_sec", label: "Cyber Security", status: "coming_soon" },
+      { id: "data_scientist", label: "Data Scientist", status: "coming_soon" },
+      { id: "data_engineer", label: "Data Engineer", status: "coming_soon" },
+      { id: "software_architect", label: "Software Architect", status: "coming_soon" },
+    ],
+  },
+  {
+    title: "Skill Based Roadmaps",
+    items: [
+      { id: "react", label: "React", status: "coming_soon" },
+      { id: "vue", label: "Vue", status: "coming_soon" },
+      { id: "javascript", label: "JavaScript", status: "coming_soon" },
+      { id: "nodejs", label: "Node.js", status: "coming_soon" },
+      { id: "typescript", label: "TypeScript", status: "coming_soon" },
+      { id: "python", label: "Python", status: "coming_soon" },
+      { id: "postgresql", label: "PostgreSQL", status: "coming_soon" },
+      { id: "java", label: "Java", status: "coming_soon" },
+      { id: "cplusplus", label: "C++", status: "coming_soon" },
+      { id: "csharp", label: "C#", status: "coming_soon" },
+      { id: "go", label: "Go", status: "coming_soon" },
+      { id: "rust", label: "Rust", status: "coming_soon" },
+      { id: "ruby", label: "Ruby", status: "coming_soon" },
+      { id: "php", label: "PHP", status: "coming_soon" },
+      { id: "sql", label: "SQL", status: "coming_soon" },
+      { id: "mongodb", label: "MongoDB", status: "coming_soon" },
+      { id: "graphql", label: "GraphQL", status: "coming_soon" },
+      { id: "docker", label: "Docker", status: "coming_soon" },
+      { id: "kubernetes", label: "Kubernetes", status: "coming_soon" },
+      { id: "aws", label: "AWS", status: "coming_soon" },
+      { id: "azure", label: "Azure", status: "coming_soon" },
+      { id: "gcp", label: "Google Cloud", status: "coming_soon" },
+      { id: "linux", label: "Linux", status: "coming_soon" },
+      { id: "git", label: "Git", status: "coming_soon" },
+      { id: "system_design", label: "System Design", status: "coming_soon" },
+      { id: "dsa", label: "Data Structures", status: "coming_soon" },
+      { id: "testing", label: "Software Testing", status: "coming_soon" },
+      { id: "clean_code", label: "Clean Code", status: "coming_soon" },
+      { id: "redis", label: "Redis", status: "coming_soon" },
+      { id: "elasticsearch", label: "ElasticSearch", status: "coming_soon" },
+    ],
+  },
+  {
+    title: "Frameworks & Tools Roadmap",
+    items: [
+      { id: "nextjs", label: "Next.js", status: "coming_soon" },
+      { id: "nestjs", label: "NestJS", status: "coming_soon" },
+      { id: "express", label: "Express", status: "coming_soon" },
+      { id: "django", label: "Django", status: "coming_soon" },
+      { id: "flask", label: "Flask", status: "coming_soon" },
+      { id: "fastapi", label: "FastAPI", status: "coming_soon" },
+      { id: "laravel", label: "Laravel", status: "coming_soon" },
+      { id: "rails", label: "Ruby on Rails", status: "coming_soon" },
+      { id: "aspnet", label: "ASP.NET Core", status: "coming_soon" },
+      { id: "spring", label: "Spring Boot", status: "coming_soon" },
+      { id: "flutter", label: "Flutter", status: "coming_soon" },
+      { id: "react_native", label: "React Native", status: "coming_soon" },
+      { id: "swift", label: "Swift", status: "coming_soon" },
+      { id: "kotlin", label: "Kotlin", status: "coming_soon" },
+      { id: "pandas", label: "Pandas", status: "coming_soon" },
+      { id: "tensorflow", label: "TensorFlow", status: "coming_soon" },
+      { id: "pytorch", label: "PyTorch", status: "coming_soon" },
+      { id: "tailwind", label: "Tailwind CSS", status: "coming_soon" },
+      { id: "bootstrap", label: "Bootstrap", status: "coming_soon" },
+      { id: "sass", label: "Sass", status: "coming_soon" },
+      { id: "npm", label: "npm", status: "coming_soon" },
+      { id: "yarn", label: "Yarn", status: "coming_soon" },
+      { id: "webpack", label: "Webpack", status: "coming_soon" },
+      { id: "vite", label: "Vite", status: "coming_soon" },
+      { id: "jest", label: "Jest", status: "coming_soon" },
+      { id: "cypress", label: "Cypress", status: "coming_soon" },
+      { id: "playwright", label: "Playwright", status: "coming_soon" },
+      { id: "github_actions", label: "GitHub Actions", status: "coming_soon" },
+      { id: "gitlab_ci", label: "GitLab CI", status: "coming_soon" },
+      { id: "jenkins", label: "Jenkins", status: "coming_soon" },
+      { id: "terraform", label: "Terraform", status: "coming_soon" },
+      { id: "ansible", label: "Ansible", status: "coming_soon" },
+      { id: "framer_motion", label: "Framer Motion", status: "coming_soon" },
+      { id: "prisma", label: "Prisma ORM", status: "coming_soon" },
+      { id: "drizzle", label: "Drizzle ORM", status: "coming_soon" },
+      { id: "apollo", label: "Apollo GraphQL", status: "coming_soon" },
+    ],
+  },
+  {
+    title: "Best Practices",
+    items: [
+      { id: "code_review", label: "Code Review", status: "coming_soon" },
+      { id: "design_patterns", label: "Design Patterns", status: "coming_soon" },
+      { id: "refactoring", label: "Refactoring", status: "coming_soon" },
+      { id: "agile", label: "Agile Development", status: "coming_soon" },
+      { id: "scrum", label: "Scrum Framework", status: "coming_soon" },
+      { id: "performance", label: "Web Performance", status: "coming_soon" },
+      { id: "accessibility", label: "Accessibility (a11y)", status: "coming_soon" },
+      { id: "security", label: "Web Security", status: "coming_soon" },
+      { id: "seo", label: "Technical SEO", status: "coming_soon" },
+      { id: "ci_cd", label: "CI/CD Best Practices", status: "coming_soon" },
+      { id: "api_design", label: "REST API Design", status: "coming_soon" },
+      { id: "microservices", label: "Microservices", status: "coming_soon" },
+      { id: "serverless", label: "Serverless Architecture", status: "coming_soon" },
+    ],
+  },
+];
+
 export default function RoadmapPage() {
-  const [active, setActive] = useState("design");
-  const path = PATHS.find((p) => p.id === active)!;
+  const { user, isLoaded } = useUser();
+  const [active, setActive] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [statusMap, setStatusMap] = useState<Record<number, { status: RoadmapStepStatus; progressPercent: number }>>({});
+  const [selectedTopic, setSelectedTopic] = useState<{ skill: string; stepNo: number; isDone: boolean } | null>(null);
+  const [completedTopics, setCompletedTopics] = useState<Set<string>>(new Set());
+
+  const fetchStatus = useCallback(async () => {
+    if (!isLoaded || !user?.id) {
+      if (isLoaded) setLoading(false);
+      return;
+    }
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/dashboard/roadmap?userId=${user.id}`);
+      if (res.ok) {
+        const data: BackendRoadmapResponse = await res.json();
+        const devPath = data["dev"];
+        if (devPath && devPath.stages) {
+          const map: Record<number, { status: RoadmapStepStatus; progressPercent: number }> = {};
+          devPath.stages.forEach((st) => {
+            map[st.stepNo] = { status: st.status, progressPercent: st.progressPercent };
+          });
+          setStatusMap(map);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  }, [isLoaded, user?.id]);
+
+  useEffect(() => {
+    fetchStatus();
+  }, [fetchStatus]);
+
+  const pathContent = active ? PATHS.find((p) => p.id === active) : null;
+
+  const steps = pathContent
+    ? pathContent.steps.map((step, index) => {
+        if (active === "dev" && statusMap[step.no]) {
+          return { ...step, status: statusMap[step.no].status, progressPercent: statusMap[step.no].progressPercent };
+        }
+        const isFirst = index === 0;
+        return { ...step, status: (isFirst ? "current" : "locked") as RoadmapStepStatus, progressPercent: 0 };
+      })
+    : [];
+
+  const completedCount = steps.filter((s) => s.status === "done").length;
+  const overallProgress =
+    steps.length > 0
+      ? Math.round(
+          steps.reduce((acc, step) => acc + (step.status === "done" ? 100 : step.progressPercent || 0), 0) / steps.length
+        )
+      : 0;
 
   return (
-    <main
-      className={`${montserrat.className} min-h-screen bg-background text-foreground pt-24 pb-20`}
-    >
-      <div className="max-w-6xl mx-auto px-6">
-        {/* ── Hero ── */}
-        <div className="text-center mb-14">
-          <div
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-5"
-            style={{
-              background: "rgba(124,58,237,0.15)",
-              border: "1px solid rgba(124,58,237,0.35)",
-              color: "#c084fc",
-            }}
-          >
-            <Zap size={11} /> Structured Learning Paths
-          </div>
-          <h1 className="font-serif text-5xl md:text-6xl font-black text-white leading-tight mb-4">
-            Your Learning{" "}
-            <span
-              style={{
-                background: "linear-gradient(135deg,#c084fc,#7c3aed)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-              className={`${montserrat.className} inline-block`}
-            >
-              Roadmap
-            </span>
-          </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Follow a curated sequence of courses, projects, and milestones —
-            built by industry experts to get you job-ready.
-          </p>
-        </div>
+    <div className={`min-h-screen bg-[#05050a] selection:bg-violet-500/30 ${montserrat.className}`}>
+      <Navbar />
 
-        {/* ── Path selector tabs ── */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-12">
-          {PATHS.map((p) => (
-            <button
-              key={p.id}
-              onClick={() => setActive(p.id)}
-              className="rounded-2xl p-4 text-left transition-all duration-200"
-              style={{
-                background: active === p.id ? p.bg : "rgba(15,15,30,0.6)",
-                border: `1px solid ${active === p.id ? p.border : "rgba(124,58,237,0.15)"}`,
-                boxShadow: active === p.id ? `0 0 30px ${p.glow}` : "none",
-              }}
-            >
-              <div className="text-3xl mb-2">{p.emoji}</div>
-              <p className="text-sm font-bold text-white leading-tight">
-                {p.label}
-              </p>
-              <p className="text-[11px] mt-1" style={{ color: p.color }}>
-                {p.duration}
-              </p>
-            </button>
-          ))}
-        </div>
+      <main className="text-white pt-10">
+        <div className="max-w-7xl mx-auto px-6">
 
-        {/* ── Active path panel ── */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={active}
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 16 }}
-            transition={{ duration: 0.22 }}
-          >
-            {/* Path header */}
+          {/* ── Hero ── */}
+          <div className="text-center mb-10 mt-16 flex flex-col items-center">
             <div
-              className="rounded-3xl p-6 md:p-8 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-5"
-              style={{
-                background: path.bg,
-                border: `1px solid ${path.border}`,
-                boxShadow: `0 0 50px ${path.glow}`,
-              }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-8"
+              style={{ background: "rgba(124,58,237,0.15)", border: "1px solid rgba(124,58,237,0.35)", color: "#c084fc" }}
             >
-              <div>
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-4xl">{path.emoji}</span>
-                  <div>
-                    <h2 className="text-2xl font-black text-white">
-                      {path.label}
-                    </h2>
-                    <p className="text-sm" style={{ color: path.color }}>
-                      {path.description}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-xs text-gray-500 mt-2">
-                  <span className="font-semibold text-gray-400">
-                    Career paths:{" "}
-                  </span>
-                  {path.jobs}
-                </p>
-              </div>
-              <div className="flex flex-wrap gap-3 text-center flex-shrink-0">
-                <div
-                  className="px-5 py-3 rounded-2xl"
-                  style={{
-                    background: "rgba(0,0,0,0.3)",
-                    border: `1px solid ${path.border}`,
-                  }}
-                >
-                  <p className="text-xl font-black text-white">
-                    {path.steps.length}
-                  </p>
-                  <p className="text-[11px] text-gray-500">Stages</p>
-                </div>
-                <div
-                  className="px-5 py-3 rounded-2xl"
-                  style={{
-                    background: "rgba(0,0,0,0.3)",
-                    border: `1px solid ${path.border}`,
-                  }}
-                >
-                  <p className="text-xl font-black text-white">
-                    {path.duration}
-                  </p>
-                  <p className="text-[11px] text-gray-500">Timeline</p>
-                </div>
-                <div
-                  className="px-5 py-3 rounded-2xl"
-                  style={{
-                    background: "rgba(0,0,0,0.3)",
-                    border: `1px solid ${path.border}`,
-                  }}
-                >
-                  <p className="text-xl font-black text-white">
-                    {path.steps.filter((s) => s.status === "done").length}/
-                    {path.steps.length}
-                  </p>
-                  <p className="text-[11px] text-gray-500">Complete</p>
-                </div>
-              </div>
+              <Zap size={11} /> Structured Learning Paths
             </div>
-
-            {/* Progress bar */}
-            <div className="mb-8">
-              <div className="flex justify-between text-xs text-gray-500 mb-2">
-                <span>Progress</span>
-                <span style={{ color: path.color }}>
-                  {Math.round(
-                    (path.steps.filter((s) => s.status === "done").length /
-                      path.steps.length) *
-                      100,
-                  )}
-                  %
-                </span>
-              </div>
-              <div
-                className="h-2 rounded-full overflow-hidden"
-                style={{ background: "rgba(255,255,255,0.06)" }}
-              >
-                <motion.div
-                  className="h-full rounded-full"
-                  style={{
-                    background: `linear-gradient(90deg, ${path.color}90, ${path.color})`,
-                  }}
-                  initial={{ width: 0 }}
-                  animate={{
-                    width: `${(path.steps.filter((s) => s.status === "done").length / path.steps.length) * 100}%`,
-                  }}
-                  transition={{ duration: 0.7, ease: "easeOut" }}
+            <h1 className="text-5xl md:text-6xl font-black text-white leading-tight mb-4">
+              Your Learning{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">Blueprint</span>
+            </h1>
+            <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-8 leading-relaxed font-medium">
+              Step-by-step career playbooks curated by industry experts. Start at zero and follow the exact path to job-ready mastery.
+            </p>
+            {!active && (
+              <div className="relative w-full max-w-xl mx-auto">
+                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
+                <input
+                  type="text"
+                  placeholder="Search roadmaps..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-white/[0.03] border border-white/10 rounded-full py-4 pl-14 pr-6 text-white placeholder-gray-500 focus:outline-none focus:border-violet-500/50 focus:ring-1 focus:ring-violet-500/50 transition-all font-medium"
                 />
               </div>
-            </div>
+            )}
+          </div>
 
-            {/* Steps */}
-            <div className="space-y-3">
-              {path.steps.map((step, idx) => {
-                const isLocked = step.status === "locked";
-                const isCurrent = step.status === "current";
-                return (
-                  <motion.div
-                    key={step.no}
-                    initial={{ opacity: 0, x: -12 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: idx * 0.05 }}
-                    className="rounded-2xl overflow-hidden"
-                    style={{
-                      background: isCurrent
-                        ? path.bg
-                        : isLocked
-                          ? "rgba(15,15,26,0.5)"
-                          : "rgba(15,15,30,0.8)",
-                      border: isCurrent
-                        ? `1px solid ${path.border}`
-                        : isLocked
-                          ? "1px solid rgba(255,255,255,0.05)"
-                          : `1px solid ${path.border}50`,
-                      boxShadow: isCurrent ? `0 0 24px ${path.glow}` : "none",
-                      opacity: isLocked ? 0.65 : 1,
-                    }}
-                  >
-                    <div className="flex items-start gap-4 p-5">
-                      {/* Step number + icon */}
-                      <div className="flex flex-col items-center gap-1 flex-shrink-0">
-                        <StepIcon status={step.status} color={path.color} />
-                        {idx < path.steps.length - 1 && (
-                          <div
-                            className="w-px h-4 mt-1"
-                            style={{
-                              background: isLocked
-                                ? "rgba(255,255,255,0.06)"
-                                : `${path.color}40`,
-                            }}
-                          />
-                        )}
-                      </div>
+          {/* ── Main Layout ── */}
+          <div className="flex flex-col md:flex-row gap-10 pb-24">
 
-                      {/* Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-wrap items-center gap-2 mb-1">
-                          <span className="text-[10px] font-semibold text-gray-600">
-                            {step.weeks}
-                          </span>
-                          {isCurrent && (
-                            <span
-                              className="text-[10px] font-bold px-2 py-0.5 rounded-full"
-                              style={{
-                                background: `${path.color}20`,
-                                color: path.color,
-                              }}
-                            >
-                              ● In Progress
-                            </span>
-                          )}
-                        </div>
-                        <h3 className="text-base font-bold text-white mb-1">
-                          Stage {step.no} — {step.title}
-                        </h3>
-                        <p className="text-sm text-gray-500 mb-3">
-                          {step.desc}
-                        </p>
-
-                        {/* Skill chips */}
-                        <div className="flex flex-wrap gap-1.5 mb-3">
-                          {step.skills.map((skill) => (
-                            <span
-                              key={skill}
-                              className="text-[10px] px-2.5 py-0.5 rounded-full font-medium"
-                              style={{
-                                background: `${path.color}15`,
-                                color: path.color,
-                                border: `1px solid ${path.color}25`,
-                              }}
-                            >
-                              {skill}
-                            </span>
-                          ))}
-                        </div>
-
-                        {/* CTA */}
-                        {!isLocked && (
-                          <Link
-                            href={`/courses/${step.courseSlug}`}
-                            className="inline-flex items-center gap-1.5 text-xs font-semibold transition-all hover:gap-2.5"
-                            style={{ color: path.color }}
-                          >
-                            {step.status === "done"
-                              ? "Review course"
-                              : "Start course"}{" "}
-                            <ChevronRight size={13} />
-                          </Link>
-                        )}
-                        {isLocked && (
-                          <span className="text-xs text-gray-700 flex items-center gap-1">
-                            <Lock size={11} /> Complete previous stage to unlock
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Stage number badge */}
-                      <div
-                        className="hidden sm:flex w-9 h-9 rounded-xl items-center justify-center text-sm font-black flex-shrink-0"
-                        style={{
-                          background: isLocked
-                            ? "rgba(255,255,255,0.04)"
-                            : `${path.color}18`,
-                          color: isLocked ? "#374151" : path.color,
-                        }}
-                      >
-                        {step.no}
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-
-            {/* CTA */}
-            <div
-              className="mt-10 rounded-3xl p-8 text-center"
-              style={{
-                background: path.bg,
-                border: `1px solid ${path.border}`,
-                boxShadow: `0 0 60px ${path.glow}`,
-              }}
-            >
-              <Sparkles
-                size={20}
-                style={{ color: path.color }}
-                className="mx-auto mb-3"
-              />
-              <h3 className="text-2xl font-black text-white mb-2">
-                Ready to start this path?
-              </h3>
-              <p className="text-gray-400 text-sm mb-6">
-                Begin with Stage 1 and follow the roadmap at your own pace.
-              </p>
-              <div className="flex gap-3 justify-center flex-wrap">
-                <Link
-                  href={`/courses/${path.steps[0].courseSlug}`}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-bold text-sm transition-all hover:opacity-90"
-                  style={{
-                    background: `linear-gradient(135deg, ${path.color}cc, ${path.color})`,
-                    boxShadow: `0 0 24px ${path.glow}`,
-                  }}
-                >
-                  Start Stage 1 <ArrowRight size={15} />
-                </Link>
-                <Link
-                  href="/courses"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-semibold transition-all hover:bg-white/5"
-                  style={{
-                    border: `1px solid ${path.border}`,
-                    color: path.color,
-                  }}
-                >
-                  Browse all courses
-                </Link>
+            {/* Sidebar — only show on dashboard, not active roadmap */}
+            {!active && (
+            <div className="w-full md:w-52 shrink-0 hidden md:block border-r border-white/5 pr-6">
+              <div className="sticky top-24">
+                <h3 className="text-[10px] font-black tracking-widest text-gray-500 uppercase mb-4 pl-2">Categories</h3>
+                <div className="space-y-0.5">
+                  {SIDEBAR_CATS.map((cat) => (
+                    <button
+                      key={cat.label}
+                      onClick={() => {
+                        setActiveCategory(cat.match);
+                        setActive(null);
+                      }}
+                      className={`w-full text-left px-4 py-2 rounded-lg text-sm transition-colors ${
+                        activeCategory === cat.match
+                          ? "bg-violet-500/10 text-violet-300 font-bold border border-violet-500/20"
+                          : "text-gray-400 hover:bg-white/[0.03] font-medium"
+                      }`}
+                    >
+                      {cat.label}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
+            )}
+
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              {!active ? (
+                /* ── Dashboard Grid ── */
+                <div className="space-y-12">
+                  {ROADMAP_CATEGORIES.filter((category) =>
+                    activeCategory === null || category.title === activeCategory
+                  ).map((category) => {
+                    const filtered = category.items.filter((item) =>
+                      searchQuery ? item.label.toLowerCase().includes(searchQuery.toLowerCase()) : true
+                    );
+                    if (filtered.length === 0) return null;
+                    return (
+                      <div key={category.title}>
+                        <h2 className="text-xs font-black tracking-widest text-gray-500 uppercase mb-5 flex items-center gap-4">
+                          {category.title}
+                          <div className="h-px bg-white/5 flex-1" />
+                        </h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                          {filtered.map((item) => {
+                            const isReady = item.status === "ready";
+                            // roadmap.sh slug mapping
+                            const roadmapShSlugs: Record<string, string> = {
+                              frontend: "frontend", backend: "backend", devops: "devops",
+                              data_analyst: "data-analyst", android: "android", ios: "ios",
+                              blockchain: "blockchain", qa: "qa", cloud_architect: "cloudnative",
+                              game_dev: "game-developer", tech_writer: "technical-writer",
+                              machine_learning: "mlops", devsecops: "devops", sre: "devops",
+                              engineering_manager: "engineering-manager", dev_rel: "devops",
+                              cyber_sec: "cyber-security", data_scientist: "data-scientist",
+                              data_engineer: "data-analyst", software_architect: "software-architect",
+                              react: "react", vue: "vue", javascript: "javascript",
+                              nodejs: "nodejs", typescript: "typescript", python: "python",
+                              postgresql: "postgresql", java: "java", cplusplus: "cpp",
+                              csharp: "csharp", go: "golang", rust: "rust", ruby: "ruby",
+                              php: "php", sql: "sql", mongodb: "mongodb", graphql: "graphql",
+                              docker: "docker", kubernetes: "kubernetes", aws: "aws",
+                              azure: "azure", gcp: "gcp", linux: "linux", git: "git",
+                              system_design: "system-design", dsa: "datastructures",
+                              testing: "qa", clean_code: "software-architect",
+                              redis: "redis", elasticsearch: "devops",
+                              nextjs: "nodejs", nestjs: "nodejs", express: "nodejs",
+                              django: "python", flask: "python", fastapi: "python",
+                              laravel: "php", rails: "ruby", aspnet: "csharp",
+                              spring: "java", flutter: "flutter", react_native: "react-native",
+                              swift: "swift", kotlin: "kotlin", pandas: "python",
+                              tensorflow: "mlops", pytorch: "mlops", tailwind: "css",
+                              bootstrap: "css", sass: "css", npm: "nodejs", yarn: "nodejs",
+                              webpack: "nodejs", vite: "nodejs", jest: "qa",
+                              cypress: "qa", playwright: "qa", github_actions: "devops",
+                              gitlab_ci: "devops", jenkins: "devops", terraform: "devops",
+                              ansible: "devops", framer_motion: "react", prisma: "nodejs",
+                              drizzle: "nodejs", apollo: "graphql",
+                              code_review: "software-architect", design_patterns: "software-architect",
+                              refactoring: "software-architect", agile: "engineering-manager",
+                              scrum: "engineering-manager", performance: "frontend",
+                              accessibility: "frontend", security: "cyber-security",
+                              seo: "frontend", ci_cd: "devops", api_design: "api-design",
+                              microservices: "software-architect", serverless: "devops",
+                            };
+                            const roadmapShUrl = !isReady && roadmapShSlugs[item.id]
+                              ? `https://roadmap.sh/${roadmapShSlugs[item.id]}`
+                              : null;
+                            if (!isReady && roadmapShUrl) {
+                              return (
+                                <a
+                                  key={item.id}
+                                  href={roadmapShUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="group flex items-center justify-between p-4 rounded-xl border text-left transition-all duration-300 bg-white/[0.02] border-white/[0.06] hover:border-violet-500/30 hover:bg-violet-500/5 cursor-pointer"
+                                >
+                                  <span className="text-sm font-bold text-gray-400 group-hover:text-white transition-colors">
+                                    {item.label}
+                                  </span>
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-[8px] font-bold tracking-widest text-gray-600 uppercase">roadmap.sh</span>
+                                    <ArrowRight size={12} className="text-gray-600 group-hover:text-violet-400 transition-colors" />
+                                  </div>
+                                </a>
+                              );
+                            }
+                            return (
+                              <button
+                                key={item.id}
+                                onClick={() => isReady && setActive(item.id)}
+                                className="group flex items-center justify-between p-4 rounded-xl border text-left transition-all duration-300 bg-white/[0.02] border-white/10 hover:border-violet-500/30 hover:bg-violet-500/5 cursor-pointer"
+                              >
+                                <span className="text-sm font-bold text-gray-200 group-hover:text-white">
+                                  {item.label}
+                                </span>
+                                <BookOpen size={16} className="text-gray-600 group-hover:text-violet-400 transition-colors" />
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                /* ── Active Roadmap View ── */
+                <AnimatePresence mode="wait">
+                  {!loading && pathContent && (
+                    <motion.div
+                      key={active}
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -16 }}
+                      transition={{ duration: 0.22 }}
+                    >
+                      {/* Back (mobile) */}
+                      <div className="mb-6 md:hidden">
+                        <button
+                          onClick={() => setActive(null)}
+                          className="flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-white py-2 px-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all w-fit"
+                        >
+                          <ChevronRight className="rotate-180" size={14} /> Back to Categories
+                        </button>
+                      </div>
+
+                      {/* Path Header */}
+                      <div
+                        className="rounded-3xl p-6 md:p-8 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-5 relative overflow-hidden"
+                        style={{ background: pathContent.bg, border: `1px solid ${pathContent.border}`, boxShadow: `0 0 50px ${pathContent.glow}` }}
+                      >
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-12 translate-x-12 blur-2xl" />
+                        <div className="relative z-10">
+                          <div className="flex items-center gap-4 mb-3">
+                            <div className="w-16 h-16 rounded-2xl bg-black/40 flex items-center justify-center text-4xl shadow-inner">
+                              {pathContent.emoji}
+                            </div>
+                            <div>
+                              <h2 className="text-3xl font-black text-white">{pathContent.label}</h2>
+                              <p className="text-sm font-medium" style={{ color: pathContent.color }}>{pathContent.description}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 mt-2">
+                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-black/30 px-2 py-0.5 rounded">Career paths:</span>
+                            <span className="text-xs text-gray-300 font-semibold">{pathContent.jobs}</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-3 text-center shrink-0 relative z-10">
+                          {[
+                            { label: "Stages", value: steps.length },
+                            { label: "Timeline", value: pathContent.duration },
+                            { label: "Complete", value: `${completedCount}/${steps.length}` },
+                          ].map((stat) => (
+                            <div key={stat.label} className="px-5 py-3 rounded-2xl" style={{ background: "rgba(0,0,0,0.3)", border: `1px solid ${pathContent.border}` }}>
+                              <p className="text-xl font-black text-white">{stat.value}</p>
+                              <p className="text-[11px] text-gray-500">{stat.label}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Progress Bar */}
+                      <div className="mb-10">
+                        <div className="flex justify-between text-xs text-gray-500 mb-2 font-bold uppercase tracking-wider">
+                          <span>Path Mastery</span>
+                          <span style={{ color: pathContent.color }}>{overallProgress}%</span>
+                        </div>
+                        <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+                          <motion.div
+                            className="h-full rounded-full"
+                            style={{ background: `linear-gradient(90deg, ${pathContent.color}90, ${pathContent.color})` }}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${overallProgress}%` }}
+                            transition={{ duration: 1.2, ease: "circOut" }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Steps */}
+                      <div className="space-y-4">
+                        {steps.map((step, idx) => {
+                          const isLocked = step.status === "locked";
+                          const isCurrent = step.status === "current";
+                          const isDone = step.status === "done";
+                          const prevStep = idx > 0 ? steps[idx - 1] : null;
+                          return (
+                            <motion.div
+                              key={step.no}
+                              initial={{ opacity: 0, x: -12 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              transition={{ delay: idx * 0.07 }}
+                              className="group rounded-3xl overflow-hidden transition-all duration-300"
+                              style={{
+                                background: isCurrent
+                                  ? "linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))"
+                                  : isLocked ? "rgba(255,255,255,0.01)" : "rgba(255,255,255,0.03)",
+                                border: isCurrent
+                                  ? `1px solid ${pathContent.border}`
+                                  : isDone ? `1px solid ${pathContent.color}40` : "1px solid rgba(255,255,255,0.06)",
+                                opacity: isLocked ? 0.6 : 1,
+                              }}
+                            >
+                              <div className="flex items-start gap-6 p-6">
+                                <div className="flex flex-col items-center gap-2 pt-1.5 shrink-0">
+                                  <StepIcon status={step.status} color={pathContent.color} />
+                                  {idx < steps.length - 1 && <div className="w-px h-16 bg-white/10" />}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex flex-wrap items-center gap-3 mb-2">
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 bg-white/5 px-2 py-0.5 rounded">{step.weeks}</span>
+                                    {isCurrent && (
+                                      <span className="flex items-center gap-1.5 text-[10px] font-bold text-violet-400 animate-pulse">
+                                        <div className="w-2 h-2 rounded-full bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.8)]" /> IN PROGRESS
+                                      </span>
+                                    )}
+                                    {isDone && (
+                                      <span className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400">
+                                        CERTIFIED <CheckCircle size={10} />
+                                      </span>
+                                    )}
+                                  </div>
+                                  <h3 className="text-xl font-black text-white mb-2 group-hover:text-violet-400 transition-colors">
+                                    Stage {step.no}: {step.title}
+                                  </h3>
+                                  <p className="text-sm text-gray-400 leading-relaxed mb-4">{step.desc}</p>
+                                  <div className="flex flex-wrap gap-2.5 mb-5">
+                                    {step.skills.map((skill) => {
+                                      const topicId = `${step.no}-${skill}`;
+                                      const isTopicDone = completedTopics.has(topicId);
+                                      return (
+                                        <button
+                                          key={skill}
+                                          onClick={() => setSelectedTopic({ skill, stepNo: step.no, isDone: isTopicDone })}
+                                          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all text-[10px] font-bold uppercase tracking-wider ${
+                                            isTopicDone
+                                              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                                              : "bg-white/[0.03] border-white/10 text-gray-300 hover:border-violet-500/50 hover:bg-violet-500/10 hover:text-white"
+                                          }`}
+                                        >
+                                          <div className={`w-1.5 h-1.5 rounded-full ${isTopicDone ? "bg-emerald-400" : "bg-gray-500"}`} />
+                                          {skill}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
+                                  {!isLocked ? (
+                                    <Link
+                                      href={`/courses/${step.courseSlug}`}
+                                      className="inline-flex items-center gap-2 text-[13px] font-black px-4 py-2 border border-white/5 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] transition-colors group/btn"
+                                      style={{ color: pathContent.color }}
+                                    >
+                                      {isDone ? "Review Curriculum" : "Start Learning"}
+                                      <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                                    </Link>
+                                  ) : (
+                                    <div className="mt-3 pt-3 border-t border-white/[0.05]">
+                                      <div className="flex items-center gap-2 text-[11px] font-black tracking-widest text-gray-600 uppercase">
+                                        <Lock size={12} className="text-gray-500" /> Complete previous stage to unlock
+                                      </div>
+                                      {prevStep && (
+                                        <div className="text-xs text-gray-500 flex items-center gap-2 mt-1">
+                                          <span className="text-violet-400 font-bold border border-violet-500/30 bg-violet-500/10 px-2 py-0.5 rounded">Stage {step.no - 1}</span>
+                                          {prevStep.title}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                                {isCurrent && (step.progressPercent ?? 0) > 0 && (
+                                  <div className="hidden sm:flex flex-col items-center gap-2 px-4 py-3 rounded-2xl bg-black/20 border border-white/5 shrink-0">
+                                    <div className="relative w-12 h-12">
+                                      <svg className="w-full h-full" viewBox="0 0 36 36">
+                                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={3} />
+                                        <motion.path
+                                          initial={{ pathLength: 0 }}
+                                          animate={{ pathLength: (step.progressPercent ?? 0) / 100 }}
+                                          transition={{ duration: 1.5, ease: "easeOut" }}
+                                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                          fill="none"
+                                          stroke={pathContent.color}
+                                          strokeWidth={3}
+                                          strokeLinecap="round"
+                                        />
+                                      </svg>
+                                      <span className="absolute inset-0 flex items-center justify-center text-[10px] font-black">{step.progressPercent}%</span>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+
+                      {/* CTA Cards */}
+                      <div className="mt-16 grid md:grid-cols-2 gap-6">
+                        <div className="p-8 rounded-[32px] border border-white/[0.05] bg-gradient-to-br from-violet-600/10 to-transparent relative group overflow-hidden">
+                          <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
+                            <Sparkles size={64} className="text-violet-500" />
+                          </div>
+                          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-600/20 text-violet-300 text-[10px] font-black uppercase mb-6 border border-violet-500/20">
+                            <StarIcon size={11} className="fill-current" /> AI Career Architect
+                          </div>
+                          <h3 className="text-2xl font-black text-white mb-4">Generate Custom Path</h3>
+                          <p className="text-gray-400 text-sm mb-8 leading-relaxed">Our AI can architect a specialized roadmap based on your current skills.</p>
+                          <button className="px-6 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white font-black text-xs hover:bg-violet-600 hover:border-violet-500 transition-all">
+                            Join Waitlist
+                          </button>
+                        </div>
+                        <div className="p-8 rounded-[32px] border border-white/[0.05] bg-gradient-to-br from-emerald-600/10 to-transparent relative group overflow-hidden">
+                          <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform">
+                            <Zap size={64} className="text-emerald-500" />
+                          </div>
+                          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-600/20 text-emerald-300 text-[10px] font-black uppercase mb-6 border border-emerald-500/20">
+                            <CheckCircle size={11} className="fill-current" /> Mentorship Pro
+                          </div>
+                          <h3 className="text-2xl font-black text-white mb-4">Validate Your Progress</h3>
+                          <p className="text-gray-400 text-sm mb-8 leading-relaxed">Get milestones reviewed by industry leads. Unlock the Job-Ready badge.</p>
+                          <button className="px-6 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white font-black text-xs hover:bg-emerald-600 hover:border-emerald-500 transition-all flex items-center gap-2">
+                            <Lock size={12} /> Unlock Mentors
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {loading && active && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="flex flex-col items-center justify-center py-20 gap-4"
+                    >
+                      <Loader2 className="w-8 h-8 text-violet-500 animate-spin" />
+                      <p className="text-sm font-bold tracking-widest text-gray-500 uppercase">Synchronizing your progress...</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* ── Glassmorphism Side Drawer ── */}
+      <AnimatePresence>
+        {selectedTopic && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex justify-end"
+          >
+            <div
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
+              onClick={() => setSelectedTopic(null)}
+            />
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="relative z-[70] w-full max-w-md bg-[#0a0a0f]/95 backdrop-blur-xl border-l border-white/10 shadow-2xl flex flex-col h-full"
+            >
+              <div className="p-6 border-b border-white/5 flex items-center justify-between">
+                <div>
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Stage {selectedTopic.stepNo} · Topic</p>
+                  <h2 className="text-2xl font-black text-white">{selectedTopic.skill}</h2>
+                </div>
+                <button onClick={() => setSelectedTopic(null)} className="p-2 rounded-full hover:bg-white/5 text-gray-400 transition-colors">
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                <div>
+                  <h3 className="text-sm font-black text-white mb-3 flex items-center gap-2">
+                    <Sparkles size={16} className="text-violet-400" /> Why learn this?
+                  </h3>
+                  <p className="text-sm text-gray-400 leading-relaxed bg-white/[0.02] border border-white/[0.05] p-4 rounded-2xl">
+                    Mastering <strong className="text-violet-300">{selectedTopic.skill}</strong> is crucial for building robust, scalable applications—and one of the most sought-after skills in modern tech.
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-white mb-4">Curated Resources</h3>
+                  <div className="space-y-3">
+                    {[1, 2].map((i) => (
+                      <a key={i} href="#" className="flex items-start gap-4 p-4 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/10 transition-all group">
+                        <div className="w-10 h-10 rounded-xl bg-violet-500/20 text-violet-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                          <PlayCircle size={18} />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-white group-hover:text-violet-300 transition-colors">Complete {selectedTopic.skill} Crash Course</p>
+                          <p className="text-xs text-gray-500 mt-1 flex items-center gap-2">
+                            <span className="w-1.5 h-1.5 rounded-full bg-red-500" /> YouTube · 45 mins
+                          </p>
+                        </div>
+                      </a>
+                    ))}
+                    <a href="#" className="flex items-start gap-4 p-4 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/10 transition-all group">
+                      <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <BookOpen size={18} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors">Official Documentation</p>
+                        <p className="text-xs text-gray-500 mt-1 flex items-center gap-2">
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500" /> Read the docs
+                        </p>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-white/5 bg-black/40">
+                <button
+                  onClick={() => {
+                    if (!selectedTopic) return;
+                    const id = `${selectedTopic.stepNo}-${selectedTopic.skill}`;
+                    setCompletedTopics((prev) => {
+                      const next = new Set(prev);
+                      if (next.has(id)) next.delete(id);
+                      else next.add(id);
+                      return next;
+                    });
+                    setSelectedTopic((prev) => (prev ? { ...prev, isDone: !prev.isDone } : null));
+                  }}
+                  className={`w-full py-4 rounded-2xl flex items-center justify-center gap-3 font-black text-sm transition-all active:scale-[0.98] ${
+                    selectedTopic.isDone
+                      ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/20"
+                      : "bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-500/25"
+                  }`}
+                >
+                  {selectedTopic.isDone ? (
+                    <><CheckCircle size={18} /> Mark as Pending</>
+                  ) : (
+                    <><Circle size={18} /> Mark as Mastered</>
+                  )}
+                </button>
+              </div>
+            </motion.div>
           </motion.div>
-        </AnimatePresence>
-      </div>
-    </main>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

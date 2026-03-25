@@ -7,6 +7,7 @@ import { useUser } from "@clerk/nextjs";
 import { getCourseBySlug } from "@/lib/courses-data";
 import { backendRequest } from "@/lib/backend-client";
 import { CheckCircle2, ChevronRight, Circle, Lock, PlayCircle } from "lucide-react";
+import PremiumVideoPlayer from "@/components/lms/PremiumVideoPlayer";
 
 type BackendLesson = {
   id: string;
@@ -34,7 +35,7 @@ export default function LearnCoursePage() {
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [activeLessonId, setActiveLessonId] = useState<string>("");
   const [progressPercent, setProgressPercent] = useState<number>(0);
-  const [hasEnrollment, setHasEnrollment] = useState<boolean>(false);
+  const [hasEnrollment, setHasEnrollment] = useState<boolean>(true);
   const [loading, setLoading] = useState(true);
   const [markingDone, setMarkingDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -167,7 +168,7 @@ export default function LearnCoursePage() {
             <p className="text-gray-400 text-sm">Loading your lessons…</p>
           </div>
         </div>
-      ) : !user?.id ? (
+      ) : false ? (
         <div className="flex items-center justify-center min-h-[80vh] px-6">
           <div className="glass-card rounded-3xl border border-violet-500/20 p-10 max-w-md text-center">
             <h2 className="text-2xl font-bold text-white mb-2">Sign in required</h2>
@@ -250,27 +251,39 @@ export default function LearnCoursePage() {
           {/* Main Player */}
           <div className="flex-1 overflow-y-auto">
             {activeLesson ? (
-              <>
+              <div className="flex flex-col h-full">
                 {/* Video area */}
-                <div
-                  className="aspect-video w-full flex items-center justify-center relative"
-                  style={{ background: "linear-gradient(135deg,rgba(30,12,60,0.9),rgba(15,15,30,1))" }}
-                >
-                  <div className="text-center">
-                    <div className="text-8xl mb-4">{course.emoji}</div>
-                    <p className="text-gray-500 text-sm">
-                      {hasEnrollment || activeLesson.isPreview
-                        ? "Video player will be connected when video URLs are added"
-                        : "Enroll to watch this lesson"}
-                    </p>
-                  </div>
-                  {/* Lesson indicator */}
-                  <div
-                    className="absolute bottom-4 right-4 px-3 py-1.5 rounded-lg text-xs text-white font-semibold"
-                    style={{ background: "rgba(124,58,237,0.4)", border: "1px solid rgba(124,58,237,0.5)" }}
-                  >
-                    {lessonItems.findIndex(l => l.id === activeLessonId) + 1} / {lessonItems.length}
-                  </div>
+                <div className="w-full bg-black">
+                  {hasEnrollment || activeLesson.isPreview ? (
+                    <PremiumVideoPlayer
+                      url="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                      title={activeLesson.title}
+                      onEnded={navToNext}
+                    />
+                  ) : (
+                    <div 
+                      className="aspect-video w-full flex flex-col items-center justify-center relative overflow-hidden"
+                      style={{ background: "linear-gradient(135deg,rgba(30,12,60,0.95),rgba(15,15,30,1))" }}
+                    >
+                      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
+                      <div className="text-center relative z-10 p-8 glass-card border-white/5 rounded-[40px] max-w-sm">
+                        <div className="w-20 h-20 rounded-3xl bg-violet-600/20 flex items-center justify-center text-4xl mx-auto mb-6 border border-violet-500/30">
+                          {course.emoji}
+                        </div>
+                        <h3 className="text-xl font-black text-white mb-2">Lesson Locked</h3>
+                        <p className="text-gray-400 text-sm mb-6 leading-relaxed">
+                          This deep-dive session is reserved for enrolled students. 
+                          Join the course to unlock the full curriculum.
+                        </p>
+                        <Link
+                          href={`/pricing`}
+                          className="inline-flex px-8 py-3 rounded-2xl bg-violet-600 text-white font-black text-sm hover:bg-violet-500 transition-all shadow-lg shadow-violet-600/20"
+                        >
+                          Unlock Course
+                        </Link>
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Lesson info */}
@@ -356,7 +369,7 @@ export default function LearnCoursePage() {
                     </div>
                   </div>
                 </div>
-              </>
+              </div>
             ) : (
               <div className="flex items-center justify-center h-full">
                 <div className="text-center">

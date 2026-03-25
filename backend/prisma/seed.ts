@@ -7,10 +7,10 @@ async function main() {
 
   // Create Sample Courses
   const course1 = await prisma.course.upsert({
-    where: { slug: "ui-ux-design-bootcamp" },
+    where: { slug: "complete-ui-ux-design-bootcamp" },
     update: {},
     create: {
-      slug: "ui-ux-design-bootcamp",
+      slug: "complete-ui-ux-design-bootcamp",
       title: "Complete UI/UX Design Bootcamp",
       shortDescription: "Master the art of designing beautiful and functional user interfaces.",
       longDescription: "This comprehensive bootcamp covers everything from design principles and wireframing to high-fidelity prototyping using Figma and Adobe XD. Perfect for beginners and those looking to switch careers into design.",
@@ -64,10 +64,10 @@ async function main() {
   });
 
   const course2 = await prisma.course.upsert({
-    where: { slug: "nextjs-mastery-2026" },
+    where: { slug: "react-nextjs-mastery-2026" },
     update: {},
     create: {
-      slug: "nextjs-mastery-2026",
+      slug: "react-nextjs-mastery-2026",
       title: "React & Next.js Mastery 2026",
       shortDescription: "Build production-ready full-stack applications with the latest Next.js features.",
       longDescription: "Deep dive into App Router, Server Components, Server Actions, and advanced patterns. Learn how to build scalable, high-performance web applications with ease.",
@@ -107,10 +107,10 @@ async function main() {
   });
 
   const course3 = await prisma.course.upsert({
-    where: { slug: "python-for-ai-and-ml" },
+    where: { slug: "ai-machine-learning-for-designers" },
     update: {},
     create: {
-      slug: "python-for-ai-and-ml",
+      slug: "ai-machine-learning-for-designers",
       title: "Python for AI and Machine Learning",
       shortDescription: "Start your journey into the world of Artificial Intelligence with Python.",
       longDescription: "Learn Python from scratch and move towards building your first machine learning models. Covers NumPy, Pandas, Scikit-learn, and neural network basics.",

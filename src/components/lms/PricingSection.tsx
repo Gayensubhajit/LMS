@@ -1,294 +1,273 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { motion, useInView } from "framer-motion";
-import { Check, X, Zap, Star, Crown } from "lucide-react";
-import { Montserrat } from "next/font/google";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { Check, Users, Zap, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
-const montserrat = Montserrat({ subsets: ["latin"] });
-
-const plans = [
+const INDIVIDUAL_PLANS = [
   {
-    name: "Pay Per Course",
-    icon: "📚",
-    price: { monthly: 49, yearly: 39 },
-    description: "Perfect for exploring specific topics at your own pace.",
-    badge: null,
-    color: "from-blue-500 to-cyan-600",
-    glow: "rgba(59,130,246,0.3)",
-    features: [
-      { text: "Access to purchased courses", included: true },
-      { text: "Lifetime course access", included: true },
-      { text: "Certificate of completion", included: true },
-      { text: "Community forum access", included: true },
-      { text: "AI learning assistant", included: false },
-      { text: "1-on-1 mentorship sessions", included: false },
-      { text: "Unlimited course access", included: false },
-      { text: "Priority support", included: false },
-    ],
-    cta: "Get Started",
+    name: "Single Course",
+    price: "₹1,999",
+    period: "/course",
+    description: "Pick a single topic or skill and earn a verified credential.",
     highlight: false,
+    cta: "Browse Courses",
+    href: "/courses",
+    note: "Pay only for what you need",
+    features: [
+      "Lifetime access to purchased course",
+      "Certificate upon completion",
+      "Community forum access",
+      "Mobile & offline access",
+    ],
   },
   {
-    name: "Pro Plan",
-    icon: "⚡",
-    price: { monthly: 79, yearly: 59 },
-    description: "Most popular. Everything you need to accelerate your career.",
-    badge: "Most Popular",
-    color: "from-violet-500 to-purple-700",
-    glow: "rgba(124,58,237,0.5)",
-    features: [
-      { text: "Access to purchased courses", included: true },
-      { text: "Lifetime course access", included: true },
-      { text: "Certificate of completion", included: true },
-      { text: "Community forum access", included: true },
-      { text: "AI learning assistant", included: true },
-      { text: "1-on-1 mentorship sessions", included: true },
-      { text: "Unlimited course access", included: false },
-      { text: "Priority support", included: false },
-    ],
-    cta: "Start Free Trial",
+    name: "EduNova Plus",
+    price: "₹2,499",
+    period: "/month",
+    description: "Access thousands of courses and earn unlimited certificates.",
     highlight: true,
+    badge: "Most Popular",
+    cta: "Start Free Trial",
+    href: "/auth/sign-up?plan=plus",
+    note: "Cancel anytime · 14-day free trial",
+    features: [
+      "Access to 7,000+ courses",
+      "Unlimited certificates",
+      "AI-powered learning paths",
+      "1-on-1 mentorship sessions",
+      "Priority support",
+      "Offline downloads",
+    ],
   },
   {
-    name: "Subscription Plan",
-    icon: "👑",
-    price: { monthly: 129, yearly: 99 },
-    description: "Unlimited everything. For serious learners and teams.",
-    badge: "Best Value",
-    color: "from-amber-500 to-orange-600",
-    glow: "rgba(245,158,11,0.3)",
-    features: [
-      { text: "Access to purchased courses", included: true },
-      { text: "Lifetime course access", included: true },
-      { text: "Certificate of completion", included: true },
-      { text: "Community forum access", included: true },
-      { text: "AI learning assistant", included: true },
-      { text: "1-on-1 mentorship sessions", included: true },
-      { text: "Unlimited course access", included: true },
-      { text: "Priority support", included: true },
-    ],
-    cta: "Get Premium",
+    name: "Plus Annual",
+    price: "₹19,999",
+    period: "/year",
+    description: "Save big by committing to a full year of accelerated learning.",
     highlight: false,
+    badge: "Save 33%",
+    cta: "Try Annual Plan",
+    href: "/auth/sign-up?plan=annual",
+    note: "14-day money-back guarantee",
+    features: [
+      "Everything in EduNova Plus",
+      "Save ₹9,989 vs. monthly",
+      "Early access to new courses",
+      "Exclusive annual member events",
+    ],
+  },
+];
+
+const TEAM_PLANS = [
+  {
+    name: "Teams Starter",
+    price: "₹1,999",
+    period: "/seat/month",
+    description: "5–25 seats. Simple team learning for growing companies.",
+    highlight: false,
+    cta: "Get Started",
+    href: "/auth/sign-up?plan=teams",
+    note: "Minimum 5 seats",
+    features: [
+      "All Plus features per seat",
+      "Team progress dashboard",
+      "Admin management panel",
+      "Monthly usage reports",
+    ],
+  },
+  {
+    name: "Teams Pro",
+    price: "₹1,499",
+    period: "/seat/month",
+    description: "25+ seats. Volume pricing with dedicated account management.",
+    highlight: true,
+    badge: "Best for Teams",
+    cta: "Start Team Trial",
+    href: "/auth/sign-up?plan=teams-pro",
+    note: "Minimum 25 seats · Cancel anytime",
+    features: [
+      "Everything in Starter",
+      "Dedicated success manager",
+      "Custom learning paths",
+      "SSO & SCIM provisioning",
+      "Advanced analytics",
+      "Priority SLA support",
+    ],
+  },
+  {
+    name: "Enterprise",
+    price: "Custom",
+    period: "for large teams",
+    description: "Fully tailored learning programs for 100+ seat organizations.",
+    highlight: false,
+    cta: "Contact Sales",
+    href: "/support",
+    note: "Unlimited seats available",
+    features: [
+      "Everything in Teams Pro",
+      "Custom API integrations",
+      "White-label option",
+      "Compliance & audit logs",
+    ],
   },
 ];
 
 export default function PricingSection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
-  const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
+  const [tab, setTab] = useState<"individuals" | "teams">("individuals");
+
+  const plans = tab === "individuals" ? INDIVIDUAL_PLANS : TEAM_PLANS;
 
   return (
-    <section className="relative py-28 overflow-hidden" id="pricing">
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(124,58,237,0.06) 0%, transparent 70%)",
-        }}
-      />
+    <section className="relative py-28 overflow-hidden bg-[#05050a]" id="pricing" ref={ref}>
+      {/* Ambient glow */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-violet-600/5 rounded-full blur-[120px]" />
+      </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6" ref={ref}>
+      <div className="relative z-10 max-w-6xl mx-auto px-6">
         {/* Header */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.55 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 tag-purple mb-4">
-            Flexible Pricing
-          </div>
-          <h2 className="font-serif text-4xl md:text-6xl font-black text-white mb-4">
-            Invest in Your Future —
-            <br />
-            <span className={`${montserrat.className} gradient-text`}>
-              Choose Your Perfect Plan
-            </span>
+          <p className="text-xs font-black tracking-[0.25em] text-violet-400 uppercase mb-4">Flexible Pricing</p>
+          <h2 className="text-4xl md:text-5xl font-black text-white mb-4 leading-tight">
+            Invest in Your Future
           </h2>
-          <p
-            className={`${montserrat.className} text-gray-300 text-lg max-w-xl mx-auto mb-8`}
-          >
+          <p className="text-gray-400 text-base max-w-xl mx-auto mb-10">
             All plans include a 7-day free trial. No credit card required.
-            Cancel anytime.
           </p>
 
-          {/* Billing toggle */}
-          <div className="inline-flex items-center glass-card rounded-xl p-1 gap-1">
+          {/* Tab toggle — same style as Coursera */}
+          <div className="inline-flex items-center p-1 rounded-full bg-white/5 border border-white/10 gap-1">
             <button
-              onClick={() => setBilling("monthly")}
-              className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
-                billing === "monthly"
-                  ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white"
+              onClick={() => setTab("individuals")}
+              className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${
+                tab === "individuals"
+                  ? "bg-violet-600 text-white shadow-lg shadow-violet-600/30"
                   : "text-gray-400 hover:text-white"
               }`}
             >
-              Monthly
+              For Individuals
             </button>
             <button
-              onClick={() => setBilling("yearly")}
-              className={`px-5 py-2 rounded-lg text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
-                billing === "yearly"
-                  ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white"
+              onClick={() => setTab("teams")}
+              className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
+                tab === "teams"
+                  ? "bg-violet-600 text-white shadow-lg shadow-violet-600/30"
                   : "text-gray-400 hover:text-white"
               }`}
             >
-              Yearly
-              <span className="bg-green-500/20 text-green-400 border border-green-500/30 text-xs px-2 py-0.5 rounded-full">
-                Save 20%
-              </span>
+              <Users size={14} /> For Teams
             </button>
           </div>
         </motion.div>
 
-        {/* Pricing cards */}
-        <div
-          className={`${montserrat.className} grid grid-cols-1 md:grid-cols-3 gap-6 items-start`}
-        >
-          {plans.map((plan, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 40, scale: 0.95 }}
-              animate={inView ? { opacity: 1, y: 0, scale: 1 } : {}}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
-              className={`relative rounded-2xl overflow-hidden ${
-                plan.highlight
-                  ? "ring-2 ring-violet-500 shadow-[0_0_60px_rgba(124,58,237,0.3)]"
-                  : "glass-card"
-              }`}
-              style={{
-                background: plan.highlight
-                  ? "linear-gradient(135deg, rgba(124,58,237,0.2) 0%, rgba(15,15,30,0.9) 100%)"
-                  : undefined,
-                border: plan.highlight
-                  ? "1px solid rgba(124,58,237,0.5)"
-                  : undefined,
-              }}
-            >
-              {/* Popular badge */}
-              {plan.badge && (
-                <div
-                  className={`absolute top-0 left-0 right-0 text-center py-1.5 text-xs font-bold ${
+        {/* Cards */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={tab}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.25 }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start"
+          >
+            {plans.map((plan, i) => (
+              <motion.div
+                key={plan.name}
+                initial={{ opacity: 0, y: 20 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ delay: i * 0.08 }}
+                className={`relative rounded-2xl flex flex-col overflow-hidden transition-all duration-300 ${
+                  plan.highlight
+                    ? "ring-2 ring-violet-500/70 shadow-2xl shadow-violet-500/20"
+                    : "border border-white/[0.07]"
+                }`}
+                style={{
+                  background: plan.highlight
+                    ? "linear-gradient(160deg, rgba(124,58,237,0.15) 0%, rgba(10,10,20,0.97) 60%)"
+                    : "rgba(255,255,255,0.025)",
+                }}
+              >
+                {/* Badge */}
+                {"badge" in plan && plan.badge && (
+                  <div className={`text-center py-2 text-[11px] font-black uppercase tracking-widest ${
                     plan.highlight
                       ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white"
-                      : "bg-amber-500/20 text-amber-400"
-                  }`}
-                >
-                  {plan.badge === "Most Popular" && (
-                    <Star size={11} className="inline mr-1" />
-                  )}
-                  {plan.badge === "Best Value" && (
-                    <Crown size={11} className="inline mr-1" />
-                  )}
-                  {plan.badge}
-                </div>
-              )}
-
-              <div className={`p-8 ${plan.badge ? "pt-12" : ""}`}>
-                {/* Plan icon + name */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div
-                    className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${plan.color} flex items-center justify-center text-xl shadow-lg`}
-                    style={{ boxShadow: `0 8px 25px ${plan.glow}` }}
-                  >
-                    {plan.icon}
+                      : "bg-amber-500/10 text-amber-400 border-b border-amber-500/20"
+                  }`}>
+                    {plan.badge}
                   </div>
-                  <div>
-                    <div className="text-lg font-bold text-white">
-                      {plan.name}
+                )}
+
+                <div className="p-8 flex flex-col flex-1">
+                  {/* Name + desc */}
+                  <h3 className="text-xl font-black text-white mb-2">{plan.name}</h3>
+                  <p className="text-sm text-gray-400 leading-relaxed mb-6">{plan.description}</p>
+
+                  {/* Price */}
+                  <div className="mb-6">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-black text-white tracking-tight">{plan.price}</span>
+                      <span className="text-gray-500 text-sm font-medium">{plan.period}</span>
                     </div>
                   </div>
-                </div>
 
-                <p className="text-sm text-gray-400 mb-6 leading-relaxed">
-                  {plan.description}
-                </p>
-
-                {/* Price */}
-                <div className="mb-6">
-                  <motion.div
-                    key={billing}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex items-baseline gap-1"
+                  {/* CTA */}
+                  <Link
+                    href={plan.href}
+                    className={`flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-bold text-sm mb-2 transition-all group ${
+                      plan.highlight
+                        ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-600/25"
+                        : "border border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.07] hover:border-white/20"
+                    }`}
                   >
-                    <span className="text-4xl font-black text-white">
-                      ${plan.price[billing]}
-                    </span>
-                    <span className="text-gray-400 text-sm">/month</span>
-                  </motion.div>
-                  {billing === "yearly" && (
-                    <div className="text-xs text-green-400 mt-1">
-                      Billed as ${plan.price.yearly * 12}/year • Save $
-                      {(plan.price.monthly - plan.price.yearly) * 12}
-                    </div>
-                  )}
-                </div>
+                    {plan.highlight && <Zap size={14} />}
+                    {plan.cta}
+                    <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all" />
+                  </Link>
+                  <p className="text-center text-[11px] text-gray-600 mb-8">{plan.note}</p>
 
-                {/* CTA */}
-                <motion.a
-                  href={`/auth/sign-up?plan=${encodeURIComponent(plan.name)}&billing=${billing}`}
-                  whileHover={{
-                    scale: 1.03,
-                    boxShadow: plan.highlight
-                      ? `0 0 30px ${plan.glow}`
-                      : undefined,
-                  }}
-                  whileTap={{ scale: 0.97 }}
-                  className={`w-full py-3 px-4 rounded-xl font-bold text-sm mb-6 transition-all duration-300 ${
-                    plan.highlight
-                      ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white"
-                      : "border border-violet-500/30 text-violet-300 hover:bg-violet-600/10"
-                  }`}
-                >
-                  {plan.highlight && (
-                    <Zap size={14} className="inline mr-1.5" />
-                  )}
-                  {plan.cta}
-                </motion.a>
-
-                {/* Features */}
-                <div className="space-y-3 mt-8">
-                  {plan.features.map((feat, j) => (
-                    <div key={j} className="flex items-center gap-3">
-                      <div
-                        className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
-                          feat.included
-                            ? "bg-violet-600/20 border border-violet-500/40"
-                            : "bg-white/5 border border-white/10"
-                        }`}
-                      >
-                        {feat.included ? (
-                          <Check size={11} className="text-violet-400" />
-                        ) : (
-                          <X size={11} className="text-gray-600" />
-                        )}
+                  {/* Features */}
+                  <div className="border-t border-white/[0.05] pt-6 space-y-3 flex-1">
+                    {plan.features.map((f) => (
+                      <div key={f} className="flex items-center gap-3">
+                        <div className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
+                          plan.highlight ? "bg-violet-600/20" : "bg-white/5"
+                        }`}>
+                          <Check size={10} className={plan.highlight ? "text-violet-400" : "text-gray-500"} strokeWidth={3} />
+                        </div>
+                        <span className="text-sm text-gray-300 font-medium">{f}</span>
                       </div>
-                      <span
-                        className={`text-sm ${feat.included ? "text-gray-300" : "text-gray-600"}`}
-                      >
-                        {feat.text}
-                      </span>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              </motion.div>
+            ))}
+          </motion.div>
+        </AnimatePresence>
 
-        {/* Money back guarantee */}
+        {/* Footer note */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.5, delay: 0.6 }}
-          className="text-center mt-10 text-sm text-gray-500"
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ delay: 0.5 }}
+          className="text-center mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-gray-600"
         >
-          🛡️{" "}
-          <span className="text-gray-300 font-medium">
-            30-day money-back guarantee
-          </span>{" "}
-          • No questions asked • Cancel anytime
+          <span>🛡️ 30-day money-back guarantee</span>
+          <span>·</span>
+          <span>No hidden fees</span>
+          <span>·</span>
+          <Link href="/pricing" className="text-violet-400 hover:text-violet-300 font-semibold transition-colors">
+            See full plan details →
+          </Link>
         </motion.div>
       </div>
     </section>

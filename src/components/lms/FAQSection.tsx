@@ -3,6 +3,9 @@
 import { useRef, useState } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Plus, Minus } from "lucide-react";
+import { Montserrat } from "next/font/google";
+
+const montserrat = Montserrat({ subsets: ["latin"] });
 
 const faqs = [
   {
@@ -41,7 +44,8 @@ export default function FAQSection() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(124,58,237,0.05) 0%, transparent 70%)",
+          background:
+            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(124,58,237,0.05) 0%, transparent 70%)",
         }}
       />
 
@@ -53,13 +57,17 @@ export default function FAQSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-14"
         >
-          <div className="inline-flex items-center gap-2 tag-purple mb-4">Platform Exclusive</div>
-          <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">
+          <div className="inline-flex items-center gap-2 tag-purple mb-4">
+            Platform Exclusive
+          </div>
+          <h2 className="font-serif text-4xl md:text-6xl font-black text-white mb-4">
             Frequently Asked
             <br />
-            <span className="gradient-text">Questions</span>
+            <span className={`${montserrat.className} gradient-text`}>
+              Questions
+            </span>
           </h2>
-          <p className="text-gray-400">
+          <p className={`${montserrat.className} text-gray-400`}>
             Everything you need to know before you begin your learning journey.
           </p>
         </motion.div>
@@ -74,8 +82,12 @@ export default function FAQSection() {
               transition={{ duration: 0.4, delay: i * 0.07 }}
               className="glass-card rounded-2xl overflow-hidden"
               style={{
-                borderColor: openIndex === i ? "rgba(124,58,237,0.5)" : "rgba(124,58,237,0.2)",
-                boxShadow: openIndex === i ? "0 0 25px rgba(124,58,237,0.15)" : "none",
+                borderColor:
+                  openIndex === i
+                    ? "rgba(124,58,237,0.5)"
+                    : "rgba(124,58,237,0.2)",
+                boxShadow:
+                  openIndex === i ? "0 0 25px rgba(124,58,237,0.15)" : "none",
                 transition: "all 0.3s ease",
               }}
             >
@@ -85,7 +97,9 @@ export default function FAQSection() {
               >
                 <span
                   className={`text-base font-semibold transition-colors duration-200 ${
-                    openIndex === i ? "text-white" : "text-gray-300 group-hover:text-white"
+                    openIndex === i
+                      ? "text-white"
+                      : "text-gray-300 group-hover:text-white"
                   }`}
                 >
                   {faq.q}
@@ -124,21 +138,25 @@ export default function FAQSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.7 }}
-          className="text-center mt-12 glass-card rounded-2xl p-8"
+          className={`${montserrat.className} text-center mt-12 glass-card rounded-2xl p-8`}
         >
           <div className="text-2xl mb-2">🤔</div>
-          <h3 className="text-lg font-bold text-white mb-2">Still have questions?</h3>
-          <p className="text-gray-400 text-sm mb-4">Our team is here to help 24/7.</p>
+          <h3 className="text-lg font-bold text-white mb-2">
+            Still have questions?
+          </h3>
+          <p className="text-gray-400 text-sm mb-4">
+            Our team is here to help 24/7.
+          </p>
           <div className="flex items-center justify-center gap-3">
             <a
               href="/support?tab=chat"
-              className="bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold px-6 py-2.5 rounded-xl hover:shadow-[0_0_25px_rgba(124,58,237,0.5)] transition-shadow"
+              className="bg-gradient-to-r from-violet-600 to-purple-600 text-white  font-semibold px-2 py-3 md:px-6 md:py-3 rounded-xl hover:shadow-[0_0_25px_rgba(124,58,237,0.5)] transition-shadow text-xs md:text-md"
             >
               Chat with Us
             </a>
             <a
               href="/support?tab=email"
-              className="border border-violet-500/30 text-violet-300 text-sm font-semibold px-6 py-2.5 rounded-xl hover:bg-violet-600/10 transition-colors"
+              className="border border-violet-500/30 text-violet-300 text-xs md:text-md font-semibold px-2 py-3 md:px-6 md:py-3 rounded-xl hover:bg-violet-600/10 transition-colors"
             >
               Email Support
             </a>

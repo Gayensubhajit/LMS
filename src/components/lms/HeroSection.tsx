@@ -2,13 +2,53 @@
 
 import { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { Play, Star, Users, BookOpen, Trophy, Sparkles, ArrowRight, Zap } from "lucide-react";
+import {
+  Play,
+  Star,
+  Users,
+  BookOpen,
+  Trophy,
+  Sparkles,
+  ArrowRight,
+  Zap,
+} from "lucide-react";
+import { Montserrat } from "next/font/google";
+
+const montserrat = Montserrat({ subsets: ["latin"] });
 
 const floatingAvatars = [
-  { id: 1, initials: "AJ", color: "from-violet-500 to-purple-700", delay: 0, x: "75%", y: "18%" },
-  { id: 2, initials: "SK", color: "from-pink-500 to-rose-600", delay: 0.5, x: "80%", y: "42%" },
-  { id: 3, initials: "ML", color: "from-blue-500 to-cyan-600", delay: 1, x: "70%", y: "65%" },
-  { id: 4, initials: "RP", color: "from-amber-500 to-orange-600", delay: 1.5, x: "60%", y: "28%" },
+  {
+    id: 1,
+    initials: "Ai",
+    color: "from-violet-500 to-purple-700",
+    delay: 0,
+    x: "75%",
+    y: "18%",
+  },
+  {
+    id: 2,
+    initials: "Java",
+    color: "from-pink-500 to-rose-600",
+    delay: 0.5,
+    x: "80%",
+    y: "42%",
+  },
+  {
+    id: 3,
+    initials: "ML",
+    color: "from-blue-500 to-cyan-600",
+    delay: 1,
+    x: "70%",
+    y: "65%",
+  },
+  {
+    id: 4,
+    initials: "Next",
+    color: "from-amber-500 to-orange-600",
+    delay: 1.5,
+    x: "60%",
+    y: "28%",
+  },
 ];
 
 const stats = [
@@ -50,25 +90,38 @@ export default function HeroSection() {
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
           className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full"
           style={{
-            background: "radial-gradient(circle, rgba(124,58,237,0.25) 0%, transparent 70%)",
+            background:
+              "radial-gradient(circle, rgba(124,58,237,0.25) 0%, transparent 70%)",
             filter: "blur(40px)",
           }}
         />
         <motion.div
           animate={{ scale: [1.2, 1, 1.2], opacity: [0.2, 0.4, 0.2] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 2,
+          }}
           className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full"
           style={{
-            background: "radial-gradient(circle, rgba(232,121,249,0.2) 0%, transparent 70%)",
+            background:
+              "radial-gradient(circle, rgba(232,121,249,0.2) 0%, transparent 70%)",
             filter: "blur(60px)",
           }}
         />
         <motion.div
           animate={{ scale: [1, 1.3, 1], opacity: [0.15, 0.3, 0.15] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 4 }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 4,
+          }}
           className="absolute top-1/2 right-1/3 w-64 h-64 rounded-full"
           style={{
-            background: "radial-gradient(circle, rgba(59,130,246,0.2) 0%, transparent 70%)",
+            background:
+              "radial-gradient(circle, rgba(59,130,246,0.2) 0%, transparent 70%)",
             filter: "blur(50px)",
           }}
         />
@@ -94,7 +147,9 @@ export default function HeroSection() {
               transition={{ duration: 0.5 }}
               className="inline-flex items-center gap-2 mb-6"
             >
-              <span className="inline-flex items-center gap-2 bg-violet-600/20 border border-violet-500/30 text-violet-300 text-sm px-4 py-1.5 rounded-full">
+              <span
+                className={`${montserrat.className} inline-flex items-center gap-2 bg-violet-600/20 border border-violet-500/30 text-violet-300 text-sm px-4 py-1.5 rounded-full`}
+              >
                 <Sparkles size={14} className="animate-pulse" />
                 AI-Powered Learning Platform
                 <Zap size={12} className="text-yellow-400" />
@@ -108,11 +163,13 @@ export default function HeroSection() {
               transition={{ duration: 0.7, delay: 0.1 }}
               className="text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight mb-6"
             >
-              <span className="text-white">Step Into the</span>
+              <span className="text-white font-serif">Step Into the</span>
               <br />
-              <span className="gradient-text">Future of</span>
+              <span className={`${montserrat.className} gradient-text`}>
+                Future of
+              </span>
               <br />
-              <span className="text-white">Learning</span>
+              <span className="text-white font-serif">Learning</span>
             </motion.h1>
 
             {/* Subtitle */}
@@ -120,7 +177,7 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-lg text-gray-400 mb-8 max-w-xl leading-relaxed"
+              className={`${montserrat.className} text-lg text-gray-400 mb-8 max-w-xl leading-relaxed`}
             >
               Master UI/UX Design, Development & more with AI-guided roadmaps,
               real-world projects, and industry mentors — all in one platform.
@@ -137,13 +194,19 @@ export default function HeroSection() {
                 href="/auth/sign-up"
                 whileHover={{
                   scale: 1.05,
-                  boxShadow: "0 0 40px rgba(124,58,237,0.6), 0 0 80px rgba(124,58,237,0.2)",
+                  boxShadow:
+                    "0 0 40px rgba(124,58,237,0.6), 0 0 80px rgba(124,58,237,0.2)",
                 }}
                 whileTap={{ scale: 0.97 }}
                 className="group relative flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold px-8 py-4 rounded-2xl text-base overflow-hidden"
               >
-                <span className="relative z-10">Start Learning Free</span>
-                <ArrowRight size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />
+                <span className={`${montserrat.className} relative z-10`}>
+                  Start Learning Free
+                </span>
+                <ArrowRight
+                  size={18}
+                  className="relative z-10 group-hover:translate-x-1 transition-transform"
+                />
                 <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </motion.a>
 
@@ -177,10 +240,14 @@ export default function HeroSection() {
                     <stat.icon size={14} className="text-violet-400" />
                   </div>
                   <div>
-                    <div className="text-lg font-black text-white leading-none">{stat.value}</div>
+                    <div className="text-lg font-black text-white leading-none">
+                      {stat.value}
+                    </div>
                     <div className="text-xs text-gray-500">{stat.label}</div>
                   </div>
-                  {i < stats.length - 1 && <div className="w-px h-8 bg-violet-500/20 ml-2" />}
+                  {i < stats.length - 1 && (
+                    <div className="w-px h-8 bg-violet-500/20 ml-2" />
+                  )}
                 </div>
               ))}
             </motion.div>
@@ -216,29 +283,42 @@ export default function HeroSection() {
                 <div className="flex-1 rounded-2xl overflow-hidden relative bg-gradient-to-br from-violet-800/30 to-purple-900/30 border border-violet-500/20 flex items-center justify-center mb-4">
                   <div className="text-center">
                     <div className="text-5xl mb-2">🎨</div>
-                    <div className="text-xs text-gray-400">Design Masterclass</div>
+                    <div className="text-xs text-gray-400">
+                      Design Masterclass
+                    </div>
                   </div>
                   {/* Floating orb inside card */}
                   <motion.div
                     animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0.6, 0.3] }}
                     transition={{ duration: 3, repeat: Infinity }}
                     className="absolute top-4 right-4 w-16 h-16 rounded-full"
-                    style={{ background: "radial-gradient(circle, rgba(168,85,247,0.5) 0%, transparent 70%)" }}
+                    style={{
+                      background:
+                        "radial-gradient(circle, rgba(168,85,247,0.5) 0%, transparent 70%)",
+                    }}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <div className="text-sm font-bold text-white">Complete UI/UX Design Course</div>
+                  <div className="text-sm font-bold text-white">
+                    Complete UI/UX Design Course
+                  </div>
                   <div className="flex items-center justify-between text-xs text-gray-400">
                     <span>48 Lessons • 12h</span>
-                    <span className="text-violet-400 font-semibold">83% Complete</span>
+                    <span className="text-violet-400 font-semibold">
+                      83% Complete
+                    </span>
                   </div>
                   {/* Progress bar */}
                   <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: "83%" }}
-                      transition={{ duration: 1.5, delay: 0.8, ease: "easeOut" }}
+                      transition={{
+                        duration: 1.5,
+                        delay: 0.8,
+                        ease: "easeOut",
+                      }}
                       className="h-full rounded-full progress-glow"
                     />
                   </div>
@@ -262,7 +342,9 @@ export default function HeroSection() {
                 }}
                 className="w-12 h-12 rounded-2xl border border-white/10 shadow-xl overflow-hidden"
               >
-                <div className={`w-full h-full bg-gradient-to-br ${avatar.color} flex items-center justify-center text-white text-sm font-bold`}>
+                <div
+                  className={`w-full h-full bg-gradient-to-br ${avatar.color} flex items-center justify-center text-white text-sm font-bold`}
+                >
                   {avatar.initials}
                 </div>
               </motion.div>
@@ -280,7 +362,9 @@ export default function HeroSection() {
                 🏆
               </div>
               <div>
-                <div className="text-xs font-bold text-white">Course Completed!</div>
+                <div className="text-xs font-bold text-white">
+                  Course Completed!
+                </div>
                 <div className="text-xs text-gray-400">React Fundamentals</div>
               </div>
             </motion.div>
@@ -290,8 +374,11 @@ export default function HeroSection() {
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 1.2 }}
-              className="absolute right-0 bottom-1/4 glass-card rounded-2xl p-3 flex items-center gap-2 border border-green-500/20"
-              style={{ animation: "float 6s ease-in-out infinite", animationDelay: "1s" }}
+              className="absolute bottom-8 right-15 glass-card rounded-2xl p-3 flex items-center gap-2 border border-green-500/20"
+              style={{
+                animation: "float 6s ease-in-out infinite",
+                animationDelay: "1s",
+              }}
             >
               <div className="relative w-2.5 h-2.5 rounded-full bg-green-400">
                 <div className="absolute inset-0 rounded-full bg-green-400 animate-ping opacity-60" />

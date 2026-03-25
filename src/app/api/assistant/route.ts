@@ -3,14 +3,15 @@ import { NextResponse } from "next/server";
 type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
 
 export async function POST(req: Request) {
-  let payload: { messages?: ChatMessage[]; model?: string; temperature?: number };
+  let payload: {
+    messages?: ChatMessage[];
+    model?: string;
+    temperature?: number;
+  };
   try {
     payload = await req.json();
   } catch {
-    return NextResponse.json(
-      { error: "Invalid JSON body" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
   const apiKey = process.env.OPENAI_API_KEY;
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
         error:
           "OPENAI_API_KEY is not set on the server. Set it in your environment variables to enable the assistant.",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 
@@ -36,8 +37,7 @@ export async function POST(req: Request) {
 
   // Ensure the system prompt is at the front.
   const finalMessages =
-    messages.length === 0 ||
-    messages[0]?.role !== "system"
+    messages.length === 0 || messages[0]?.role !== "system"
       ? [systemPrompt, ...messages]
       : messages;
 
@@ -60,23 +60,17 @@ export async function POST(req: Request) {
     if (!upstream.ok) {
       const upstreamError =
         data?.error?.message ?? `OpenAI request failed (${upstream.status})`;
-      return NextResponse.json(
-        { error: upstreamError },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: upstreamError }, { status: 500 });
     }
 
     const reply =
-      data?.choices?.[0]?.message?.content ??
-      data?.choices?.[0]?.text ??
-      "";
+      data?.choices?.[0]?.message?.content ?? data?.choices?.[0]?.text ?? "";
 
     return NextResponse.json({ reply });
   } catch (err) {
     return NextResponse.json(
       { error: (err as Error)?.message ?? "Assistant request failed" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

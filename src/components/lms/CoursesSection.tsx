@@ -3,8 +3,18 @@
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Star, Clock, Users, Play, ArrowRight, BookOpen } from "lucide-react";
+import { Montserrat } from "next/font/google";
 
-const categories = ["All", "Design", "Development", "Marketing", "AI/ML", "Business"];
+const montserrat = Montserrat({ subsets: ["latin"] });
+
+const categories = [
+  "All",
+  "Design",
+  "Development",
+  "Marketing",
+  "AI/ML",
+  "Business",
+];
 
 const courses = [
   {
@@ -117,16 +127,18 @@ export default function CoursesSection() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
-  const filtered = activeCategory === "All"
-    ? courses
-    : courses.filter((c) => c.category === activeCategory);
+  const filtered =
+    activeCategory === "All"
+      ? courses
+      : courses.filter((c) => c.category === activeCategory);
 
   return (
     <section className="relative py-28 overflow-hidden" id="courses">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: "radial-gradient(ellipse 70% 40% at 50% 50%, rgba(124,58,237,0.05) 0%, transparent 70%)",
+          background:
+            "radial-gradient(ellipse 70% 40% at 50% 50%, rgba(124,58,237,0.05) 0%, transparent 70%)",
         }}
       />
 
@@ -141,13 +153,18 @@ export default function CoursesSection() {
           <div className="inline-flex items-center gap-2 tag-purple mb-4">
             Top Rated Courses
           </div>
-          <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">
+          <h2 className="font-serif text-4xl md:text-6xl font-black text-white mb-4">
             Level Up with Our
             <br />
-            <span className="gradient-text">Most Popular Courses</span>
+            <span className={`${montserrat.className} gradient-text`}>
+              Most Popular Courses
+            </span>
           </h2>
-          <p className="text-gray-400 text-lg max-w-xl mx-auto">
-            Hand-picked courses taught by industry experts. Updated regularly to stay ahead of the curve.
+          <p
+            className={`${montserrat.className} text-gray-400 text-lg max-w-xl mx-auto`}
+          >
+            Hand-picked courses taught by industry experts. Updated regularly to
+            stay ahead of the curve.
           </p>
         </motion.div>
 
@@ -162,7 +179,7 @@ export default function CoursesSection() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-5 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
+              className={`${montserrat.className} px-5 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                 activeCategory === cat
                   ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-[0_0_20px_rgba(124,58,237,0.4)]"
                   : "glass-card text-gray-400 hover:text-white hover:border-violet-500/40"
@@ -174,7 +191,9 @@ export default function CoursesSection() {
         </motion.div>
 
         {/* Course cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div
+          className={`${montserrat.className} grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6`}
+        >
           {filtered.map((course, i) => (
             <motion.div
               key={i}
@@ -186,9 +205,16 @@ export default function CoursesSection() {
               className="group relative glass-card rounded-2xl overflow-hidden cursor-pointer"
               style={{
                 transition: "all 0.3s ease",
-                transform: hoveredCard === i ? "translateY(-8px)" : "translateY(0)",
-                boxShadow: hoveredCard === i ? `0 20px 60px ${course.accentColor}` : "none",
-                borderColor: hoveredCard === i ? `${course.accentColor}` : "rgba(124,58,237,0.2)",
+                transform:
+                  hoveredCard === i ? "translateY(-8px)" : "translateY(0)",
+                boxShadow:
+                  hoveredCard === i
+                    ? `0 20px 60px ${course.accentColor}`
+                    : "none",
+                borderColor:
+                  hoveredCard === i
+                    ? `${course.accentColor}`
+                    : "rgba(124,58,237,0.2)",
               }}
             >
               {/* Thumbnail */}
@@ -215,7 +241,9 @@ export default function CoursesSection() {
                 </motion.div>
 
                 {/* Badge */}
-                <div className={`absolute top-3 left-3 text-xs font-semibold px-2.5 py-1 rounded-lg border ${course.badgeColor}`}>
+                <div
+                  className={`absolute top-3 left-3 text-xs font-semibold px-2.5 py-1 rounded-lg border ${course.badgeColor}`}
+                >
                   {course.badge}
                 </div>
 
@@ -228,12 +256,22 @@ export default function CoursesSection() {
               {/* Card content */}
               <div className="p-5">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs text-violet-400 font-medium">{course.category}</span>
+                  <span className="text-xs text-violet-400 font-medium">
+                    {course.category}
+                  </span>
                   <span className="text-gray-600">•</span>
                   <div className="flex items-center gap-1">
-                    <Star size={11} fill="#facc15" className="text-yellow-400" />
-                    <span className="text-xs text-yellow-400 font-bold">{course.rating}</span>
-                    <span className="text-xs text-gray-500">({course.students})</span>
+                    <Star
+                      size={11}
+                      fill="#facc15"
+                      className="text-yellow-400"
+                    />
+                    <span className="text-xs text-yellow-400 font-bold">
+                      {course.rating}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      ({course.students})
+                    </span>
                   </div>
                 </div>
 
@@ -241,12 +279,17 @@ export default function CoursesSection() {
                   {course.title}
                 </h3>
 
-                <p className="text-xs text-gray-400 mb-3">by {course.instructor}</p>
+                <p className="text-xs text-gray-400 mb-3">
+                  by {course.instructor}
+                </p>
 
                 {/* Tags */}
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {course.tags.map((tag, j) => (
-                    <span key={j} className="text-xs bg-white/5 text-gray-400 px-2 py-0.5 rounded-md">
+                    <span
+                      key={j}
+                      className="text-xs bg-white/5 text-gray-400 px-2 py-0.5 rounded-md"
+                    >
                       {tag}
                     </span>
                   ))}
@@ -254,16 +297,29 @@ export default function CoursesSection() {
 
                 {/* Meta */}
                 <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
-                  <span className="flex items-center gap-1"><Clock size={11} />{course.duration}</span>
-                  <span className="flex items-center gap-1"><BookOpen size={11} />{course.lessons} lessons</span>
-                  <span className="flex items-center gap-1"><Users size={11} />{course.students}</span>
+                  <span className="flex items-center gap-1">
+                    <Clock size={11} />
+                    {course.duration}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <BookOpen size={11} />
+                    {course.lessons} lessons
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Users size={11} />
+                    {course.students}
+                  </span>
                 </div>
 
                 {/* Price + CTA */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-xl font-black text-white">${course.price}</span>
-                    <span className="text-xs text-gray-500 ml-1 line-through">${Math.round(course.price * 1.6)}</span>
+                    <span className="text-xl font-black text-white">
+                      ${course.price}
+                    </span>
+                    <span className="text-xs text-gray-500 ml-1 line-through">
+                      ${Math.round(course.price * 1.6)}
+                    </span>
                   </div>
                   <motion.a
                     href="/courses"

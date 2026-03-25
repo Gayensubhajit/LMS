@@ -3,6 +3,9 @@
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Check, X, Zap, Star, Crown } from "lucide-react";
+import { Montserrat } from "next/font/google";
+
+const montserrat = Montserrat({ subsets: ["latin"] });
 
 const plans = [
   {
@@ -80,7 +83,8 @@ export default function PricingSection() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(124,58,237,0.06) 0%, transparent 70%)",
+          background:
+            "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(124,58,237,0.06) 0%, transparent 70%)",
         }}
       />
 
@@ -92,14 +96,21 @@ export default function PricingSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 tag-purple mb-4">Flexible Pricing</div>
-          <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">
+          <div className="inline-flex items-center gap-2 tag-purple mb-4">
+            Flexible Pricing
+          </div>
+          <h2 className="font-serif text-4xl md:text-6xl font-black text-white mb-4">
             Invest in Your Future —
             <br />
-            <span className="gradient-text">Choose Your Perfect Plan</span>
+            <span className={`${montserrat.className} gradient-text`}>
+              Choose Your Perfect Plan
+            </span>
           </h2>
-          <p className="text-gray-400 text-lg max-w-xl mx-auto mb-8">
-            All plans include a 7-day free trial. No credit card required. Cancel anytime.
+          <p
+            className={`${montserrat.className} text-gray-300 text-lg max-w-xl mx-auto mb-8`}
+          >
+            All plans include a 7-day free trial. No credit card required.
+            Cancel anytime.
           </p>
 
           {/* Billing toggle */}
@@ -131,7 +142,9 @@ export default function PricingSection() {
         </motion.div>
 
         {/* Pricing cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
+        <div
+          className={`${montserrat.className} grid grid-cols-1 md:grid-cols-3 gap-6 items-start`}
+        >
           {plans.map((plan, i) => (
             <motion.div
               key={i}
@@ -147,7 +160,9 @@ export default function PricingSection() {
                 background: plan.highlight
                   ? "linear-gradient(135deg, rgba(124,58,237,0.2) 0%, rgba(15,15,30,0.9) 100%)"
                   : undefined,
-                border: plan.highlight ? "1px solid rgba(124,58,237,0.5)" : undefined,
+                border: plan.highlight
+                  ? "1px solid rgba(124,58,237,0.5)"
+                  : undefined,
               }}
             >
               {/* Popular badge */}
@@ -159,8 +174,12 @@ export default function PricingSection() {
                       : "bg-amber-500/20 text-amber-400"
                   }`}
                 >
-                  {plan.badge === "Most Popular" && <Star size={11} className="inline mr-1" />}
-                  {plan.badge === "Best Value" && <Crown size={11} className="inline mr-1" />}
+                  {plan.badge === "Most Popular" && (
+                    <Star size={11} className="inline mr-1" />
+                  )}
+                  {plan.badge === "Best Value" && (
+                    <Crown size={11} className="inline mr-1" />
+                  )}
                   {plan.badge}
                 </div>
               )}
@@ -175,11 +194,15 @@ export default function PricingSection() {
                     {plan.icon}
                   </div>
                   <div>
-                    <div className="text-lg font-bold text-white">{plan.name}</div>
+                    <div className="text-lg font-bold text-white">
+                      {plan.name}
+                    </div>
                   </div>
                 </div>
 
-                <p className="text-sm text-gray-400 mb-6 leading-relaxed">{plan.description}</p>
+                <p className="text-sm text-gray-400 mb-6 leading-relaxed">
+                  {plan.description}
+                </p>
 
                 {/* Price */}
                 <div className="mb-6">
@@ -196,7 +219,8 @@ export default function PricingSection() {
                   </motion.div>
                   {billing === "yearly" && (
                     <div className="text-xs text-green-400 mt-1">
-                      Billed as ${plan.price.yearly * 12}/year • Save ${(plan.price.monthly - plan.price.yearly) * 12}
+                      Billed as ${plan.price.yearly * 12}/year • Save $
+                      {(plan.price.monthly - plan.price.yearly) * 12}
                     </div>
                   )}
                 </div>
@@ -206,21 +230,25 @@ export default function PricingSection() {
                   href={`/auth/sign-up?plan=${encodeURIComponent(plan.name)}&billing=${billing}`}
                   whileHover={{
                     scale: 1.03,
-                    boxShadow: plan.highlight ? `0 0 30px ${plan.glow}` : undefined,
+                    boxShadow: plan.highlight
+                      ? `0 0 30px ${plan.glow}`
+                      : undefined,
                   }}
                   whileTap={{ scale: 0.97 }}
-                  className={`w-full py-3.5 rounded-xl font-bold text-sm mb-6 transition-all duration-300 ${
+                  className={`w-full py-3 px-4 rounded-xl font-bold text-sm mb-6 transition-all duration-300 ${
                     plan.highlight
                       ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white"
                       : "border border-violet-500/30 text-violet-300 hover:bg-violet-600/10"
                   }`}
                 >
-                  {plan.highlight && <Zap size={14} className="inline mr-1.5" />}
+                  {plan.highlight && (
+                    <Zap size={14} className="inline mr-1.5" />
+                  )}
                   {plan.cta}
                 </motion.a>
 
                 {/* Features */}
-                <div className="space-y-3">
+                <div className="space-y-3 mt-8">
                   {plan.features.map((feat, j) => (
                     <div key={j} className="flex items-center gap-3">
                       <div
@@ -236,7 +264,9 @@ export default function PricingSection() {
                           <X size={11} className="text-gray-600" />
                         )}
                       </div>
-                      <span className={`text-sm ${feat.included ? "text-gray-300" : "text-gray-600"}`}>
+                      <span
+                        className={`text-sm ${feat.included ? "text-gray-300" : "text-gray-600"}`}
+                      >
                         {feat.text}
                       </span>
                     </div>
@@ -254,7 +284,11 @@ export default function PricingSection() {
           transition={{ duration: 0.5, delay: 0.6 }}
           className="text-center mt-10 text-sm text-gray-500"
         >
-          🛡️ <span className="text-gray-300 font-medium">30-day money-back guarantee</span> • No questions asked • Cancel anytime
+          🛡️{" "}
+          <span className="text-gray-300 font-medium">
+            30-day money-back guarantee
+          </span>{" "}
+          • No questions asked • Cancel anytime
         </motion.div>
       </div>
     </section>

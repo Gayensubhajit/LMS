@@ -1,6 +1,4 @@
 "use client";
-
-import dynamic from "next/dynamic";
 import Navbar from "@/components/lms/Navbar";
 import HeroSection from "@/components/lms/HeroSection";
 import TrustedBySectionPremium from "@/components/lms/TrustedBySectionPremium";
@@ -15,17 +13,9 @@ import CTASection from "@/components/lms/CTASection";
 import Footer from "@/components/lms/Footer";
 import AssistantWidget from "@/components/lms/AssistantWidget";
 
-const ParticleBackground = dynamic(
-  () => import("@/components/lms/ParticleBackground"),
-  { ssr: false }
-);
-
 export default function Home() {
   return (
     <main className="relative min-h-screen bg-background overflow-x-hidden">
-      {/* Particle background */}
-      <ParticleBackground />
-
       {/* Content */}
       <div className="relative z-10">
         <Navbar />

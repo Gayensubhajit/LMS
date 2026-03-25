@@ -1,16 +1,35 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { BookOpen, ChevronDown, MessageSquare, PlayCircle, Star, UserRound } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { BookOpen, ChevronDown, Lock, MessageSquare, Play, PlayCircle, Star, UserRound } from "lucide-react";
 import type { Course } from "@/lib/courses-data";
 import EnrollmentModal from "./EnrollmentModal";
 
-const planConfig = [
-  { key: "oneMonth", label: "1 Month", valueKey: "oneMonth" as const, desc: "Best for quick upskilling" },
-  { key: "threeMonth", label: "3 Months", valueKey: "threeMonth" as const, desc: "Most popular for career switchers" },
-  { key: "sixMonth", label: "6 Months", valueKey: "sixMonth" as const, desc: "Best value for deep mastery" },
-];
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
+
+type BackendLesson = {
+  id: string;
+  title: string;
+  description: string | null;
+  durationMins: number | null;
+  position: number;
+  isPreview: boolean;
+};
+
+type BackendSection = {
+  id: string;
+  title: string;
+  position: number;
+  lessons: BackendLesson[];
+};
+
+type BackendCourseWithLessons = {
+  id: string;
+  slug: string;
+  title: string;
+  sections: BackendSection[];
+};
 
 const instructorProfiles: Record<string, { role: string; bio: string; learners: string }> = {
   "Jessica Willis": {
@@ -32,42 +51,43 @@ const instructorProfiles: Record<string, { role: string; bio: string; learners: 
 
 export default function CourseDetailsClient({ course }: { course: Course }) {
   const [tab, setTab] = useState<"overview" | "syllabus" | "reviews">("overview");
-  const [openModuleIndex, setOpenModuleIndex] = useState<number | null>(0);
+  const [openSectionIndex, setOpenSectionIndex] = useState<number | null>(0);
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
 
-  const modules = useMemo(() => {
-    // Build a simple curriculum from course skills.
+  // Real sections from backend
+  const [sections, setSections] = useState<BackendSection[]>([]);
+  const [sectionsLoaded, setSectionsLoaded] = useState(false);
+
+  useEffect(() => {
+    fetch(`${BACKEND_URL}/courses/${course.slug}/lessons`)
+      .then(r => r.json())
+      .then((data: { ok: boolean; item: BackendCourseWithLessons }) => {
+        if (data.ok && data.item?.sections?.length) {
+          setSections(data.item.sections);
+        }
+      })
+      .catch(() => {/* keep empty */})
+      .finally(() => setSectionsLoaded(true));
+  }, [course.slug]);
+
+  // Fallback modules from skills when backend has no sections yet
+  const fallbackModules = useMemo(() => {
     return course.skills.map((skill, index) => ({
       title: `Module ${index + 1}: ${skill}`,
-      lessons: Math.max(4, Math.round(course.lessons / Math.max(course.skills.length, 1))),
-      duration: `${Math.max(2, Math.round(Number(course.duration.replace("h", "")) / Math.max(course.skills.length, 1)))}h`,
-      summary: `Hands-on exercises and practical workflows focused on ${skill.toLowerCase()}.`,
-      lessonList: [
+      lessons: [
         `Introduction to ${skill}`,
         `${skill} core concepts and framework`,
         `Guided project: applying ${skill.toLowerCase()}`,
         `${skill} best practices and review`,
       ],
     }));
-  }, [course]);
+  }, [course.skills]);
 
   const reviews = useMemo(
     () => [
-      {
-        name: "Rahul D.",
-        rating: 5,
-        text: `Excellent structure. I finally understood ${course.skills[0]} with practical examples.`,
-      },
-      {
-        name: "Ananya S.",
-        rating: 5,
-        text: "One of the cleanest course experiences I have used. Great pace and clear explanations.",
-      },
-      {
-        name: "Michael K.",
-        rating: 4,
-        text: "Strong content depth and modern tooling. Worth it for career-focused learning.",
-      },
+      { name: "Rahul D.", rating: 5, text: `Excellent structure. I finally understood ${course.skills[0]} with practical examples.` },
+      { name: "Ananya S.", rating: 5, text: "One of the cleanest course experiences I have used. Great pace and clear explanations." },
+      { name: "Michael K.", rating: 4, text: "Strong content depth and modern tooling. Worth it for career-focused learning." },
     ],
     [course.skills]
   );
@@ -77,6 +97,10 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
     bio: "Experienced mentor delivering practical, project-based learning.",
     learners: course.students,
   };
+
+  const totalLessons = sections.length > 0
+    ? sections.reduce((sum, s) => sum + s.lessons.length, 0)
+    : course.lessons;
 
   return (
     <main className="min-h-screen bg-background text-foreground px-6 py-14">
@@ -97,27 +121,18 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
               <p className="text-gray-400 mb-6">by {course.instructor}</p>
 
               <div className="flex flex-wrap gap-2 mb-6">
-                <button
-                  onClick={() => setTab("overview")}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium ${tab === "overview" ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white" : "bg-white/5 border border-violet-500/20 text-gray-300"}`}
-                >
-                  Overview
-                </button>
-                <button
-                  onClick={() => setTab("syllabus")}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium ${tab === "syllabus" ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white" : "bg-white/5 border border-violet-500/20 text-gray-300"}`}
-                >
-                  Syllabus
-                </button>
-                <button
-                  onClick={() => setTab("reviews")}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium ${tab === "reviews" ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white" : "bg-white/5 border border-violet-500/20 text-gray-300"}`}
-                >
-                  Reviews
-                </button>
+                {(["overview", "syllabus", "reviews"] as const).map(t => (
+                  <button
+                    key={t}
+                    onClick={() => setTab(t)}
+                    className={`px-4 py-2 rounded-xl text-sm font-medium capitalize ${tab === t ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white" : "bg-white/5 border border-violet-500/20 text-gray-300"}`}
+                  >
+                    {t}
+                  </button>
+                ))}
               </div>
 
-              {/* Real video preview */}
+              {/* Video Preview */}
               <div className="mb-7 rounded-2xl overflow-hidden border border-violet-500/20 bg-black/30">
                 <div className="px-4 py-3 border-b border-violet-500/20 flex items-center justify-between">
                   <div className="text-sm font-semibold text-white flex items-center gap-2">
@@ -139,6 +154,7 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
                 </div>
               </div>
 
+              {/* Overview Tab */}
               {tab === "overview" && (
                 <div>
                   <p className="text-gray-300 leading-relaxed mb-6">{course.longDescription}</p>
@@ -154,7 +170,7 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
                     </div>
                     <div className="rounded-xl bg-white/5 border border-violet-500/15 p-3">
                       <div className="text-xs text-gray-500">Lessons</div>
-                      <div className="text-white font-bold">{course.lessons}</div>
+                      <div className="text-white font-bold">{totalLessons}</div>
                     </div>
                     <div className="rounded-xl bg-white/5 border border-violet-500/15 p-3">
                       <div className="text-xs text-gray-500">Students</div>
@@ -166,10 +182,7 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
                     <h2 className="text-lg font-bold text-white mb-3">What you will learn</h2>
                     <div className="flex flex-wrap gap-2">
                       {course.skills.map((skill) => (
-                        <span
-                          key={skill}
-                          className="text-sm bg-violet-600/15 border border-violet-500/20 text-violet-300 px-3 py-1.5 rounded-lg"
-                        >
+                        <span key={skill} className="text-sm bg-violet-600/15 border border-violet-500/20 text-violet-300 px-3 py-1.5 rounded-lg">
                           {skill}
                         </span>
                       ))}
@@ -192,59 +205,102 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
                 </div>
               )}
 
+              {/* Syllabus Tab — Real sections from backend */}
               {tab === "syllabus" && (
-                <div className="space-y-3">
-                  {modules.map((module, index) => (
-                    <div
-                      key={module.title}
-                      className="rounded-2xl border border-violet-500/20 bg-white/5 p-4"
-                    >
-                      <button
-                        onClick={() =>
-                          setOpenModuleIndex(openModuleIndex === index ? null : index)
-                        }
-                        className="w-full flex items-center justify-between text-left"
-                      >
-                        <div>
-                          <h3 className="text-white font-semibold">{module.title}</h3>
-                          <p className="text-sm text-gray-400 mt-1">{module.summary}</p>
-                          <div className="text-xs text-gray-500 mt-2">
-                            {module.lessons} lessons • {module.duration} • Week {index + 1}
-                          </div>
-                        </div>
-                        <ChevronDown
-                          size={18}
-                          className={`text-violet-300 transition-transform ${
-                            openModuleIndex === index ? "rotate-180" : ""
-                          }`}
-                        />
-                      </button>
-
-                      {openModuleIndex === index ? (
-                        <ul className="mt-4 pt-3 border-t border-violet-500/15 space-y-2">
-                          {module.lessonList.map((lesson) => (
-                            <li
-                              key={lesson}
-                              className="text-sm text-gray-300 flex items-start gap-2"
-                            >
-                              <span className="text-violet-400 mt-0.5">•</span>
-                              <span>{lesson}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      ) : null}
+                <div>
+                  {!sectionsLoaded ? (
+                    <div className="space-y-3">
+                      {[1, 2, 3].map(i => (
+                        <div key={i} className="h-16 rounded-2xl bg-white/5 border border-violet-500/10 animate-pulse" />
+                      ))}
                     </div>
-                  ))}
+                  ) : sections.length > 0 ? (
+                    <div className="space-y-3">
+                      {sections.map((section, index) => (
+                        <div key={section.id} className="rounded-2xl border border-violet-500/20 bg-white/5 p-4">
+                          <button
+                            onClick={() => setOpenSectionIndex(openSectionIndex === index ? null : index)}
+                            className="w-full flex items-center justify-between text-left"
+                          >
+                            <div>
+                              <h3 className="text-white font-semibold">{section.title}</h3>
+                              <div className="text-xs text-gray-500 mt-1">
+                                {section.lessons.length} lessons
+                                {section.lessons.some(l => l.isPreview) && (
+                                  <span className="ml-2 text-violet-400">• Some free previews</span>
+                                )}
+                              </div>
+                            </div>
+                            <ChevronDown
+                              size={18}
+                              className={`text-violet-300 transition-transform flex-shrink-0 ml-2 ${openSectionIndex === index ? "rotate-180" : ""}`}
+                            />
+                          </button>
+
+                          {openSectionIndex === index && (
+                            <ul className="mt-4 pt-3 border-t border-violet-500/15 space-y-2">
+                              {section.lessons.map(lesson => (
+                                <li key={lesson.id} className="flex items-center gap-3 text-sm py-1">
+                                  <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
+                                    style={{ background: lesson.isPreview ? "rgba(124,58,237,0.2)" : "rgba(255,255,255,0.05)" }}>
+                                    {lesson.isPreview
+                                      ? <Play size={10} className="text-violet-400" fill="currentColor" />
+                                      : <Lock size={10} className="text-gray-600" />
+                                    }
+                                  </div>
+                                  <span className={lesson.isPreview ? "text-gray-200" : "text-gray-500"}>
+                                    {lesson.title}
+                                  </span>
+                                  {lesson.durationMins && (
+                                    <span className="ml-auto text-xs text-gray-600">{lesson.durationMins}m</span>
+                                  )}
+                                  {lesson.isPreview && (
+                                    <span className="text-[10px] text-violet-400 border border-violet-500/30 px-1.5 py-0.5 rounded-md">Free</span>
+                                  )}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    // Fallback to generated modules
+                    <div className="space-y-3">
+                      {fallbackModules.map((module, index) => (
+                        <div key={module.title} className="rounded-2xl border border-violet-500/20 bg-white/5 p-4">
+                          <button
+                            onClick={() => setOpenSectionIndex(openSectionIndex === index ? null : index)}
+                            className="w-full flex items-center justify-between text-left"
+                          >
+                            <div>
+                              <h3 className="text-white font-semibold">{module.title}</h3>
+                              <div className="text-xs text-gray-500 mt-1">{module.lessons.length} lessons</div>
+                            </div>
+                            <ChevronDown size={18} className={`text-violet-300 transition-transform ${openSectionIndex === index ? "rotate-180" : ""}`} />
+                          </button>
+                          {openSectionIndex === index && (
+                            <ul className="mt-4 pt-3 border-t border-violet-500/15 space-y-2">
+                              {module.lessons.map(lesson => (
+                                <li key={lesson} className="text-sm text-gray-300 flex items-start gap-2">
+                                  <span className="text-violet-400 mt-0.5">•</span>
+                                  <span>{lesson}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
+              {/* Reviews Tab */}
               {tab === "reviews" && (
                 <div className="space-y-3">
-                  {reviews.map((review) => (
-                    <div
-                      key={review.name}
-                      className="rounded-2xl border border-violet-500/20 bg-white/5 p-4"
-                    >
+                  {reviews.map(review => (
+                    <div key={review.name} className="rounded-2xl border border-violet-500/20 bg-white/5 p-4">
                       <div className="flex items-center justify-between mb-2">
                         <span className="text-white font-semibold">{review.name}</span>
                         <span className="text-yellow-400 text-sm flex items-center gap-1">
@@ -259,6 +315,7 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
             </div>
           </article>
 
+          {/* Sidebar */}
           <aside className="glass-card rounded-3xl border border-violet-500/20 p-6 h-fit sticky top-8">
             <h2 className="text-xl font-black text-white mb-2">Enroll in this course</h2>
             <p className="text-sm text-gray-500 mb-6">Choose your subscription duration and get started today</p>
@@ -273,8 +330,14 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
             <div className="mt-5 pt-4 border-t border-violet-500/15 text-xs text-gray-500 space-y-2">
               <div className="flex items-center gap-2">
                 <BookOpen size={14} />
-                <span>{course.lessons} structured lessons</span>
+                <span>{totalLessons} structured lessons</span>
               </div>
+              {sections.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <Play size={14} />
+                  <span>{sections.length} sections · {sections.filter(s => s.lessons.some(l => l.isPreview)).length} free previews</span>
+                </div>
+              )}
               <div className="flex items-center gap-2">
                 <MessageSquare size={14} />
                 <span>Community Q&A and mentor support</span>
@@ -284,7 +347,6 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
         </section>
       </div>
 
-      {/* Enrollment Modal */}
       <EnrollmentModal
         course={course}
         isOpen={isEnrollModalOpen}
@@ -293,4 +355,3 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
     </main>
   );
 }
-

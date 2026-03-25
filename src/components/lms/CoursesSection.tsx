@@ -4,122 +4,40 @@ import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
 import { Star, Clock, Users, Play, ArrowRight, BookOpen } from "lucide-react";
 import { Montserrat } from "next/font/google";
+import { coursesData } from "@/lib/courses-data";
+import Link from "next/link";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
-const categories = [
-  "All",
-  "Design",
-  "Development",
-  "Marketing",
-  "AI/ML",
-  "Business",
-];
+const categories = ["All", "Design", "Development", "Marketing", "AI/ML", "Business"];
 
-const courses = [
-  {
-    emoji: "🎨",
-    category: "Design",
-    title: "Complete UI/UX Design Bootcamp",
-    instructor: "Jessica Willis",
-    rating: 4.9,
-    students: "12.4K",
-    duration: "48h",
-    lessons: 120,
-    price: 89,
-    badge: "Bestseller",
-    badgeColor: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-    gradient: "from-violet-900/50 to-purple-900/30",
-    accentColor: "rgba(124,58,237,0.5)",
-    tags: ["Figma", "Prototyping", "User Research"],
-    level: "Beginner",
-  },
-  {
-    emoji: "⚛️",
-    category: "Development",
-    title: "React & Next.js Mastery 2026",
-    instructor: "Alex Chen",
-    rating: 4.8,
-    students: "9.8K",
-    duration: "62h",
-    lessons: 155,
-    price: 99,
-    badge: "Hot",
-    badgeColor: "bg-red-500/20 text-red-400 border-red-500/30",
-    gradient: "from-blue-900/50 to-cyan-900/30",
-    accentColor: "rgba(59,130,246,0.5)",
-    tags: ["React", "Next.js", "TypeScript"],
-    level: "Intermediate",
-  },
-  {
-    emoji: "🤖",
-    category: "AI/ML",
-    title: "AI & Machine Learning for Designers",
-    instructor: "Dr. Sarah Park",
-    rating: 4.9,
-    students: "7.2K",
-    duration: "40h",
-    lessons: 96,
-    price: 119,
-    badge: "New",
-    badgeColor: "bg-green-500/20 text-green-400 border-green-500/30",
-    gradient: "from-emerald-900/50 to-teal-900/30",
-    accentColor: "rgba(16,185,129,0.5)",
-    tags: ["AI Tools", "Prompt Design", "Automation"],
-    level: "All Levels",
-  },
-  {
-    emoji: "📱",
-    category: "Design",
-    title: "Mobile App Design with Figma",
-    instructor: "Marcus Lee",
-    rating: 4.7,
-    students: "6.1K",
-    duration: "32h",
-    lessons: 80,
-    price: 79,
-    badge: "Popular",
-    badgeColor: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-    gradient: "from-pink-900/50 to-rose-900/30",
-    accentColor: "rgba(236,72,153,0.5)",
-    tags: ["iOS", "Android", "Figma"],
-    level: "Beginner",
-  },
-  {
-    emoji: "🔥",
-    category: "Development",
-    title: "Full-Stack Development Accelerator",
-    instructor: "Ryan Torres",
-    rating: 4.8,
-    students: "11.3K",
-    duration: "80h",
-    lessons: 200,
-    price: 149,
-    badge: "Bestseller",
-    badgeColor: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
-    gradient: "from-amber-900/50 to-orange-900/30",
-    accentColor: "rgba(245,158,11,0.5)",
-    tags: ["Node.js", "MongoDB", "AWS"],
-    level: "Advanced",
-  },
-  {
-    emoji: "📊",
-    category: "Business",
-    title: "Product Management Fundamentals",
-    instructor: "Emily Watson",
-    rating: 4.6,
-    students: "4.8K",
-    duration: "28h",
-    lessons: 70,
-    price: 69,
-    badge: "Trending",
-    badgeColor: "bg-indigo-500/20 text-indigo-400 border-indigo-500/30",
-    gradient: "from-indigo-900/50 to-purple-900/30",
-    accentColor: "rgba(99,102,241,0.5)",
-    tags: ["Product", "Strategy", "Agile"],
-    level: "Beginner",
-  },
-];
+const gradientMap: Record<string, string> = {
+  Design: "from-violet-900/50 to-purple-900/30",
+  Development: "from-blue-900/50 to-cyan-900/30",
+  "AI/ML": "from-emerald-900/50 to-teal-900/30",
+  Business: "from-indigo-900/50 to-purple-900/30",
+  Marketing: "from-pink-900/50 to-rose-900/30",
+};
+
+const accentMap: Record<string, string> = {
+  Design: "rgba(124,58,237,0.5)",
+  Development: "rgba(59,130,246,0.5)",
+  "AI/ML": "rgba(16,185,129,0.5)",
+  Business: "rgba(99,102,241,0.5)",
+  Marketing: "rgba(236,72,153,0.5)",
+};
+
+const badgeMap: Record<string, { label: string; color: string }> = {
+  "complete-ui-ux-design-bootcamp": { label: "Bestseller", color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
+  "react-nextjs-mastery-2026": { label: "Hot", color: "bg-red-500/20 text-red-400 border-red-500/30" },
+  "ai-machine-learning-for-designers": { label: "New", color: "bg-green-500/20 text-green-400 border-green-500/30" },
+  "mobile-app-design-with-figma": { label: "Popular", color: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
+  "full-stack-development-accelerator": { label: "Bestseller", color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
+  "product-management-fundamentals": { label: "Trending", color: "bg-indigo-500/20 text-indigo-400 border-indigo-500/30" },
+};
+
+// Show first 6 courses from local data
+const courses = coursesData.slice(0, 6);
 
 export default function CoursesSection() {
   const ref = useRef(null);
@@ -194,9 +112,13 @@ export default function CoursesSection() {
         <div
           className={`${montserrat.className} grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6`}
         >
-          {filtered.map((course, i) => (
+          {filtered.map((course, i) => {
+            const accent = accentMap[course.category] ?? "rgba(124,58,237,0.5)";
+            const gradient = gradientMap[course.category] ?? "from-violet-900/50 to-purple-900/30";
+            const badge = badgeMap[course.slug] ?? { label: "Featured", color: "bg-violet-500/20 text-violet-400 border-violet-500/30" };
+            return (
             <motion.div
-              key={i}
+              key={course.slug}
               initial={{ opacity: 0, y: 40 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.5, delay: i * 0.08 }}
@@ -205,22 +127,13 @@ export default function CoursesSection() {
               className="group relative glass-card rounded-2xl overflow-hidden cursor-pointer"
               style={{
                 transition: "all 0.3s ease",
-                transform:
-                  hoveredCard === i ? "translateY(-8px)" : "translateY(0)",
-                boxShadow:
-                  hoveredCard === i
-                    ? `0 20px 60px ${course.accentColor}`
-                    : "none",
-                borderColor:
-                  hoveredCard === i
-                    ? `${course.accentColor}`
-                    : "rgba(124,58,237,0.2)",
+                transform: hoveredCard === i ? "translateY(-8px)" : "translateY(0)",
+                boxShadow: hoveredCard === i ? `0 20px 60px ${accent}` : "none",
+                borderColor: hoveredCard === i ? accent : "rgba(124,58,237,0.2)",
               }}
             >
               {/* Thumbnail */}
-              <div
-                className={`relative h-44 bg-gradient-to-br ${course.gradient} flex items-center justify-center overflow-hidden`}
-              >
+              <div className={`relative h-44 bg-gradient-to-br ${gradient} flex items-center justify-center overflow-hidden`}>
                 <motion.div
                   animate={hoveredCard === i ? { scale: 1.1 } : { scale: 1 }}
                   transition={{ duration: 0.4 }}
@@ -241,10 +154,8 @@ export default function CoursesSection() {
                 </motion.div>
 
                 {/* Badge */}
-                <div
-                  className={`absolute top-3 left-3 text-xs font-semibold px-2.5 py-1 rounded-lg border ${course.badgeColor}`}
-                >
-                  {course.badge}
+                <div className={`absolute top-3 left-3 text-xs font-semibold px-2.5 py-1 rounded-lg border ${badge.color}`}>
+                  {badge.label}
                 </div>
 
                 {/* Level */}
@@ -256,84 +167,51 @@ export default function CoursesSection() {
               {/* Card content */}
               <div className="p-5">
                 <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs text-violet-400 font-medium">
-                    {course.category}
-                  </span>
+                  <span className="text-xs text-violet-400 font-medium">{course.category}</span>
                   <span className="text-gray-600">•</span>
                   <div className="flex items-center gap-1">
-                    <Star
-                      size={11}
-                      fill="#facc15"
-                      className="text-yellow-400"
-                    />
-                    <span className="text-xs text-yellow-400 font-bold">
-                      {course.rating}
-                    </span>
-                    <span className="text-xs text-gray-500">
-                      ({course.students})
-                    </span>
+                    <Star size={11} fill="#facc15" className="text-yellow-400" />
+                    <span className="text-xs text-yellow-400 font-bold">{course.rating}</span>
+                    <span className="text-xs text-gray-500">({course.students})</span>
                   </div>
                 </div>
 
-                <h3 className="text-base font-bold text-white mb-2 line-clamp-2 leading-snug">
-                  {course.title}
-                </h3>
+                <h3 className="text-base font-bold text-white mb-2 line-clamp-2 leading-snug">{course.title}</h3>
+                <p className="text-xs text-gray-400 mb-3">by {course.instructor}</p>
 
-                <p className="text-xs text-gray-400 mb-3">
-                  by {course.instructor}
-                </p>
-
-                {/* Tags */}
+                {/* Skills as tags */}
                 <div className="flex flex-wrap gap-1.5 mb-4">
-                  {course.tags.map((tag, j) => (
-                    <span
-                      key={j}
-                      className="text-xs bg-white/5 text-gray-400 px-2 py-0.5 rounded-md"
-                    >
-                      {tag}
-                    </span>
+                  {course.skills.slice(0, 3).map((skill: string, j: number) => (
+                    <span key={j} className="text-xs bg-white/5 text-gray-400 px-2 py-0.5 rounded-md">{skill}</span>
                   ))}
                 </div>
 
                 {/* Meta */}
                 <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
-                  <span className="flex items-center gap-1">
-                    <Clock size={11} />
-                    {course.duration}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <BookOpen size={11} />
-                    {course.lessons} lessons
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Users size={11} />
-                    {course.students}
-                  </span>
+                  <span className="flex items-center gap-1"><Clock size={11} />{course.duration}</span>
+                  <span className="flex items-center gap-1"><BookOpen size={11} />{course.lessons} lessons</span>
+                  <span className="flex items-center gap-1"><Users size={11} />{course.students}</span>
                 </div>
 
                 {/* Price + CTA */}
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-xl font-black text-white">
-                      ${course.price}
-                    </span>
-                    <span className="text-xs text-gray-500 ml-1 line-through">
-                      ${Math.round(course.price * 1.6)}
-                    </span>
+                    <span className="text-xl font-black text-white">${course.price.oneMonth}</span>
+                    <span className="text-xs text-gray-500 ml-1 line-through">${Math.round(course.price.oneMonth * 1.6)}</span>
                   </div>
-                  <motion.a
-                    href="/courses"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-xs font-semibold px-4 py-2 rounded-xl"
+                  <Link
+                    href={`/courses/${course.slug}`}
+                    className="flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-xs font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition-all"
                   >
                     View Details <ArrowRight size={12} />
-                  </motion.a>
+                  </Link>
                 </div>
               </div>
             </motion.div>
-          ))}
+            );
+          })}
         </div>
+
 
         {/* Bottom CTA */}
         <motion.div

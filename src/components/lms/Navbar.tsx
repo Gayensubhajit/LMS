@@ -142,9 +142,16 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  // Check enrollments to show "My Learning" link
+  // Check enrollments to show "My Learning" link + silently sync user to DB if not yet there
   useEffect(() => {
     if (!isLoaded || !user?.id) return;
+
+    // Silently sync existing Clerk users who signed up before the webhook was configured
+    backendRequest<{ ok: boolean; synced: boolean }>("/users/sync", {
+      method: "POST",
+      clerkUserId: user.id,
+    }).catch(() => { /* silent — not critical */ });
+
     backendRequest<{ ok: boolean; items: unknown[] }>("/dashboard/my-courses", {
       clerkUserId: user.id,
     })
@@ -665,9 +672,6 @@ export default function Navbar() {
                     <div className="py-1.5">
                       {profileMenuItems.map((item) => {
                         const Icon = item.icon;
-                        // Only show My Learning if enrolled
-                        if (item.label === "My Learning" && !hasEnrollments)
-                          return null;
                         return (
                           <a
                             key={item.label}

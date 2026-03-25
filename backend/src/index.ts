@@ -12,6 +12,7 @@ import {
 } from "./routes/payments.js";
 import { progressRouter } from "./routes/progress.js";
 import { dashboardRouter } from "./routes/dashboard.js";
+import { usersRouter } from "./routes/users.js";
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.use("/access", accessRouter);
 app.use("/payments", paymentsRouter);
 app.use("/progress", progressRouter);
 app.use("/dashboard", dashboardRouter);
+app.use("/users", usersRouter);
 
 app.listen(env.PORT, () => {
   console.log(`Backend running on http://localhost:${env.PORT}`);

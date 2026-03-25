@@ -26,14 +26,29 @@ function getFullName(payload: ClerkWebhookPayload): string | null {
   return fullName.length > 0 ? fullName : null;
 }
 
+// Retry helper – retries up to 3 times with exponential back-off + reconnect
+async function withRetry<T>(fn: () => Promise<T>, retries = 3): Promise<T> {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const isLast = attempt === retries;
+      console.error(`!!! DB attempt ${attempt}/${retries} failed:`, (err as Error).message);
+      if (isLast) throw err;
+      await new Promise(r => setTimeout(r, 500 * attempt));
+      // Force Prisma to reconnect after the connection was dropped
+      try { await prisma.$disconnect(); } catch { /* ignore */ }
+      await prisma.$connect();
+    }
+  }
+  throw new Error("Unreachable");
+}
+
 export async function handleClerkWebhook(req: Request, res: Response) {
   console.log(">>> Received Clerk Webhook");
   if (!env.CLERK_WEBHOOK_SECRET) {
     console.error("!!! CLERK_WEBHOOK_SECRET missing");
-    return res.status(500).json({
-      ok: false,
-      error: "CLERK_WEBHOOK_SECRET is not configured"
-    });
+    return res.status(500).json({ ok: false, error: "CLERK_WEBHOOK_SECRET is not configured" });
   }
 
   const svixId = req.header("svix-id");
@@ -42,18 +57,12 @@ export async function handleClerkWebhook(req: Request, res: Response) {
 
   if (!svixId || !svixTimestamp || !svixSignature) {
     console.error("!!! Missing Svix headers", { svixId, svixTimestamp, svixSignature });
-    return res.status(400).json({
-      ok: false,
-      error: "Missing Svix headers"
-    });
+    return res.status(400).json({ ok: false, error: "Missing Svix headers" });
   }
 
   const rawBody = req.body?.toString?.();
   if (!rawBody) {
-    return res.status(400).json({
-      ok: false,
-      error: "Invalid webhook body"
-    });
+    return res.status(400).json({ ok: false, error: "Invalid webhook body" });
   }
 
   let payload: ClerkWebhookPayload;
@@ -64,61 +73,52 @@ export async function handleClerkWebhook(req: Request, res: Response) {
       "svix-timestamp": svixTimestamp,
       "svix-signature": svixSignature
     }) as ClerkWebhookPayload;
-    console.log(">>> Webhook verified successfully, event type:", payload.type);
+    console.log(">>> Webhook verified, event type:", payload.type);
   } catch (err) {
     console.error("!!! Webhook signature verification failed:", err);
-    return res.status(400).json({
-      ok: false,
-      error: "Webhook signature verification failed"
-    });
+    return res.status(400).json({ ok: false, error: "Webhook signature verification failed" });
   }
 
   const eventType = payload.type;
   const clerkUserId = payload.data?.id;
   if (!eventType || !clerkUserId) {
-    return res.status(400).json({
-      ok: false,
-      error: "Missing event type or clerk user id"
-    });
+    return res.status(400).json({ ok: false, error: "Missing event type or clerk user id" });
   }
 
   try {
     if (eventType === "user.created" || eventType === "user.updated") {
       const email = getPrimaryEmail(payload);
       if (!email) {
-        return res.status(400).json({
-          ok: false,
-          error: "Email is required for user sync"
-        });
+        return res.status(400).json({ ok: false, error: "Email is required for user sync" });
       }
 
-      await prisma.user.upsert({
-        where: { clerkUserId },
-        create: {
-          clerkUserId,
-          email,
-          fullName: getFullName(payload),
-          avatarUrl: payload.data?.image_url ?? null
-        },
-        update: {
-          email,
-          fullName: getFullName(payload),
-          avatarUrl: payload.data?.image_url ?? null
-        }
-      });
+      await withRetry(() =>
+        prisma.user.upsert({
+          where: { clerkUserId },
+          create: {
+            clerkUserId,
+            email,
+            fullName: getFullName(payload),
+            avatarUrl: payload.data?.image_url ?? null
+          },
+          update: {
+            email,
+            fullName: getFullName(payload),
+            avatarUrl: payload.data?.image_url ?? null
+          }
+        })
+      );
+      console.log(">>> User synced to DB:", email);
     } else if (eventType === "user.deleted") {
-      await prisma.user.deleteMany({
-        where: { clerkUserId }
-      });
+      await withRetry(() =>
+        prisma.user.deleteMany({ where: { clerkUserId } })
+      );
+      console.log(">>> User deleted from DB:", clerkUserId);
     }
 
     return res.status(200).json({ ok: true });
   } catch (error) {
-    console.error("Clerk webhook sync failed:", error);
-    return res.status(500).json({
-      ok: false,
-      error: "Failed to sync user"
-    });
+    console.error("!!! Clerk webhook sync ultimately failed:", error);
+    return res.status(500).json({ ok: false, error: "Failed to sync user" });
   }
 }
-

@@ -2,7 +2,17 @@
 
 import { useRef, useState } from "react";
 import { motion, useInView } from "framer-motion";
-import { Star, Users, BookOpen, Twitter, Linkedin, ArrowRight } from "lucide-react";
+import {
+  Star,
+  Users,
+  BookOpen,
+  Twitter,
+  Linkedin,
+  ArrowRight,
+} from "lucide-react";
+import { Montserrat } from "next/font/google";
+
+const montserrat = Montserrat({ subsets: ["latin"] });
 
 const instructors = [
   {
@@ -73,7 +83,8 @@ export default function InstructorsSection() {
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: "linear-gradient(180deg, transparent 0%, rgba(124,58,237,0.04) 50%, transparent 100%)",
+          background:
+            "linear-gradient(180deg, transparent 0%, rgba(124,58,237,0.04) 50%, transparent 100%)",
         }}
       />
 
@@ -85,19 +96,22 @@ export default function InstructorsSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 tag-purple mb-4">World-Class Mentors</div>
-          <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">
+          <div className="inline-flex items-center gap-2 tag-purple mb-4">
+            World-Class Mentors
+          </div>
+          <h2 className="font-serif text-4xl md:text-6xl font-black text-white mb-4">
             Learn from Industry Leaders
             <br />
-            <span className="gradient-text">&amp; Top Creators</span>
+            <span className={`${montserrat.className} gradient-text`}>&amp; Top Creators</span>
           </h2>
-          <p className="text-gray-400 text-lg max-w-xl mx-auto">
-            Our instructors aren&apos;t just teachers — they&apos;re practitioners actively working at the world&apos;s best companies.
+          <p className={`${montserrat.className} text-gray-400 text-lg max-w-xl mx-auto`}>
+            Our instructors aren&apos;t just teachers — they&apos;re
+            practitioners actively working at the world&apos;s best companies.
           </p>
         </motion.div>
 
         {/* Instructors grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className={`${montserrat.className} grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6`}>
           {instructors.map((inst, i) => (
             <motion.div
               key={inst.id}
@@ -110,19 +124,30 @@ export default function InstructorsSection() {
               style={{
                 transition: "all 0.3s ease",
                 transform: hovered === i ? "translateY(-8px)" : "translateY(0)",
-                boxShadow: hovered === i ? "0 20px 50px rgba(124,58,237,0.25)" : "none",
+                boxShadow:
+                  hovered === i ? "0 20px 50px rgba(124,58,237,0.25)" : "none",
               }}
             >
               {/* Avatar area */}
-              <div className={`relative h-36 bg-gradient-to-br ${inst.bgColor} flex items-center justify-center overflow-hidden`}>
+              <div
+                className={`relative h-36 bg-gradient-to-br ${inst.bgColor} flex items-center justify-center overflow-hidden`}
+              >
                 {/* Animated rings */}
                 <motion.div
-                  animate={hovered === i ? { scale: [1, 1.5, 1], opacity: [0.3, 0.1, 0.3] } : {}}
+                  animate={
+                    hovered === i
+                      ? { scale: [1, 1.5, 1], opacity: [0.3, 0.1, 0.3] }
+                      : {}
+                  }
                   transition={{ duration: 2, repeat: Infinity }}
                   className="absolute w-24 h-24 rounded-full border border-violet-500/20"
                 />
                 <motion.div
-                  animate={hovered === i ? { scale: [1, 2, 1], opacity: [0.2, 0.05, 0.2] } : {}}
+                  animate={
+                    hovered === i
+                      ? { scale: [1, 2, 1], opacity: [0.2, 0.05, 0.2] }
+                      : {}
+                  }
                   transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
                   className="absolute w-24 h-24 rounded-full border border-violet-500/20"
                 />
@@ -132,7 +157,10 @@ export default function InstructorsSection() {
                   animate={hovered === i ? { scale: 1.05 } : { scale: 1 }}
                   transition={{ duration: 0.3 }}
                   className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${inst.color} flex items-center justify-center text-white text-2xl font-black shadow-xl relative z-10`}
-                  style={{ boxShadow: hovered === i ? "0 10px 40px rgba(124,58,237,0.5)" : "" }}
+                  style={{
+                    boxShadow:
+                      hovered === i ? "0 10px 40px rgba(124,58,237,0.5)" : "",
+                  }}
                 >
                   {inst.initials}
                 </motion.div>
@@ -148,12 +176,17 @@ export default function InstructorsSection() {
                 <h3 className="text-base font-bold text-white">{inst.name}</h3>
                 <p className="text-xs text-violet-400 mb-3">{inst.role}</p>
 
-                <p className="text-xs text-gray-400 mb-3 leading-relaxed">{inst.bio}</p>
+                <p className="text-xs text-gray-400 mb-3 leading-relaxed">
+                  {inst.bio}
+                </p>
 
                 {/* Expertise tags */}
                 <div className="flex flex-wrap gap-1.5 mb-4">
                   {inst.expertise.map((tag, j) => (
-                    <span key={j} className="text-xs bg-violet-600/15 border border-violet-500/20 text-violet-300 px-2 py-0.5 rounded-md">
+                    <span
+                      key={j}
+                      className="text-xs bg-violet-600/15 border border-violet-500/20 text-violet-300 px-2 py-0.5 rounded-md"
+                    >
                       {tag}
                     </span>
                   ))}
@@ -162,11 +195,23 @@ export default function InstructorsSection() {
                 {/* Stats */}
                 <div className="flex items-center gap-4 text-xs text-gray-400 mb-4 pb-4 border-b border-white/5">
                   <span className="flex items-center gap-1">
-                    <Star size={10} fill="#facc15" className="text-yellow-400" />
-                    <span className="font-semibold text-white">{inst.rating}</span>
+                    <Star
+                      size={10}
+                      fill="#facc15"
+                      className="text-yellow-400"
+                    />
+                    <span className="font-semibold text-white">
+                      {inst.rating}
+                    </span>
                   </span>
-                  <span className="flex items-center gap-1"><Users size={10} />{inst.students}</span>
-                  <span className="flex items-center gap-1"><BookOpen size={10} />{inst.courses} courses</span>
+                  <span className="flex items-center gap-1">
+                    <Users size={10} />
+                    {inst.students}
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <BookOpen size={10} />
+                    {inst.courses} courses
+                  </span>
                 </div>
 
                 {/* Social + View */}
@@ -205,7 +250,7 @@ export default function InstructorsSection() {
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.5, delay: 0.7 }}
-          className="text-center mt-12"
+          className="text-center mt-12 backdrop-blur"
         >
           <a
             href="/instructors"

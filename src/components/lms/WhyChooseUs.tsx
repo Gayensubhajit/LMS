@@ -3,6 +3,9 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Brain, Briefcase, Users, Rocket, Shield, Clock } from "lucide-react";
+import { Montserrat } from "next/font/google";
+
+const montserrat = Montserrat({ subsets: ["latin"] });
 
 const features = [
   {
@@ -81,12 +84,12 @@ export default function WhyChooseUs() {
           <div className="inline-flex items-center gap-2 tag-purple mb-4">
             Why Choose Us
           </div>
-          <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">
+          <h2 className="font-serif text-4xl md:text-6xl font-black text-white mb-4">
             The Learning Platform
             <br />
-            <span className="gradient-text">Built for Your Success</span>
+            <span className={`${montserrat.className} gradient-text`}>Built for Your Success</span>
           </h2>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+          <p className={`${montserrat.className} text-gray-400 text-lg max-w-2xl mx-auto`}>
             We combine cutting-edge AI technology with proven learning science to
             deliver results that matter for your career.
           </p>

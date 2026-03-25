@@ -3,6 +3,9 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Search, Map, Code2, Palette, Layers, Award } from "lucide-react";
+import { Montserrat } from "next/font/google";
+
+const montserrat = Montserrat({ subsets: ["latin"] });
 
 const steps = [
   {
@@ -86,12 +89,12 @@ export default function RoadmapSection() {
           <div className="inline-flex items-center gap-2 tag-purple mb-4">
             Your Learning Journey
           </div>
-          <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">
+          <h2 className="font-serif text-4xl md:text-6xl font-black text-white mb-4">
             From Beginner to Pro:
             <br />
-            <span className="gradient-text">Your Step-by-Step Roadmap</span>
+            <span className={`${montserrat.className} gradient-text`}>Your Step-by-Step Roadmap</span>
           </h2>
-          <p className="text-gray-400 text-lg max-w-xl mx-auto">
+          <p className={`${montserrat.className} text-gray-400 text-lg max-w-xl mx-auto`}>
             A proven, structured path designed to take you from zero to job-ready in the shortest time possible.
           </p>
         </motion.div>

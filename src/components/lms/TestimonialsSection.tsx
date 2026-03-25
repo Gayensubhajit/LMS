@@ -3,6 +3,9 @@
 import { useRef, useState, useEffect } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Star, Quote, ChevronLeft, ChevronRight } from "lucide-react";
+import { Montserrat } from "next/font/google";
+
+const montserrat = Montserrat({ subsets: ["latin"] });
 
 const testimonials = [
   {
@@ -95,12 +98,12 @@ export default function TestimonialsSection() {
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 tag-purple mb-4">Community Stories</div>
-          <h2 className="text-4xl sm:text-5xl font-black text-white mb-4">
+          <h2 className="font-serif text-4xl md:text-6xl font-black text-white mb-4">
             Success Stories from Our
             <br />
-            <span className="gradient-text">Growing Community</span>
+            <span className={`${montserrat.className} gradient-text`}>Growing Community</span>
           </h2>
-          <p className="text-gray-400 text-lg max-w-xl mx-auto">
+          <p className={`${montserrat.className} text-gray-400 text-lg max-w-xl mx-auto`}>
             Join thousands of learners who have transformed their careers with EduNova.
           </p>
 
@@ -137,7 +140,7 @@ export default function TestimonialsSection() {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.4 }}
               >
-                <p className="text-xl text-gray-200 leading-relaxed mb-8 italic">
+                <p className={`text-xl text-gray-200 leading-relaxed mb-8 italic`}>
                   &ldquo;{testimonials[current].text}&rdquo;
                 </p>
 

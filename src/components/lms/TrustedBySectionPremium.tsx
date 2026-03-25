@@ -1,30 +1,46 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
+import { Montserrat } from "next/font/google";
+
+const montserrat = Montserrat({ subsets: ["latin"] });
 
 const trustedLogos = [
-  { name: "Google" },
-  { name: "Meta" },
-  { name: "Microsoft" },
-  { name: "Netflix" },
-  { name: "Spotify" },
-  { name: "Stripe" },
-  { name: "Airbnb" },
-  { name: "Notion" },
-  { name: "OpenAI" },
-  { name: "Figma" },
-  { name: "Vercel" },
-  { name: "Shopify" },
+  { href: "/marquee_images/01.svg" },
+  { href: "/marquee_images/02.svg" },
+  { href: "/marquee_images/03.svg" },
+  { href: "/marquee_images/04.svg" },
+  { href: "/marquee_images/05.svg" },
+  { href: "/marquee_images/06.svg" },
+  { href: "/marquee_images/07.svg" },
+  { href: "/marquee_images/08.svg" },
+  { href: "/marquee_images/09.svg" },
+  { href: "/marquee_images/10.svg" },
+  { href: "/marquee_images/11.svg" },
+  { href: "/marquee_images/12.svg" },
+  { href: "/marquee_images/13.svg" },
+  { href: "/marquee_images/14.svg" },
+  { href: "/marquee_images/15.svg" },
+  { href: "/marquee_images/16.svg" },
+  { href: "/marquee_images/17.svg" },
+  { href: "/marquee_images/18.svg" },
+  { href: "/marquee_images/19.svg" },
+  { href: "/marquee_images/20.svg" },
+  { href: "/marquee_images/21.svg" },
+  { href: "/marquee_images/22.svg" },
 ];
 
 export default function TrustedBySectionPremium() {
   const marqueeItems = [...trustedLogos, ...trustedLogos, ...trustedLogos];
 
   return (
-    <section className="relative py-10 overflow-hidden">
-      <div className="relative z-10 max-w-7xl mx-auto px-6">
+    <section className="relative py-10 overflow-hidden mt-6 md:mt-32 backdrop-blur">
+      <div className="relative z-10 max-w-5xl mx-auto px-6">
         {/* Label */}
-        <p className="text-xs text-gray-500 tracking-wide mb-8">
+        <p
+          className={`${montserrat.className} opacity-90 text-gray-300 tracking-wide mb-16`}
+        >
           Preferred by individuals from 20+ forward thinking companies
         </p>
 
@@ -34,20 +50,22 @@ export default function TrustedBySectionPremium() {
           <div className="pointer-events-none absolute inset-y-0 left-0 w-24 z-10 bg-gradient-to-r from-background to-transparent" />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-24 z-10 bg-gradient-to-l from-background to-transparent" />
 
-          <div className="overflow-hidden">
+          <div className="overflow-x-clip">
             <motion.div
-              className="flex items-center gap-16 whitespace-nowrap"
+              className="flex items-center gap-16 whitespace-nowrap shrink-0"
               style={{ width: "max-content" }}
-              animate={{ x: ["0%", "-33.333%"] }}
-              transition={{ repeat: Infinity, duration: 22, ease: "linear" }}
+              animate={{ x: ["0%", "-100%"] }}
+              transition={{ repeat: Infinity, duration: 300, ease: "linear" }}
             >
-              {marqueeItems.map((l, i) => (
-                <span
-                  key={`${l.name}-${i}`}
-                  className="text-white/25 hover:text-white/55 transition-colors duration-300 font-semibold text-lg tracking-widest uppercase select-none cursor-default"
-                >
-                  {l.name}
-                </span>
+              {marqueeItems.map((items, idx) => (
+                <Image
+                  key={idx}
+                  src={items.href}
+                  alt={`Marquee_Logo_Image_${idx}`}
+                  width={200}
+                  height={200}
+                  className="opacity-80 object-cover"
+                />
               ))}
             </motion.div>
           </div>

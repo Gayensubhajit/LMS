@@ -172,13 +172,26 @@ export default function CoursesSection() {
                 <div
                   className={`relative h-44 bg-linear-to-br ${gradient} flex items-center justify-center overflow-hidden`}
                 >
-                  <motion.div
-                    animate={hoveredCard === i ? { scale: 1.1 } : { scale: 1 }}
-                    transition={{ duration: 0.4 }}
-                    className="text-6xl"
-                  >
-                    {course.emoji}
-                  </motion.div>
+                  {course.img ? (
+                    <img 
+                      src={course.img} 
+                      alt={course.title}
+                      className="w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" 
+                    />
+                  ) : (
+                    <motion.div
+                      animate={hoveredCard === i ? { scale: 1.1 } : { scale: 1 }}
+                      transition={{ duration: 0.4 }}
+                      className="text-6xl"
+                    >
+                      {course.emoji}
+                    </motion.div>
+                  )}
+                  {course.img && (
+                    <div className="absolute inset-0 flex items-center justify-center text-5xl transform group-hover:scale-125 transition-transform duration-700 drop-shadow-2xl">
+                       {course.emoji}
+                    </div>
+                   )}
 
                   {/* Badge */}
                   <div

@@ -26,6 +26,7 @@ import { coursesData } from "@/lib/courses-data";
 import { useRouter, usePathname } from "next/navigation";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { backendRequest } from "@/lib/backend-client";
+import { syncCourseView } from "@/lib/history-api";
 
 const navLinks = [
   { label: "Courses", href: "/courses" },
@@ -107,6 +108,24 @@ export default function Navbar() {
   const mobileSearchRef = useRef<HTMLInputElement>(null);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const RECENT_SEARCHES_KEY = "lms_recent_searches";
+
+  // Load saved searches from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(RECENT_SEARCHES_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) setRecentSearches(parsed);
+      }
+    } catch {}
+  }, []);
+
+  // Persist to localStorage whenever recentSearches changes
+  useEffect(() => {
+    if (recentSearches.length > 0) {
+      localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(recentSearches));
+    }
+  }, [recentSearches]);
 
   // Scroll effect
   useEffect(() => {
@@ -192,14 +211,30 @@ export default function Navbar() {
       .catch(() => setHasEnrollments(false));
   }, [isLoaded, user?.id]);
 
-  const addRecentSearch = (term: string) => {
+  const addRecentSearch = (term: string, slug?: string) => {
     const t = term.trim();
     if (!t) return;
     const tLower = t.toLowerCase();
+
+    // Update React state for in-session display
     setRecentSearches((prev) => {
       const filtered = prev.filter((s) => s.toLowerCase() !== tLower);
       return [t, ...filtered].slice(0, 7);
     });
+
+    // Write directly to localStorage for cross-page / cross-refresh persistence
+    try {
+      const RECENT_KEY = "lms_recent_searches";
+      const existing: string[] = JSON.parse(localStorage.getItem(RECENT_KEY) || "[]");
+      const filtered = existing.filter((s) => s.toLowerCase() !== tLower);
+      const updated = [t, ...filtered].slice(0, 7);
+      localStorage.setItem(RECENT_KEY, JSON.stringify(updated));
+    } catch {}
+
+    // NEW: Sync to backend if logged in and it's a real course
+    if (user?.id && slug) {
+      syncCourseView(user.id, slug);
+    }
   };
 
   const runMobileSearch = (term: string) => {
@@ -238,6 +273,7 @@ export default function Navbar() {
   const handleResultClick = useCallback(
     (courseTitle: string) => {
       const matched = coursesData.find((c) => c.title === courseTitle);
+      addRecentSearch(courseTitle, matched?.slug);
       setQuery("");
       setSearchFocused(false);
       setHighlightedIndex(-1);
@@ -261,6 +297,7 @@ export default function Navbar() {
       }
     } else {
       setSearchFocused(false);
+      addRecentSearch(query.trim());
       router.push(`/courses?q=${encodeURIComponent(query.trim())}`);
       setQuery("");
     }
@@ -324,8 +361,8 @@ export default function Navbar() {
         </motion.a>
 
         {/* Desktop Nav links */}
-        {/* Show nav links starting at md+ so they don't disappear between md and lg. */}
-        <div className="hidden md:flex items-center gap-8 lg:gap-10 shrink-0">
+        {/* Show nav links starting at lg+ so they don't disappear between md and lg. */}
+        <div className="hidden lg:flex items-center gap-8 lg:gap-10 shrink-0">
           {navLinks.slice(0, 1).map((link) => {
             const isActive = pathname === link.href;
             return (
@@ -387,7 +424,7 @@ export default function Navbar() {
         {/* ── Search Bar ── */}
         <div
           ref={wrapperRef}
-          className="flex-1 min-w-[320px] relative hidden md:block max-w-[460px]"
+          className="flex-1 min-w-[320px] relative hidden lg:block max-w-[460px]"
         >
           <form onSubmit={handleSubmit}>
             <div
@@ -656,7 +693,7 @@ export default function Navbar() {
         </div>
 
         {/* ── Right Side: Auth ── */}
-        <div className="hidden md:flex items-center gap-3 shrink-0">
+        <div className="hidden lg:flex items-center gap-3 shrink-0">
           {/* Not signed in */}
           {isLoaded && !user && (
             <>
@@ -793,7 +830,7 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Actions (Search first, then Account menu) */}
-        <div className="md:hidden ml-auto flex items-center gap-3">
+        <div className="lg:hidden ml-auto flex items-center gap-3">
           <button
             className="text-gray-300 hover:text-white cursor-pointer"
             onClick={() => {
@@ -810,7 +847,7 @@ export default function Navbar() {
             onClick={() => {
               setMobilePanel((p) => (p === "main" || p === "account" ? "none" : "main"));
             }}
-            aria-label="Account menu"
+            aria-label="Toggle navigation menu"
           >
             {mobilePanel !== "none" ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -825,7 +862,7 @@ export default function Navbar() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="md:hidden fixed left-0 right-0 top-[72px] bottom-0 z-50 overflow-y-auto"
+            className="lg:hidden fixed left-0 right-0 top-[72px] bottom-0 z-50 overflow-y-auto"
             style={{
               background: "rgba(10,10,22,1)",
               borderTop: "1px solid rgba(124,58,237,0.1)",

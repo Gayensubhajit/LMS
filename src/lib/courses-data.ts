@@ -14,6 +14,9 @@ export type Course = {
   longDescription: string;
   skills: string[];
   isFree?: boolean;
+  img?: string;
+  color?: string;
+  iconPath?: string;
   price: {
     oneMonth: number;
     threeMonth: number;
@@ -35,6 +38,9 @@ export const coursesData: Course[] = [
     level: "Beginner",
     emoji: "🌐",
     isFree: true,
+    img: "https://images.unsplash.com/photo-1547658719-da2b51169166?q=80&w=800&auto=format&fit=crop",
+    color: "from-blue-400 to-indigo-600",
+    iconPath: "M12 2L2 7l10 5 10-5-10-5z",
     previewVideoUrl: "https://www.youtube.com/embed/qz0aGYrrlhU",
     shortDescription: "Learn HTML, CSS & JavaScript from scratch. Completely free.",
     longDescription:
@@ -54,6 +60,9 @@ export const coursesData: Course[] = [
     level: "Beginner",
     emoji: "⚙️",
     isFree: true,
+    img: "https://images.unsplash.com/photo-1627390642289-4b6848039600?q=80&w=800&auto=format&fit=crop",
+    color: "from-slate-600 to-slate-900",
+    iconPath: "M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",
     previewVideoUrl: "https://www.youtube.com/embed/Oe421EPjeBE",
     shortDescription: "Build REST APIs with Node.js and Express. No cost, no catch.",
     longDescription:
@@ -73,6 +82,9 @@ export const coursesData: Course[] = [
     level: "All Levels",
     emoji: "🤖",
     isFree: true,
+    img: "https://images.unsplash.com/photo-1676299081847-824916de030a?q=80&w=800&auto=format&fit=crop",
+    color: "from-violet-500 to-indigo-800",
+    iconPath: "M12 1v22M17 5H7M17 19H7M12 5l-5 5 5 5",
     previewVideoUrl: "https://www.youtube.com/embed/aircAruvnKk",
     shortDescription: "Understand LLMs, prompt engineering & AI tools. Completely free.",
     longDescription:
@@ -92,6 +104,9 @@ export const coursesData: Course[] = [
     rating: 4.9,
     level: "Beginner",
     emoji: "🎨",
+    img: "https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?q=80&w=800&auto=format&fit=crop",
+    color: "from-pink-400 to-rose-600",
+    iconPath: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z",
     previewVideoUrl: "https://www.youtube.com/embed/c9Wg6Cb_YlU",
     shortDescription: "Master UI/UX from fundamentals to portfolio-ready projects.",
     longDescription:
@@ -110,6 +125,9 @@ export const coursesData: Course[] = [
     rating: 4.8,
     level: "Intermediate",
     emoji: "⚛️",
+    img: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=800&auto=format&fit=crop",
+    color: "from-blue-600 to-indigo-900",
+    iconPath: "M12 2L2 7l10 5 10-5-10-5z",
     previewVideoUrl: "https://www.youtube.com/embed/37vxWr0WgQk",
     shortDescription: "Build production-grade React and Next.js apps with TypeScript.",
     longDescription:
@@ -128,6 +146,9 @@ export const coursesData: Course[] = [
     rating: 4.9,
     level: "All Levels",
     emoji: "🤖",
+    img: "https://images.unsplash.com/photo-1620712943543-bcc4628c9757?q=80&w=800&auto=format&fit=crop",
+    color: "from-purple-500 to-indigo-700",
+    iconPath: "M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",
     previewVideoUrl: "https://www.youtube.com/embed/aircAruvnKk",
     shortDescription: "Use modern AI workflows to improve design outcomes.",
     longDescription:
@@ -146,6 +167,9 @@ export const coursesData: Course[] = [
     rating: 4.7,
     level: "Beginner",
     emoji: "📱",
+    img: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=800&auto=format&fit=crop",
+    color: "from-orange-400 to-red-600",
+    iconPath: "M12 1v22M17 5H7M17 19H7M12 5l-5 5 5 5",
     previewVideoUrl: "https://www.youtube.com/embed/FTFaQWZBqQ8",
     shortDescription: "Design polished mobile interfaces and interactions in Figma.",
     longDescription:
@@ -164,6 +188,9 @@ export const coursesData: Course[] = [
     rating: 4.8,
     level: "Advanced",
     emoji: "🔥",
+    img: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop",
+    color: "from-emerald-400 to-cyan-600",
+    iconPath: "M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",
     previewVideoUrl: "https://www.youtube.com/embed/2OHbjep_WjQ",
     shortDescription: "Build and deploy full-stack applications from scratch.",
     longDescription:
@@ -182,6 +209,9 @@ export const coursesData: Course[] = [
     rating: 4.6,
     level: "Beginner",
     emoji: "📊",
+    img: "https://images.unsplash.com/photo-1531403001835-4247793d5cd6?q=80&w=800&auto=format&fit=crop",
+    color: "from-blue-400 to-indigo-600",
+    iconPath: "M12 2L2 7l10 5 10-5-10-5z",
     previewVideoUrl: "https://www.youtube.com/embed/4vA-_8x3r8U",
     shortDescription: "Learn product strategy, roadmapping, and execution basics.",
     longDescription:
@@ -200,6 +230,9 @@ export const coursesData: Course[] = [
     rating: 4.7,
     level: "Intermediate",
     emoji: "✨",
+    img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop",
+    color: "from-pink-500 to-indigo-600",
+    iconPath: "M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",
     previewVideoUrl: "https://www.youtube.com/embed/1vX4QX0nYlM",
     shortDescription: "Create immersive UI motion with Framer and modern principles.",
     longDescription:
@@ -218,6 +251,9 @@ export const coursesData: Course[] = [
     rating: 4.8,
     level: "Beginner",
     emoji: "🐍",
+    img: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=800&auto=format&fit=crop",
+    color: "from-blue-500 to-teal-400",
+    iconPath: "M12 1v22M17 5H7M17 19H7M12 5l-5 5 5 5",
     previewVideoUrl: "https://www.youtube.com/embed/r-uOLxNrNk8",
     shortDescription: "Analyze, visualize, and model real datasets with Python.",
     longDescription:
@@ -236,6 +272,9 @@ export const coursesData: Course[] = [
     rating: 4.6,
     level: "All Levels",
     emoji: "📈",
+    img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
+    color: "from-indigo-400 to-blue-600",
+    iconPath: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z",
     previewVideoUrl: "https://www.youtube.com/embed/zMIt7w6QW7s",
     shortDescription: "Build repeatable growth loops across channels and funnels.",
     longDescription:
@@ -254,6 +293,9 @@ export const coursesData: Course[] = [
     rating: 4.7,
     level: "Advanced",
     emoji: "🧩",
+    img: "https://images.unsplash.com/photo-1508921331319-4e09324f144e?q=80&w=800&auto=format&fit=crop",
+    color: "from-slate-700 to-indigo-900",
+    iconPath: "M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z",
     previewVideoUrl: "https://www.youtube.com/embed/bUHFg8CZFws",
     shortDescription: "Architect scalable, maintainable frontend systems.",
     longDescription:
@@ -272,6 +314,9 @@ export const coursesData: Course[] = [
     rating: 4.8,
     level: "Intermediate",
     emoji: "🧠",
+    img: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop",
+    color: "from-emerald-400 to-teal-700",
+    iconPath: "M12 1v22M17 5H7M17 19H7M12 5l-5 5 5 5",
     previewVideoUrl: "https://www.youtube.com/embed/3Qz7x2M8y0E",
     shortDescription: "Run user interviews and convert insights into product actions.",
     longDescription:
@@ -290,6 +335,9 @@ export const coursesData: Course[] = [
     rating: 4.7,
     level: "All Levels",
     emoji: "⚙️",
+    img: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?q=80&w=800&auto=format&fit=crop",
+    color: "from-violet-400 to-purple-800",
+    iconPath: "M12 2L2 7l10 5 10-5-10-5z",
     previewVideoUrl: "https://www.youtube.com/embed/4M9YQ8jX6gA",
     shortDescription: "Automate workflows with no-code tools and AI integrations.",
     longDescription:

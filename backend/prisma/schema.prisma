@@ -58,6 +58,17 @@ model User {
   enrollments     Enrollment[]
   progressRecords Progress[]
   reviews         Review[]
+  recentViews     RecentView[]
+  certificates    Certificate[]
+
+  isNameVerified  Boolean      @default(false)
+  verifiedName    String?
+
+  // Settings
+  language             String       @default("English")
+  timezone             String?
+  twoFactorEnabled     Boolean      @default(false)
+  newsletterSubscribed Boolean      @default(true)
 }
 
 model Course {
@@ -81,6 +92,8 @@ model Course {
   sections         CourseSection[]
   enrollments      Enrollment[]
   reviews          Review[]
+  recentViews      RecentView[]
+  certificates     Certificate[]
 }
 
 model CourseSection {
@@ -183,5 +196,32 @@ model Review {
 
   @@unique([userId, courseId])
   @@index([courseId, rating])
+}
+
+model RecentView {
+  id           String   @id @default(cuid())
+  userId       String
+  courseId     String
+  lastViewedAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([userId, lastViewedAt])
+}
+
+model Certificate {
+  id            String   @id @default(cuid())
+  userId        String
+  courseId      String
+  certificateId String   @unique @default(uuid())
+  issuedAt      DateTime @default(now())
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course        Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@index([userId, issuedAt])
 }
 

@@ -21,7 +21,8 @@ export async function backendRequest<T>(path: string, options: RequestOptions = 
   const response = await fetch(`${BACKEND_URL}${path}`, {
     method,
     headers,
-    body: body ? JSON.stringify(body) : undefined
+    body: body ? JSON.stringify(body) : undefined,
+    keepalive: true, // Ensure request finishes if page navigates
   });
 
   const data = await response.json().catch(() => ({}));

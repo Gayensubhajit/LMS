@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from "@/components/lms/Navbar";
 import Footer from "@/components/lms/Footer";
+import { useUser } from "@clerk/nextjs";
+import { getRecentViews } from "@/lib/history-api";
+import { coursesData } from "@/lib/courses-data";
 import { 
   CreditCard, 
   History, 
@@ -19,12 +22,70 @@ import {
   Monitor,
   Cpu,
   BrainCircuit,
-  Globe
+  Globe,
+  GraduationCap
 } from 'lucide-react';
 
 export default function PurchasesPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState('subscriptions');
+
+  // Start empty (SSR-safe). Populated client-side after hydration.
+  const [historyItems, setHistoryItems] = useState<any[]>([]);
+  const [hasSearchHistory, setHasSearchHistory] = useState(false);
+
+  const { user, isLoaded } = useUser();
+
+  React.useEffect(() => {
+    if (!isLoaded) return;
+
+    async function loadHistory() {
+      // 1. If signed in, try fetching from backend
+      if (user?.id) {
+        try {
+          const backendItems = await getRecentViews(user.id);
+          if (backendItems.length > 0) {
+            setHistoryItems(backendItems.map(course => ({ type: 'course', course, term: course.title })));
+            setHasSearchHistory(true);
+            return; // Preference for account sync
+          }
+        } catch (e) {
+          console.error('[PurchasesPage] Backend history fetch failed:', e);
+        }
+      }
+
+      // 2. Fallback to localStorage (either guest or backend was empty)
+      try {
+        const raw = localStorage.getItem('lms_recent_searches');
+        if (!raw) return;
+        const terms: string[] = JSON.parse(raw);
+        if (!Array.isArray(terms) || terms.length === 0) return;
+
+        const seen = new Set<string>();
+        const deduped: any[] = [];
+
+        terms.slice(0, 6).forEach(term => {
+          const termWords = term.toLowerCase().split(/\s+/);
+          const match = coursesData.find(c => {
+            const titleLower = c.title.toLowerCase();
+            return termWords.some(word => word.length > 2 && titleLower.includes(word));
+          });
+          const key = match ? match.slug : `search:${term}`;
+          if (!seen.has(key)) {
+            seen.add(key);
+            deduped.push({ type: match ? 'course' : 'search', course: match || null, term });
+          }
+        });
+
+        setHistoryItems(deduped.slice(0, 4));
+        setHasSearchHistory(terms.length > 0);
+      } catch (e) {
+        console.error('[PurchasesPage] Local history error:', e);
+      }
+    }
+
+    loadHistory();
+  }, [isLoaded, user?.id]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -43,25 +104,41 @@ export default function PurchasesPage() {
     }
   } as const;
 
-  const recentlyViewed = [
-    { title: "English for Career Development", provider: "University of Pennsylvania", type: "Course", color: "from-amber-400 to-orange-500", iconPath: "M12 2L2 7l10 5 10-5-10-5z" },
-    { title: "Applied Data Science Capstone", provider: "IBM", type: "Course", color: "from-sky-400 to-blue-500", iconPath: "M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" },
-    { title: "Meta Full Stack Developer", provider: "Meta", type: "Specialization", color: "from-blue-600 to-indigo-600", iconPath: "M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" },
-    { title: "Google AI Essentials", provider: "Google", type: "Professional Certificate", color: "from-red-500 to-yellow-500", iconPath: "M12 1v22M17 5H7M17 19H7M12 5l-5 5 5 5" }
-  ];
-
-  const freeCourses = [
-    { title: "Computer Science: Programming", provider: "Princeton University", type: "Course", img: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=400&h=250&auto=format&fit=crop" },
-    { title: "Fundamentals of AI", provider: "Stanford Online", type: "Course", img: "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=400&h=250&auto=format&fit=crop" },
-    { title: "Computer Architecture", provider: "Princeton University", type: "Course", img: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=400&h=250&auto=format&fit=crop" },
-    { title: "Build Portfolio Website", provider: "EduNova", type: "Guided Project", img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=400&h=250&auto=format&fit=crop" }
-  ];
+  const freeCourses = coursesData.filter(c => c.isFree).slice(0, 4);
 
   const degrees = [
-    { title: "Post Graduate Diploma in Applied Statistics", provider: "Indian Statistical Institute", level: "Master's Degree", color: "from-emerald-500 to-teal-600" },
-    { title: "Bachelor of Science in Computer Science", provider: "Birla Institute of Technology", level: "Bachelor's Degree", color: "from-indigo-500 to-violet-600" },
-    { title: "Bachelor of Science in Data Science & AI", provider: "IIT Madras", level: "Bachelor's Degree", color: "from-violet-500 to-pink-600" },
-    { title: "Bachelor of Science in Psychology", provider: "O.P. Jindal University", level: "Bachelor's Degree", color: "from-sky-500 to-blue-600" }
+    { 
+      title: "Bachelor of Science in Computer Science", 
+      provider: "BITS Pilani", 
+      level: "Bachelor's Degree", 
+      color: "from-indigo-500 to-violet-600", 
+      img: "https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=800&auto=format&fit=crop",
+      href: "https://www.coursera.org/degrees/bachelor-of-science-computer-science-bits" 
+    },
+    { 
+      title: "Post Graduate Diploma in Applied Statistics", 
+      provider: "Indian Statistical Institute", 
+      level: "Master's Degree", 
+      color: "from-emerald-500 to-teal-600", 
+      img: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=800&auto=format&fit=crop",
+      href: "https://www.coursera.org/degrees/postgraduate-diploma-applied-statistics-isi" 
+    },
+    { 
+      title: "Bachelor of Science in Data Science & AI", 
+      provider: "IIT Madras", 
+      level: "Bachelor's Degree", 
+      color: "from-violet-500 to-pink-600", 
+      img: "https://images.unsplash.com/photo-1562774053-701939374585?q=80&w=800&auto=format&fit=crop",
+      href: "https://www.onlinedegrees.iitm.ac.in/" 
+    },
+    { 
+      title: "Bachelor of Science in Psychology", 
+      provider: "O.P. Jindal University", 
+      level: "Bachelor's Degree", 
+      color: "from-sky-500 to-blue-600", 
+      img: "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=800&auto=format&fit=crop",
+      href: "https://www.coursera.org/degrees/bachelor-of-science-psychology-jindal" 
+    }
   ];
 
   return (
@@ -84,7 +161,7 @@ export default function PurchasesPage() {
             <span className="text-violet-400">Acquisition Logs</span>
           </div>
           
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white tracking-tighter mb-8 leading-none uppercase">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tighter mb-8 leading-none uppercase">
              Purchases
           </h1>
 
@@ -150,42 +227,91 @@ export default function PurchasesPage() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="space-y-24"
+          className="space-y-32"
         >
           {/* Recently Viewed */}
-          <div className="space-y-8">
-            <div className="flex justify-between items-center px-4">
-               <h3 className="text-sm sm:text-base font-black text-white uppercase tracking-[0.3em]">Recently Viewed Voyages</h3>
-               <button 
-                 onClick={() => router.push('/roadmap')}
-                 className="text-[10px] font-black text-violet-400 uppercase tracking-widest flex items-center gap-1 hover:text-white transition-colors"
-               >
-                 View logs <ChevronRight size={12} />
-               </button>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-               {recentlyViewed.map((item, i) => (
-                 <motion.div 
-                   key={i} 
-                   variants={itemVariants}
-                   whileHover={{ y: -5 }}
-                   className="bg-slate-900/40 border border-white/5 rounded-[2rem] overflow-hidden group/card shadow-xl backdrop-blur-sm"
+          {hasSearchHistory && (
+            <div className="space-y-10">
+              <div className="flex justify-between items-end px-4">
+                 <div className="space-y-2">
+                    <h3 className="text-xl sm:text-2xl font-black text-white tracking-tighter uppercase">Recently Viewed Voyages</h3>
+                    <div className="h-1 w-20 bg-violet-500/50 rounded-full" />
+                 </div>
+                 <button 
+                   onClick={() => router.push('/courses')}
+                   className="hidden sm:flex text-[10px] font-black text-violet-400 uppercase tracking-widest items-center gap-1 hover:text-white transition-colors"
                  >
-                    <div className={`h-32 bg-gradient-to-br ${item.color} p-8 flex items-center justify-center relative overflow-hidden`}>
-                       <div className="absolute inset-0 bg-black/10 opacity-0 group-hover/card:opacity-100 transition-opacity" />
-                       <svg viewBox="0 0 24 24" className="w-12 h-12 text-white/90 drop-shadow-2xl transform group-hover/card:scale-110 transition-transform">
-                          <path fill="currentColor" d={item.iconPath} />
-                       </svg>
-                    </div>
-                    <div className="p-6">
-                       <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest block mb-2">{item.provider}</span>
-                       <h4 className="text-xs sm:text-sm font-black text-white tracking-tight mb-2 group-hover/card:text-violet-400 transition-colors">{item.title}</h4>
-                       <span className="text-[9px] font-bold text-gray-500 uppercase">{item.type}</span>
-                    </div>
-                 </motion.div>
-               ))}
+                   Browse all <ChevronRight size={12} />
+                 </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                 {historyItems.map((item: any, i: number) => {
+                   const course = item.course;
+                   return (
+                   <motion.div 
+                     key={i} 
+                     variants={itemVariants}
+                     whileHover={{ y: -5 }}
+                     onClick={() => course ? router.push(`/courses/${course.slug}`) : router.push(`/courses?q=${encodeURIComponent(item.term)}`)}
+                     className="bg-slate-900/40 border border-white/5 rounded-[2.5rem] overflow-hidden group/card shadow-xl backdrop-blur-sm cursor-pointer h-full flex flex-col"
+                   >
+                       <div className="h-44 relative overflow-hidden bg-slate-800">
+                          {course?.img ? (
+                            <img 
+                              src={course.img} 
+                              alt={course.title}
+                              className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-700 opacity-80" 
+                            />
+                          ) : (
+                            <img 
+                              src={`https://images.unsplash.com/photo-1501504905252-473c47e087f8?q=80&w=800&auto=format&fit=crop`}
+                              alt={course?.title || item.term}
+                              className="w-full h-full object-cover opacity-30"
+                            />
+                          )}
+                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent opacity-70" />
+                         <div className="absolute top-4 left-4">
+                            <span className="px-3 py-1 rounded-full bg-violet-500/20 backdrop-blur-md border border-violet-500/30 text-[8px] font-black text-white uppercase tracking-widest">
+                              {course ? course.category : 'Search'}
+                            </span>
+                         </div>
+                          {!course?.img && (
+                            <div className="absolute inset-0 flex items-center justify-center text-5xl drop-shadow-lg">
+                              {course?.emoji || '🔍'}
+                            </div>
+                          )}
+                      </div>
+                      <div className="p-8 flex-1 flex flex-col justify-between">
+                         <div>
+                            <div className="flex items-center gap-3 mb-4">
+                               <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+                                  <img 
+                                    src={`https://api.dicebear.com/7.x/initials/svg?seed=${(course?.instructor || item.term).split(' ').map((n: string) => n[0]).join('')}&backgroundColor=7c3aed`} 
+                                    alt={course?.instructor || item.term}
+                                    className="w-full h-full object-cover"
+                                  />
+                               </div>
+                               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest truncate">
+                                 {course?.instructor || 'EduNova'}
+                               </span>
+                            </div>
+                            <h4 className="text-sm font-black text-white tracking-tight mb-2 group-hover/card:text-violet-400 transition-colors leading-snug line-clamp-2">
+                              {course?.title || `"${item.term}"`}
+                            </h4>
+                         </div>
+                         <div>
+                            <div className="h-px w-full bg-white/5 mb-4" />
+                            <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
+                              {course ? course.level : 'Browse Results'}
+                            </span>
+                         </div>
+                      </div>
+                   </motion.div>
+                   );
+                 })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* EduNova Infinite Banner */}
           <motion.div 
@@ -225,75 +351,138 @@ export default function PurchasesPage() {
              </div>
           </motion.div>
 
-          {/* Free Interstellar Labs */}
-          <div className="space-y-8">
-            <div className="flex justify-between items-center px-4">
-               <h3 className="text-sm sm:text-base font-black text-white uppercase tracking-[0.3em]">Free Interstellar Labs</h3>
+          {/* Free Interstellar Labs (Inspiration: Get Started with These Free Courses) */}
+          <div className="space-y-10 group/labs">
+            <div className="flex justify-between items-end px-4">
+               <div className="space-y-2">
+                  <h3 className="text-xl sm:text-2xl font-black text-white tracking-tighter uppercase">Get Started with These Free Transmissions</h3>
+                  <div className="h-1 w-20 bg-sky-500/50 rounded-full" />
+               </div>
                <button 
                  onClick={() => router.push('/courses?category=Labs')}
-                 className="text-[10px] font-black text-sky-400 uppercase tracking-widest flex items-center gap-1 hover:text-white transition-colors"
+                 className="hidden sm:flex text-[10px] font-black text-sky-400 uppercase tracking-widest items-center gap-1 hover:text-white transition-colors"
                >
                  Explore all labs <ChevronRight size={12} />
                </button>
             </div>
+            
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-               {freeCourses.map((item, i) => (
+               {freeCourses.map((course, i) => (
                  <motion.div 
                    key={i} 
                    variants={itemVariants}
                    whileHover={{ y: -5 }}
-                   className="bg-slate-900/40 border border-white/5 rounded-[2.5rem] overflow-hidden group/card shadow-xl backdrop-blur-sm"
+                   onClick={() => router.push(`/courses/${course.slug}`)}
+                   className="bg-slate-900/40 border border-white/5 rounded-[2.5rem] overflow-hidden group/card shadow-xl backdrop-blur-sm cursor-pointer h-full flex flex-col"
                  >
-                    <div className="h-40 relative overflow-hidden">
-                       <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-700" />
-                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950 to-transparent opacity-60" />
-                       <div className="absolute bottom-4 left-6">
-                          <span className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-[8px] font-black text-white uppercase tracking-widest">Free lab</span>
+                     <div className="h-44 relative overflow-hidden bg-slate-800">
+                        {course.img ? (
+                          <img 
+                            src={course.img} 
+                            alt={course.title}
+                            className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-700 opacity-80" 
+                          />
+                        ) : (
+                          <img
+                            src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop"
+                            alt={course.title}
+                            className="w-full h-full object-cover opacity-30"
+                          />
+                        )}
+                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent opacity-60" />
+                       <div className="absolute top-4 left-4">
+                          <span className="px-3 py-1 rounded-full bg-sky-500/20 backdrop-blur-md border border-sky-500/30 text-[8px] font-black text-white uppercase tracking-widest">Free lab</span>
                        </div>
                     </div>
-                    <div className="p-8">
-                       <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest block mb-2">{item.provider}</span>
-                       <h4 className="text-xs sm:text-sm font-black text-white tracking-tight mb-3 group-hover/card:text-sky-400 transition-colors leading-relaxed">{item.title}</h4>
-                       <span className="text-[9px] font-bold text-gray-500 uppercase">{item.type}</span>
+                    <div className="p-8 flex-1 flex flex-col justify-between">
+                       <div>
+                          <div className="flex items-center gap-3 mb-4">
+                             <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center overflow-hidden">
+                                <img 
+                                  src={`https://api.dicebear.com/7.x/initials/svg?seed=${course.instructor.split(' ').map(n => n[0]).join('')}&backgroundColor=3b82f6`} 
+                                  alt={course.instructor}
+                                  className="w-full h-full object-cover"
+                                />
+                             </div>
+                             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{course.instructor}</span>
+                          </div>
+                          <h4 className="text-sm font-black text-white tracking-tight mb-4 group-hover/card:text-sky-400 transition-colors leading-snug line-clamp-2">{course.title}</h4>
+                       </div>
+                       <div>
+                          <div className="h-px w-full bg-white/5 mb-4" />
+                          <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Guided Project</span>
+                       </div>
                     </div>
                  </motion.div>
                ))}
             </div>
           </div>
 
-          {/* Earn Your Mastery (Degrees) */}
-          <div className="space-y-8 pb-12">
-            <div className="flex justify-between items-center px-4">
-               <h3 className="text-sm sm:text-base font-black text-white uppercase tracking-[0.3em]">Earn Your Residency Mastery</h3>
+          {/* Earn Your Residency Mastery (Inspiration: Earn Your Degree) */}
+          <div className="space-y-10 group/degrees pb-20">
+            <div className="flex justify-between items-end px-4">
+               <div className="space-y-2">
+                  <h3 className="text-xl sm:text-2xl font-black text-white tracking-tighter uppercase">Earn Your Interstellar Degree</h3>
+                  <div className="h-1 w-20 bg-pink-500/50 rounded-full" />
+               </div>
                <button 
-                 onClick={() => router.push('/courses?category=Degrees')}
-                 className="text-[10px] font-black text-pink-400 uppercase tracking-widest flex items-center gap-1 hover:text-white transition-colors"
+                 onClick={() => window.open('https://www.coursera.org/degrees', '_blank')}
+                 className="hidden sm:flex text-[10px] font-black text-pink-400 uppercase tracking-widest items-center gap-1 hover:text-white transition-colors"
                >
                  Browse degrees <ChevronRight size={12} />
                </button>
             </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                {degrees.map((item, i) => (
                  <motion.div 
                    key={i} 
                    variants={itemVariants}
                    whileHover={{ y: -5 }}
-                   className="bg-slate-900/40 border border-white/5 rounded-[2.5rem] overflow-hidden group/card shadow-xl backdrop-blur-sm p-8 flex flex-col justify-between h-[280px]"
+                   onClick={() => window.open(item.href, '_blank')}
+                   className="bg-slate-900/40 border border-white/5 rounded-[2.5rem] overflow-hidden group/card shadow-xl backdrop-blur-sm flex flex-col h-[420px] cursor-pointer"
                  >
-                    <div className="space-y-4">
-                       <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${item.color} p-[1px]`}>
-                          <div className="w-full h-full rounded-2xl bg-slate-950 flex items-center justify-center">
-                             <Award size={24} className="text-white" />
-                          </div>
-                       </div>
-                       <div>
-                          <span className="text-[8px] font-black text-gray-500 uppercase tracking-widest block mb-1">{item.provider}</span>
-                          <h4 className="text-xs sm:text-sm font-black text-white tracking-tight group-hover/card:text-transparent group-hover/card:bg-clip-text group-hover/card:bg-gradient-to-r group-hover/card:from-white group-hover/card:to-gray-400 leading-tight transition-all">{item.title}</h4>
+                     <div className="h-44 relative overflow-hidden bg-slate-800">
+                       <img 
+                         src={item.img || 'https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?q=80&w=800&auto=format&fit=crop'} 
+                         alt={item.title}
+                         className="w-full h-full object-cover group-hover/card:scale-110 transition-transform duration-1000 opacity-80" 
+                         onError={(e) => { (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1541339907198-e08759dfc3ef?q=80&w=800&auto=format&fit=crop'; }}
+                       />
+                       <div className={`absolute inset-0 bg-gradient-to-br ${item.color} mix-blend-overlay opacity-40`} />
+                       <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />
+                       
+                       {/* Badge from Inspiration */}
+                       <div className="absolute top-4 right-4 animate-bounce-slow">
+                          <span className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[7px] font-black text-white uppercase tracking-widest">Hands-On Projects</span>
                        </div>
                     </div>
-                    <div>
-                       <div className="h-px w-full bg-white/5 mb-4" />
-                       <span className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">{item.level}</span>
+                    
+                    <div className="p-8 flex-1 flex flex-col justify-between">
+                       <div className="space-y-4">
+                          <div className="flex items-center gap-3">
+                             <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center p-1.5 overflow-hidden shadow-inner">
+                                <img 
+                                  src={`https://api.dicebear.com/7.x/shapes/svg?seed=${item.provider.replace(/\s/g, '')}&backgroundColor=transparent&shape1Color=ec4899&shape2Color=ffffff`} 
+                                  alt={item.provider}
+                                  className="w-full h-full object-contain"
+                                />
+                             </div>
+                             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{item.provider}</span>
+                          </div>
+                          <h4 className="text-sm sm:text-base font-black text-white tracking-tight group-hover/card:text-pink-400 leading-tight transition-all line-clamp-3">{item.title}</h4>
+                       </div>
+                       
+                       <div className="space-y-4">
+                          <div className="h-px w-full bg-white/5" />
+                          <div className="flex items-center justify-between">
+                             <div className="flex items-center gap-2 text-sky-400 group-hover/card:text-white transition-colors">
+                                <GraduationCap size={14} />
+                                <span className="text-[9px] font-black uppercase tracking-widest">Earn a degree</span>
+                             </div>
+                             <span className="text-[8px] font-black text-gray-500 uppercase">{item.level.split(' ')[0]}</span>
+                          </div>
+                       </div>
                     </div>
                  </motion.div>
                ))}
@@ -312,9 +501,12 @@ export default function PurchasesPage() {
           -ms-overflow-style: none;
           scrollbar-width: none;
         }
-        @keyframes gradient-x {
-           0%, 100% { background-position: 0% 50%; }
-           50% { background-position: 100% 50%; }
+        @keyframes bounce-slow {
+           0%, 100% { transform: translateY(0); }
+           50% { transform: translateY(-3px); }
+        }
+        .animate-bounce-slow {
+           animation: bounce-slow 3s ease-in-out infinite;
         }
         .animate-gradient-x {
            background-size: 200% 200%;

@@ -291,21 +291,23 @@ export default function Navbar() {
   const showMyLearning = isLoaded && user && hasEnrollments;
 
   return (
-    <motion.nav
-      initial={{ y: -80, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
-        scrolled
-          ? "bg-background/90 backdrop-blur-xl border-b border-purple-300/50 shadow-[0_4px_30px_rgba(124,58,237,0.15)]"
-          : "bg-transparent"
-      }`}
-    >
-<<<<<<< HEAD
-      <div className="max-w-7xl mx-auto px-6 flex items-center gap-3 h-18 py-4">
-=======
-      <div className="max-w-7xl w-full mx-auto px-6 flex items-center gap-4 h-18 py-4">
->>>>>>> a8b60c7f2ca8f1fe0745ab58e92f3238ef5dc25b
+    <nav className="fixed top-0 left-0 right-0 z-50">
+      {/* Background with blur separated to prevent containing block bug on fixed children */}
+      <div 
+        className={`absolute inset-0 pointer-events-none transition-all duration-500 ${
+          scrolled
+            ? "bg-background/90 backdrop-blur-xl border-b border-purple-300/50 shadow-[0_4px_30px_rgba(124,58,237,0.15)]"
+            : "bg-transparent"
+        }`}
+      />
+      {/* Header Content Animation wrapper */}
+      <motion.div
+        className="relative z-10"
+        initial={{ y: -80, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <div className="max-w-7xl w-full mx-auto px-6 flex items-center gap-4 h-18 py-4">
         {/* Logo */}
         <motion.a
           href="/"
@@ -335,13 +337,7 @@ export default function Navbar() {
               >
                 {link.label}
                 <span
-<<<<<<< HEAD
-                  className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 transition-all duration-300 rounded-full ${
-                    isActive ? "w-full" : "w-0 group-hover:w-full"
-                  }`}
-=======
                   className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 transition-all duration-300 rounded-full ${isActive ? "w-full" : "w-0 group-hover:w-full"}`}
->>>>>>> a8b60c7f2ca8f1fe0745ab58e92f3238ef5dc25b
                 />
               </motion.a>
             );
@@ -362,13 +358,7 @@ export default function Navbar() {
             >
               My Learning
               <span
-<<<<<<< HEAD
-                className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 rounded-full transition-all duration-300 ${
-                  pathname === "/my-courses" ? "w-full" : "w-0 group-hover:w-full"
-                }`}
-=======
                 className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 rounded-full transition-all duration-300 ${pathname === "/my-courses" ? "w-full" : "w-0 group-hover:w-full"}`}
->>>>>>> a8b60c7f2ca8f1fe0745ab58e92f3238ef5dc25b
               />
             </motion.a>
           )}
@@ -441,14 +431,7 @@ export default function Navbar() {
               )}
               <button
                 type="submit"
-<<<<<<< HEAD
                 className="mr-1.5 w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20"
-=======
-                className="mr-1.5 px-3 py-1.5 rounded-lg text-white text-xs font-semibold shrink-0 transition-all hover:opacity-90"
-                style={{
-                  background: "linear-gradient(135deg, #7c3aed, #a855f7)",
-                }}
->>>>>>> a8b60c7f2ca8f1fe0745ab58e92f3238ef5dc25b
               >
                 <Search size={14} className="text-white" />
               </button>
@@ -811,7 +794,7 @@ export default function Navbar() {
         {/* Mobile Actions (Search first, then Account menu) */}
         <div className="md:hidden ml-auto flex items-center gap-3">
           <button
-            className="text-gray-300 hover:text-white"
+            className="text-gray-300 hover:text-white cursor-pointer"
             onClick={() => {
               setMobilePanel("search");
               setFocusMobileSearch(true);
@@ -822,7 +805,7 @@ export default function Navbar() {
           </button>
 
           <button
-            className="text-gray-300 hover:text-white"
+            className="text-gray-300 hover:text-white cursor-pointer"
             onClick={() => {
               setMobilePanel((p) => (p === "account" ? "none" : "account"));
             }}
@@ -831,7 +814,8 @@ export default function Navbar() {
             {mobilePanel === "account" ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
-      </div>
+        </div>
+      </motion.div>
 
       {/* Mobile Panel */}
       <AnimatePresence>
@@ -977,7 +961,7 @@ export default function Navbar() {
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-bold text-white truncate">
-                        {user.fullName ?? user.emailAddresses[0]?.emailAddress.split("@")[0]}
+                        {user.fullName ?? user.emailAddresses[0]?.emailAddress?.split("@")[0]}
                       </p>
                       <p className="text-xs text-gray-500 truncate">
                         {user.emailAddresses[0]?.emailAddress}
@@ -1079,6 +1063,6 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.nav>
+    </nav>
   );
 }

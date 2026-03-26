@@ -18,7 +18,7 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { coursesData } from "@/lib/courses-data";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { backendRequest } from "@/lib/backend-client";
 
@@ -90,6 +90,7 @@ const profileMenuItems = [
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const { user, isLoaded } = useUser();
   const { signOut } = useClerk();
 
@@ -252,7 +253,7 @@ export default function Navbar() {
         {/* Logo */}
         <motion.a
           href="/"
-          className="flex items-center gap-2 group shrink-0 mr-16"
+          className="flex items-center gap-2 group shrink-0 mr-8 lg:mr-12"
           whileHover={{ scale: 1.02 }}
         >
           <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-purple-800 flex items-center justify-center shadow-[0_0_20px_rgba(124,58,237,0.5)]">
@@ -266,30 +267,33 @@ export default function Navbar() {
 
         {/* Desktop Nav links */}
         <div className="hidden lg:flex items-center gap-12 shrink-0">
-          {navLinks.map((link) => (
-            <motion.a
-              key={link.label}
-              href={link.href}
-              className="text-sm text-gray-300 hover:text-white transition-colors relative group whitespace-nowrap"
-              whileHover={{ y: -1 }}
-            >
-              {link.label}
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 group-hover:w-full transition-all duration-300 rounded-full" />
-            </motion.a>
-          ))}
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <motion.a
+                key={link.label}
+                href={link.href}
+                className={`text-sm transition-colors relative group whitespace-nowrap ${isActive ? "text-white" : "text-gray-300 hover:text-white"}`}
+                whileHover={{ y: -1 }}
+              >
+                {link.label}
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 transition-all duration-300 rounded-full ${isActive ? "w-full" : "w-0 group-hover:w-full"}`} />
+              </motion.a>
+            );
+          })}
 
           {/* My Learning — only when signed in AND has enrollments */}
           {isLoaded && user && hasEnrollments && (
             <motion.a
               href="/my-courses"
-              className="text-sm text-violet-300 hover:text-violet-200 transition-colors relative group whitespace-nowrap font-medium"
+              className={`text-sm transition-colors relative group whitespace-nowrap font-medium ${pathname === "/my-courses" ? "text-violet-300" : "text-gray-300 hover:text-white"}`}
               whileHover={{ y: -1 }}
               initial={{ opacity: 0, x: -6 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3 }}
             >
               My Learning
-              <span className="absolute -bottom-1 left-0 w-full h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 rounded-full" />
+              <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 rounded-full transition-all duration-300 ${pathname === "/my-courses" ? "w-full" : "w-0 group-hover:w-full"}`} />
             </motion.a>
           )}
         </div>
@@ -297,7 +301,7 @@ export default function Navbar() {
         {/* ── Search Bar ── */}
         <div
           ref={wrapperRef}
-          className="flex-1 min-w-0 relative hidden ml-32 md:block"
+          className="flex-1 min-w-0 relative hidden ml-8 lg:ml-16 md:block"
         >
           <form onSubmit={handleSubmit}>
             <div

@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import { coursesData, type Course } from "@/lib/courses-data";
 import { Montserrat } from "next/font/google";
+import Navbar from "@/components/lms/Navbar";
+import Footer from "@/components/lms/Footer";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
@@ -153,6 +155,37 @@ export default function CoursesPage() {
 
   const { getToken, userId } = useAuth();
   const [enrolling, setEnrolling] = useState<string | null>(null);
+  const [enrolledSlugs, setEnrolledSlugs] = useState<Set<string>>(new Set());
+
+  // Fetch enrolled courses for the user
+  useEffect(() => {
+    if (!userId) {
+      setEnrolledSlugs(new Set());
+      return;
+    }
+
+    const fetchEnrollments = async () => {
+      try {
+        const token = await getToken();
+        const res = await fetch(`${BACKEND_URL}/enrollments/me`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            // Backend auth expects this header to identify the Clerk user
+            "x-clerk-user-id": userId
+          }
+        });
+        const data = await res.json();
+        if (data.ok && data.items) {
+          const slugs = new Set<string>(data.items.map((e: { course: { slug: string } }) => e.course.slug));
+          setEnrolledSlugs(slugs);
+        }
+      } catch (err) {
+        console.error("Fetch enrollments error:", err);
+      }
+    };
+
+    fetchEnrollments();
+  }, [userId, getToken]);
 
   const handleEnrollFree = async (courseSlug: string) => {
     if (!userId) {
@@ -189,9 +222,11 @@ export default function CoursesPage() {
   };
 
   return (
-    <main className={`${montserrat.className} min-h-screen bg-background text-foreground pt-20`}>
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        {/* ── Heading / Search header ── */}
+    <>
+      <Navbar />
+      <main className={`${montserrat.className} min-h-screen bg-background text-foreground pt-20`}>
+        <div className="max-w-6xl mx-auto px-6 py-10">
+          {/* ── Heading / Search header ── */}
         <AnimatePresence mode="wait">
           {isSearchMode ? (
             <motion.div
@@ -225,7 +260,6 @@ export default function CoursesPage() {
                 className="flex items-center rounded-xl mb-5 overflow-hidden"
                 style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(168,85,247,0.4)" }}
               >
-                <Search size={15} className="ml-4 text-violet-400 flex-shrink-0" />
                 <input
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
@@ -235,8 +269,15 @@ export default function CoursesPage() {
                     }
                   }}
                   placeholder="Refine your search…"
-                  className="flex-1 bg-transparent text-sm text-white placeholder-gray-600 px-3 py-3 outline-none"
+                  className="flex-1 bg-transparent text-sm text-white placeholder-gray-600 px-4 py-3 outline-none"
                 />
+                <button
+                  type="button"
+                  onClick={() => query.trim() && router.push(`/courses?q=${encodeURIComponent(query.trim())}`)}
+                  className="mr-1.5 w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20"
+                >
+                  <Search size={16} className="text-white" />
+                </button>
                 <button
                   onClick={clearSearch}
                   className="text-xs text-violet-400 hover:text-violet-200 px-4 py-3 transition-colors border-l border-violet-500/20 whitespace-nowrap"
@@ -333,13 +374,18 @@ export default function CoursesPage() {
                 className="flex items-center rounded-xl mb-5 overflow-hidden"
                 style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(168,85,247,0.35)" }}
               >
-                <Search size={15} className="ml-4 text-violet-400 flex-shrink-0" />
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search courses, skills, instructors…"
-                  className="flex-1 bg-transparent text-sm text-white placeholder-gray-600 px-3 py-3 outline-none"
-                />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search courses, skills, instructors…"
+                className="flex-1 bg-transparent text-sm text-white placeholder-gray-600 px-4 py-3 outline-none"
+              />
+              <button
+                type="submit"
+                className="mr-1.5 w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20"
+              >
+                <Search size={16} className="text-white" />
+              </button>
                 <button
                   type="submit"
                   className="text-xs text-white font-semibold px-5 py-3 transition-all hover:opacity-90 flex-shrink-0"
@@ -493,31 +539,49 @@ export default function CoursesPage() {
                           </>
                         )}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Link
-                          href={`/courses/${course.slug}`}
-                          className="text-xs font-semibold px-3 py-2 rounded-xl transition-all hover:bg-violet-500/10"
-                          style={{ border: "1px solid rgba(124,58,237,0.3)", color: "#c084fc" }}
-                        >
-                          Details
-                        </Link>
-                        {course.isFree ? (
-                          <button
-                            onClick={() => handleEnrollFree(course.slug)}
-                            disabled={enrolling === course.slug}
-                            className="text-xs font-semibold px-3.5 py-2 rounded-xl text-white transition-all hover:opacity-90 disabled:opacity-50"
-                            style={{ background: "linear-gradient(135deg,#059669,#10b981)" }}
-                          >
-                            {enrolling === course.slug ? "Enrolling..." : "Enroll Free"}
-                          </button>
+                        <div className="flex items-center gap-2">
+                        {enrolledSlugs.has(course.slug) ? (
+                            <div className="flex flex-col items-end gap-1">
+                              <Link
+                                href={`/learn/${course.slug}`}
+                                className="text-xs font-bold px-5 py-2.5 rounded-xl text-white transition-all hover:opacity-90 shadow-lg shadow-blue-500/20"
+                                style={{ background: "linear-gradient(135deg,#2563eb,#3b82f6)" }}
+                              >
+                                Go to course
+                              </Link>
+                              <span className="text-[10px] font-semibold text-emerald-300 flex items-center gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                Already enrolled
+                              </span>
+                            </div>
                         ) : (
-                          <Link
-                            href={`/checkout?slug=${encodeURIComponent(course.slug)}&plan=1month`}
-                            className="text-xs font-semibold px-3.5 py-2 rounded-xl text-white transition-all hover:opacity-90"
-                            style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}
-                          >
-                            Enroll
-                          </Link>
+                          <>
+                            <Link
+                              href={`/courses/${course.slug}`}
+                              className="text-xs font-semibold px-3 py-2 rounded-xl transition-all hover:bg-violet-500/10"
+                              style={{ border: "1px solid rgba(124,58,237,0.3)", color: "#c084fc" }}
+                            >
+                              Details
+                            </Link>
+                            {course.isFree ? (
+                              <button
+                                onClick={() => handleEnrollFree(course.slug)}
+                                disabled={enrolling === course.slug}
+                                className="text-xs font-semibold px-3.5 py-2 rounded-xl text-white transition-all hover:opacity-90 disabled:opacity-50"
+                                style={{ background: "linear-gradient(135deg,#059669,#10b981)" }}
+                              >
+                                {enrolling === course.slug ? "Enrolling..." : "Enroll for free"}
+                              </button>
+                            ) : (
+                              <Link
+                                href={`/checkout?slug=${encodeURIComponent(course.slug)}&plan=1month`}
+                                className="text-xs font-semibold px-3.5 py-2 rounded-xl text-white transition-all hover:opacity-90"
+                                style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}
+                              >
+                                Enroll
+                              </Link>
+                            )}
+                          </>
                         )}
                       </div>
                     </div>
@@ -528,6 +592,8 @@ export default function CoursesPage() {
           </section>
         )}
       </div>
-    </main>
+      </main>
+      <Footer />
+    </>
   );
 }

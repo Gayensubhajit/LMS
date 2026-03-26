@@ -1,5 +1,8 @@
 generator client {
   provider = "prisma-client-js"
+  // Ensure Prisma ships query-engine binaries for both Windows and Linux
+  // so `npm run dev` works after switching OS/environments.
+  binaryTargets = ["native", "windows", "debian-openssl-3.0.x", "debian-openssl-1.1.x"]
 }
 
 datasource db {

@@ -161,3 +161,23 @@ enrollmentsRouter.get("/me", async (req, res) => {
   });
 });
 
+enrollmentsRouter.get("/check/:slug", async (req, res) => {
+  const user = await getUserFromHeader(req, res);
+  if (!user) return res.status(401).json({ ok: false, enrolled: false });
+
+  const { slug } = req.params;
+
+  const enrollment = await prisma.enrollment.findFirst({
+    where: {
+      userId: user.id,
+      course: { slug },
+      status: EnrollmentStatus.ACTIVE
+    }
+  });
+
+  return res.status(200).json({
+    ok: true,
+    enrolled: !!enrollment
+  });
+});
+

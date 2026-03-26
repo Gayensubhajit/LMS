@@ -9,6 +9,8 @@ import {
   Search,
   TrendingUp,
   Sparkles,
+  History,
+  ChevronRight,
   User,
   GraduationCap,
   Settings,
@@ -16,6 +18,9 @@ import {
   ShoppingBag,
   Award,
   HelpCircle,
+  Globe,
+  Bell,
+  ArrowLeft,
 } from "lucide-react";
 import { coursesData } from "@/lib/courses-data";
 import { useRouter, usePathname } from "next/navigation";
@@ -49,26 +54,18 @@ const popularSearches = [
     category: "AI/ML",
     badge: "🔥 Trending",
   },
-  { term: "Python", emoji: "🐍", category: "AI/ML", badge: "📈 Popular" },
-  {
-    term: "Full-Stack Development",
-    emoji: "🔥",
-    category: "Development",
-    badge: "💼 Career Boost",
-  },
-  { term: "Figma", emoji: "✏️", category: "Design", badge: "⭐ Top Rated" },
-  {
-    term: "No-Code Automation",
-    emoji: "⚙️",
-    category: "AI/ML",
-    badge: "🆕 New",
-  },
-  {
-    term: "Product Management",
-    emoji: "📊",
-    category: "Business",
-    badge: "📈 Popular",
-  },
+];
+
+// Coursera-like mobile search trending chips (shown in the search sheet)
+const mobileTrendingChips = [
+  "artificial intelligence",
+  "python",
+  "microsoft excel",
+  "ai",
+  "excel",
+  "machine learning",
+  "project management",
+  "data analytics",
 ];
 
 const categoryColors: Record<string, { bg: string; text: string }> = {
@@ -95,17 +92,21 @@ export default function Navbar() {
   const { signOut } = useClerk();
 
   const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobilePanel, setMobilePanel] = useState<"none" | "account" | "search">("none");
   const [query, setQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [mobileQuery, setMobileQuery] = useState("");
   const [profileOpen, setProfileOpen] = useState(false);
   const [hasEnrollments, setHasEnrollments] = useState(false);
+  const [focusMobileSearch, setFocusMobileSearch] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+  const mobileSearchRef = useRef<HTMLInputElement>(null);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const RECENT_SEARCHES_KEY = "lms_recent_searches";
 
   // Scroll effect
   useEffect(() => {
@@ -143,6 +144,35 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
+  // Focus mobile search when opened via the search icon
+  useEffect(() => {
+    if (mobilePanel !== "search" || !focusMobileSearch) return;
+    requestAnimationFrame(() => {
+      mobileSearchRef.current?.focus();
+    });
+    setFocusMobileSearch(false);
+  }, [mobilePanel, focusMobileSearch]);
+
+  // Load/save recent searches for the mobile search sheet
+  useEffect(() => {
+    try {
+      const raw = window.localStorage.getItem(RECENT_SEARCHES_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) setRecentSearches(parsed.filter((x) => typeof x === "string"));
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(recentSearches));
+    } catch {
+      // ignore
+    }
+  }, [recentSearches]);
+
   // Check enrollments to show "My Learning" link + silently sync user to DB if not yet there
   useEffect(() => {
     if (!isLoaded || !user?.id) return;
@@ -159,6 +189,25 @@ export default function Navbar() {
       .then((res) => setHasEnrollments(res.items.length > 0))
       .catch(() => setHasEnrollments(false));
   }, [isLoaded, user?.id]);
+
+  const addRecentSearch = (term: string) => {
+    const t = term.trim();
+    if (!t) return;
+    const tLower = t.toLowerCase();
+    setRecentSearches((prev) => {
+      const filtered = prev.filter((s) => s.toLowerCase() !== tLower);
+      return [t, ...filtered].slice(0, 7);
+    });
+  };
+
+  const runMobileSearch = (term: string) => {
+    const t = term.trim();
+    if (!t) return;
+    addRecentSearch(t);
+    setMobilePanel("none");
+    setMobileQuery("");
+    router.push(`/courses?q=${encodeURIComponent(t)}`);
+  };
 
   // Live course search results
   const results = query.trim()
@@ -237,6 +286,7 @@ export default function Navbar() {
     : "";
 
   const avatarUrl = user?.imageUrl;
+  const showMyLearning = isLoaded && user && hasEnrollments;
 
   return (
     <motion.nav
@@ -249,11 +299,11 @@ export default function Navbar() {
           : "bg-transparent"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 flex items-center gap-4 h-18 py-4">
+      <div className="max-w-7xl mx-auto px-6 flex items-center gap-3 h-18 py-4">
         {/* Logo */}
         <motion.a
           href="/"
-          className="flex items-center gap-2 group shrink-0 mr-8 lg:mr-12"
+          className="flex items-center gap-2 group shrink-0 mr-4 lg:mr-6"
           whileHover={{ scale: 1.02 }}
         >
           <div className="relative w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-purple-800 flex items-center justify-center shadow-[0_0_20px_rgba(124,58,237,0.5)]">
@@ -266,8 +316,9 @@ export default function Navbar() {
         </motion.a>
 
         {/* Desktop Nav links */}
-        <div className="hidden lg:flex items-center gap-12 shrink-0">
-          {navLinks.map((link) => {
+        {/* Show nav links starting at md+ so they don't disappear between md and lg. */}
+        <div className="hidden md:flex items-center gap-8 lg:gap-10 shrink-0">
+          {navLinks.slice(0, 1).map((link) => {
             const isActive = pathname === link.href;
             return (
               <motion.a
@@ -277,52 +328,77 @@ export default function Navbar() {
                 whileHover={{ y: -1 }}
               >
                 {link.label}
-                <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 transition-all duration-300 rounded-full ${isActive ? "w-full" : "w-0 group-hover:w-full"}`} />
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 transition-all duration-300 rounded-full ${
+                    isActive ? "w-full" : "w-0 group-hover:w-full"
+                  }`}
+                />
               </motion.a>
             );
           })}
 
-          {/* My Learning — only when signed in AND has enrollments */}
-          {isLoaded && user && hasEnrollments && (
+          {isLoaded && user && (
             <motion.a
               href="/my-courses"
-              className={`text-sm transition-colors relative group whitespace-nowrap font-medium ${pathname === "/my-courses" ? "text-violet-300" : "text-gray-300 hover:text-white"}`}
+              className={`text-sm transition-colors relative group whitespace-nowrap font-medium ${
+                pathname === "/my-courses"
+                  ? "text-violet-300"
+                  : "text-gray-300 hover:text-white"
+              }`}
               whileHover={{ y: -1 }}
               initial={{ opacity: 0, x: -6 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3 }}
             >
               My Learning
-              <span className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 rounded-full transition-all duration-300 ${pathname === "/my-courses" ? "w-full" : "w-0 group-hover:w-full"}`} />
+              <span
+                className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 rounded-full transition-all duration-300 ${
+                  pathname === "/my-courses" ? "w-full" : "w-0 group-hover:w-full"
+                }`}
+              />
             </motion.a>
           )}
+
+          {navLinks.slice(1).map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <motion.a
+                key={link.label}
+                href={link.href}
+                className={`text-sm transition-colors relative group whitespace-nowrap ${isActive ? "text-white" : "text-gray-300 hover:text-white"}`}
+                whileHover={{ y: -1 }}
+              >
+                {link.label}
+                <span
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 transition-all duration-300 rounded-full ${
+                    isActive ? "w-full" : "w-0 group-hover:w-full"
+                  }`}
+                />
+              </motion.a>
+            );
+          })}
         </div>
 
         {/* ── Search Bar ── */}
         <div
           ref={wrapperRef}
-          className="flex-1 min-w-0 relative hidden ml-8 lg:ml-16 md:block"
+          className="flex-1 min-w-[320px] relative hidden md:block max-w-[460px]"
         >
           <form onSubmit={handleSubmit}>
             <div
-              className="flex items-center rounded-xl transition-all duration-300 overflow-hidden"
+              className="flex items-center rounded-full transition-all duration-300 overflow-hidden"
               style={{
                 background: searchFocused
-                  ? "rgba(124,58,237,0.15)"
+                  ? "rgba(124,58,237,0.12)"
                   : "rgba(255,255,255,0.06)",
                 border: searchFocused
-                  ? "1px solid rgba(168,85,247,0.7)"
+                  ? "1px solid rgba(168,85,247,0.6)"
                   : "1px solid rgba(255,255,255,0.1)",
                 boxShadow: searchFocused
-                  ? "0 0 24px rgba(124,58,237,0.25)"
+                  ? "0 0 20px rgba(124,58,237,0.2)"
                   : "none",
               }}
             >
-              <Search
-                size={16}
-                className="ml-4 shrink-0 transition-colors duration-200"
-                style={{ color: searchFocused ? "#c084fc" : "#6b7280" }}
-              />
               <input
                 ref={inputRef}
                 type="text"
@@ -332,9 +408,10 @@ export default function Navbar() {
                   setHighlightedIndex(-1);
                 }}
                 onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
                 onKeyDown={handleKeyDown}
                 placeholder="What do you want to learn?"
-                className="flex-1 bg-transparent text-sm text-white placeholder-gray-500 px-3 py-2.5 outline-none"
+                className="flex-1 bg-transparent text-[13px] text-white placeholder-gray-500 px-5 py-2.5 outline-none"
               />
               {query && (
                 <button
@@ -350,12 +427,9 @@ export default function Navbar() {
               )}
               <button
                 type="submit"
-                className="mr-1.5 px-3 py-1.5 rounded-lg text-white text-xs font-semibold flex-shrink-0 transition-all hover:opacity-90"
-                style={{
-                  background: "linear-gradient(135deg, #7c3aed, #a855f7)",
-                }}
+                className="mr-1.5 w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20"
               >
-                Search
+                <Search size={14} className="text-white" />
               </button>
             </div>
           </form>
@@ -368,7 +442,7 @@ export default function Navbar() {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -10, scale: 0.97 }}
                 transition={{ duration: 0.18, ease: "easeOut" }}
-                className="absolute top-full left-0 right-0 mt-2 rounded-2xl z-50 overflow-hidden"
+                className="absolute top-full left-0 right-0 mt-2 rounded-2xl z-50 max-h-[60vh] overflow-y-auto"
                 style={{
                   background: "rgba(10,10,22,0.98)",
                   border: "1px solid rgba(124,58,237,0.35)",
@@ -583,20 +657,20 @@ export default function Navbar() {
             <>
               <motion.a
                 href="/auth/sign-in"
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-                className="text-sm text-gray-300 hover:text-white px-4 py-2 transition-colors"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="text-xs font-bold text-gray-300 hover:text-white border border-white/10 px-4 py-2 rounded-lg transition-colors"
               >
                 Sign In
               </motion.a>
               <motion.a
                 href="/auth/sign-up"
                 whileHover={{
-                  scale: 1.04,
-                  boxShadow: "0 0 25px rgba(124,58,237,0.6)",
+                  scale: 1.02,
+                  boxShadow: "0 0 20px rgba(124,58,237,0.4)",
                 }}
-                whileTap={{ scale: 0.96 }}
-                className="text-sm font-semibold bg-gradient-to-r from-violet-600 to-purple-600 text-white px-5 py-2.5 rounded-xl shadow-[0_0_15px_rgba(124,58,237,0.3)] transition-all duration-300 whitespace-nowrap"
+                whileTap={{ scale: 0.98 }}
+                className="text-xs font-bold bg-gradient-to-r from-violet-600 to-purple-600 text-white px-4 py-2 rounded-lg shadow-[0_0_10px_rgba(124,58,237,0.2)] transition-all duration-300 whitespace-nowrap"
               >
                 Start Free Trial
               </motion.a>
@@ -713,95 +787,274 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile Hamburger */}
-        <button
-          className="md:hidden text-gray-300 hover:text-white ml-auto"
-          onClick={() => setMobileOpen(!mobileOpen)}
-        >
-          {mobileOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        {/* Mobile Actions (Search first, then Account menu) */}
+        <div className="md:hidden ml-auto flex items-center gap-3">
+          <button
+            className="text-gray-300 hover:text-white"
+            onClick={() => {
+              setMobilePanel("search");
+              setFocusMobileSearch(true);
+            }}
+            aria-label="Search"
+          >
+            <Search size={22} />
+          </button>
+
+          <button
+            className="text-gray-300 hover:text-white"
+            onClick={() => {
+              setMobilePanel((p) => (p === "account" ? "none" : "account"));
+            }}
+            aria-label="Account menu"
+          >
+            {mobilePanel === "account" ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Panel */}
       <AnimatePresence>
-        {mobileOpen && (
+        {mobilePanel !== "none" && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-background/95 backdrop-blur-xl border-b border-purple-500/20 px-6 pb-6 overflow-hidden"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="md:hidden fixed left-0 right-0 top-[72px] bottom-0 z-50 overflow-y-auto"
+            style={{
+              background: "rgba(10,10,22,1)",
+              borderTop: "1px solid rgba(124,58,237,0.1)",
+              backdropFilter: "blur(24px)",
+            }}
           >
-            <div className="flex flex-col gap-4 pt-4">
-              {/* Mobile search */}
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (mobileQuery.trim()) {
-                    router.push(
-                      `/courses?q=${encodeURIComponent(mobileQuery)}`,
-                    );
-                    setMobileQuery("");
-                    setMobileOpen(false);
-                  }
-                }}
-                className="flex items-center gap-2 rounded-xl px-4 py-2.5"
-                style={{
-                  background: "rgba(124,58,237,0.1)",
-                  border: "1px solid rgba(124,58,237,0.3)",
-                }}
-              >
-                <Search size={15} className="text-violet-400 flex-shrink-0" />
-                <input
-                  type="text"
-                  value={mobileQuery}
-                  onChange={(e) => setMobileQuery(e.target.value)}
-                  placeholder="What do you want to learn?"
-                  className="flex-1 bg-transparent text-sm text-white placeholder-gray-500 outline-none"
-                />
-              </form>
+            {mobilePanel === "search" ? (
+              <div className="px-4 pb-6">
+                {/* Search header */}
+                <div className="pt-4 flex items-center gap-3">
+                  <div className="flex-1 flex items-center rounded-full pl-5 pr-1.5 py-1.5" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(124,58,237,0.25)" }}>
+                    <input
+                      ref={mobileSearchRef}
+                      type="text"
+                      value={mobileQuery}
+                      onChange={(e) => setMobileQuery(e.target.value)}
+                      placeholder="What do you want to learn?"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          runMobileSearch(mobileQuery);
+                        }
+                      }}
+                      className="w-full bg-transparent outline-none text-sm text-white placeholder-gray-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => runMobileSearch(mobileQuery)}
+                      className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 hover:bg-blue-500 transition-colors"
+                    >
+                      <Search size={18} className="text-white" />
+                    </button>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setMobilePanel("none")}
+                    className="text-sm font-semibold text-gray-400 hover:text-white transition-colors"
+                  >
+                    Close
+                  </button>
+                </div>
 
-              {navLinks.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  onClick={() => setMobileOpen(false)}
-                  className="text-gray-300 hover:text-white text-base py-1 border-b border-purple-500/10"
-                >
-                  {link.label}
-                </a>
-              ))}
+                {/* Recent searches */}
+                <div className="mt-5 flex items-center justify-between">
+                  <h3 className="text-sm font-bold text-white">Recent searches</h3>
+                  <button
+                    type="button"
+                    onClick={() => setRecentSearches([])}
+                    className="text-sm font-semibold text-violet-400 hover:text-violet-300"
+                  >
+                    Clear all
+                  </button>
+                </div>
 
-              {/* My Learning in mobile */}
-              {isLoaded && user && hasEnrollments && (
-                <a
-                  href="/my-courses"
-                  onClick={() => setMobileOpen(false)}
-                  className="text-violet-300 hover:text-violet-200 text-base py-1 border-b border-purple-500/10 font-medium"
-                >
-                  My Learning
-                </a>
-              )}
+                <div className="mt-2">
+                  {recentSearches.length === 0 ? (
+                    <div className="py-3 text-sm text-gray-500">
+                      No recent searches
+                    </div>
+                  ) : (
+                    recentSearches.map((term) => (
+                      <div
+                        key={term}
+                        className="flex items-center gap-3 py-3"
+                        style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+                      >
+                        <History size={18} className="text-gray-500 flex-shrink-0" />
+                        <button
+                          type="button"
+                          onClick={() => runMobileSearch(term)}
+                          className="flex-1 text-left text-sm font-semibold text-gray-300"
+                        >
+                          {term}
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={`Remove ${term}`}
+                          onClick={() => {
+                            const lower = term.toLowerCase();
+                            setRecentSearches((prev) => prev.filter((s) => s.toLowerCase() !== lower));
+                          }}
+                          className="text-gray-500 hover:text-white p-1 transition-colors"
+                        >
+                          <X size={16} />
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
 
-              {isLoaded && user ? (
-                <button
-                  onClick={() => {
-                    setMobileOpen(false);
-                    void signOut({ redirectUrl: "/" });
-                  }}
-                  className="w-full text-center border border-red-500/30 text-red-400 py-3 rounded-xl font-semibold mt-2"
-                >
-                  Log Out
-                </button>
-              ) : (
-                <a
-                  href="/auth/sign-up"
-                  onClick={() => setMobileOpen(false)}
-                  className="w-full text-center bg-gradient-to-r from-violet-600 to-purple-600 text-white py-3 rounded-xl font-semibold mt-2"
-                >
-                  Start Free Trial
-                </a>
-              )}
-            </div>
+                {/* Trending */}
+                <div className="mt-6">
+                  <h3 className="text-sm font-bold text-white">
+                    Trending on EduNova
+                  </h3>
+                </div>
+
+                <div className="mt-3 flex flex-wrap gap-3 pb-2">
+                  {mobileTrendingChips.map((chip) => (
+                    <button
+                      key={chip}
+                      type="button"
+                      onClick={() => runMobileSearch(chip)}
+                      className="px-4 py-2 rounded-xl text-sm font-semibold text-gray-300 hover:text-white hover:border-violet-500/50 transition-colors"
+                      style={{ border: "1px solid rgba(255,255,255,0.12)" }}
+                    >
+                      {chip}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              // Account panel
+              <div className="px-5 pb-6">
+                {/* Start content immediately with small top padding */}
+                <div className="pt-2" />
+
+                {/* Profile section — only when signed in */}
+                {isLoaded && user && (
+                  <a
+                    href="/profile"
+                    onClick={() => setMobilePanel("none")}
+                    className="flex items-center gap-3 mt-1 mb-2 py-3 rounded-xl hover:bg-white/5 transition-colors"
+                  >
+                    <div
+                      className="w-11 h-11 rounded-full overflow-hidden flex items-center justify-center border-2 border-violet-500/40"
+                      style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}
+                    >
+                      {avatarUrl ? (
+                        <img src={avatarUrl} alt={initials} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-white text-sm font-bold">{initials}</span>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-bold text-white truncate">
+                        {user.fullName ?? user.emailAddresses[0]?.emailAddress.split("@")[0]}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {user.emailAddresses[0]?.emailAddress}
+                      </p>
+                    </div>
+                    <ChevronRight size={16} className="text-gray-500 flex-shrink-0" />
+                  </a>
+                )}
+
+                {/* Divider */}
+                <div className="h-px w-full" style={{ background: "rgba(124,58,237,0.2)" }} />
+
+                {/* Navigation links — always shown */}
+                <div className="mt-4 space-y-0">
+                  {/* Show 'Courses' first */}
+                  {navLinks.slice(0, 1).map((link) => (
+                    <a
+                      key={link.label}
+                      href={link.href}
+                      onClick={() => setMobilePanel("none")}
+                      className={`flex items-center gap-3 py-3.5 transition-colors ${
+                        pathname === link.href
+                          ? "text-violet-400"
+                          : "text-gray-300 hover:text-white"
+                      }`}
+                    >
+                      <BookOpen size={18} className="text-violet-400 flex-shrink-0" />
+                      <span className="text-[15px] font-medium">{link.label}</span>
+                    </a>
+                  ))}
+
+                  {/* Show 'My Learning' below 'Courses' if user is signed in */}
+                  {isLoaded && user && (
+                    <a
+                      href="/my-courses"
+                      onClick={() => setMobilePanel("none")}
+                      className="flex items-center gap-3 py-3.5 text-gray-300 hover:text-white transition-colors"
+                    >
+                      <GraduationCap size={18} className="text-violet-400 flex-shrink-0" />
+                      <span className="text-[15px] font-medium">My Learning</span>
+                    </a>
+                  )}
+
+                  {/* Show the rest of the nav links */}
+                  {navLinks.slice(1).map((link) => (
+                    <a
+                      key={link.label}
+                      href={link.href}
+                      onClick={() => setMobilePanel("none")}
+                      className={`flex items-center gap-3 py-3.5 transition-colors ${
+                        pathname === link.href
+                          ? "text-violet-400"
+                          : "text-gray-300 hover:text-white"
+                      }`}
+                    >
+                      <BookOpen size={18} className="text-violet-400 flex-shrink-0" />
+                      <span className="text-[15px] font-medium">{link.label}</span>
+                    </a>
+                  ))}
+                </div>
+
+                {/* Bottom section */}
+                <div className="mt-4 h-px w-full" style={{ background: "rgba(124,58,237,0.2)" }} />
+
+                {isLoaded && user ? (
+                  /* Log Out */
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobilePanel("none");
+                      void signOut({ redirectUrl: "/" });
+                    }}
+                    className="w-full flex items-center gap-3 mt-4 py-3.5 text-red-400 hover:text-red-300 transition-colors"
+                  >
+                    <LogOut size={18} className="flex-shrink-0" />
+                    <span className="text-[15px] font-medium">Log Out</span>
+                  </button>
+                ) : (
+                  /* Auth buttons for guests */
+                  <div className="mt-5 space-y-3">
+                    <a
+                      href="/auth/sign-in"
+                      onClick={() => setMobilePanel("none")}
+                      className="block text-center text-white border border-violet-500/40 py-3 rounded-xl font-semibold hover:bg-violet-500/10 transition-colors"
+                    >
+                      Sign In
+                    </a>
+                    <a
+                      href="/auth/sign-up"
+                      onClick={() => setMobilePanel("none")}
+                      className="block text-center bg-gradient-to-r from-violet-600 to-purple-600 text-white py-3 rounded-xl font-bold shadow-[0_0_15px_rgba(124,58,237,0.3)]"
+                    >
+                      Start Free Trial
+                    </a>
+                  </div>
+                )}
+              </div>
+            )}
           </motion.div>
         )}
       </AnimatePresence>

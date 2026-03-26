@@ -58,8 +58,15 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
   const [openSectionIndex, setOpenSectionIndex] = useState<number | null>(0);
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
   const [enrolling, setEnrolling] = useState(false);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [checkingEnrollment, setCheckingEnrollment] = useState(true);
 
   const handleEnrollClick = async () => {
+    if (isEnrolled) {
+      router.push(`/learn/${course.slug}`);
+      return;
+    }
+
     if (course.isFree) {
       if (!userId) {
         router.push(`/auth/sign-in?redirect_url=/courses/${course.slug}`);
@@ -113,6 +120,37 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
       .catch(() => {/* keep empty */})
       .finally(() => setSectionsLoaded(true));
   }, [course.slug]);
+
+  // Check enrollment status
+  useEffect(() => {
+    if (!userId) {
+      setCheckingEnrollment(false);
+      return;
+    }
+
+    const checkEnrollment = async () => {
+      try {
+        const token = await getToken();
+        const res = await fetch(`${BACKEND_URL}/enrollments/check/${course.slug}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            // Backend auth expects this header to identify the Clerk user
+            "x-clerk-user-id": userId
+          }
+        });
+        const data = await res.json();
+        if (data.ok) {
+          setIsEnrolled(data.enrolled);
+        }
+      } catch (err) {
+        console.error("Check enrollment error:", err);
+      } finally {
+        setCheckingEnrollment(false);
+      }
+    };
+
+    checkEnrollment();
+  }, [course.slug, userId, getToken]);
 
   // Fallback modules from skills when backend has no sections yet
   const fallbackModules = useMemo(() => {
@@ -364,20 +402,32 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
             <h2 className="text-xl font-black text-white mb-2">Enroll in this course</h2>
             <p className="text-sm text-gray-500 mb-6">Choose your subscription duration and get started today</p>
 
-            <button
-              onClick={handleEnrollClick}
-              disabled={enrolling}
-              className="w-full bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold px-4 py-3 rounded-xl hover:from-violet-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              {enrolling ? (
-                <>
-                  <Loader2 size={18} className="animate-spin" />
-                  Enrolling...
-                </>
-              ) : (
-                course.isFree ? "Enroll Free" : "Enroll Now"
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={handleEnrollClick}
+                disabled={enrolling || checkingEnrollment}
+                className="w-full bg-blue-600 text-white font-bold px-4 py-4 rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 flex items-center justify-center gap-2 text-base"
+              >
+                {enrolling ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin" />
+                    Enrolling...
+                  </>
+                ) : checkingEnrollment ? (
+                  "Checking enrollment..."
+                ) : isEnrolled ? (
+                  "Go to course"
+                ) : (
+                  course.isFree ? "Enroll for free" : "Enroll Now"
+                )}
+              </button>
+              {isEnrolled && (
+                <div className="flex items-center justify-center gap-2 text-sm text-gray-400 font-medium">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Already enrolled
+                </div>
               )}
-            </button>
+            </div>
 
             <div className="mt-5 pt-4 border-t border-violet-500/15 text-xs text-gray-500 space-y-2">
               <div className="flex items-center gap-2">

@@ -181,7 +181,9 @@ export default function Navbar() {
     backendRequest<{ ok: boolean; synced: boolean }>("/users/sync", {
       method: "POST",
       clerkUserId: user.id,
-    }).catch(() => { /* silent — not critical */ });
+    }).catch(() => {
+      /* silent — not critical */
+    });
 
     backendRequest<{ ok: boolean; items: unknown[] }>("/dashboard/my-courses", {
       clerkUserId: user.id,
@@ -299,7 +301,11 @@ export default function Navbar() {
           : "bg-transparent"
       }`}
     >
+<<<<<<< HEAD
       <div className="max-w-7xl mx-auto px-6 flex items-center gap-3 h-18 py-4">
+=======
+      <div className="max-w-7xl w-full mx-auto px-6 flex items-center gap-4 h-18 py-4">
+>>>>>>> a8b60c7f2ca8f1fe0745ab58e92f3238ef5dc25b
         {/* Logo */}
         <motion.a
           href="/"
@@ -329,9 +335,13 @@ export default function Navbar() {
               >
                 {link.label}
                 <span
+<<<<<<< HEAD
                   className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 transition-all duration-300 rounded-full ${
                     isActive ? "w-full" : "w-0 group-hover:w-full"
                   }`}
+=======
+                  className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 transition-all duration-300 rounded-full ${isActive ? "w-full" : "w-0 group-hover:w-full"}`}
+>>>>>>> a8b60c7f2ca8f1fe0745ab58e92f3238ef5dc25b
                 />
               </motion.a>
             );
@@ -352,9 +362,13 @@ export default function Navbar() {
             >
               My Learning
               <span
+<<<<<<< HEAD
                 className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 rounded-full transition-all duration-300 ${
                   pathname === "/my-courses" ? "w-full" : "w-0 group-hover:w-full"
                 }`}
+=======
+                className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-violet-500 to-purple-400 rounded-full transition-all duration-300 ${pathname === "/my-courses" ? "w-full" : "w-0 group-hover:w-full"}`}
+>>>>>>> a8b60c7f2ca8f1fe0745ab58e92f3238ef5dc25b
               />
             </motion.a>
           )}
@@ -427,7 +441,14 @@ export default function Navbar() {
               )}
               <button
                 type="submit"
+<<<<<<< HEAD
                 className="mr-1.5 w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20"
+=======
+                className="mr-1.5 px-3 py-1.5 rounded-lg text-white text-xs font-semibold shrink-0 transition-all hover:opacity-90"
+                style={{
+                  background: "linear-gradient(135deg, #7c3aed, #a855f7)",
+                }}
+>>>>>>> a8b60c7f2ca8f1fe0745ab58e92f3238ef5dc25b
               >
                 <Search size={14} className="text-white" />
               </button>
@@ -488,7 +509,7 @@ export default function Navbar() {
                               }}
                             >
                               <div
-                                className="w-9 h-9 rounded-lg flex items-center justify-center text-lg flex-shrink-0"
+                                className="w-9 h-9 rounded-lg flex items-center justify-center text-lg shrink-0"
                                 style={{ background: col.bg }}
                               >
                                 {p.emoji}
@@ -502,7 +523,7 @@ export default function Navbar() {
                                 </p>
                               </div>
                               <span
-                                className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap"
+                                className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 whitespace-nowrap"
                                 style={{ background: col.bg, color: col.text }}
                               >
                                 {p.badge}
@@ -576,7 +597,7 @@ export default function Navbar() {
                                 }}
                               >
                                 <div
-                                  className="w-10 h-10 rounded-xl flex items-center justify-center text-xl flex-shrink-0"
+                                  className="w-10 h-10 rounded-xl flex items-center justify-center text-xl shrink-0"
                                   style={{
                                     background: col.bg,
                                     border: `1px solid ${col.text}30`,
@@ -607,7 +628,7 @@ export default function Navbar() {
                                   </div>
                                 </div>
                                 <span
-                                  className="text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0"
+                                  className="text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0"
                                   style={{
                                     background: col.bg,
                                     color: col.text,
@@ -651,7 +672,7 @@ export default function Navbar() {
         </div>
 
         {/* ── Right Side: Auth ── */}
-        <div className="hidden md:flex items-center gap-3 flex-shrink-0">
+        <div className="hidden md:flex items-center gap-3 shrink-0">
           {/* Not signed in */}
           {isLoaded && !user && (
             <>

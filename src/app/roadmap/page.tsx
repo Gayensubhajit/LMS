@@ -21,6 +21,7 @@ import {
 import { Montserrat } from "next/font/google";
 import { useUser } from "@clerk/nextjs";
 import Navbar from "@/components/lms/Navbar";
+import Footer from "@/components/lms/Footer";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -296,11 +297,11 @@ function StepIcon({ status, color }: { status: string; color: string }) {
 
 // Maps sidebar category → which ROADMAP_CATEGORIES title(s) it highlights
 const SIDEBAR_CATS: { label: string; match: string | null }[] = [
-  { label: "All Roadmaps",          match: null },
-  { label: "Role Based",            match: "Role Based Roadmaps" },
-  { label: "Skill Based",           match: "Skill Based Roadmaps" },
-  { label: "Frameworks & Tools",    match: "Frameworks & Tools Roadmap" },
-  { label: "Best Practices",        match: "Best Practices" },
+  { label: "All Roadmaps", match: null },
+  { label: "Role Based", match: "Role Based Roadmaps" },
+  { label: "Skill Based", match: "Skill Based Roadmaps" },
+  { label: "Frameworks & Tools", match: "Frameworks & Tools Roadmap" },
+  { label: "Best Practices", match: "Best Practices" },
 ];
 
 const ROADMAP_CATEGORIES = [
@@ -319,18 +320,34 @@ const ROADMAP_CATEGORIES = [
       { id: "ios", label: "iOS", status: "coming_soon" },
       { id: "blockchain", label: "Blockchain", status: "coming_soon" },
       { id: "qa", label: "QA Engineer", status: "coming_soon" },
-      { id: "cloud_architect", label: "Cloud Architect", status: "coming_soon" },
+      {
+        id: "cloud_architect",
+        label: "Cloud Architect",
+        status: "coming_soon",
+      },
       { id: "game_dev", label: "Game Developer", status: "coming_soon" },
       { id: "tech_writer", label: "Technical Writer", status: "coming_soon" },
-      { id: "machine_learning", label: "Machine Learning", status: "coming_soon" },
+      {
+        id: "machine_learning",
+        label: "Machine Learning",
+        status: "coming_soon",
+      },
       { id: "devsecops", label: "DevSecOps", status: "coming_soon" },
       { id: "sre", label: "Site Reliability", status: "coming_soon" },
-      { id: "engineering_manager", label: "Engineering Manager", status: "coming_soon" },
+      {
+        id: "engineering_manager",
+        label: "Engineering Manager",
+        status: "coming_soon",
+      },
       { id: "dev_rel", label: "Developer Relations", status: "coming_soon" },
       { id: "cyber_sec", label: "Cyber Security", status: "coming_soon" },
       { id: "data_scientist", label: "Data Scientist", status: "coming_soon" },
       { id: "data_engineer", label: "Data Engineer", status: "coming_soon" },
-      { id: "software_architect", label: "Software Architect", status: "coming_soon" },
+      {
+        id: "software_architect",
+        label: "Software Architect",
+        status: "coming_soon",
+      },
     ],
   },
   {
@@ -413,18 +430,30 @@ const ROADMAP_CATEGORIES = [
     title: "Best Practices",
     items: [
       { id: "code_review", label: "Code Review", status: "coming_soon" },
-      { id: "design_patterns", label: "Design Patterns", status: "coming_soon" },
+      {
+        id: "design_patterns",
+        label: "Design Patterns",
+        status: "coming_soon",
+      },
       { id: "refactoring", label: "Refactoring", status: "coming_soon" },
       { id: "agile", label: "Agile Development", status: "coming_soon" },
       { id: "scrum", label: "Scrum Framework", status: "coming_soon" },
       { id: "performance", label: "Web Performance", status: "coming_soon" },
-      { id: "accessibility", label: "Accessibility (a11y)", status: "coming_soon" },
+      {
+        id: "accessibility",
+        label: "Accessibility (a11y)",
+        status: "coming_soon",
+      },
       { id: "security", label: "Web Security", status: "coming_soon" },
       { id: "seo", label: "Technical SEO", status: "coming_soon" },
       { id: "ci_cd", label: "CI/CD Best Practices", status: "coming_soon" },
       { id: "api_design", label: "REST API Design", status: "coming_soon" },
       { id: "microservices", label: "Microservices", status: "coming_soon" },
-      { id: "serverless", label: "Serverless Architecture", status: "coming_soon" },
+      {
+        id: "serverless",
+        label: "Serverless Architecture",
+        status: "coming_soon",
+      },
     ],
   },
 ];
@@ -435,9 +464,17 @@ export default function RoadmapPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
-  const [statusMap, setStatusMap] = useState<Record<number, { status: RoadmapStepStatus; progressPercent: number }>>({});
-  const [selectedTopic, setSelectedTopic] = useState<{ skill: string; stepNo: number; isDone: boolean } | null>(null);
-  const [completedTopics, setCompletedTopics] = useState<Set<string>>(new Set());
+  const [statusMap, setStatusMap] = useState<
+    Record<number, { status: RoadmapStepStatus; progressPercent: number }>
+  >({});
+  const [selectedTopic, setSelectedTopic] = useState<{
+    skill: string;
+    stepNo: number;
+    isDone: boolean;
+  } | null>(null);
+  const [completedTopics, setCompletedTopics] = useState<Set<string>>(
+    new Set(),
+  );
 
   const fetchStatus = useCallback(async () => {
     if (!isLoaded || !user?.id) {
@@ -445,14 +482,22 @@ export default function RoadmapPage() {
       return;
     }
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/dashboard/roadmap?userId=${user.id}`);
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/dashboard/roadmap?userId=${user.id}`,
+      );
       if (res.ok) {
         const data: BackendRoadmapResponse = await res.json();
         const devPath = data["dev"];
         if (devPath && devPath.stages) {
-          const map: Record<number, { status: RoadmapStepStatus; progressPercent: number }> = {};
+          const map: Record<
+            number,
+            { status: RoadmapStepStatus; progressPercent: number }
+          > = {};
           devPath.stages.forEach((st) => {
-            map[st.stepNo] = { status: st.status, progressPercent: st.progressPercent };
+            map[st.stepNo] = {
+              status: st.status,
+              progressPercent: st.progressPercent,
+            };
           });
           setStatusMap(map);
         }
@@ -473,10 +518,18 @@ export default function RoadmapPage() {
   const steps = pathContent
     ? pathContent.steps.map((step, index) => {
         if (active === "dev" && statusMap[step.no]) {
-          return { ...step, status: statusMap[step.no].status, progressPercent: statusMap[step.no].progressPercent };
+          return {
+            ...step,
+            status: statusMap[step.no].status,
+            progressPercent: statusMap[step.no].progressPercent,
+          };
         }
         const isFirst = index === 0;
-        return { ...step, status: (isFirst ? "current" : "locked") as RoadmapStepStatus, progressPercent: 0 };
+        return {
+          ...step,
+          status: (isFirst ? "current" : "locked") as RoadmapStepStatus,
+          progressPercent: 0,
+        };
       })
     : [];
 
@@ -484,35 +537,52 @@ export default function RoadmapPage() {
   const overallProgress =
     steps.length > 0
       ? Math.round(
-          steps.reduce((acc, step) => acc + (step.status === "done" ? 100 : step.progressPercent || 0), 0) / steps.length
+          steps.reduce(
+            (acc, step) =>
+              acc + (step.status === "done" ? 100 : step.progressPercent || 0),
+            0,
+          ) / steps.length,
         )
       : 0;
 
   return (
-    <div className={`min-h-screen bg-[#05050a] selection:bg-violet-500/30 ${montserrat.className}`}>
+    <div
+      className={`min-h-screen mx-auto bg-[#05050a] selection:bg-violet-500/30 ${montserrat.className}`}
+    >
       <Navbar />
 
-      <main className="text-white pt-10">
+      <main className="text-white pt-10 max-w-6xl mx-auto">
         <div className="max-w-7xl mx-auto px-6">
-
           {/* ── Hero ── */}
           <div className="text-center mb-10 mt-16 flex flex-col items-center">
             <div
               className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-8"
-              style={{ background: "rgba(124,58,237,0.15)", border: "1px solid rgba(124,58,237,0.35)", color: "#c084fc" }}
+              style={{
+                background: "rgba(124,58,237,0.15)",
+                border: "1px solid rgba(124,58,237,0.35)",
+                color: "#c084fc",
+              }}
             >
               <Zap size={11} /> Structured Learning Paths
             </div>
-            <h1 className="text-5xl md:text-6xl font-black text-white leading-tight mb-4">
+            <h1 className="font-serif text-5xl md:text-6xl font-black text-white leading-tight mb-4">
               Your Learning{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">Blueprint</span>
+              <span
+                className={`${montserrat.className} text-transparent bg-clip-text bg-linear-to-r from-violet-400 to-fuchsia-400`}
+              >
+                Blueprint
+              </span>
             </h1>
             <p className="text-lg text-gray-400 max-w-2xl mx-auto mb-8 leading-relaxed font-medium">
-              Step-by-step career playbooks curated by industry experts. Start at zero and follow the exact path to job-ready mastery.
+              Step-by-step career playbooks curated by industry experts. Start
+              at zero and follow the exact path to job-ready mastery.
             </p>
             {!active && (
               <div className="relative w-full max-w-xl mx-auto">
-                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500" size={20} />
+                <Search
+                  className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-500"
+                  size={20}
+                />
                 <input
                   type="text"
                   placeholder="Search roadmaps..."
@@ -526,32 +596,33 @@ export default function RoadmapPage() {
 
           {/* ── Main Layout ── */}
           <div className="flex flex-col md:flex-row gap-10 pb-24">
-
             {/* Sidebar — only show on dashboard, not active roadmap */}
             {!active && (
-            <div className="w-full md:w-52 shrink-0 hidden md:block border-r border-white/5 pr-6">
-              <div className="sticky top-24">
-                <h3 className="text-[10px] font-black tracking-widest text-gray-500 uppercase mb-4 pl-2">Categories</h3>
-                <div className="space-y-0.5">
-                  {SIDEBAR_CATS.map((cat) => (
-                    <button
-                      key={cat.label}
-                      onClick={() => {
-                        setActiveCategory(cat.match);
-                        setActive(null);
-                      }}
-                      className={`w-full text-left px-4 py-2 rounded-lg text-sm transition-colors ${
-                        activeCategory === cat.match
-                          ? "bg-violet-500/10 text-violet-300 font-bold border border-violet-500/20"
-                          : "text-gray-400 hover:bg-white/[0.03] font-medium"
-                      }`}
-                    >
-                      {cat.label}
-                    </button>
-                  ))}
+              <div className="w-full md:w-52 shrink-0 hidden md:block border-r border-white/5 pr-6">
+                <div className="sticky top-24">
+                  <h3 className="text-[10px] font-black tracking-widest text-gray-500 uppercase mb-4 pl-2">
+                    Categories
+                  </h3>
+                  <div className="space-y-0.5">
+                    {SIDEBAR_CATS.map((cat) => (
+                      <button
+                        key={cat.label}
+                        onClick={() => {
+                          setActiveCategory(cat.match);
+                          setActive(null);
+                        }}
+                        className={`w-full text-left px-4 py-2 rounded-lg text-sm transition-colors ${
+                          activeCategory === cat.match
+                            ? "bg-violet-500/10 text-violet-300 font-bold border border-violet-500/20"
+                            : "text-gray-400 hover:bg-white/[0.03] font-medium"
+                        }`}
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
             )}
 
             {/* Content */}
@@ -559,11 +630,17 @@ export default function RoadmapPage() {
               {!active ? (
                 /* ── Dashboard Grid ── */
                 <div className="space-y-12">
-                  {ROADMAP_CATEGORIES.filter((category) =>
-                    activeCategory === null || category.title === activeCategory
+                  {ROADMAP_CATEGORIES.filter(
+                    (category) =>
+                      activeCategory === null ||
+                      category.title === activeCategory,
                   ).map((category) => {
                     const filtered = category.items.filter((item) =>
-                      searchQuery ? item.label.toLowerCase().includes(searchQuery.toLowerCase()) : true
+                      searchQuery
+                        ? item.label
+                            .toLowerCase()
+                            .includes(searchQuery.toLowerCase())
+                        : true,
                     );
                     if (filtered.length === 0) return null;
                     return (
@@ -577,46 +654,110 @@ export default function RoadmapPage() {
                             const isReady = item.status === "ready";
                             // roadmap.sh slug mapping
                             const roadmapShSlugs: Record<string, string> = {
-                              frontend: "frontend", backend: "backend", devops: "devops",
-                              data_analyst: "data-analyst", android: "android", ios: "ios",
-                              blockchain: "blockchain", qa: "qa", cloud_architect: "cloudnative",
-                              game_dev: "game-developer", tech_writer: "technical-writer",
-                              machine_learning: "mlops", devsecops: "devops", sre: "devops",
-                              engineering_manager: "engineering-manager", dev_rel: "devops",
-                              cyber_sec: "cyber-security", data_scientist: "data-scientist",
-                              data_engineer: "data-analyst", software_architect: "software-architect",
-                              react: "react", vue: "vue", javascript: "javascript",
-                              nodejs: "nodejs", typescript: "typescript", python: "python",
-                              postgresql: "postgresql", java: "java", cplusplus: "cpp",
-                              csharp: "csharp", go: "golang", rust: "rust", ruby: "ruby",
-                              php: "php", sql: "sql", mongodb: "mongodb", graphql: "graphql",
-                              docker: "docker", kubernetes: "kubernetes", aws: "aws",
-                              azure: "azure", gcp: "gcp", linux: "linux", git: "git",
-                              system_design: "system-design", dsa: "datastructures",
-                              testing: "qa", clean_code: "software-architect",
-                              redis: "redis", elasticsearch: "devops",
-                              nextjs: "nodejs", nestjs: "nodejs", express: "nodejs",
-                              django: "python", flask: "python", fastapi: "python",
-                              laravel: "php", rails: "ruby", aspnet: "csharp",
-                              spring: "java", flutter: "flutter", react_native: "react-native",
-                              swift: "swift", kotlin: "kotlin", pandas: "python",
-                              tensorflow: "mlops", pytorch: "mlops", tailwind: "css",
-                              bootstrap: "css", sass: "css", npm: "nodejs", yarn: "nodejs",
-                              webpack: "nodejs", vite: "nodejs", jest: "qa",
-                              cypress: "qa", playwright: "qa", github_actions: "devops",
-                              gitlab_ci: "devops", jenkins: "devops", terraform: "devops",
-                              ansible: "devops", framer_motion: "react", prisma: "nodejs",
-                              drizzle: "nodejs", apollo: "graphql",
-                              code_review: "software-architect", design_patterns: "software-architect",
-                              refactoring: "software-architect", agile: "engineering-manager",
-                              scrum: "engineering-manager", performance: "frontend",
-                              accessibility: "frontend", security: "cyber-security",
-                              seo: "frontend", ci_cd: "devops", api_design: "api-design",
-                              microservices: "software-architect", serverless: "devops",
+                              frontend: "frontend",
+                              backend: "backend",
+                              devops: "devops",
+                              data_analyst: "data-analyst",
+                              android: "android",
+                              ios: "ios",
+                              blockchain: "blockchain",
+                              qa: "qa",
+                              cloud_architect: "cloudnative",
+                              game_dev: "game-developer",
+                              tech_writer: "technical-writer",
+                              machine_learning: "mlops",
+                              devsecops: "devops",
+                              sre: "devops",
+                              engineering_manager: "engineering-manager",
+                              dev_rel: "devops",
+                              cyber_sec: "cyber-security",
+                              data_scientist: "data-scientist",
+                              data_engineer: "data-analyst",
+                              software_architect: "software-architect",
+                              react: "react",
+                              vue: "vue",
+                              javascript: "javascript",
+                              nodejs: "nodejs",
+                              typescript: "typescript",
+                              python: "python",
+                              postgresql: "postgresql",
+                              java: "java",
+                              cplusplus: "cpp",
+                              csharp: "csharp",
+                              go: "golang",
+                              rust: "rust",
+                              ruby: "ruby",
+                              php: "php",
+                              sql: "sql",
+                              mongodb: "mongodb",
+                              graphql: "graphql",
+                              docker: "docker",
+                              kubernetes: "kubernetes",
+                              aws: "aws",
+                              azure: "azure",
+                              gcp: "gcp",
+                              linux: "linux",
+                              git: "git",
+                              system_design: "system-design",
+                              dsa: "datastructures",
+                              testing: "qa",
+                              clean_code: "software-architect",
+                              redis: "redis",
+                              elasticsearch: "devops",
+                              nextjs: "nodejs",
+                              nestjs: "nodejs",
+                              express: "nodejs",
+                              django: "python",
+                              flask: "python",
+                              fastapi: "python",
+                              laravel: "php",
+                              rails: "ruby",
+                              aspnet: "csharp",
+                              spring: "java",
+                              flutter: "flutter",
+                              react_native: "react-native",
+                              swift: "swift",
+                              kotlin: "kotlin",
+                              pandas: "python",
+                              tensorflow: "mlops",
+                              pytorch: "mlops",
+                              tailwind: "css",
+                              bootstrap: "css",
+                              sass: "css",
+                              npm: "nodejs",
+                              yarn: "nodejs",
+                              webpack: "nodejs",
+                              vite: "nodejs",
+                              jest: "qa",
+                              cypress: "qa",
+                              playwright: "qa",
+                              github_actions: "devops",
+                              gitlab_ci: "devops",
+                              jenkins: "devops",
+                              terraform: "devops",
+                              ansible: "devops",
+                              framer_motion: "react",
+                              prisma: "nodejs",
+                              drizzle: "nodejs",
+                              apollo: "graphql",
+                              code_review: "software-architect",
+                              design_patterns: "software-architect",
+                              refactoring: "software-architect",
+                              agile: "engineering-manager",
+                              scrum: "engineering-manager",
+                              performance: "frontend",
+                              accessibility: "frontend",
+                              security: "cyber-security",
+                              seo: "frontend",
+                              ci_cd: "devops",
+                              api_design: "api-design",
+                              microservices: "software-architect",
+                              serverless: "devops",
                             };
-                            const roadmapShUrl = !isReady && roadmapShSlugs[item.id]
-                              ? `https://roadmap.sh/${roadmapShSlugs[item.id]}`
-                              : null;
+                            const roadmapShUrl =
+                              !isReady && roadmapShSlugs[item.id]
+                                ? `https://roadmap.sh/${roadmapShSlugs[item.id]}`
+                                : null;
                             if (!isReady && roadmapShUrl) {
                               return (
                                 <a
@@ -630,8 +771,13 @@ export default function RoadmapPage() {
                                     {item.label}
                                   </span>
                                   <div className="flex items-center gap-1.5">
-                                    <span className="text-[8px] font-bold tracking-widest text-gray-600 uppercase">roadmap.sh</span>
-                                    <ArrowRight size={12} className="text-gray-600 group-hover:text-violet-400 transition-colors" />
+                                    <span className="text-[8px] font-bold tracking-widest text-gray-600 uppercase">
+                                      roadmap.sh
+                                    </span>
+                                    <ArrowRight
+                                      size={12}
+                                      className="text-gray-600 group-hover:text-violet-400 transition-colors"
+                                    />
                                   </div>
                                 </a>
                               );
@@ -645,7 +791,10 @@ export default function RoadmapPage() {
                                 <span className="text-sm font-bold text-gray-200 group-hover:text-white">
                                   {item.label}
                                 </span>
-                                <BookOpen size={16} className="text-gray-600 group-hover:text-violet-400 transition-colors" />
+                                <BookOpen
+                                  size={16}
+                                  className="text-gray-600 group-hover:text-violet-400 transition-colors"
+                                />
                               </button>
                             );
                           })}
@@ -671,14 +820,19 @@ export default function RoadmapPage() {
                           onClick={() => setActive(null)}
                           className="flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-white py-2 px-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-all w-fit"
                         >
-                          <ChevronRight className="rotate-180" size={14} /> Back to Categories
+                          <ChevronRight className="rotate-180" size={14} /> Back
+                          to Categories
                         </button>
                       </div>
 
                       {/* Path Header */}
                       <div
                         className="rounded-3xl p-6 md:p-8 mb-8 flex flex-col md:flex-row md:items-center justify-between gap-5 relative overflow-hidden"
-                        style={{ background: pathContent.bg, border: `1px solid ${pathContent.border}`, boxShadow: `0 0 50px ${pathContent.glow}` }}
+                        style={{
+                          background: pathContent.bg,
+                          border: `1px solid ${pathContent.border}`,
+                          boxShadow: `0 0 50px ${pathContent.glow}`,
+                        }}
                       >
                         <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-12 translate-x-12 blur-2xl" />
                         <div className="relative z-10">
@@ -687,24 +841,49 @@ export default function RoadmapPage() {
                               {pathContent.emoji}
                             </div>
                             <div>
-                              <h2 className="text-3xl font-black text-white">{pathContent.label}</h2>
-                              <p className="text-sm font-medium" style={{ color: pathContent.color }}>{pathContent.description}</p>
+                              <h2 className="text-3xl font-black text-white">
+                                {pathContent.label}
+                              </h2>
+                              <p
+                                className="text-sm font-medium"
+                                style={{ color: pathContent.color }}
+                              >
+                                {pathContent.description}
+                              </p>
                             </div>
                           </div>
                           <div className="flex items-center gap-2 mt-2">
-                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-black/30 px-2 py-0.5 rounded">Career paths:</span>
-                            <span className="text-xs text-gray-300 font-semibold">{pathContent.jobs}</span>
+                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-black/30 px-2 py-0.5 rounded">
+                              Career paths:
+                            </span>
+                            <span className="text-xs text-gray-300 font-semibold">
+                              {pathContent.jobs}
+                            </span>
                           </div>
                         </div>
                         <div className="flex flex-wrap gap-3 text-center shrink-0 relative z-10">
                           {[
                             { label: "Stages", value: steps.length },
                             { label: "Timeline", value: pathContent.duration },
-                            { label: "Complete", value: `${completedCount}/${steps.length}` },
+                            {
+                              label: "Complete",
+                              value: `${completedCount}/${steps.length}`,
+                            },
                           ].map((stat) => (
-                            <div key={stat.label} className="px-5 py-3 rounded-2xl" style={{ background: "rgba(0,0,0,0.3)", border: `1px solid ${pathContent.border}` }}>
-                              <p className="text-xl font-black text-white">{stat.value}</p>
-                              <p className="text-[11px] text-gray-500">{stat.label}</p>
+                            <div
+                              key={stat.label}
+                              className="px-5 py-3 rounded-2xl"
+                              style={{
+                                background: "rgba(0,0,0,0.3)",
+                                border: `1px solid ${pathContent.border}`,
+                              }}
+                            >
+                              <p className="text-xl font-black text-white">
+                                {stat.value}
+                              </p>
+                              <p className="text-[11px] text-gray-500">
+                                {stat.label}
+                              </p>
                             </div>
                           ))}
                         </div>
@@ -714,12 +893,19 @@ export default function RoadmapPage() {
                       <div className="mb-10">
                         <div className="flex justify-between text-xs text-gray-500 mb-2 font-bold uppercase tracking-wider">
                           <span>Path Mastery</span>
-                          <span style={{ color: pathContent.color }}>{overallProgress}%</span>
+                          <span style={{ color: pathContent.color }}>
+                            {overallProgress}%
+                          </span>
                         </div>
-                        <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.06)" }}>
+                        <div
+                          className="h-2 rounded-full overflow-hidden"
+                          style={{ background: "rgba(255,255,255,0.06)" }}
+                        >
                           <motion.div
                             className="h-full rounded-full"
-                            style={{ background: `linear-gradient(90deg, ${pathContent.color}90, ${pathContent.color})` }}
+                            style={{
+                              background: `linear-gradient(90deg, ${pathContent.color}90, ${pathContent.color})`,
+                            }}
                             initial={{ width: 0 }}
                             animate={{ width: `${overallProgress}%` }}
                             transition={{ duration: 1.2, ease: "circOut" }}
@@ -744,24 +930,36 @@ export default function RoadmapPage() {
                               style={{
                                 background: isCurrent
                                   ? "linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02))"
-                                  : isLocked ? "rgba(255,255,255,0.01)" : "rgba(255,255,255,0.03)",
+                                  : isLocked
+                                    ? "rgba(255,255,255,0.01)"
+                                    : "rgba(255,255,255,0.03)",
                                 border: isCurrent
                                   ? `1px solid ${pathContent.border}`
-                                  : isDone ? `1px solid ${pathContent.color}40` : "1px solid rgba(255,255,255,0.06)",
+                                  : isDone
+                                    ? `1px solid ${pathContent.color}40`
+                                    : "1px solid rgba(255,255,255,0.06)",
                                 opacity: isLocked ? 0.6 : 1,
                               }}
                             >
                               <div className="flex items-start gap-6 p-6">
                                 <div className="flex flex-col items-center gap-2 pt-1.5 shrink-0">
-                                  <StepIcon status={step.status} color={pathContent.color} />
-                                  {idx < steps.length - 1 && <div className="w-px h-16 bg-white/10" />}
+                                  <StepIcon
+                                    status={step.status}
+                                    color={pathContent.color}
+                                  />
+                                  {idx < steps.length - 1 && (
+                                    <div className="w-px h-16 bg-white/10" />
+                                  )}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <div className="flex flex-wrap items-center gap-3 mb-2">
-                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 bg-white/5 px-2 py-0.5 rounded">{step.weeks}</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 bg-white/5 px-2 py-0.5 rounded">
+                                      {step.weeks}
+                                    </span>
                                     {isCurrent && (
                                       <span className="flex items-center gap-1.5 text-[10px] font-bold text-violet-400 animate-pulse">
-                                        <div className="w-2 h-2 rounded-full bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.8)]" /> IN PROGRESS
+                                        <div className="w-2 h-2 rounded-full bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.8)]" />{" "}
+                                        IN PROGRESS
                                       </span>
                                     )}
                                     {isDone && (
@@ -773,22 +971,33 @@ export default function RoadmapPage() {
                                   <h3 className="text-xl font-black text-white mb-2 group-hover:text-violet-400 transition-colors">
                                     Stage {step.no}: {step.title}
                                   </h3>
-                                  <p className="text-sm text-gray-400 leading-relaxed mb-4">{step.desc}</p>
+                                  <p className="text-sm text-gray-400 leading-relaxed mb-4">
+                                    {step.desc}
+                                  </p>
                                   <div className="flex flex-wrap gap-2.5 mb-5">
                                     {step.skills.map((skill) => {
                                       const topicId = `${step.no}-${skill}`;
-                                      const isTopicDone = completedTopics.has(topicId);
+                                      const isTopicDone =
+                                        completedTopics.has(topicId);
                                       return (
                                         <button
                                           key={skill}
-                                          onClick={() => setSelectedTopic({ skill, stepNo: step.no, isDone: isTopicDone })}
+                                          onClick={() =>
+                                            setSelectedTopic({
+                                              skill,
+                                              stepNo: step.no,
+                                              isDone: isTopicDone,
+                                            })
+                                          }
                                           className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all text-[10px] font-bold uppercase tracking-wider ${
                                             isTopicDone
                                               ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
                                               : "bg-white/[0.03] border-white/10 text-gray-300 hover:border-violet-500/50 hover:bg-violet-500/10 hover:text-white"
                                           }`}
                                         >
-                                          <div className={`w-1.5 h-1.5 rounded-full ${isTopicDone ? "bg-emerald-400" : "bg-gray-500"}`} />
+                                          <div
+                                            className={`w-1.5 h-1.5 rounded-full ${isTopicDone ? "bg-emerald-400" : "bg-gray-500"}`}
+                                          />
                                           {skill}
                                         </button>
                                       );
@@ -800,43 +1009,72 @@ export default function RoadmapPage() {
                                       className="inline-flex items-center gap-2 text-[13px] font-black px-4 py-2 border border-white/5 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] transition-colors group/btn"
                                       style={{ color: pathContent.color }}
                                     >
-                                      {isDone ? "Review Curriculum" : "Start Learning"}
-                                      <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                                      {isDone
+                                        ? "Review Curriculum"
+                                        : "Start Learning"}
+                                      <ArrowRight
+                                        size={14}
+                                        className="group-hover/btn:translate-x-1 transition-transform"
+                                      />
                                     </Link>
                                   ) : (
                                     <div className="mt-3 pt-3 border-t border-white/[0.05]">
                                       <div className="flex items-center gap-2 text-[11px] font-black tracking-widest text-gray-600 uppercase">
-                                        <Lock size={12} className="text-gray-500" /> Complete previous stage to unlock
+                                        <Lock
+                                          size={12}
+                                          className="text-gray-500"
+                                        />{" "}
+                                        Complete previous stage to unlock
                                       </div>
                                       {prevStep && (
                                         <div className="text-xs text-gray-500 flex items-center gap-2 mt-1">
-                                          <span className="text-violet-400 font-bold border border-violet-500/30 bg-violet-500/10 px-2 py-0.5 rounded">Stage {step.no - 1}</span>
+                                          <span className="text-violet-400 font-bold border border-violet-500/30 bg-violet-500/10 px-2 py-0.5 rounded">
+                                            Stage {step.no - 1}
+                                          </span>
                                           {prevStep.title}
                                         </div>
                                       )}
                                     </div>
                                   )}
                                 </div>
-                                {isCurrent && (step.progressPercent ?? 0) > 0 && (
-                                  <div className="hidden sm:flex flex-col items-center gap-2 px-4 py-3 rounded-2xl bg-black/20 border border-white/5 shrink-0">
-                                    <div className="relative w-12 h-12">
-                                      <svg className="w-full h-full" viewBox="0 0 36 36">
-                                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={3} />
-                                        <motion.path
-                                          initial={{ pathLength: 0 }}
-                                          animate={{ pathLength: (step.progressPercent ?? 0) / 100 }}
-                                          transition={{ duration: 1.5, ease: "easeOut" }}
-                                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                          fill="none"
-                                          stroke={pathContent.color}
-                                          strokeWidth={3}
-                                          strokeLinecap="round"
-                                        />
-                                      </svg>
-                                      <span className="absolute inset-0 flex items-center justify-center text-[10px] font-black">{step.progressPercent}%</span>
+                                {isCurrent &&
+                                  (step.progressPercent ?? 0) > 0 && (
+                                    <div className="hidden sm:flex flex-col items-center gap-2 px-4 py-3 rounded-2xl bg-black/20 border border-white/5 shrink-0">
+                                      <div className="relative w-12 h-12">
+                                        <svg
+                                          className="w-full h-full"
+                                          viewBox="0 0 36 36"
+                                        >
+                                          <path
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none"
+                                            stroke="rgba(255,255,255,0.05)"
+                                            strokeWidth={3}
+                                          />
+                                          <motion.path
+                                            initial={{ pathLength: 0 }}
+                                            animate={{
+                                              pathLength:
+                                                (step.progressPercent ?? 0) /
+                                                100,
+                                            }}
+                                            transition={{
+                                              duration: 1.5,
+                                              ease: "easeOut",
+                                            }}
+                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                                            fill="none"
+                                            stroke={pathContent.color}
+                                            strokeWidth={3}
+                                            strokeLinecap="round"
+                                          />
+                                        </svg>
+                                        <span className="absolute inset-0 flex items-center justify-center text-[10px] font-black">
+                                          {step.progressPercent}%
+                                        </span>
+                                      </div>
                                     </div>
-                                  </div>
-                                )}
+                                  )}
                               </div>
                             </motion.div>
                           );
@@ -850,10 +1088,16 @@ export default function RoadmapPage() {
                             <Sparkles size={64} className="text-violet-500" />
                           </div>
                           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-600/20 text-violet-300 text-[10px] font-black uppercase mb-6 border border-violet-500/20">
-                            <StarIcon size={11} className="fill-current" /> AI Career Architect
+                            <StarIcon size={11} className="fill-current" /> AI
+                            Career Architect
                           </div>
-                          <h3 className="text-2xl font-black text-white mb-4">Generate Custom Path</h3>
-                          <p className="text-gray-400 text-sm mb-8 leading-relaxed">Our AI can architect a specialized roadmap based on your current skills.</p>
+                          <h3 className="text-2xl font-black text-white mb-4">
+                            Generate Custom Path
+                          </h3>
+                          <p className="text-gray-400 text-sm mb-8 leading-relaxed">
+                            Our AI can architect a specialized roadmap based on
+                            your current skills.
+                          </p>
                           <button className="px-6 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white font-black text-xs hover:bg-violet-600 hover:border-violet-500 transition-all">
                             Join Waitlist
                           </button>
@@ -863,10 +1107,16 @@ export default function RoadmapPage() {
                             <Zap size={64} className="text-emerald-500" />
                           </div>
                           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-600/20 text-emerald-300 text-[10px] font-black uppercase mb-6 border border-emerald-500/20">
-                            <CheckCircle size={11} className="fill-current" /> Mentorship Pro
+                            <CheckCircle size={11} className="fill-current" />{" "}
+                            Mentorship Pro
                           </div>
-                          <h3 className="text-2xl font-black text-white mb-4">Validate Your Progress</h3>
-                          <p className="text-gray-400 text-sm mb-8 leading-relaxed">Get milestones reviewed by industry leads. Unlock the Job-Ready badge.</p>
+                          <h3 className="text-2xl font-black text-white mb-4">
+                            Validate Your Progress
+                          </h3>
+                          <p className="text-gray-400 text-sm mb-8 leading-relaxed">
+                            Get milestones reviewed by industry leads. Unlock
+                            the Job-Ready badge.
+                          </p>
                           <button className="px-6 py-3 rounded-xl bg-white/[0.03] border border-white/10 text-white font-black text-xs hover:bg-emerald-600 hover:border-emerald-500 transition-all flex items-center gap-2">
                             <Lock size={12} /> Unlock Mentors
                           </button>
@@ -883,7 +1133,9 @@ export default function RoadmapPage() {
                       className="flex flex-col items-center justify-center py-20 gap-4"
                     >
                       <Loader2 className="w-8 h-8 text-violet-500 animate-spin" />
-                      <p className="text-sm font-bold tracking-widest text-gray-500 uppercase">Synchronizing your progress...</p>
+                      <p className="text-sm font-bold tracking-widest text-gray-500 uppercase">
+                        Synchronizing your progress...
+                      </p>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -915,10 +1167,17 @@ export default function RoadmapPage() {
             >
               <div className="p-6 border-b border-white/5 flex items-center justify-between">
                 <div>
-                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Stage {selectedTopic.stepNo} · Topic</p>
-                  <h2 className="text-2xl font-black text-white">{selectedTopic.skill}</h2>
+                  <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">
+                    Stage {selectedTopic.stepNo} · Topic
+                  </p>
+                  <h2 className="text-2xl font-black text-white">
+                    {selectedTopic.skill}
+                  </h2>
                 </div>
-                <button onClick={() => setSelectedTopic(null)} className="p-2 rounded-full hover:bg-white/5 text-gray-400 transition-colors">
+                <button
+                  onClick={() => setSelectedTopic(null)}
+                  className="p-2 rounded-full hover:bg-white/5 text-gray-400 transition-colors"
+                >
                   <X size={20} />
                 </button>
               </div>
@@ -926,36 +1185,57 @@ export default function RoadmapPage() {
               <div className="flex-1 overflow-y-auto p-6 space-y-8">
                 <div>
                   <h3 className="text-sm font-black text-white mb-3 flex items-center gap-2">
-                    <Sparkles size={16} className="text-violet-400" /> Why learn this?
+                    <Sparkles size={16} className="text-violet-400" /> Why learn
+                    this?
                   </h3>
                   <p className="text-sm text-gray-400 leading-relaxed bg-white/[0.02] border border-white/[0.05] p-4 rounded-2xl">
-                    Mastering <strong className="text-violet-300">{selectedTopic.skill}</strong> is crucial for building robust, scalable applications—and one of the most sought-after skills in modern tech.
+                    Mastering{" "}
+                    <strong className="text-violet-300">
+                      {selectedTopic.skill}
+                    </strong>{" "}
+                    is crucial for building robust, scalable applications—and
+                    one of the most sought-after skills in modern tech.
                   </p>
                 </div>
                 <div>
-                  <h3 className="text-sm font-black text-white mb-4">Curated Resources</h3>
+                  <h3 className="text-sm font-black text-white mb-4">
+                    Curated Resources
+                  </h3>
                   <div className="space-y-3">
                     {[1, 2].map((i) => (
-                      <a key={i} href="#" className="flex items-start gap-4 p-4 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/10 transition-all group">
+                      <a
+                        key={i}
+                        href="#"
+                        className="flex items-start gap-4 p-4 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/10 transition-all group"
+                      >
                         <div className="w-10 h-10 rounded-xl bg-violet-500/20 text-violet-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                           <PlayCircle size={18} />
                         </div>
                         <div>
-                          <p className="text-sm font-bold text-white group-hover:text-violet-300 transition-colors">Complete {selectedTopic.skill} Crash Course</p>
+                          <p className="text-sm font-bold text-white group-hover:text-violet-300 transition-colors">
+                            Complete {selectedTopic.skill} Crash Course
+                          </p>
                           <p className="text-xs text-gray-500 mt-1 flex items-center gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-red-500" /> YouTube · 45 mins
+                            <span className="w-1.5 h-1.5 rounded-full bg-red-500" />{" "}
+                            YouTube · 45 mins
                           </p>
                         </div>
                       </a>
                     ))}
-                    <a href="#" className="flex items-start gap-4 p-4 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/10 transition-all group">
+                    <a
+                      href="#"
+                      className="flex items-start gap-4 p-4 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] hover:border-white/10 transition-all group"
+                    >
                       <div className="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                         <BookOpen size={18} />
                       </div>
                       <div>
-                        <p className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors">Official Documentation</p>
+                        <p className="text-sm font-bold text-white group-hover:text-blue-300 transition-colors">
+                          Official Documentation
+                        </p>
                         <p className="text-xs text-gray-500 mt-1 flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500" /> Read the docs
+                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />{" "}
+                          Read the docs
                         </p>
                       </div>
                     </a>
@@ -974,7 +1254,9 @@ export default function RoadmapPage() {
                       else next.add(id);
                       return next;
                     });
-                    setSelectedTopic((prev) => (prev ? { ...prev, isDone: !prev.isDone } : null));
+                    setSelectedTopic((prev) =>
+                      prev ? { ...prev, isDone: !prev.isDone } : null,
+                    );
                   }}
                   className={`w-full py-4 rounded-2xl flex items-center justify-center gap-3 font-black text-sm transition-all active:scale-[0.98] ${
                     selectedTopic.isDone
@@ -983,9 +1265,13 @@ export default function RoadmapPage() {
                   }`}
                 >
                   {selectedTopic.isDone ? (
-                    <><CheckCircle size={18} /> Mark as Pending</>
+                    <>
+                      <CheckCircle size={18} /> Mark as Pending
+                    </>
                   ) : (
-                    <><Circle size={18} /> Mark as Mastered</>
+                    <>
+                      <Circle size={18} /> Mark as Mastered
+                    </>
                   )}
                 </button>
               </div>
@@ -993,6 +1279,7 @@ export default function RoadmapPage() {
           </motion.div>
         )}
       </AnimatePresence>
+      <Footer />
     </div>
   );
 }

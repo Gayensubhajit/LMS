@@ -1,6 +1,22 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-export default clerkMiddleware();
+// Group matchers for clarity and scale
+const isPublicRoute = createRouteMatcher(["/", "/sign-in(.*)", "/sing-up(.*)"]);
+const isProtectedRoute = createRouteMatcher([
+  "/profile(.*)",
+  "/my-courses(.*)",
+  "/settings(.*)",
+  "/accomplishments(.*)",
+  "/support(.*)",
+  "/course/(.*)", // PROTECT SPECIFIC COURSE-IDs, Keeps /course public
+]);
+
+export default clerkMiddleware(async (auth, req) => {
+  // Protect specific routes
+  if (isProtectedRoute(req)) {
+    await auth.protect();
+  }
+});
 
 export const config = {
   matcher: [
@@ -10,4 +26,3 @@ export const config = {
     "/(api|trpc)(.*)",
   ],
 };
-

@@ -103,8 +103,8 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-violet-300 transition-all">Subhajit Gayen</h1>
-                <p className="text-[10px] sm:text-xs text-violet-400/60 mb-6 sm:mb-8 uppercase tracking-[0.2em] font-black">Pioneer Level 42</p>
+                <h1 className="text-lg sm:text-2xl font-black text-white tracking-tight mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-violet-300 transition-all">Subhajit Gayen</h1>
+                <p className="text-[10px] sm:text-[11px] text-violet-400/60 mb-6 sm:mb-8 uppercase tracking-[0.2em] font-black">Pioneer Level 42</p>
 
                 <div className="space-y-3">
                   <button className="w-full py-3 sm:py-3.5 rounded-xl sm:rounded-2xl border border-violet-500/30 text-violet-400 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-violet-500/10 transition-all shadow-lg hover:shadow-violet-500/10">
@@ -178,12 +178,12 @@ export default function ProfilePage() {
                className="relative overflow-hidden rounded-[2.5rem] sm:rounded-[3rem] p-px shadow-2xl group w-full"
             >
                <div className="absolute inset-0 bg-gradient-to-br from-violet-600/30 via-transparent to-sky-400/30 group-hover:opacity-100 opacity-60 transition-opacity duration-700" />
-               <div className="relative bg-slate-950/90 backdrop-blur-3xl rounded-[2.45rem] sm:rounded-[2.95rem] p-6 sm:p-8 lg:p-14 border border-white/5 overflow-hidden">
+               <div className="relative bg-slate-950/90 backdrop-blur-3xl rounded-[2.45rem] sm:rounded-[2.95rem] p-6 sm:p-8 lg:p-12 border border-white/5 overflow-hidden">
                   <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-violet-600/5 blur-[100px] rounded-full pointer-events-none" />
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
                      <div className="relative z-10 text-center md:text-left">
                         <span className="text-[9px] sm:text-[10px] font-black text-violet-400 uppercase tracking-[0.4em] mb-4 block animate-pulse">Certified Intelligence Asset</span>
-                        <h2 className="text-3xl sm:text-4xl lg:text-7xl font-black text-white tracking-tighter mb-4 lg:mb-6 leading-[0.85] uppercase">
+                        <h2 className="text-2xl sm:text-3xl lg:text-5xl font-black text-white tracking-tighter mb-4 lg:mb-6 leading-[0.85] uppercase">
                            Pioneer <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-pink-400 to-sky-400">Identity</span>
                         </h2>
                         <p className="text-gray-500 text-[11px] sm:text-sm mb-6 lg:mb-8 leading-relaxed max-w-sm mx-auto md:mx-0 font-medium">
@@ -269,7 +269,7 @@ export default function ProfilePage() {
                <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
                   <div className="text-center md:text-left">
                      <span className="text-[9px] sm:text-[10px] font-black text-violet-400 uppercase tracking-[0.5em] mb-4 block">Intelligence Profile</span>
-                     <h3 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tighter mb-4 sm:mb-6 leading-none">
+                     <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tighter mb-4 sm:mb-6 leading-none">
                         Learning <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-sky-400">DNA</span>
                      </h3>
                      <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-6 lg:mb-8 font-medium">

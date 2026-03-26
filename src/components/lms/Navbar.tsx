@@ -79,7 +79,7 @@ const categoryColors: Record<string, { bg: string; text: string }> = {
 const profileMenuItems = [
   { label: "Profile", href: "/profile", icon: User },
   { label: "My Learning", href: "/my-courses", icon: GraduationCap },
-  { label: "My Purchases", href: "/my-courses", icon: ShoppingBag },
+  { label: "My Purchases", href: "/purchases", icon: ShoppingBag },
   { label: "Settings", href: "/settings", icon: Settings },
   { label: "Accomplishments", href: "/accomplishments", icon: Award },
   { label: "Help Center", href: "/support", icon: HelpCircle },

@@ -1,8 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
-import { Search, Map, Code2, Palette, Layers, Award } from "lucide-react";
+import { motion, useScroll, useSpring, useTransform, useInView } from "framer-motion";
+import { Search, Map, Code2, Palette, Layers, Award, Sparkles } from "lucide-react";
 import { Montserrat } from "next/font/google";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
@@ -12,8 +12,8 @@ const steps = [
     number: "01",
     icon: Search,
     title: "Discover Your Path",
-    description: "Complete a quick skill assessment. Our AI analyzes your background and crafts a personalized learning roadmap aligned with your goals.",
-    tags: ["AI Assessment", "Goal Setting", "Personalization"],
+    description: "Complete a quick skill assessment. Our AI analyzes your background and crafts a personalized roadmap.",
+    tags: ["AI Assessment", "Personalization"],
     color: "from-violet-500 to-purple-700",
     glow: "rgba(124,58,237,0.5)",
   },
@@ -21,8 +21,8 @@ const steps = [
     number: "02",
     icon: Map,
     title: "Follow Your Roadmap",
-    description: "Get a step-by-step curated learning path. Each module builds on the last, ensuring deep, lasting knowledge retention.",
-    tags: ["Structured Learning", "Progress Tracking", "Milestones"],
+    description: "Get a step-by-step curated learning path. Each module builds on the last for deep mastery.",
+    tags: ["Structured Learning", "Milestones"],
     color: "from-pink-500 to-rose-600",
     glow: "rgba(236,72,153,0.5)",
   },
@@ -30,8 +30,8 @@ const steps = [
     number: "03",
     icon: Palette,
     title: "Master Core Skills",
-    description: "Dive into hands-on projects, coding exercises, and design challenges. Learn by doing, not just watching.",
-    tags: ["Hands-on Projects", "Live Coding", "Design Practice"],
+    description: "Dive into hands-on projects and design challenges. Learn by doing, not just watching.",
+    tags: ["Hands-on", "Design Practice"],
     color: "from-blue-500 to-cyan-600",
     glow: "rgba(59,130,246,0.5)",
   },
@@ -39,8 +39,8 @@ const steps = [
     number: "04",
     icon: Code2,
     title: "Build Real Projects",
-    description: "Create portfolio-worthy projects under mentor guidance. Solve real-world problems used by actual companies.",
-    tags: ["Portfolio Building", "Mentorship", "Industry Standards"],
+    description: "Create portfolio-worthy projects under mentor guidance. Solve real-world company problems.",
+    tags: ["Portfolio", "Mentorship"],
     color: "from-emerald-500 to-teal-600",
     glow: "rgba(16,185,129,0.5)",
   },
@@ -48,8 +48,8 @@ const steps = [
     number: "05",
     icon: Layers,
     title: "Join the Community",
-    description: "Collaborate with peers, participate in challenges, and get feedback from experts and fellow learners worldwide.",
-    tags: ["Peer Review", "Challenges", "Networking"],
+    description: "Collaborate with peers, participate in challenges, and get feedback from global experts.",
+    tags: ["Peer Review", "Networking"],
     color: "from-amber-500 to-orange-600",
     glow: "rgba(245,158,11,0.5)",
   },
@@ -57,110 +57,203 @@ const steps = [
     number: "06",
     icon: Award,
     title: "Get Certified & Hired",
-    description: "Earn recognized certificates, build your portfolio, and connect with 500+ hiring partners ready to recruit top talent.",
-    tags: ["Certification", "Job Board", "500+ Partners"],
+    description: "Earn recognized certificates and connect with 500+ hiring partners ready to recruit.",
+    tags: ["Certification", "500+ Partners"],
     color: "from-purple-500 to-indigo-600",
     glow: "rgba(139,92,246,0.5)",
   },
 ];
 
 export default function RoadmapSection() {
-  const ref = useRef(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef(null);
+  const headerInView = useInView(headerRef, { once: true });
+
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start center", "end end"],
+  });
+
+  const pathLength = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  });
 
   return (
-    <section className="relative py-28 overflow-hidden" id="roadmap">
-      {/* Background */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: "linear-gradient(180deg, transparent 0%, rgba(124,58,237,0.04) 50%, transparent 100%)",
-        }}
-      />
+    <section 
+      ref={containerRef} 
+      className="relative py-32 overflow-hidden bg-[#080a10]" 
+      id="roadmap"
+    >
+      {/* Background ambient glows */}
+      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-violet-600/10 blur-[120px] pointer-events-none" />
+      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-blue-600/10 blur-[120px] pointer-events-none" />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6" ref={ref}>
+      <div className="relative z-10 max-w-7xl mx-auto px-6">
         {/* Section header */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={inView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-20"
-        >
-          <div className="inline-flex items-center gap-2 tag-purple mb-4">
-            Your Learning Journey
+        <div ref={headerRef} className="text-center mb-32">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={headerInView ? { opacity: 1, scale: 1 } : {}}
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-violet-500/20 bg-violet-500/5 text-violet-400 text-xs font-bold uppercase tracking-widest mb-6"
+          >
+            <Sparkles size={12} />
+            The Mastery Protocol
+          </motion.div>
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={headerInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.1 }}
+            className="text-4xl md:text-6xl font-black text-white mb-6 leading-tight"
+          >
+            Your celestial path<br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-purple-400 to-blue-400">
+              to industry mastery.
+            </span>
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={headerInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ delay: 0.2 }}
+            className="text-gray-500 text-lg max-w-2xl mx-auto leading-relaxed"
+          >
+            A high-fidelity learning journey designed to transform beginners into 
+            world-class pioneers through a structured, interactive roadmap.
+          </motion.p>
+        </div>
+
+        {/* The Roadmap Path */}
+        <div className="relative min-h-[1200px]">
+          {/* SVG Path Background */}
+          <div className="absolute left-8 lg:left-1/2 top-0 bottom-0 w-1 lg:w-2 transform -translate-x-1/2 opacity-20">
+            <svg width="100%" height="100%" viewBox="0 0 2 1000" preserveAspectRatio="none">
+              <line x1="1" y1="0" x2="1" y2="1000" stroke="white" strokeWidth="2" strokeDasharray="10 10" />
+            </svg>
           </div>
-          <h2 className="font-serif text-4xl md:text-6xl font-black text-white mb-4">
-            From Beginner to Pro:
-            <br />
-            <span className={`${montserrat.className} gradient-text`}>Your Step-by-Step Roadmap</span>
-          </h2>
-          <p className={`${montserrat.className} text-gray-400 text-lg max-w-xl mx-auto`}>
-            A proven, structured path designed to take you from zero to job-ready in the shortest time possible.
-          </p>
-        </motion.div>
 
-        {/* Steps */}
-        <div className="relative">
-          {/* Connecting line */}
-          <div className="absolute left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-violet-500/30 to-transparent hidden lg:block transform -translate-x-1/2" />
+          {/* Animated SVG Path */}
+          <div className="absolute left-8 lg:left-1/2 top-0 bottom-0 w-1 lg:w-2 transform -translate-x-1/2">
+            <svg width="100%" height="100%" viewBox="0 0 2 1000" preserveAspectRatio="none" className="overflow-visible">
+              <motion.line
+                x1="1"
+                y1="0"
+                x2="1"
+                y2="1000"
+                stroke="url(#roadmap-gradient)"
+                strokeWidth="4"
+                style={{ 
+                  pathLength,
+                  filter: "drop-shadow(0 0 8px rgba(124,58,237,0.5))"
+                }}
+              />
+              <defs>
+                <linearGradient id="roadmap-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#7c3aed" />
+                  <stop offset="50%" stopColor="#c01578" />
+                  <stop offset="100%" stopColor="#2563eb" />
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Steps */}
+          <div className="relative">
             {steps.map((step, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: i % 2 === 0 ? -40 : 40, y: 20 }}
-                animate={inView ? { opacity: 1, x: 0, y: 0 } : {}}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
-                className="group relative"
-              >
-                <div
-                  className="glass-card rounded-2xl p-6 h-full overflow-hidden"
-                  style={{ transition: "all 0.3s ease" }}
-                >
-                  {/* Hover glow */}
-                  <motion.div
-                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    style={{
-                      background: `radial-gradient(circle at top left, ${step.glow.replace("0.5", "0.07")} 0%, transparent 60%)`,
-                    }}
-                  />
-
-                  <div className="flex items-start gap-4 relative z-10">
-                    {/* Number + Icon */}
-                    <div className="flex-shrink-0">
-                      <div
-                        className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center relative`}
-                        style={{ boxShadow: `0 8px 25px ${step.glow}` }}
-                      >
-                        <step.icon size={22} className="text-white" />
-                        <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-[#08080f] border border-violet-500/40 flex items-center justify-center">
-                          <span className="text-[10px] font-black gradient-text-purple">{step.number}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-white mb-2">{step.title}</h3>
-                      <p className="text-sm text-gray-400 leading-relaxed mb-3">{step.description}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {step.tags.map((tag, j) => (
-                          <span key={j} className="tag-purple text-xs">{tag}</span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Bottom accent */}
-                  <div
-                    className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r ${step.color} opacity-0 group-hover:opacity-80 transition-opacity duration-300`}
-                  />
-                </div>
-              </motion.div>
+              <RoadmapStep key={i} step={step} index={i} total={steps.length} scrollProgress={scrollYProgress} />
             ))}
           </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function RoadmapStep({ 
+  step, 
+  index, 
+  total, 
+  scrollProgress 
+}: { 
+  step: typeof steps[0], 
+  index: number, 
+  total: number, 
+  scrollProgress: any 
+}) {
+  const isEven = index % 2 === 0;
+  
+  // Calculate if this node should be "active" based on scroll progress
+  const stepThreshold = index / (total - 1);
+  const isActive = useTransform(scrollProgress, (val: number) => val >= stepThreshold);
+
+  return (
+    <div className={`relative w-full flex items-center mb-24 lg:mb-32 last:mb-0`}>
+      {/* Node (Center/Left) */}
+      <div className="absolute left-8 lg:left-1/2 transform -translate-x-1/2 z-50">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 1 }}
+          whileInView={{ scale: 1 }}
+          viewport={{ once: true, amount: 0 }}
+          className={`relative w-10 h-10 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl bg-[#0d1117] border-2 transition-all duration-500 flex items-center justify-center shadow-[0_0_30px_rgba(124,58,237,0.2)]`}
+          style={{ 
+            borderColor: "rgba(124,58,237,0.4)",
+          }}
+        >
+          {/* Active glow ring - ALWAYS visible at low opacity, brighter when active */}
+          <motion.div 
+            style={{ opacity: isActive ? 1 : 0.4 }}
+            className={`absolute -inset-1.5 lg:-inset-2 rounded-[16px] lg:rounded-[20px] bg-gradient-to-br ${step.color} blur-md transition-opacity duration-500`} 
+          />
+          
+          <div className={`relative z-10 w-full h-full rounded-lg lg:rounded-xl bg-[#080a10] flex items-center justify-center overflow-hidden`}>
+             <step.icon size={18} className="text-white relative z-20 lg:hidden shadow-sm" />
+             <step.icon size={22} className="text-white relative z-20 hidden lg:block" />
+             
+             {/* Dynamic background fill on active */}
+             <motion.div 
+               style={{ scaleY: isActive ? 1 : 0 }}
+               className={`absolute inset-0 bg-gradient-to-br ${step.color} origin-bottom transition-transform duration-700`}
+             />
+          </div>
+          
+          {/* Step Number Tag */}
+          <div className="absolute -top-2 -right-2 lg:-top-3 lg:-right-3 px-1.5 py-0.5 rounded-md bg-white text-black text-[8px] lg:text-[10px] font-black z-30 shadow-lg">
+            {step.number}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Content Card (Left or Right) */}
+      <div className={`w-full grid grid-cols-1 lg:grid-cols-2 items-center`}>
+        <div className={`pl-20 pr-4 lg:px-12 ${isEven ? "lg:col-start-1" : "lg:col-start-2 lg:text-right"} z-10`}>
+          <motion.div
+            initial={{ opacity: 0, x: isEven ? -40 : 40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="group"
+          >
+            <div className={`relative p-6 lg:p-8 rounded-2xl lg:rounded-3xl border border-white/[0.05] bg-white/[0.02] backdrop-blur-md hover:bg-white/[0.04] transition-all duration-500 ${!isEven ? "lg:flex lg:flex-col lg:items-end" : ""}`}>
+              {/* Hover highlight line */}
+              <div className={`absolute top-0 bottom-0 ${isEven ? 'left-0' : 'right-0'} w-1 bg-gradient-to-b ${step.color} opacity-0 group-hover:opacity-100 transition-opacity rounded-full`} />
+              
+              <h3 className="text-lg lg:text-xl font-bold text-white mb-2 lg:mb-3 group-hover:text-violet-400 transition-colors uppercase tracking-tight">
+                {step.title}
+              </h3>
+              <p className="text-xs lg:text-sm text-gray-500 leading-relaxed mb-4 lg:mb-5 max-w-sm">
+                {step.description}
+              </p>
+              <div className={`flex flex-wrap gap-2 ${!isEven ? 'lg:justify-end' : ''}`}>
+                {step.tags.map((tag, j) => (
+                  <span key={j} className="px-2 py-0.5 lg:px-3 lg:py-1 rounded-full bg-white/5 border border-white/10 text-[8px] lg:text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </div>
   );
 }

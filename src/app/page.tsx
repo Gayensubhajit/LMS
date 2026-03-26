@@ -11,7 +11,6 @@ import PricingSection from "@/components/lms/PricingSection";
 import FAQSection from "@/components/lms/FAQSection";
 import CTASection from "@/components/lms/CTASection";
 import Footer from "@/components/lms/Footer";
-import AssistantWidget from "@/components/lms/AssistantWidget";
 
 export default function Home() {
   return (
@@ -31,7 +30,6 @@ export default function Home() {
         <CTASection />
         <Footer />
       </div>
-      <AssistantWidget />
     </main>
   );
 }

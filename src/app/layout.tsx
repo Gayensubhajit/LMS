@@ -6,6 +6,7 @@ import ErrorReporter from "@/components/ErrorReporter";
 import Script from "next/script";
 import { ThemeProviderWrapper } from "@/components/theme/ThemeProviderWrapper";
 import ClerkProviderWrapper from "@/components/auth/ClerkProviderWrapper";
+import AssistantWidget from "@/components/lms/AssistantWidget";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,6 +47,7 @@ export default function RootLayout({
               data-custom-data='{"appName": "YourApp", "version": "1.0.0", "greeting": "hi"}'
             />
             {children}
+            <AssistantWidget />
             <VisualEditsMessenger />
           </ThemeProviderWrapper>
         </ClerkProviderWrapper>

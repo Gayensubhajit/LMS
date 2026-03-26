@@ -230,6 +230,19 @@ export default function HeroSection() {
                   </div>
                 </Link>
               </motion.div>
+
+              <motion.div
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.96 }}
+              >
+                <Link
+                  href="/features"
+                  className={`${montserrat.className} flex items-center gap-2 text-sm font-semibold text-violet-400 hover:text-violet-300 transition-colors underline underline-offset-4`}
+                >
+                  <Sparkles size={15} />
+                  Explore all features →
+                </Link>
+              </motion.div>
             </motion.div>
 
             {/* Stats */}

@@ -1,204 +1,387 @@
-"use client";
+'use client';
 
-// Force recompile to fix potential 404 issue.
-
-import { useRouter } from "next/navigation";
-import { useUser, useClerk } from "@clerk/nextjs";
-import {
-  ArrowLeft,
-  X,
-  User,
-  ShoppingBag,
-  Settings,
-  Globe,
-  ChevronRight,
-  Bell,
-  Award,
-  HelpCircle,
-  LogOut,
-} from "lucide-react";
+import React from 'react';
+import { motion } from 'framer-motion';
 import Navbar from "@/components/lms/Navbar";
 import Footer from "@/components/lms/Footer";
+import PioneerPassport from "@/components/lms/PioneerPassport";
+import { 
+  User,
+  Pencil,
+  Share2,
+  Globe,
+  Briefcase,
+  GraduationCap,
+  Plus,
+  Info,
+  ChevronRight,
+  ExternalLink,
+  Award,
+  BarChart3,
+  TrendingUp,
+  CheckCircle2,
+  Box,
+  BrainCircuit,
+  Cpu,
+  Monitor,
+  Zap
+} from 'lucide-react';
 
 export default function ProfilePage() {
-  const router = useRouter();
-  const { user, isLoaded } = useUser();
-  const { signOut } = useClerk();
-
-  const avatarUrl = user?.imageUrl;
-  const initials = user
-    ? (user.firstName?.[0] ?? "") + (user.lastName?.[0] ?? "") ||
-      user.emailAddresses[0]?.emailAddress[0]?.toUpperCase() ||
-      "?"
-    : "";
-
-  const accountItems = [
-    { label: "Profile", href: "/profile/edit", icon: User },
-    { label: "My Purchases", href: "/my-courses", icon: ShoppingBag },
-    { label: "Settings", href: "/settings", icon: Settings },
+  const desiredRoles = [
+    { label: "Machine Learning Engineer", icon: BrainCircuit, tech: "PyTorch • TensorFlow" },
+    { label: "Data Analyst", icon: Cpu, tech: "SQL • Pandas" },
+    { label: "Python Developer", icon: Monitor, tech: "Django • FastAPI" }
   ];
 
-  const accountItems2 = [
-    { label: "Updates", href: "/updates", icon: Bell },
-    { label: "Accomplishments", href: "/accomplishments", icon: Award },
-    { label: "Help Center", href: "/support", icon: HelpCircle },
-  ];
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: { 
+        type: 'spring' as const, 
+        stiffness: 300, 
+        damping: 24 
+      }
+    }
+  };
 
   return (
-    <>
+    <main className="relative min-h-screen bg-[#080a10] overflow-x-hidden pt-20 font-sans selection:bg-violet-500/30">
       <Navbar />
-      <main className="min-h-screen pt-20 md:pt-24 pb-16">
-        <div className="max-w-xl mx-auto px-5">
-          {/* Back / Close header */}
-          <div className="flex items-center justify-between mb-6">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="flex items-center gap-1.5 text-sm font-medium text-gray-400 hover:text-white transition-colors"
+      
+      {/* Dynamic Starfield & Nebula Background */}
+      <div className="absolute inset-0 z-0 opacity-20 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-violet-600/10 blur-[130px] rounded-full animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-sky-600/10 blur-[130px] rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20" />
+      </div>
+
+      <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start"
+        >
+          
+          {/* ================= LEFT SIDEBAR (STICKY ON DESKTOP) ================= */}
+          <div className="lg:col-span-1 space-y-6 lg:sticky lg:top-28 w-full">
+            {/* Personal Details Card */}
+            <motion.div 
+              variants={itemVariants}
+              whileHover={{ y: -5 }}
+              className="bg-slate-900/40 border border-white/5 backdrop-blur-md rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 text-center relative group overflow-hidden"
             >
-              <ArrowLeft size={16} />
-              Back
-            </button>
-            <button
-              type="button"
-              onClick={() => router.push("/")}
-              className="p-1 text-gray-400 hover:text-white transition-colors"
-              aria-label="Close"
+              <div className="absolute -inset-1 bg-gradient-to-tr from-violet-600/10 to-sky-400/10 opacity-0 group-hover:opacity-100 transition-opacity blur-xl" />
+              <div className="relative z-10">
+                <div className="flex justify-between items-start mb-6">
+                  <span className="text-[10px] sm:text-[11px] font-black text-white/40 uppercase tracking-[0.2em]">Personal Details</span>
+                  <button className="p-2 rounded-xl bg-white/5 text-gray-400 hover:text-white transition-all hover:bg-white/10" aria-label="Edit details">
+                    <Pencil size={14} />
+                  </button>
+                </div>
+
+                <div className="relative inline-block mb-6 group/avatar">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-violet-600 to-sky-400 rounded-full blur-md opacity-20 group-hover/avatar:opacity-60 transition-opacity animate-pulse" />
+                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full border-2 border-violet-500/30 flex items-center justify-center bg-slate-950 overflow-hidden shadow-2xl group-hover/avatar:border-violet-400 transition-colors">
+                      <span className="text-4xl sm:text-5xl font-black text-white italic tracking-tighter drop-shadow-2xl">S</span>
+                  </div>
+                  <div className="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 w-8 h-8 sm:w-10 sm:h-10 bg-violet-600 rounded-full flex items-center justify-center border-2 sm:border-4 border-slate-950 shadow-lg text-white">
+                     <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="currentColor" />
+                  </div>
+                </div>
+
+                <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-violet-300 transition-all">Subhajit Gayen</h1>
+                <p className="text-[10px] sm:text-xs text-violet-400/60 mb-6 sm:mb-8 uppercase tracking-[0.2em] font-black">Pioneer Level 42</p>
+
+                <div className="space-y-3">
+                  <button className="w-full py-3 sm:py-3.5 rounded-xl sm:rounded-2xl border border-violet-500/30 text-violet-400 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-violet-500/10 transition-all shadow-lg hover:shadow-violet-500/10">
+                    <Share2 size={16} /> Share profile
+                  </button>
+                  <button className="w-full text-[10px] sm:text-[11px] font-black text-gray-500 hover:text-white transition-colors uppercase tracking-widest">
+                    Update visibility
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Work Preferences Card */}
+            <motion.div 
+              variants={itemVariants}
+              whileHover={{ y: -5 }}
+              className="bg-slate-900/40 border border-white/5 backdrop-blur-md rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden"
             >
-              <X size={20} />
-            </button>
+              <div className="absolute -inset-1 bg-gradient-to-tr from-sky-400/10 to-violet-600/10 opacity-0 group-hover:opacity-100 transition-opacity blur-xl" />
+              <div className="relative z-10">
+                <div className="flex justify-between items-start mb-6">
+                  <h3 className="text-[10px] sm:text-xs font-black text-white uppercase tracking-[0.2em]">Work preferences</h3>
+                  <button className="p-2 rounded-xl bg-white/5 text-gray-400 hover:text-white transition-all hover:bg-white/10">
+                    <Pencil size={14} />
+                  </button>
+                </div>
+                
+                <div className="space-y-4">
+                   <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-1">Desired roles</span>
+                   <div className="space-y-2">
+                      {desiredRoles.map((role, i) => (
+                        <div key={i} className="flex items-center gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/5 border border-white/5 hover:border-violet-500/30 transition-all cursor-default group/role shadow-inner">
+                           <div className="p-2 rounded-lg sm:p-2.5 sm:rounded-xl bg-violet-400/5 text-violet-400 group-hover/role:bg-violet-400/20 group-hover/role:scale-110 transition-all">
+                              <role.icon className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+                           </div>
+                           <div className="flex flex-col">
+                              <span className="text-xs font-black text-gray-200 group-hover/role:text-white transition-colors uppercase tracking-tight">{role.label}</span>
+                              <span className="text-[9px] text-gray-500 uppercase tracking-tighter mt-0.5">{role.tech}</span>
+                           </div>
+                        </div>
+                      ))}
+                   </div>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Additional Info Card */}
+            <motion.div 
+              variants={itemVariants}
+              whileHover={{ y: -5 }}
+              className="bg-slate-900/40 border border-white/5 backdrop-blur-md rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden"
+            >
+              <div className="relative z-10">
+                <h3 className="text-[10px] sm:text-xs font-black text-white uppercase tracking-[0.2em] mb-4">Additional info</h3>
+                <p className="text-[11px] sm:text-xs text-gray-500 mb-6 leading-relaxed font-medium">
+                  Add links to your portfolio, GitHub, or LinkedIn to help recruiters find you.
+                </p>
+                <button className="w-full py-3.5 sm:py-4 rounded-xl sm:rounded-2xl bg-white/5 border border-white/10 text-white font-black text-[10px] sm:text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-white/10 transition-all hover:border-violet-500/20 shadow-xl">
+                  <Plus size={16} /> Add Info
+                </button>
+              </div>
+            </motion.div>
           </div>
 
-          {/* User avatar + info */}
-          {isLoaded && user && (
-            <div className="flex items-center gap-4 mb-8">
-              <div
-                className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center border-2 border-violet-500/40"
-                style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}
-              >
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt={initials}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <span className="text-white text-lg font-bold">
-                    {initials}
-                  </span>
-                )}
+          {/* ================= MAIN CONTENT ================= */}
+          <div className="lg:col-span-3 space-y-8 lg:space-y-10 w-full overflow-hidden">
+            
+            {/* HERO - Pioneer Passport */}
+            <motion.div 
+               variants={itemVariants}
+               className="relative overflow-hidden rounded-[2.5rem] sm:rounded-[3rem] p-px shadow-2xl group w-full"
+            >
+               <div className="absolute inset-0 bg-gradient-to-br from-violet-600/30 via-transparent to-sky-400/30 group-hover:opacity-100 opacity-60 transition-opacity duration-700" />
+               <div className="relative bg-slate-950/90 backdrop-blur-3xl rounded-[2.45rem] sm:rounded-[2.95rem] p-6 sm:p-8 lg:p-14 border border-white/5 overflow-hidden">
+                  <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-violet-600/5 blur-[100px] rounded-full pointer-events-none" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
+                     <div className="relative z-10 text-center md:text-left">
+                        <span className="text-[9px] sm:text-[10px] font-black text-violet-400 uppercase tracking-[0.4em] mb-4 block animate-pulse">Certified Intelligence Asset</span>
+                        <h2 className="text-3xl sm:text-4xl lg:text-7xl font-black text-white tracking-tighter mb-4 lg:mb-6 leading-[0.85] uppercase">
+                           Pioneer <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-pink-400 to-sky-400">Identity</span>
+                        </h2>
+                        <p className="text-gray-500 text-[11px] sm:text-sm mb-6 lg:mb-8 leading-relaxed max-w-sm mx-auto md:mx-0 font-medium">
+                           Synchronizing your multi-dimensional progress across the EduNova network.
+                        </p>
+                        <div className="flex flex-wrap justify-center md:justify-start gap-3">
+                           <div className="px-4 py-2 rounded-full bg-violet-400/10 border border-violet-400/20 text-[9px] font-black text-violet-400 uppercase tracking-[0.2em] shadow-lg">
+                              Alpha active
+                           </div>
+                           <div className="px-4 py-2 rounded-full bg-sky-400/10 border border-sky-400/20 text-[9px] font-black text-sky-400 uppercase tracking-[0.2em] shadow-lg">
+                              Sync: 100%
+                           </div>
+                        </div>
+                     </div>
+                     <div className="flex justify-center relative z-10 transform hover:scale-105 transition-transform duration-500 w-full max-w-[280px] sm:max-w-[340px] mx-auto md:max-w-none">
+                        <PioneerPassport />
+                     </div>
+                  </div>
+               </div>
+            </motion.div>
+
+            {/* Experience Section */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 px-4 sm:px-6">
+                 <h3 className="text-sm sm:text-base font-black text-white uppercase tracking-[0.3em]">Experience</h3>
+                 <div className="h-px flex-1 bg-gradient-to-r from-violet-500/20 to-transparent" />
+                 <Info size={14} className="text-gray-700" />
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-lg font-bold text-white truncate">
-                  {user.fullName ??
-                    user.emailAddresses[0]?.emailAddress.split("@")[0]}
-                </p>
-                <p className="text-sm text-gray-500 truncate">
-                  {user.emailAddresses[0]?.emailAddress}
-                </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+                {/* Projects Card */}
+                <motion.div 
+                  variants={itemVariants}
+                  whileHover={{ y: -5, boxShadow: "0 20px 30px -10px rgba(124, 58, 237, 0.1)" }}
+                  className="bg-slate-900/40 border border-white/5 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-violet-600/5 blur-[50px] rounded-full group-hover:bg-violet-600/10 transition-colors" />
+                  <div className="flex justify-between items-start mb-6">
+                    <h4 className="text-[10px] font-black text-white uppercase tracking-widest px-3 py-1.5 rounded-full bg-white/5 border border-white/5">Projects</h4>
+                    <div className="p-2 rounded-xl bg-violet-400/10 text-violet-400">
+                      <BarChart3 size={18} />
+                    </div>
+                  </div>
+                  <p className="text-[12px] sm:text-sm text-gray-400 mb-8 leading-relaxed font-medium">
+                    Showcase your high-impact work. Demonstrate mastery through job-relevant projects.
+                  </p>
+                  <button className="text-[10px] sm:text-xs font-black text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-1 group/btn uppercase tracking-widest">
+                    Browse Projects <ChevronRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                  </button>
+                </motion.div>
+
+                {/* Work History Card */}
+                <motion.div 
+                  variants={itemVariants}
+                  whileHover={{ y: -5, boxShadow: "0 20px 30px -10px rgba(56, 189, 248, 0.1)" }}
+                  className="bg-slate-900/40 border border-white/5 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden"
+                >
+                  <div className="absolute top-0 right-0 w-32 h-32 bg-sky-400/5 blur-[50px] rounded-full group-hover:bg-sky-400/10 transition-colors" />
+                  <div className="flex justify-between items-start mb-6">
+                    <h4 className="text-[10px] font-black text-white uppercase tracking-widest px-3 py-1.5 rounded-full bg-white/5 border border-white/5">Work history</h4>
+                    <div className="p-2 rounded-xl bg-sky-400/10 text-sky-400">
+                      <Briefcase size={18} />
+                    </div>
+                  </div>
+                  <p className="text-[12px] sm:text-sm text-gray-400 mb-8 leading-relaxed font-medium">
+                    Consolidate your профессиональный journey. Add internships, volunteer roles, or industry experience.
+                  </p>
+                  <button className="w-full py-3.5 sm:py-4 rounded-xl sm:rounded-2xl bg-white/5 border border-white/10 text-white font-black text-[10px] sm:text-xs flex items-center justify-center gap-2 hover:bg-white/10 transition-all uppercase tracking-widest shadow-lg">
+                    <Plus size={16} /> Add experience
+                  </button>
+                </motion.div>
               </div>
             </div>
-          )}
 
-          {/* Your Account heading */}
-          <h1 className="text-2xl font-bold text-white mb-6">Your Account</h1>
-
-          {/* Divider */}
-          <div
-            className="h-px w-full mb-2"
-            style={{ background: "rgba(124,58,237,0.2)" }}
-          />
-
-          {/* Account menu items */}
-          <div className="space-y-0">
-            {accountItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="flex items-center gap-4 py-4 text-gray-300 hover:text-white transition-colors group"
-                  style={{
-                    borderBottom: "1px solid rgba(124,58,237,0.1)",
-                  }}
-                >
-                  <Icon
-                    size={20}
-                    className="text-gray-500 group-hover:text-violet-400 transition-colors flex-shrink-0"
-                  />
-                  <span className="text-[15px] font-medium flex-1">
-                    {item.label}
-                  </span>
-                  <ChevronRight
-                    size={16}
-                    className="text-gray-600 group-hover:text-gray-400 transition-colors"
-                  />
-                </a>
-              );
-            })}
-
-            {/* Preferred Language */}
-            <button
-              type="button"
-              className="w-full flex items-center gap-4 py-4 text-gray-300 hover:text-white transition-colors group"
-              style={{
-                borderBottom: "1px solid rgba(124,58,237,0.1)",
-              }}
+            {/* Intelligence Insights (Radar Chart Integration) */}
+            <motion.div 
+              variants={itemVariants}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              className="bg-slate-950 p-8 sm:p-10 md:p-16 rounded-[2.5rem] sm:rounded-[3.5rem] border border-white/5 relative overflow-hidden group shadow-2xl"
             >
-              <Globe
-                size={20}
-                className="text-gray-500 group-hover:text-violet-400 transition-colors flex-shrink-0"
-              />
-              <span className="text-[15px] font-medium flex-1 text-left">
-                Preferred language: English
-              </span>
-              <ChevronRight
-                size={16}
-                className="text-gray-600 group-hover:text-gray-400 transition-colors"
-              />
-            </button>
+               <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-600/5 blur-[120px] rounded-full pointer-events-none group-hover:bg-violet-600/10 transition-all duration-1000" />
+               <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
+                  <div className="text-center md:text-left">
+                     <span className="text-[9px] sm:text-[10px] font-black text-violet-400 uppercase tracking-[0.5em] mb-4 block">Intelligence Profile</span>
+                     <h3 className="text-2xl sm:text-3xl font-black text-white uppercase tracking-tighter mb-4 sm:mb-6 leading-none">
+                        Learning <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-sky-400">DNA</span>
+                     </h3>
+                     <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-6 lg:mb-8 font-medium">
+                        Theoretical mastery meets practical execution in a unified visualization.
+                     </p>
+                     <div className="flex flex-row justify-center md:justify-start gap-4">
+                        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] bg-white/[0.03] border border-white/5 group-hover:border-violet-500/20 transition-all shadow-inner flex flex-col items-center sm:items-start">
+                           <span className="text-[8px] sm:text-[10px] font-black text-gray-500 uppercase block mb-1">Rank</span>
+                           <span className="text-[11px] sm:text-sm font-black text-white italic tracking-tighter uppercase whitespace-nowrap">Voyager</span>
+                        </div>
+                        <div className="p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] bg-white/[0.03] border border-white/5 group-hover:border-sky-500/20 transition-all shadow-inner flex flex-col items-center sm:items-start">
+                           <span className="text-[8px] sm:text-[10px] font-black text-gray-500 uppercase block mb-1">99th Percentile</span>
+                           <span className="text-lg sm:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-sky-400">148.2</span>
+                        </div>
+                     </div>
+                  </div>
+                  
+                  {/* Skill Radar SVG Animation */}
+                  <div className="relative aspect-square max-w-[240px] sm:max-w-[340px] mx-auto group-hover:scale-110 transition-transform duration-1000 ease-out">
+                     <div className="absolute inset-0 bg-violet-500/10 blur-[60px] rounded-full animate-pulse" />
+                     <svg viewBox="0 0 100 100" className="w-full h-full transform -rotate-90 overflow-visible relative z-10">
+                        <defs>
+                           <radialGradient id="dataGlow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                              <stop offset="0%" stopColor="#a78bfa" stopOpacity="0.4" />
+                              <stop offset="100%" stopColor="#a78bfa" stopOpacity="0" />
+                           </radialGradient>
+                        </defs>
+                        {[20, 40, 60, 80, 100].map(r => (
+                          <circle key={r} cx="50" cy="50" r={r/2} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" strokeDasharray="1 2" />
+                        ))}
+                        {[0, 120, 240].map(angle => (
+                          <line key={angle} x1="50" y1="50" x2={50 + 50 * Math.cos(angle * Math.PI / 180)} y2={50 + 50 * Math.sin(angle * Math.PI / 180)} stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+                        ))}
+                        <polygon 
+                          points="50,15 85,75 15,75" 
+                          fill="url(#dataGlow)"
+                          stroke="#a78bfa"
+                          strokeWidth="2"
+                          className="animate-[pulse_4s_infinite]"
+                        />
+                        <circle cx="50" cy="15" r="2.5" fill="#a78bfa" className="shadow-violet-500 shadow-lg" />
+                        <circle cx="85" cy="75" r="2.5" fill="#ec4899" />
+                        <circle cx="15" cy="75" r="2.5" fill="#38bdf8" />
+                     </svg>
+                     <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-6 sm:-translate-y-10 text-[9px] sm:text-[11px] font-black text-violet-400 uppercase tracking-[0.3em]">Theoretical</div>
+                     <div className="absolute bottom-2 right-0 translate-x-10 text-[9px] sm:text-[11px] font-black text-pink-400 uppercase tracking-[0.3em]">Execution</div>
+                     <div className="absolute bottom-2 left-0 -translate-x-10 text-[9px] sm:text-[11px] font-black text-sky-400 uppercase tracking-[0.3em]">Interface</div>
+                  </div>
+               </div>
+            </motion.div>
 
-            {accountItems2.map((item) => {
-              const Icon = item.icon;
-              return (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="flex items-center gap-4 py-4 text-gray-300 hover:text-white transition-colors group"
-                  style={{
-                    borderBottom: "1px solid rgba(124,58,237,0.1)",
-                  }}
+            {/* Education Section */}
+            <div className="space-y-6 pb-12 lg:pb-0">
+               <div className="flex items-center gap-3 px-4 sm:px-6">
+                 <h3 className="text-sm sm:text-base font-black text-white uppercase tracking-[0.3em]">Education</h3>
+                 <div className="h-px flex-1 bg-gradient-to-r from-sky-500/20 to-transparent" />
+                 <Info size={14} className="text-gray-700" />
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+                {/* Credentials Card */}
+                <motion.div 
+                   variants={itemVariants}
+                   whileHover={{ y: -5, boxShadow: "0 20px 30px -10px rgba(124, 58, 237, 0.1)" }}
+                   className="bg-slate-900/40 border border-white/5 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden"
                 >
-                  <Icon
-                    size={20}
-                    className="text-gray-500 group-hover:text-violet-400 transition-colors flex-shrink-0"
-                  />
-                  <span className="text-[15px] font-medium flex-1">
-                    {item.label}
-                  </span>
-                  <ChevronRight
-                    size={16}
-                    className="text-gray-600 group-hover:text-gray-400 transition-colors"
-                  />
-                </a>
-              );
-            })}
+                  <div className="flex justify-between items-start mb-6">
+                    <h4 className="text-[10px] font-black text-white uppercase tracking-widest px-3 py-1.5 rounded-full bg-white/5 border border-white/5">Credentials</h4>
+                    <button className="py-1.5 px-3 sm:px-5 rounded-lg sm:rounded-xl bg-violet-600/20 text-violet-400 text-[9px] sm:text-[10px] font-black uppercase tracking-widest hover:bg-violet-600/40 transition-all border border-violet-500/10 active:scale-95">
+                      Add New
+                    </button>
+                  </div>
+                  <p className="text-[12px] sm:text-sm text-gray-400 mb-8 leading-relaxed font-medium">
+                    Verified training from companies like Google & Meta.
+                  </p>
+                  <button className="text-[10px] sm:text-xs font-black text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-2 group/btn uppercase tracking-[0.2em]">
+                    Browse Certs <ChevronRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
+                  </button>
+                </motion.div>
 
-            {/* Log Out */}
-            <button
-              type="button"
-              onClick={() => void signOut({ redirectUrl: "/" })}
-              className="w-full flex items-center gap-4 py-4 text-red-400 hover:text-red-300 transition-colors group"
-            >
-              <LogOut
-                size={20}
-                className="flex-shrink-0"
-              />
-              <span className="text-[15px] font-medium">Log Out</span>
-            </button>
+                {/* Degrees Card */}
+                <motion.div 
+                   variants={itemVariants}
+                   whileHover={{ y: -5, boxShadow: "0 20px 30px -10px rgba(167, 139, 250, 0.1)" }}
+                   className="bg-slate-900/40 border border-white/5 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden"
+                >
+                  <div className="flex justify-between items-start mb-6">
+                     <h4 className="text-[10px] font-black text-white uppercase tracking-widest px-3 py-1.5 rounded-full bg-white/5 border border-white/5">Degrees</h4>
+                     <button className="p-2 rounded-xl bg-white/5 text-gray-400 hover:text-white transition-all hover:bg-white/10">
+                        <Pencil size={14} />
+                     </button>
+                  </div>
+                  
+                  <div className="flex items-center gap-4 sm:gap-5 bg-white/[0.03] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-white/5 group-hover:border-violet-500/40 transition-all shadow-inner relative overflow-hidden">
+                     <div className="absolute -inset-px bg-gradient-to-r from-violet-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                     <div className="relative z-10 w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <GraduationCap className="text-violet-400 w-6 h-6 sm:w-7 sm:h-7" />
+                     </div>
+                     <div className="relative z-10">
+                        <h5 className="text-[12px] sm:text-sm lg:text-base font-black text-white uppercase tracking-tight">Bachelor's degree</h5>
+                        <p className="text-[9px] sm:text-[10px] text-violet-400/70 font-black uppercase tracking-[0.2em] mt-1">CS • Year 3</p>
+                     </div>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+
           </div>
-        </div>
-      </main>
-    </>
+        </motion.div>
+      </section>
+
+      <Footer />
+    </main>
   );
 }

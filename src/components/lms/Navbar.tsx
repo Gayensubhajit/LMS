@@ -92,7 +92,7 @@ export default function Navbar() {
   const { signOut } = useClerk();
 
   const [scrolled, setScrolled] = useState(false);
-  const [mobilePanel, setMobilePanel] = useState<"none" | "account" | "search">("none");
+  const [mobilePanel, setMobilePanel] = useState<"none" | "main" | "account" | "search">("none");
   const [query, setQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -362,6 +362,7 @@ export default function Navbar() {
               />
             </motion.a>
           )}
+
 
           {navLinks.slice(1).map((link) => {
             const isActive = pathname === link.href;
@@ -807,11 +808,11 @@ export default function Navbar() {
           <button
             className="text-gray-300 hover:text-white cursor-pointer"
             onClick={() => {
-              setMobilePanel((p) => (p === "account" ? "none" : "account"));
+              setMobilePanel((p) => (p === "main" || p === "account" ? "none" : "main"));
             }}
             aria-label="Account menu"
           >
-            {mobilePanel === "account" ? <X size={22} /> : <Menu size={22} />}
+            {mobilePanel !== "none" ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
         </div>
@@ -936,18 +937,17 @@ export default function Navbar() {
                   ))}
                 </div>
               </div>
-            ) : (
-              // Account panel
+            ) : mobilePanel === "main" ? (
+              // Main menu panel (formerly account but rebranded to main)
               <div className="px-5 pb-6">
                 {/* Start content immediately with small top padding */}
                 <div className="pt-2" />
 
                 {/* Profile section — only when signed in */}
                 {isLoaded && user && (
-                  <a
-                    href="/profile"
-                    onClick={() => setMobilePanel("none")}
-                    className="flex items-center gap-3 mt-1 mb-2 py-3 rounded-xl hover:bg-white/5 transition-colors"
+                  <button
+                    onClick={() => setMobilePanel("account")}
+                    className="w-full flex items-center gap-3 mt-1 mb-2 py-3 rounded-xl hover:bg-white/5 transition-colors text-left"
                   >
                     <div
                       className="w-11 h-11 rounded-full overflow-hidden flex items-center justify-center border-2 border-violet-500/40"
@@ -968,7 +968,7 @@ export default function Navbar() {
                       </p>
                     </div>
                     <ChevronRight size={16} className="text-gray-500 flex-shrink-0" />
-                  </a>
+                  </button>
                 )}
 
                 {/* Divider */}
@@ -1058,6 +1058,72 @@ export default function Navbar() {
                     </a>
                   </div>
                 )}
+              </div>
+            ) : (
+              // Enhanced Account Panel matching target UI but with Celestial Dark Theme
+              <div className="flex flex-col h-full bg-[#0a0a16] text-white">
+                {/* Header: Back & X */}
+                <div className="flex items-center justify-between px-4 py-4 border-b border-white/5 bg-[#0d0d1f]">
+                  <button
+                    className="flex items-center gap-2 text-gray-400 hover:text-white font-bold transition-colors"
+                    onClick={() => setMobilePanel("main")}
+                  >
+                    <ArrowLeft size={20} />
+                    <span className="text-sm uppercase tracking-widest">Back</span>
+                  </button>
+                  <button
+                    className="text-gray-500 hover:text-white"
+                    onClick={() => setMobilePanel("none")}
+                    aria-label="Close menu"
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
+
+                <div className="px-6 py-8 overflow-y-auto pb-24">
+                  <h2 className="text-2xl font-black text-white mb-8 tracking-tighter uppercase">Your Account</h2>
+
+                  <div className="space-y-2">
+                    {[
+                      { label: "Profile", href: "/profile", icon: User },
+                      { label: "My Purchases", href: "/my-courses", icon: ShoppingBag },
+                      { label: "Settings", href: "/settings", icon: Settings },
+                      { label: "Preferred language: English", href: "/settings", icon: Globe, arrow: true },
+                      { label: "Updates", href: "/updates", icon: Bell },
+                      { label: "Accomplishments", href: "/profile", icon: Award },
+                      { label: "Help Center", href: "/support", icon: HelpCircle },
+                    ].map((item, idx) => (
+                      <a
+                        key={idx}
+                        href={item.href}
+                        onClick={() => setMobilePanel("none")}
+                        className="flex items-center justify-between py-4 group hover:bg-white/5 rounded-2xl transition-all px-3 border border-transparent hover:border-white/10"
+                      >
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-violet-500/20 transition-colors">
+                            <item.icon size={20} className="text-violet-400 group-hover:text-violet-300 transition-colors" />
+                          </div>
+                          <span className="text-sm font-bold text-gray-300 group-hover:text-white transition-colors">{item.label}</span>
+                        </div>
+                        {item.arrow && <ChevronRight size={18} className="text-gray-600 group-hover:text-gray-400" />}
+                      </a>
+                    ))}
+
+                    {/* Log Out */}
+                    <button
+                      onClick={() => {
+                        setMobilePanel("none");
+                        void signOut({ redirectUrl: "/" });
+                      }}
+                      className="w-full flex items-center gap-4 py-5 px-3 group hover:bg-red-500/5 rounded-2xl transition-colors mt-4 border border-transparent hover:border-red-500/10"
+                    >
+                       <div className="w-10 h-10 rounded-xl bg-red-500/10 flex items-center justify-center">
+                          <LogOut size={20} className="text-red-400" />
+                       </div>
+                       <span className="text-sm font-bold text-red-400 group-hover:text-red-300">Log Out</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </motion.div>

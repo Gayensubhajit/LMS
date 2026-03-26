@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
@@ -48,7 +48,7 @@ const floatingAvatars = [
     color: "from-amber-500 to-orange-600",
     delay: 1.5,
     x: "60%",
-    y: "28%",
+    y: "30%",
   },
 ];
 
@@ -185,39 +185,52 @@ export default function HeroSection() {
             </motion.p>
 
             {/* CTAs */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="flex flex-wrap items-center gap-4 justify-center lg:justify-start mb-10"
+            >
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="flex flex-wrap items-center gap-4 justify-center lg:justify-start mb-10"
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow:
+                    "0 0 40px rgba(124,58,237,0.6), 0 0 80px rgba(124,58,237,0.2)",
+                }}
+                whileTap={{ scale: 0.97 }}
               >
-                <motion.div whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(124,58,237,0.6), 0 0 80px rgba(124,58,237,0.2)" }} whileTap={{ scale: 0.97 }}>
-                  <Link
-                    href="/courses"
-                    className={`${montserrat.className} group relative flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold px-8 py-4 rounded-2xl text-base overflow-hidden`}
-                  >
-                    <span className="relative z-10">Start Learning Free</span>
-                    <ArrowRight size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />
-                    <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </Link>
-                </motion.div>
-
-                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
-                  <Link
-                    href="/demo"
-                    className="flex items-center gap-3 text-white group"
-                  >
-                    <div className="relative w-12 h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center group-hover:bg-violet-600/30 transition-colors duration-300">
-                      <Play size={16} fill="white" className="translate-x-0.5" />
-                      <div className="absolute inset-0 rounded-full border border-violet-400/30 animate-ping opacity-60" />
-                    </div>
-                    <div className="text-left">
-                      <div className="text-sm font-semibold">Watch Demo</div>
-                      <div className="text-xs text-gray-400">2 min preview</div>
-                    </div>
-                  </Link>
-                </motion.div>
+                <Link
+                  href="/courses"
+                  className={`${montserrat.className} group relative flex items-center gap-2 bg-linear-to-r from-violet-600 to-purple-600 text-white font-bold px-8 py-4 rounded-2xl text-base overflow-hidden`}
+                >
+                  <span className="relative z-10">Start Learning Free</span>
+                  <ArrowRight
+                    size={18}
+                    className="relative z-10 group-hover:translate-x-1 transition-transform"
+                  />
+                  <div className="absolute inset-0 bg-linear-to-r from-violet-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </Link>
               </motion.div>
+
+              <motion.div
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.96 }}
+              >
+                <Link
+                  href="/demo"
+                  className="flex items-center gap-3 text-white group"
+                >
+                  <div className="relative w-12 h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center group-hover:bg-violet-600/30 transition-colors duration-300">
+                    <Play size={16} fill="white" className="translate-x-0.5" />
+                    <div className="absolute inset-0 rounded-full border border-violet-400/30 animate-ping opacity-60" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-sm font-semibold">Watch Demo</div>
+                    <div className="text-xs text-gray-400">2 min preview</div>
+                  </div>
+                </Link>
+              </motion.div>
+            </motion.div>
 
             {/* Stats */}
             <motion.div
@@ -256,7 +269,7 @@ export default function HeroSection() {
               className="relative w-72 h-80 rounded-3xl overflow-hidden cursor-default"
             >
               {/* Card bg */}
-              <div className="absolute inset-0 bg-gradient-to-br from-violet-900/60 via-purple-900/40 to-[#0f0f1a] backdrop-blur-xl border border-violet-500/30 rounded-3xl" />
+              <div className="absolute inset-0 bg-linear-to-br from-violet-900/60 via-purple-900/40 to-[#0f0f1a] backdrop-blur-xl border border-violet-500/30 rounded-3xl" />
 
               {/* Animated shimmer */}
               <div className="absolute inset-0 shimmer rounded-3xl" />
@@ -272,7 +285,7 @@ export default function HeroSection() {
                 </div>
 
                 {/* Course thumbnail placeholder */}
-                <div className="flex-1 rounded-2xl overflow-hidden relative bg-gradient-to-br from-violet-800/30 to-purple-900/30 border border-violet-500/20 flex items-center justify-center mb-4">
+                <div className="flex-1 rounded-2xl overflow-hidden relative bg-linear-to-br from-violet-800/30 to-purple-900/30 border border-violet-500/20 flex items-center justify-center mb-4">
                   <div className="text-center">
                     <div className="text-5xl mb-2">🎨</div>
                     <div className="text-xs text-gray-400">
@@ -329,13 +342,13 @@ export default function HeroSection() {
                   position: "absolute",
                   left: avatar.x,
                   top: avatar.y,
-                  animation: `float ${4 + i}s ease-in-out infinite`,
+                  animation: `float ${3 + i}s ease-in-out infinite`,
                   animationDelay: `${avatar.delay * 0.3}s`,
                 }}
                 className="w-12 h-12 rounded-2xl border border-white/10 shadow-xl overflow-hidden"
               >
                 <div
-                  className={`w-full h-full bg-gradient-to-br ${avatar.color} flex items-center justify-center text-white text-sm font-bold`}
+                  className={`w-full h-full bg-linear-to-br ${avatar.color} flex items-center justify-center text-white text-sm font-bold`}
                 >
                   {avatar.initials}
                 </div>
@@ -350,7 +363,7 @@ export default function HeroSection() {
               className="absolute left-0 top-1/3 glass-card rounded-2xl p-3 flex items-center gap-3 border border-violet-500/20"
               style={{ animation: "float-reverse 5s ease-in-out infinite" }}
             >
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-lg">
+              <div className="w-10 h-10 rounded-xl bg-linear-to-br from-yellow-400 to-orange-500 flex items-center justify-center text-lg">
                 🏆
               </div>
               <div>
@@ -385,7 +398,7 @@ export default function HeroSection() {
       </div>
 
       {/* Bottom fade */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[var(--background)] to-transparent pointer-events-none" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-[var(--background)] to-transparent pointer-events-none" />
     </section>
   );
 }

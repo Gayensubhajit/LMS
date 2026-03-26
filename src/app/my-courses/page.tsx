@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState, useMemo } from "react";
-import { useUser } from "@clerk/nextjs";
+import { SignIn, useUser } from "@clerk/nextjs";
 import { getCourseBySlug } from "@/lib/courses-data";
 import { backendRequest } from "@/lib/backend-client";
 import Navbar from "@/components/lms/Navbar";
@@ -62,17 +62,25 @@ function buildCalendar(year: number, month: number) {
   return cells;
 }
 
-function estimatedCompletion(startsAt: string, totalLessons: number, completedLessons: number) {
+function estimatedCompletion(
+  startsAt: string,
+  totalLessons: number,
+  completedLessons: number,
+) {
   if (totalLessons === 0 || completedLessons >= totalLessons) return null;
   const remaining = totalLessons - completedLessons;
   const daysNeeded = Math.ceil(remaining * 0.5); // ~30min/lesson, ~2 lessons/day
   const d = new Date();
   d.setDate(d.getDate() + daysNeeded);
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  return d.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 export default function MyCoursesPage() {
-  const { user, isLoaded } = useUser();
+  const { user, isLoaded, isSignedIn } = useUser();
   const [enrollments, setEnrollments] = useState<DashboardCourseItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -85,26 +93,45 @@ export default function MyCoursesPage() {
   const [calMonth, setCalMonth] = useState(todayMonth);
   const [calYear, setCalYear] = useState(todayYear);
   const calCells = buildCalendar(calYear, calMonth);
-  const calMonthLabel = new Date(calYear, calMonth, 1).toLocaleDateString("en-US", { month: "long", year: "numeric" });
+  const calMonthLabel = new Date(calYear, calMonth, 1).toLocaleDateString(
+    "en-US",
+    { month: "long", year: "numeric" },
+  );
 
-  const prevMonth = () => { if (calMonth === 0) { setCalMonth(11); setCalYear(y => y - 1); } else setCalMonth(m => m - 1); };
-  const nextMonth = () => { if (calMonth === 11) { setCalMonth(0); setCalYear(y => y + 1); } else setCalMonth(m => m + 1); };
+  const prevMonth = () => {
+    if (calMonth === 0) {
+      setCalMonth(11);
+      setCalYear((y) => y - 1);
+    } else setCalMonth((m) => m - 1);
+  };
+  const nextMonth = () => {
+    if (calMonth === 11) {
+      setCalMonth(0);
+      setCalYear((y) => y + 1);
+    } else setCalMonth((m) => m + 1);
+  };
 
   useEffect(() => {
     const run = async () => {
       if (!isLoaded) return;
-      if (!user?.id) { setLoading(false); return; }
+      if (!user?.id) {
+        setLoading(false);
+        return;
+      }
       try {
-        const res = await backendRequest<{ ok: true; items: DashboardCourseItem[] }>(
-          "/dashboard/my-courses", { clerkUserId: user.id }
-        );
+        const res = await backendRequest<{
+          ok: true;
+          items: DashboardCourseItem[];
+        }>("/dashboard/my-courses", { clerkUserId: user.id });
         setEnrollments(res.items || []);
       } catch (err) {
         const msg = (err as Error).message;
         // Surface a friendlier message for network errors
-        setError(msg === "Failed to fetch"
-          ? "Cannot reach the backend server. Make sure it is running on port 4000."
-          : msg || "Failed to load dashboard");
+        setError(
+          msg === "Failed to fetch"
+            ? "Cannot reach the backend server. Make sure it is running on port 4000."
+            : msg || "Failed to load dashboard",
+        );
       } finally {
         setLoading(false);
       }
@@ -120,29 +147,65 @@ export default function MyCoursesPage() {
   }, []);
 
   const filteredEnrollments = useMemo(() => {
-    if (activeTab === "completed") return enrollments.filter(e => e.progress.progressPercent === 100);
-    return enrollments.filter(e => e.progress.progressPercent < 100);
+    if (activeTab === "completed")
+      return enrollments.filter((e) => e.progress.progressPercent === 100);
+    return enrollments.filter((e) => e.progress.progressPercent < 100);
   }, [enrollments, activeTab]);
 
-  const displayName = user?.firstName || user?.emailAddresses[0]?.emailAddress.split("@")[0] || "Student";
+  const displayName =
+    user?.firstName ||
+    user?.emailAddresses[0]?.emailAddress.split("@")[0] ||
+    "Student";
   const avatarUrl = user?.imageUrl;
-  const initials = ((user?.firstName?.[0] ?? "") + (user?.lastName?.[0] ?? "")) || user?.emailAddresses[0]?.emailAddress[0]?.toUpperCase() || "?";
+  const initials =
+    (user?.firstName?.[0] ?? "") + (user?.lastName?.[0] ?? "") ||
+    user?.emailAddresses[0]?.emailAddress[0]?.toUpperCase() ||
+    "?";
+
+  if (!isLoaded) {
+    return <div className="min-h-screen bg-[#08080f]" />; // Or a skeleton loader
+  }
+  if (!isSignedIn) {
+    return (
+      <div className="min-h-screen bg-[#08080f] flex items-center justify-center p-4">
+        <SignIn
+          routing="hash"
+          appearance={{
+            variables: { colorPrimary: "#7c3aed" }, // Match your violet theme
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#08080f] text-[#f0f0ff]">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-24 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
-
           {/* ── LEFT SIDEBAR ── */}
           <aside className="hidden lg:block">
-
             {/* User greeting */}
             <div className="mb-6">
-              <div className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center text-xl font-black text-white mb-3" style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}>
-                {avatarUrl ? <img src={avatarUrl} alt={initials} className="w-full h-full object-cover" /> : initials}
+              <div
+                className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center text-xl font-black text-white mb-3"
+                style={{
+                  background: "linear-gradient(135deg,#7c3aed,#a855f7)",
+                }}
+              >
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt={initials}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  initials
+                )}
               </div>
-              <h1 className="text-xl font-bold text-white">{greeting}, {displayName}</h1>
+              <h1 className="text-xl font-bold text-white">
+                {greeting}, {displayName}
+              </h1>
               <p className="text-sm mt-0.5 text-gray-400">
                 {enrollments.length === 0
                   ? "Start your learning journey"
@@ -151,14 +214,25 @@ export default function MyCoursesPage() {
             </div>
 
             {/* Today's goals — clickable */}
-            <div className="rounded-lg p-4 mb-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
+            <div
+              className="rounded-lg p-4 mb-4"
+              style={{
+                background: "rgba(255,255,255,0.03)",
+                border: "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
               <div className="flex items-center gap-2 mb-3">
                 <Star size={14} className="text-yellow-400" fill="#facc15" />
-                <h3 className="text-sm font-bold text-white">Today&apos;s goals</h3>
+                <h3 className="text-sm font-bold text-white">
+                  Today&apos;s goals
+                </h3>
               </div>
               <ul className="space-y-2.5">
                 {[
-                  { label: "Complete any 3 learning items • 0/3", href: "/courses" },
+                  {
+                    label: "Complete any 3 learning items • 0/3",
+                    href: "/courses",
+                  },
                   { label: "Complete a reading", href: "/courses?q=reading" },
                   { label: "Continue your weekly streak", href: "/my-courses" },
                 ].map((goal, i) => (
@@ -178,46 +252,76 @@ export default function MyCoursesPage() {
             </div>
 
             {/* Learning plan — full month calendar */}
-            <div className="rounded-lg p-4 mb-4" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}>
-              <h3 className="text-sm font-bold mb-1 text-white">Learning plan</h3>
+            <div
+              className="rounded-lg p-4 mb-4"
+              style={{
+                background: "rgba(255,255,255,0.03)",
+                border: "1px solid rgba(255,255,255,0.08)",
+              }}
+            >
+              <h3 className="text-sm font-bold mb-1 text-white">
+                Learning plan
+              </h3>
 
               {/* Month nav */}
               <div className="flex items-center justify-between mb-3">
-                <button onClick={prevMonth} className="p-0.5 rounded hover:bg-white/10 transition-colors text-gray-400">
+                <button
+                  onClick={prevMonth}
+                  className="p-0.5 rounded hover:bg-white/10 transition-colors text-gray-400"
+                >
                   <ChevronLeft size={14} />
                 </button>
-                <span className="text-xs font-semibold text-gray-300">{calMonthLabel}</span>
-                <button onClick={nextMonth} className="p-0.5 rounded hover:bg-white/10 transition-colors text-gray-400">
+                <span className="text-xs font-semibold text-gray-300">
+                  {calMonthLabel}
+                </span>
+                <button
+                  onClick={nextMonth}
+                  className="p-0.5 rounded hover:bg-white/10 transition-colors text-gray-400"
+                >
                   <ChevronRight size={14} />
                 </button>
               </div>
 
               {/* Day headers */}
               <div className="grid grid-cols-7 mb-1">
-                {CAL_HEADERS.map(h => (
-                  <div key={h} className="text-center text-[10px] font-bold py-0.5 text-gray-500">{h}</div>
+                {CAL_HEADERS.map((h) => (
+                  <div
+                    key={h}
+                    className="text-center text-[10px] font-bold py-0.5 text-gray-500"
+                  >
+                    {h}
+                  </div>
                 ))}
               </div>
 
               {/* Day cells */}
               <div className="grid grid-cols-7 gap-y-0.5">
                 {calCells.map((day, i) => {
-                  const isToday = day === todayDate && calMonth === todayMonth && calYear === todayYear;
-                  const isPast = day !== null && (
-                    calYear < todayYear ||
-                    (calYear === todayYear && calMonth < todayMonth) ||
-                    (calYear === todayYear && calMonth === todayMonth && day < todayDate)
-                  );
+                  const isToday =
+                    day === todayDate &&
+                    calMonth === todayMonth &&
+                    calYear === todayYear;
+                  const isPast =
+                    day !== null &&
+                    (calYear < todayYear ||
+                      (calYear === todayYear && calMonth < todayMonth) ||
+                      (calYear === todayYear &&
+                        calMonth === todayMonth &&
+                        day < todayDate));
                   return (
                     <div
                       key={i}
                       className="flex items-center justify-center h-7 text-[11px] font-medium rounded-full mx-0.5"
                       style={
                         isToday
-                          ? { background: "#7c3aed", color: "#fff", fontWeight: 700 }
+                          ? {
+                              background: "#7c3aed",
+                              color: "#fff",
+                              fontWeight: 700,
+                            }
                           : isPast
-                          ? { color: "#6b7280" }
-                          : { color: day ? "#d1d5db" : "transparent" }
+                            ? { color: "#6b7280" }
+                            : { color: day ? "#d1d5db" : "transparent" }
                       }
                     >
                       {day ?? ""}
@@ -227,26 +331,48 @@ export default function MyCoursesPage() {
               </div>
 
               {/* Legend */}
-              <div className="mt-3 pt-3 flex items-center gap-4 text-[10px] text-gray-500" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+              <div
+                className="mt-3 pt-3 flex items-center gap-4 text-[10px] text-gray-500"
+                style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
+              >
                 <span className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: "#7c3aed" }} />
+                  <span
+                    className="w-2.5 h-2.5 rounded-full inline-block"
+                    style={{ background: "#7c3aed" }}
+                  />
                   Today
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: "rgba(124,58,237,0.3)" }} />
+                  <span
+                    className="w-2.5 h-2.5 rounded-full inline-block"
+                    style={{ background: "rgba(124,58,237,0.3)" }}
+                  />
                   1+ daily goals completed
                 </span>
               </div>
             </div>
 
             {/* Upgrade */}
-            <div className="rounded-lg p-5 mt-2" style={{ background: "rgba(124,58,237,0.05)", border: "1px solid rgba(124,58,237,0.15)" }}>
+            <div
+              className="rounded-lg p-5 mt-2"
+              style={{
+                background: "rgba(124,58,237,0.05)",
+                border: "1px solid rgba(124,58,237,0.15)",
+              }}
+            >
               <div className="w-10 h-10 rounded-xl bg-violet-600/20 flex items-center justify-center mb-4">
                 <GraduationCap size={20} className="text-violet-400" />
               </div>
-              <h3 className="text-sm font-bold mb-1 text-white">Upgrade to Plus</h3>
-              <p className="text-xs mb-4 text-gray-400 leading-relaxed">Get unlimited access to 7,000+ courses and certifications.</p>
-              <Link href="/pricing" className="text-xs font-bold text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-1">
+              <h3 className="text-sm font-bold mb-1 text-white">
+                Upgrade to Plus
+              </h3>
+              <p className="text-xs mb-4 text-gray-400 leading-relaxed">
+                Get unlimited access to 7,000+ courses and certifications.
+              </p>
+              <Link
+                href="/pricing"
+                className="text-xs font-bold text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-1"
+              >
                 View Plans <ArrowRight size={12} />
               </Link>
             </div>
@@ -256,7 +382,7 @@ export default function MyCoursesPage() {
           <section>
             {/* Tabs */}
             <div className="flex gap-1 mb-6 border-b border-white/5">
-              {(["in-progress", "completed"] as TabType[]).map(tab => (
+              {(["in-progress", "completed"] as TabType[]).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
@@ -278,8 +404,11 @@ export default function MyCoursesPage() {
               {/* Loading */}
               {(!isLoaded || loading) && (
                 <motion.div key="skeleton" className="space-y-4">
-                  {[1, 2, 3].map(i => (
-                    <div key={i} className="h-40 rounded-2xl animate-pulse bg-white/[0.02] border border-white/5" />
+                  {[1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className="h-40 rounded-2xl animate-pulse bg-white/[0.02] border border-white/5"
+                    />
                   ))}
                 </motion.div>
               )}
@@ -296,7 +425,9 @@ export default function MyCoursesPage() {
                     <AlertCircle size={20} className="text-red-400" />
                   </div>
                   <div>
-                    <p className="text-base font-bold text-white mb-1">Connection Issue</p>
+                    <p className="text-base font-bold text-white mb-1">
+                      Connection Issue
+                    </p>
                     <p className="text-sm text-gray-400 leading-relaxed max-w-lg">
                       {error}
                     </p>
@@ -315,9 +446,14 @@ export default function MyCoursesPage() {
                   animate={{ opacity: 1 }}
                   className="rounded-2xl p-16 text-center bg-white/[0.02] border border-dashed border-white/10"
                 >
-                  <GraduationCap size={48} className="mx-auto mb-6 text-gray-600" />
+                  <GraduationCap
+                    size={48}
+                    className="mx-auto mb-6 text-gray-600"
+                  />
                   <h2 className="text-xl font-bold mb-2 text-white">
-                    {activeTab === "completed" ? "No completed courses" : "No courses in progress"}
+                    {activeTab === "completed"
+                      ? "No completed courses"
+                      : "No courses in progress"}
                   </h2>
                   <p className="text-sm mb-8 text-gray-500 max-w-sm mx-auto">
                     {activeTab === "completed"
@@ -327,7 +463,10 @@ export default function MyCoursesPage() {
                   <Link
                     href="/courses"
                     className="inline-flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-bold text-white transition-all hover:translate-y-[-2px]"
-                    style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)", boxShadow: "0 10px 20px -10px rgba(124,58,237,0.5)" }}
+                    style={{
+                      background: "linear-gradient(135deg,#7c3aed,#a855f7)",
+                      boxShadow: "0 10px 20px -10px rgba(124,58,237,0.5)",
+                    }}
                   >
                     Explore Courses <ArrowRight size={14} />
                   </Link>
@@ -341,7 +480,11 @@ export default function MyCoursesPage() {
                     const meta = getCourseBySlug(enrollment.course.slug);
                     const pct = enrollment.progress.progressPercent;
                     const isComplete = pct === 100;
-                    const eta = estimatedCompletion(enrollment.startsAt, enrollment.progress.totalLessons, enrollment.progress.completedLessons);
+                    const eta = estimatedCompletion(
+                      enrollment.startsAt,
+                      enrollment.progress.totalLessons,
+                      enrollment.progress.completedLessons,
+                    );
                     const nextLesson = enrollment.progress.nextLesson;
 
                     return (
@@ -351,13 +494,14 @@ export default function MyCoursesPage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.05 }}
                         className="rounded-2xl overflow-hidden group transition-all duration-300 hover:border-violet-500/30"
-                        style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.06)" }}
+                        style={{
+                          background: "rgba(255,255,255,0.02)",
+                          border: "1px solid rgba(255,255,255,0.06)",
+                        }}
                       >
                         <div className="flex flex-col sm:flex-row">
                           {/* Thumbnail */}
-                          <div
-                            className="sm:w-56 h-40 sm:h-auto flex items-center justify-center text-6xl shrink-0 bg-white/[0.02] border-r border-white/5"
-                          >
+                          <div className="sm:w-56 h-40 sm:h-auto flex items-center justify-center text-6xl shrink-0 bg-white/[0.02] border-r border-white/5">
                             <span className="transition-transform duration-500 group-hover:scale-110">
                               {meta?.emoji ?? "📚"}
                             </span>
@@ -377,7 +521,9 @@ export default function MyCoursesPage() {
 
                             {/* Meta row */}
                             <div className="text-xs mb-4 flex items-center gap-2 flex-wrap text-gray-500">
-                              <span className="bg-white/5 px-2 py-0.5 rounded uppercase font-bold text-[10px] border border-white/5">{enrollment.course.category}</span>
+                              <span className="bg-white/5 px-2 py-0.5 rounded uppercase font-bold text-[10px] border border-white/5">
+                                {enrollment.course.category}
+                              </span>
                               <span>•</span>
                               <span>{pct}% complete</span>
                               {eta && !isComplete && (
@@ -389,7 +535,9 @@ export default function MyCoursesPage() {
                               {isComplete && (
                                 <>
                                   <span>•</span>
-                                  <span className="text-emerald-400 flex items-center gap-1 font-bold"><CheckCircle size={12} /> Completed</span>
+                                  <span className="text-emerald-400 flex items-center gap-1 font-bold">
+                                    <CheckCircle size={12} /> Completed
+                                  </span>
                                 </>
                               )}
                             </div>
@@ -399,9 +547,16 @@ export default function MyCoursesPage() {
                               <motion.div
                                 initial={{ width: 0 }}
                                 animate={{ width: `${pct}%` }}
-                                transition={{ duration: 0.8, delay: 0.2 + idx * 0.05 }}
+                                transition={{
+                                  duration: 0.8,
+                                  delay: 0.2 + idx * 0.05,
+                                }}
                                 className="h-full rounded-full"
-                                style={{ background: isComplete ? "linear-gradient(90deg,#1fad56,#44d67c)" : "linear-gradient(90deg,#7c3aed,#a855f7)" }}
+                                style={{
+                                  background: isComplete
+                                    ? "linear-gradient(90deg,#1fad56,#44d67c)"
+                                    : "linear-gradient(90deg,#7c3aed,#a855f7)",
+                                }}
                               />
                             </div>
 
@@ -410,20 +565,30 @@ export default function MyCoursesPage() {
                                 <>
                                   <div className="flex items-start gap-3 flex-1 min-w-0">
                                     <div className="w-8 h-8 rounded-lg bg-violet-600/10 flex items-center justify-center shrink-0">
-                                      <Video size={14} className="text-violet-400" />
+                                      <Video
+                                        size={14}
+                                        className="text-violet-400"
+                                      />
                                     </div>
                                     <div className="min-w-0">
                                       <p className="text-xs font-bold text-white truncate">
-                                        {nextLesson?.title || "Continue Learning"}
+                                        {nextLesson?.title ||
+                                          "Continue Learning"}
                                       </p>
-                                      <p className="text-[10px] text-gray-500">{nextLesson?.sectionTitle || "Pick up where you left off"}</p>
+                                      <p className="text-[10px] text-gray-500">
+                                        {nextLesson?.sectionTitle ||
+                                          "Pick up where you left off"}
+                                      </p>
                                     </div>
                                   </div>
                                   <div className="flex items-center gap-3 shrink-0">
                                     <Link
                                       href={`/learn/${enrollment.course.slug}`}
                                       className="flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-bold text-white transition-all shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40 hover:translate-y-[-1px]"
-                                      style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}
+                                      style={{
+                                        background:
+                                          "linear-gradient(135deg,#7c3aed,#a855f7)",
+                                      }}
                                     >
                                       <Play size={12} fill="currentColor" />
                                       Resume

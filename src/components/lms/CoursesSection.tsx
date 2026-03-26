@@ -9,7 +9,14 @@ import Link from "next/link";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
-const categories = ["All", "Design", "Development", "Marketing", "AI/ML", "Business"];
+const categories = [
+  "All",
+  "Design",
+  "Development",
+  "Marketing",
+  "AI/ML",
+  "Business",
+];
 
 const gradientMap: Record<string, string> = {
   Design: "from-violet-900/50 to-purple-900/30",
@@ -28,12 +35,30 @@ const accentMap: Record<string, string> = {
 };
 
 const badgeMap: Record<string, { label: string; color: string }> = {
-  "complete-ui-ux-design-bootcamp": { label: "Bestseller", color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
-  "react-nextjs-mastery-2026": { label: "Hot", color: "bg-red-500/20 text-red-400 border-red-500/30" },
-  "ai-machine-learning-for-designers": { label: "New", color: "bg-green-500/20 text-green-400 border-green-500/30" },
-  "mobile-app-design-with-figma": { label: "Popular", color: "bg-purple-500/20 text-purple-400 border-purple-500/30" },
-  "full-stack-development-accelerator": { label: "Bestseller", color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" },
-  "product-management-fundamentals": { label: "Trending", color: "bg-indigo-500/20 text-indigo-400 border-indigo-500/30" },
+  "complete-ui-ux-design-bootcamp": {
+    label: "Bestseller",
+    color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+  },
+  "react-nextjs-mastery-2026": {
+    label: "Hot",
+    color: "bg-red-500/20 text-red-400 border-red-500/30",
+  },
+  "ai-machine-learning-for-designers": {
+    label: "New",
+    color: "bg-green-500/20 text-green-400 border-green-500/30",
+  },
+  "mobile-app-design-with-figma": {
+    label: "Popular",
+    color: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+  },
+  "full-stack-development-accelerator": {
+    label: "Bestseller",
+    color: "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+  },
+  "product-management-fundamentals": {
+    label: "Trending",
+    color: "bg-indigo-500/20 text-indigo-400 border-indigo-500/30",
+  },
 };
 
 // Show first 6 courses from local data
@@ -60,7 +85,10 @@ export default function CoursesSection() {
         }}
       />
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6" ref={ref}>
+      <div
+        className={`${montserrat.className} relative z-10 max-w-7xl mx-auto px-6`}
+        ref={ref}
+      >
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -114,104 +142,153 @@ export default function CoursesSection() {
         >
           {filtered.map((course, i) => {
             const accent = accentMap[course.category] ?? "rgba(124,58,237,0.5)";
-            const gradient = gradientMap[course.category] ?? "from-violet-900/50 to-purple-900/30";
-            const badge = badgeMap[course.slug] ?? { label: "Featured", color: "bg-violet-500/20 text-violet-400 border-violet-500/30" };
+            const gradient =
+              gradientMap[course.category] ??
+              "from-violet-900/50 to-purple-900/30";
+            const badge = badgeMap[course.slug] ?? {
+              label: "Featured",
+              color: "bg-violet-500/20 text-violet-400 border-violet-500/30",
+            };
             return (
-            <motion.div
-              key={course.slug}
-              initial={{ opacity: 0, y: 40 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: i * 0.08 }}
-              onMouseEnter={() => setHoveredCard(i)}
-              onMouseLeave={() => setHoveredCard(null)}
-              className="group relative glass-card rounded-2xl overflow-hidden cursor-pointer"
-              style={{
-                transition: "all 0.3s ease",
-                transform: hoveredCard === i ? "translateY(-8px)" : "translateY(0)",
-                boxShadow: hoveredCard === i ? `0 20px 60px ${accent}` : "none",
-                borderColor: hoveredCard === i ? accent : "rgba(124,58,237,0.2)",
-              }}
-            >
-              {/* Thumbnail */}
-              <div className={`relative h-44 bg-gradient-to-br ${gradient} flex items-center justify-center overflow-hidden`}>
-                <motion.div
-                  animate={hoveredCard === i ? { scale: 1.1 } : { scale: 1 }}
-                  transition={{ duration: 0.4 }}
-                  className="text-6xl"
+              <motion.div
+                key={course.slug}
+                initial={{ opacity: 0, y: 40 }}
+                animate={inView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+                onMouseEnter={() => setHoveredCard(i)}
+                onMouseLeave={() => setHoveredCard(null)}
+                className="group relative glass-card rounded-2xl overflow-hidden cursor-pointer"
+                style={{
+                  transition: "all 0.3s ease",
+                  transform:
+                    hoveredCard === i ? "translateY(-8px)" : "translateY(0)",
+                  boxShadow:
+                    hoveredCard === i ? `0 20px 60px ${accent}` : "none",
+                  borderColor:
+                    hoveredCard === i ? accent : "rgba(124,58,237,0.2)",
+                }}
+              >
+                {/* Thumbnail */}
+                <div
+                  className={`relative h-44 bg-linear-to-br ${gradient} flex items-center justify-center overflow-hidden`}
                 >
-                  {course.emoji}
-                </motion.div>
-
-                {/* Play overlay */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: hoveredCard === i ? 1 : 0 }}
-                  className="absolute inset-0 bg-black/40 flex items-center justify-center"
-                >
-                  <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
-                    <Play size={20} fill="white" className="translate-x-0.5" />
-                  </div>
-                </motion.div>
-
-                {/* Badge */}
-                <div className={`absolute top-3 left-3 text-xs font-semibold px-2.5 py-1 rounded-lg border ${badge.color}`}>
-                  {badge.label}
-                </div>
-
-                {/* Level */}
-                <div className="absolute top-3 right-3 text-xs bg-black/50 text-gray-300 px-2.5 py-1 rounded-lg">
-                  {course.level}
-                </div>
-              </div>
-
-              {/* Card content */}
-              <div className="p-5">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-xs text-violet-400 font-medium">{course.category}</span>
-                  <span className="text-gray-600">•</span>
-                  <div className="flex items-center gap-1">
-                    <Star size={11} fill="#facc15" className="text-yellow-400" />
-                    <span className="text-xs text-yellow-400 font-bold">{course.rating}</span>
-                    <span className="text-xs text-gray-500">({course.students})</span>
-                  </div>
-                </div>
-
-                <h3 className="text-base font-bold text-white mb-2 line-clamp-2 leading-snug">{course.title}</h3>
-                <p className="text-xs text-gray-400 mb-3">by {course.instructor}</p>
-
-                {/* Skills as tags */}
-                <div className="flex flex-wrap gap-1.5 mb-4">
-                  {course.skills.slice(0, 3).map((skill: string, j: number) => (
-                    <span key={j} className="text-xs bg-white/5 text-gray-400 px-2 py-0.5 rounded-md">{skill}</span>
-                  ))}
-                </div>
-
-                {/* Meta */}
-                <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
-                  <span className="flex items-center gap-1"><Clock size={11} />{course.duration}</span>
-                  <span className="flex items-center gap-1"><BookOpen size={11} />{course.lessons} lessons</span>
-                  <span className="flex items-center gap-1"><Users size={11} />{course.students}</span>
-                </div>
-
-                {/* Price + CTA */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-xl font-black text-white">${course.price.oneMonth}</span>
-                    <span className="text-xs text-gray-500 ml-1 line-through">${Math.round(course.price.oneMonth * 1.6)}</span>
-                  </div>
-                  <Link
-                    href={`/courses/${course.slug}`}
-                    className="flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-xs font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition-all"
+                  <motion.div
+                    animate={hoveredCard === i ? { scale: 1.1 } : { scale: 1 }}
+                    transition={{ duration: 0.4 }}
+                    className="text-6xl"
                   >
-                    View Details <ArrowRight size={12} />
-                  </Link>
+                    {course.emoji}
+                  </motion.div>
+
+                  {/* Play overlay */}
+                  {/* <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: hoveredCard === i ? 1 : 0 }}
+                    className="absolute inset-0 bg-black/40 flex items-center justify-center"
+                  >
+                    <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+                      <Play
+                        size={20}
+                        fill="white"
+                        className="translate-x-0.5"
+                      />
+                    </div>
+                  </motion.div> */}
+
+                  {/* Badge */}
+                  <div
+                    className={`absolute top-3 left-3 text-xs font-semibold px-2.5 py-1 rounded-lg border ${badge.color}`}
+                  >
+                    {badge.label}
+                  </div>
+
+                  {/* Level */}
+                  <div className="absolute top-3 right-3 text-xs bg-black/50 text-gray-300 px-2.5 py-1 rounded-lg">
+                    {course.level}
+                  </div>
                 </div>
-              </div>
-            </motion.div>
+
+                {/* Card content */}
+                <div className="p-5">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs text-violet-400 font-medium">
+                      {course.category}
+                    </span>
+                    <span className="text-gray-600">•</span>
+                    <div className="flex items-center gap-1">
+                      <Star
+                        size={11}
+                        fill="#facc15"
+                        className="text-yellow-400"
+                      />
+                      <span className="text-xs text-yellow-400 font-bold">
+                        {course.rating}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        ({course.students})
+                      </span>
+                    </div>
+                  </div>
+
+                  <h3 className="text-base font-bold text-white mb-2 line-clamp-2 leading-snug">
+                    {course.title}
+                  </h3>
+                  <p className="text-xs text-gray-400 mb-3">
+                    by {course.instructor}
+                  </p>
+
+                  {/* Skills as tags */}
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    {course.skills
+                      .slice(0, 3)
+                      .map((skill: string, j: number) => (
+                        <span
+                          key={j}
+                          className="text-xs bg-white/5 text-gray-400 px-2 py-0.5 rounded-md"
+                        >
+                          {skill}
+                        </span>
+                      ))}
+                  </div>
+
+                  {/* Meta */}
+                  <div className="flex items-center gap-4 text-xs text-gray-500 mb-4">
+                    <span className="flex items-center gap-1">
+                      <Clock size={11} />
+                      {course.duration}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <BookOpen size={11} />
+                      {course.lessons} lessons
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Users size={11} />
+                      {course.students}
+                    </span>
+                  </div>
+
+                  {/* Price + CTA */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-xl font-black text-white">
+                        ${course.price.oneMonth}
+                      </span>
+                      <span className="text-xs text-gray-500 ml-1 line-through">
+                        ${Math.round(course.price.oneMonth * 1.6)}
+                      </span>
+                    </div>
+                    <Link
+                      href={`/courses/${course.slug}`}
+                      className="flex items-center gap-1.5 bg-linear-to-r from-violet-600 to-purple-600 text-white text-xs font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition-all"
+                    >
+                      View Details <ArrowRight size={12} />
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
             );
           })}
         </div>
-
 
         {/* Bottom CTA */}
         <motion.div

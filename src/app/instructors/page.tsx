@@ -6,6 +6,8 @@ import { motion } from "framer-motion";
 import { Star, BookOpen, Users, ArrowRight, Search } from "lucide-react";
 import { coursesData } from "@/lib/courses-data";
 import { Montserrat } from "next/font/google";
+import Footer from "@/components/lms/Footer";
+import Navbar from "@/components/lms/Navbar";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -144,259 +146,270 @@ export default function InstructorsPage() {
   }, [query]);
 
   return (
-    <main
-      className={`${montserrat.className} min-h-screen text-foreground pt-24 pb-20 overflow-x-hidden`}
-    >
-      <div className="max-w-5xl mx-auto px-6">
-        {/* ── Hero ── */}
-        <div className="text-center mb-14">
-          <div
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-5"
-            style={{
-              background: "rgba(124,58,237,0.15)",
-              border: "1px solid rgba(124,58,237,0.35)",
-              color: "#c084fc",
-            }}
-          >
-            <Star size={11} className="fill-current" /> World-Class Instructors
-          </div>
-          <h1 className="font-serif text-4xl md:text-6xl font-black text-white leading-tight mb-4">
-            Learn From{" "}
-            <span
-              style={{
-                background: "linear-gradient(135deg,#c084fc,#7c3aed)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
-              className={`${montserrat.className} inline-block`}
-            >
-              The Best
-            </span>
-          </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-            Our instructors come from Google, Figma, DeepMind, Stripe, and more
-            — bringing real-world experience directly to your screen.
-          </p>
-        </div>
-
-        {/* ── Stats row ── */}
-        <div className="grid grid-cols-3 gap-4 mb-12">
-          {[
-            { value: `${allInstructors.length}+`, label: "Expert Instructors" },
-            { value: "50K+", label: "Students Taught" },
-            { value: "4.8★", label: "Average Rating" },
-          ].map(({ value, label }) => (
+    <div className="min-h-screen mx-auto">
+      <Navbar />
+      <main
+        className={`${montserrat.className} min-h-screen text-foreground pt-24 pb-20 overflow-x-hidden`}
+      >
+        <div className="max-w-5xl mx-auto px-6">
+          {/* ── Hero ── */}
+          <div className="text-center mb-14">
             <div
-              key={label}
-              className="rounded-2xl p-5 text-center"
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-5"
               style={{
-                background: "rgba(15,15,30,0.8)",
-                border: "1px solid rgba(124,58,237,0.2)",
+                background: "rgba(124,58,237,0.15)",
+                border: "1px solid rgba(124,58,237,0.35)",
+                color: "#c084fc",
               }}
             >
-              <p
-                className="text-3xl font-black mb-1"
+              <Star size={11} className="fill-current" /> World-Class
+              Instructors
+            </div>
+            <h1 className="font-serif text-4xl md:text-6xl font-black text-white leading-tight mb-4">
+              Learn From{" "}
+              <span
                 style={{
                   background: "linear-gradient(135deg,#c084fc,#7c3aed)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                 }}
+                className={`${montserrat.className} inline-block`}
               >
-                {value}
-              </p>
-              <p className="text-gray-500 text-xs">{label}</p>
-            </div>
-          ))}
-        </div>
+                The Best
+              </span>
+            </h1>
+            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              Our instructors come from Google, Figma, DeepMind, Stripe, and
+              more — bringing real-world experience directly to your screen.
+            </p>
+          </div>
 
-        {/* ── Search ── */}
-        <div
-          className="flex items-center rounded-xl mb-10 overflow-hidden"
-          style={{
-            background: "rgba(124,58,237,0.08)",
-            border: "1px solid rgba(168,85,247,0.35)",
-          }}
-        >
-          <Search size={15} className="ml-4 text-violet-400 flex-shrink-0" />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by name, title, or category…"
-            className="flex-1 bg-transparent text-sm text-white placeholder-gray-600 px-3 py-3 outline-none"
-          />
-        </div>
-
-        {/* ── Instructor cards ── */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filtered.map((inst, i) => {
-            const avgRating = (
-              inst.courses.reduce((s, c) => s + c.rating, 0) /
-              inst.courses.length
-            ).toFixed(1);
-            const totalStudents = inst.courses.reduce(
-              (s, c) => s + parseFloat(c.students),
-              0,
-            );
-            const [g1, g2] = inst.meta.gradient;
-            const categories = [
-              ...new Set(inst.courses.map((c) => c.category)),
-            ];
-
-            return (
-              <motion.div
-                key={inst.name}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.22, delay: Math.min(i * 0.05, 0.3) }}
-                whileHover={{
-                  y: -6,
-                  boxShadow: "0 20px 50px rgba(124,58,237,0.2)",
-                }}
-                className="rounded-2xl overflow-hidden flex flex-col"
+          {/* ── Stats row ── */}
+          <div className="grid grid-cols-3 gap-4 mb-12">
+            {[
+              {
+                value: `${allInstructors.length}+`,
+                label: "Expert Instructors",
+              },
+              { value: "50K+", label: "Students Taught" },
+              { value: "4.8★", label: "Average Rating" },
+            ].map(({ value, label }) => (
+              <div
+                key={label}
+                className="rounded-2xl p-5 text-center"
                 style={{
-                  background: "rgba(15,15,30,0.85)",
-                  border: "1px solid rgba(124,58,237,0.18)",
+                  background: "rgba(15,15,30,0.8)",
+                  border: "1px solid rgba(124,58,237,0.2)",
                 }}
               >
-                {/* Header gradient band */}
-                <div
-                  className="h-20 relative flex-shrink-0"
+                <p
+                  className="text-3xl font-black mb-1"
                   style={{
-                    background: `linear-gradient(135deg, ${g1}30, ${g2}15)`,
+                    background: "linear-gradient(135deg,#c084fc,#7c3aed)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
                   }}
                 >
-                  {/* floating glow orb */}
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background: `radial-gradient(ellipse at 30% 50%, ${g1}20, transparent 70%)`,
-                    }}
-                  />
-                </div>
-
-                {/* Avatar — overlapping the band */}
-                <div className="px-5 -mt-8 mb-4 flex items-end justify-between">
-                  <div
-                    className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-black text-white shadow-lg flex-shrink-0"
-                    style={{
-                      background: `linear-gradient(135deg, ${g1}, ${g2})`,
-                      border: "3px solid rgba(8,8,15,1)",
-                    }}
-                  >
-                    {inst.meta.avatar}
-                  </div>
-                  <div className="flex items-center gap-1 mb-2">
-                    <Star
-                      size={13}
-                      className="text-yellow-400 fill-yellow-400"
-                    />
-                    <span className="text-white text-sm font-bold">
-                      {avgRating}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Body */}
-                <div className="px-5 pb-5 flex flex-col flex-1">
-                  <h2 className="text-base font-black text-white mb-0.5">
-                    {inst.name}
-                  </h2>
-                  <p
-                    className="text-xs font-semibold mb-3"
-                    style={{ color: g1 }}
-                  >
-                    {inst.meta.title}
-                  </p>
-                  <p className="text-xs text-gray-500 leading-relaxed mb-4 flex-1">
-                    {inst.meta.bio}
-                  </p>
-
-                  {/* Category chips */}
-                  <div className="flex flex-wrap gap-1.5 mb-4">
-                    {categories.map((cat) => (
-                      <span
-                        key={cat}
-                        className="text-[10px] px-2.5 py-0.5 rounded-full font-medium"
-                        style={{
-                          background: `${categoryColors[cat] ?? "#7c3aed"}18`,
-                          color: categoryColors[cat] ?? "#c084fc",
-                          border: `1px solid ${categoryColors[cat] ?? "#7c3aed"}30`,
-                        }}
-                      >
-                        {cat}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Stats row */}
-                  <div className="flex items-center gap-4 text-xs text-gray-600 mb-5">
-                    <span className="flex items-center gap-1">
-                      <BookOpen size={11} /> {inst.courses.length} course
-                      {inst.courses.length !== 1 ? "s" : ""}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Users size={11} /> {totalStudents.toFixed(1)}K students
-                    </span>
-                  </div>
-
-                  {/* CTA */}
-                  <Link
-                    href={`/courses?q=${encodeURIComponent(inst.name)}`}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all hover:opacity-90 text-white"
-                    style={{
-                      background: `linear-gradient(135deg, ${g1}cc, ${g2})`,
-                    }}
-                  >
-                    View courses <ArrowRight size={13} />
-                  </Link>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {filtered.length === 0 && (
-          <div className="text-center py-20">
-            <p className="text-gray-500">
-              No instructors match &ldquo;{query}&rdquo;
-            </p>
-            <button
-              onClick={() => setQuery("")}
-              className="mt-4 text-violet-400 text-sm hover:text-violet-300 transition-colors"
-            >
-              Clear search
-            </button>
+                  {value}
+                </p>
+                <p className="text-gray-500 text-xs">{label}</p>
+              </div>
+            ))}
           </div>
-        )}
 
-        {/* ── CTA banner ── */}
-        <div
-          className="mt-16 rounded-3xl p-10 text-center"
-          style={{
-            background: "rgba(124,58,237,0.08)",
-            border: "1px solid rgba(124,58,237,0.25)",
-            boxShadow: "0 0 80px rgba(124,58,237,0.1)",
-          }}
-        >
-          <h3 className="text-3xl font-black text-white mb-3">
-            Become an Instructor
-          </h3>
-          <p className="text-gray-400 text-sm max-w-lg mx-auto mb-7">
-            Share your expertise with 25K+ learners. We handle the platform —
-            you focus on teaching.
-          </p>
-          <Link
-            href="/auth/sign-up"
-            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-white font-bold text-sm transition-all hover:opacity-90"
+          {/* ── Search ── */}
+          <div
+            className="flex items-center rounded-xl mb-10 overflow-hidden"
             style={{
-              background: "linear-gradient(135deg,#7c3aed,#a855f7)",
-              boxShadow: "0 0 30px rgba(124,58,237,0.4)",
+              background: "rgba(124,58,237,0.08)",
+              border: "1px solid rgba(168,85,247,0.35)",
             }}
           >
-            Apply to Teach <ArrowRight size={15} />
-          </Link>
+            <Search size={15} className="ml-4 text-violet-400 flex-shrink-0" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search by name, title, or category…"
+              className="flex-1 bg-transparent text-sm text-white placeholder-gray-600 px-3 py-3 outline-none"
+            />
+          </div>
+
+          {/* ── Instructor cards ── */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filtered.map((inst, i) => {
+              const avgRating = (
+                inst.courses.reduce((s, c) => s + c.rating, 0) /
+                inst.courses.length
+              ).toFixed(1);
+              const totalStudents = inst.courses.reduce(
+                (s, c) => s + parseFloat(c.students),
+                0,
+              );
+              const [g1, g2] = inst.meta.gradient;
+              const categories = [
+                ...new Set(inst.courses.map((c) => c.category)),
+              ];
+
+              return (
+                <motion.div
+                  key={inst.name}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.22,
+                    delay: Math.min(i * 0.05, 0.3),
+                  }}
+                  whileHover={{
+                    y: -6,
+                    boxShadow: "0 20px 50px rgba(124,58,237,0.2)",
+                  }}
+                  className="rounded-2xl overflow-hidden flex flex-col"
+                  style={{
+                    background: "rgba(15,15,30,0.85)",
+                    border: "1px solid rgba(124,58,237,0.18)",
+                  }}
+                >
+                  {/* Header gradient band */}
+                  <div
+                    className="h-20 relative flex-shrink-0"
+                    style={{
+                      background: `linear-gradient(135deg, ${g1}30, ${g2}15)`,
+                    }}
+                  >
+                    {/* floating glow orb */}
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        background: `radial-gradient(ellipse at 30% 50%, ${g1}20, transparent 70%)`,
+                      }}
+                    />
+                  </div>
+
+                  {/* Avatar — overlapping the band */}
+                  <div className="px-5 -mt-8 mb-4 flex items-end justify-between">
+                    <div
+                      className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-black text-white shadow-lg flex-shrink-0"
+                      style={{
+                        background: `linear-gradient(135deg, ${g1}, ${g2})`,
+                        border: "3px solid rgba(8,8,15,1)",
+                      }}
+                    >
+                      {inst.meta.avatar}
+                    </div>
+                    <div className="flex items-center gap-1 mb-2">
+                      <Star
+                        size={13}
+                        className="text-yellow-400 fill-yellow-400"
+                      />
+                      <span className="text-white text-sm font-bold">
+                        {avgRating}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Body */}
+                  <div className="px-5 pb-5 flex flex-col flex-1">
+                    <h2 className="text-base font-black text-white mb-0.5">
+                      {inst.name}
+                    </h2>
+                    <p
+                      className="text-xs font-semibold mb-3"
+                      style={{ color: g1 }}
+                    >
+                      {inst.meta.title}
+                    </p>
+                    <p className="text-xs text-gray-500 leading-relaxed mb-4 flex-1">
+                      {inst.meta.bio}
+                    </p>
+
+                    {/* Category chips */}
+                    <div className="flex flex-wrap gap-1.5 mb-4">
+                      {categories.map((cat) => (
+                        <span
+                          key={cat}
+                          className="text-[10px] px-2.5 py-0.5 rounded-full font-medium"
+                          style={{
+                            background: `${categoryColors[cat] ?? "#7c3aed"}18`,
+                            color: categoryColors[cat] ?? "#c084fc",
+                            border: `1px solid ${categoryColors[cat] ?? "#7c3aed"}30`,
+                          }}
+                        >
+                          {cat}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Stats row */}
+                    <div className="flex items-center gap-4 text-xs text-gray-600 mb-5">
+                      <span className="flex items-center gap-1">
+                        <BookOpen size={11} /> {inst.courses.length} course
+                        {inst.courses.length !== 1 ? "s" : ""}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Users size={11} /> {totalStudents.toFixed(1)}K students
+                      </span>
+                    </div>
+
+                    {/* CTA */}
+                    <Link
+                      href={`/courses?q=${encodeURIComponent(inst.name)}`}
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-xs font-bold transition-all hover:opacity-90 text-white"
+                      style={{
+                        background: `linear-gradient(135deg, ${g1}cc, ${g2})`,
+                      }}
+                    >
+                      View courses <ArrowRight size={13} />
+                    </Link>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          {filtered.length === 0 && (
+            <div className="text-center py-20">
+              <p className="text-gray-500">
+                No instructors match &ldquo;{query}&rdquo;
+              </p>
+              <button
+                onClick={() => setQuery("")}
+                className="mt-4 text-violet-400 text-sm hover:text-violet-300 transition-colors"
+              >
+                Clear search
+              </button>
+            </div>
+          )}
+
+          {/* ── CTA banner ── */}
+          <div
+            className="mt-16 rounded-3xl p-10 text-center"
+            style={{
+              background: "rgba(124,58,237,0.08)",
+              border: "1px solid rgba(124,58,237,0.25)",
+              boxShadow: "0 0 80px rgba(124,58,237,0.1)",
+            }}
+          >
+            <h3 className="text-3xl font-black text-white mb-3">
+              Become an Instructor
+            </h3>
+            <p className="text-gray-400 text-sm max-w-lg mx-auto mb-7">
+              Share your expertise with 25K+ learners. We handle the platform —
+              you focus on teaching.
+            </p>
+            <Link
+              href="/auth/sign-up"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-white font-bold text-sm transition-all hover:opacity-90"
+              style={{
+                background: "linear-gradient(135deg,#7c3aed,#a855f7)",
+                boxShadow: "0 0 30px rgba(124,58,237,0.4)",
+              }}
+            >
+              Apply to Teach <ArrowRight size={15} />
+            </Link>
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }

@@ -103,9 +103,9 @@ export default function Footer() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         {/* Newsletter bar */}
-        <div className="glass-card rounded-2xl p-6 mb-14 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div>
-            <h3 className="text-lg font-bold text-white mb-1">
+        <div className="glass-card rounded-2xl p-6 mb-14 flex flex-col sm:flex-row items-center justify-between gap-6 max-w-5xl mx-auto">
+          <div className="">
+            <h3 className="text-lg font-bold whitespace-nowrap text-white mb-1">
               Stay ahead of the curve
             </h3>
             <p className="text-sm text-gray-400">
@@ -113,7 +113,7 @@ export default function Footer() {
               inbox.
             </p>
           </div>
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
             <input
               type="email"
               placeholder="your@email.com"
@@ -121,7 +121,7 @@ export default function Footer() {
             />
             <Link
               href="/auth/sign-up"
-              className="flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap hover:shadow-[0_0_20px_rgba(124,58,237,0.4)] transition-shadow"
+              className="flex w-full md:w-auto justify-center items-center gap-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap hover:shadow-[0_0_20px_rgba(124,58,237,0.4)] transition-shadow"
             >
               Subscribe <ArrowRight size={14} />
             </Link>
@@ -184,7 +184,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-violet-500/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="border-t border-violet-500/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs md:text-sm">
           <div className="text-sm text-gray-600">
             © 2026 EduNova, Inc. All rights reserved.
           </div>
@@ -207,9 +207,9 @@ export default function Footer() {
             >
               Cookies
             </Link>
-            <div className="flex items-center gap-1.5">
+            <div className="flex justify-center items-center gap-1.5">
               <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-              <span>All systems operational</span>
+              <span className="text-xs">All systems fine</span>
             </div>
           </div>
         </div>

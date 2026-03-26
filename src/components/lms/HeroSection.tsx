@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import {
   Play,
@@ -184,48 +185,39 @@ export default function HeroSection() {
             </motion.p>
 
             {/* CTAs */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.3 }}
-              className="flex flex-wrap items-center gap-4 justify-center lg:justify-start mb-10"
-            >
-              <motion.a
-                href="/auth/sign-up"
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow:
-                    "0 0 40px rgba(124,58,237,0.6), 0 0 80px rgba(124,58,237,0.2)",
-                }}
-                whileTap={{ scale: 0.97 }}
-                className="group relative flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold px-8 py-4 rounded-2xl text-base overflow-hidden"
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="flex flex-wrap items-center gap-4 justify-center lg:justify-start mb-10"
               >
-                <span className={`${montserrat.className} relative z-10`}>
-                  Start Learning Free
-                </span>
-                <ArrowRight
-                  size={18}
-                  className="relative z-10 group-hover:translate-x-1 transition-transform"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </motion.a>
+                <motion.div whileHover={{ scale: 1.05, boxShadow: "0 0 40px rgba(124,58,237,0.6), 0 0 80px rgba(124,58,237,0.2)" }} whileTap={{ scale: 0.97 }}>
+                  <Link
+                    href="/courses"
+                    className={`${montserrat.className} group relative flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold px-8 py-4 rounded-2xl text-base overflow-hidden`}
+                  >
+                    <span className="relative z-10">Start Learning Free</span>
+                    <ArrowRight size={18} className="relative z-10 group-hover:translate-x-1 transition-transform" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  </Link>
+                </motion.div>
 
-              <motion.a
-                href="/demo"
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-                className="flex items-center gap-3 text-white group"
-              >
-                <div className="relative w-12 h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center group-hover:bg-violet-600/30 transition-colors duration-300">
-                  <Play size={16} fill="white" className="translate-x-0.5" />
-                  <div className="absolute inset-0 rounded-full border border-violet-400/30 animate-ping opacity-60" />
-                </div>
-                <div className="text-left">
-                  <div className="text-sm font-semibold">Watch Demo</div>
-                  <div className="text-xs text-gray-400">2 min preview</div>
-                </div>
-              </motion.a>
-            </motion.div>
+                <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.96 }}>
+                  <Link
+                    href="/demo"
+                    className="flex items-center gap-3 text-white group"
+                  >
+                    <div className="relative w-12 h-12 rounded-full bg-white/10 border border-white/20 flex items-center justify-center group-hover:bg-violet-600/30 transition-colors duration-300">
+                      <Play size={16} fill="white" className="translate-x-0.5" />
+                      <div className="absolute inset-0 rounded-full border border-violet-400/30 animate-ping opacity-60" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-sm font-semibold">Watch Demo</div>
+                      <div className="text-xs text-gray-400">2 min preview</div>
+                    </div>
+                  </Link>
+                </motion.div>
+              </motion.div>
 
             {/* Stats */}
             <motion.div

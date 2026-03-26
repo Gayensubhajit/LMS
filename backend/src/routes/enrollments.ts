@@ -8,7 +8,7 @@ export const enrollmentsRouter = Router();
 
 const createEnrollmentSchema = z.object({
   courseSlug: z.string().min(1),
-  plan: z.enum(["1month", "3month", "6month"])
+  plan: z.enum(["1month", "3month", "6month"]).optional()
 });
 
 function addMonths(date: Date, months: number) {
@@ -17,7 +17,10 @@ function addMonths(date: Date, months: number) {
   return next;
 }
 
-function planToEnumAndMonths(plan: "1month" | "3month" | "6month") {
+function planToEnumAndMonths(plan: "1month" | "3month" | "6month" | undefined, isFree: boolean) {
+  if (isFree) {
+    return { planEnum: PlanDuration.ONE_MONTH, months: 12 }; // Free courses get 1 year for now
+  }
   if (plan === "3month") {
     return { planEnum: PlanDuration.THREE_MONTH, months: 3 };
   }
@@ -27,11 +30,12 @@ function planToEnumAndMonths(plan: "1month" | "3month" | "6month") {
   return { planEnum: PlanDuration.ONE_MONTH, months: 1 };
 }
 
-function getAmountForPlan(plan: "1month" | "3month" | "6month", prices: {
+function getAmountForPlan(plan: "1month" | "3month" | "6month" | undefined, isFree: boolean, prices: {
   oneMonthPrice: number;
   threeMonthPrice: number;
   sixMonthPrice: number;
 }) {
+  if (isFree) return 0;
   if (plan === "3month") return prices.threeMonthPrice;
   if (plan === "6month") return prices.sixMonthPrice;
   return prices.oneMonthPrice;
@@ -60,6 +64,7 @@ enrollmentsRouter.post("/", async (req, res) => {
       id: true,
       slug: true,
       title: true,
+      isFree: true,
       oneMonthPrice: true,
       threeMonthPrice: true,
       sixMonthPrice: true
@@ -73,10 +78,10 @@ enrollmentsRouter.post("/", async (req, res) => {
     });
   }
 
-  const { planEnum, months } = planToEnumAndMonths(plan);
+  const { planEnum, months } = planToEnumAndMonths(plan, course.isFree);
   const startsAt = new Date();
   const expiresAt = addMonths(startsAt, months);
-  const amountPaid = getAmountForPlan(plan, course);
+  const amountPaid = getAmountForPlan(plan, course.isFree, course);
 
   const enrollment = await prisma.enrollment.upsert({
     where: {

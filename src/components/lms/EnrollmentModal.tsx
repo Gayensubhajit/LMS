@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Check, X } from "lucide-react";
+import { Check, X, Loader2 } from "lucide-react";
 import type { Course } from "@/lib/courses-data";
 import { formatLocalPrice, getMonthlyPrice } from "@/lib/utils/currency";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 interface EnrollmentModalProps {
   course: Course;
@@ -20,8 +22,47 @@ const durationConfig = [
   { value: "6month" as Duration, label: "6 months", hasFreeUpgrade: true },
 ];
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
+
 export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentModalProps) {
+  const { getToken, userId } = useAuth();
+  const router = useRouter();
   const [selectedDuration, setSelectedDuration] = useState<Duration>("3month");
+  const [enrolling, setEnrolling] = useState(false);
+
+  const handleEnrollFree = async () => {
+    if (!userId) {
+      router.push(`/auth/sign-in?redirect_url=/courses/${course.slug}`);
+      return;
+    }
+
+    try {
+      setEnrolling(true);
+      const token = await getToken();
+      const res = await fetch(`${BACKEND_URL}/enrollments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          "x-clerk-user-id": userId
+        },
+        body: JSON.stringify({ courseSlug: course.slug })
+      });
+
+      const data = await res.json();
+      if (data.ok) {
+        onClose();
+        router.push(`/learn/${course.slug}`);
+      } else {
+        alert(data.error || "Enrollment failed");
+      }
+    } catch (err) {
+      console.error("Enrollment error:", err);
+      alert("Something went wrong during enrollment.");
+    } finally {
+      setEnrolling(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -181,17 +222,38 @@ export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentM
           </div>
 
           {/* Continue button */}
-          <Link
-            href={`/checkout?slug=${encodeURIComponent(course.slug)}&plan=${selectedDuration}`}
-            onClick={onClose}
-            className="block w-full text-center py-3 rounded-xl text-white font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.98]"
-            style={{
-              background: "linear-gradient(135deg, #7c3aed, #a855f7)",
-              boxShadow: "0 0 20px rgba(124,58,237,0.4)",
-            }}
-          >
-            Continue to Checkout →
-          </Link>
+          {course.isFree ? (
+            <button
+              onClick={handleEnrollFree}
+              disabled={enrolling}
+              className="w-full py-3 rounded-xl text-white font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.98] flex items-center justify-center gap-2"
+              style={{
+                background: "linear-gradient(135deg, #059669, #10b981)",
+                boxShadow: "0 0 20px rgba(16,185,129,0.4)",
+              }}
+            >
+              {enrolling ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  Enrolling...
+                </>
+              ) : (
+                "Enroll Free Now →"
+              )}
+            </button>
+          ) : (
+            <Link
+              href={`/checkout?slug=${encodeURIComponent(course.slug)}&plan=${selectedDuration}`}
+              onClick={onClose}
+              className="block w-full text-center py-3 rounded-xl text-white font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.98]"
+              style={{
+                background: "linear-gradient(135deg, #7c3aed, #a855f7)",
+                boxShadow: "0 0 20px rgba(124,58,237,0.4)",
+              }}
+            >
+              Continue to Checkout →
+            </Link>
+          )}
         </div>
       </div>
     </div>

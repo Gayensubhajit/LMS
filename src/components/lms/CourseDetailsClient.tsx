@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { BookOpen, ChevronDown, Lock, MessageSquare, Play, PlayCircle, Star, UserRound } from "lucide-react";
+import { BookOpen, ChevronDown, Lock, MessageSquare, Play, PlayCircle, Star, UserRound, Loader2 } from "lucide-react";
 import type { Course } from "@/lib/courses-data";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import EnrollmentModal from "./EnrollmentModal";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
@@ -50,9 +52,51 @@ const instructorProfiles: Record<string, { role: string; bio: string; learners: 
 };
 
 export default function CourseDetailsClient({ course }: { course: Course }) {
+  const { getToken, userId } = useAuth();
+  const router = useRouter();
   const [tab, setTab] = useState<"overview" | "syllabus" | "reviews">("overview");
   const [openSectionIndex, setOpenSectionIndex] = useState<number | null>(0);
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
+  const [enrolling, setEnrolling] = useState(false);
+
+  const handleEnrollClick = async () => {
+    if (course.isFree) {
+      if (!userId) {
+        router.push(`/auth/sign-in?redirect_url=/courses/${course.slug}`);
+        return;
+      }
+
+      try {
+        setEnrolling(true);
+        const token = await getToken();
+        const res = await fetch(`${BACKEND_URL}/enrollments`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            "x-clerk-user-id": userId
+          },
+          body: JSON.stringify({ courseSlug: course.slug })
+        });
+
+        const data = await res.json();
+        if (data.ok) {
+          // Success! Redirect to the learn page or show success
+          // For now, let's just refresh or redirect to learn
+          router.push(`/learn/${course.slug}`);
+        } else {
+          alert(data.error || "Enrollment failed");
+        }
+      } catch (err) {
+        console.error("Enrollment error:", err);
+        alert("Something went wrong during enrollment.");
+      } finally {
+        setEnrolling(false);
+      }
+    } else {
+      setIsEnrollModalOpen(true);
+    }
+  };
 
   // Real sections from backend
   const [sections, setSections] = useState<BackendSection[]>([]);
@@ -321,10 +365,18 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
             <p className="text-sm text-gray-500 mb-6">Choose your subscription duration and get started today</p>
 
             <button
-              onClick={() => setIsEnrollModalOpen(true)}
-              className="w-full bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold px-4 py-3 rounded-xl hover:from-violet-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl"
+              onClick={handleEnrollClick}
+              disabled={enrolling}
+              className="w-full bg-gradient-to-r from-violet-600 to-purple-600 text-white font-semibold px-4 py-3 rounded-xl hover:from-violet-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              Enroll Now
+              {enrolling ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  Enrolling...
+                </>
+              ) : (
+                course.isFree ? "Enroll Free" : "Enroll Now"
+              )}
             </button>
 
             <div className="mt-5 pt-4 border-t border-violet-500/15 text-xs text-gray-500 space-y-2">

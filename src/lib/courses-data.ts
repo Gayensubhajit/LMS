@@ -13,6 +13,7 @@ export type Course = {
   shortDescription: string;
   longDescription: string;
   skills: string[];
+  isFree?: boolean;
   price: {
     oneMonth: number;
     threeMonth: number;
@@ -21,6 +22,65 @@ export type Course = {
 };
 
 export const coursesData: Course[] = [
+  // ── FREE COURSES ──────────────────────────────────────────────────────────
+  {
+    slug: "frontend-fundamentals-free",
+    title: "Frontend Fundamentals (Free)",
+    category: "Development",
+    instructor: "Alex Chen",
+    duration: "18h",
+    lessons: 42,
+    students: "23.1K",
+    rating: 4.9,
+    level: "Beginner",
+    emoji: "🌐",
+    isFree: true,
+    previewVideoUrl: "https://www.youtube.com/embed/qz0aGYrrlhU",
+    shortDescription: "Learn HTML, CSS & JavaScript from scratch. Completely free.",
+    longDescription:
+      "Build a solid foundation with semantic HTML5, modern CSS layouts (Flexbox, Grid), and JavaScript ES6+. By the end, you'll create responsive websites from scratch with no prior experience needed.",
+    skills: ["HTML5", "CSS3", "JavaScript", "Responsive Design"],
+    price: { oneMonth: 0, threeMonth: 0, sixMonth: 0 },
+  },
+  {
+    slug: "backend-basics-free",
+    title: "Backend Basics with Node.js (Free)",
+    category: "Development",
+    instructor: "Ryan Torres",
+    duration: "14h",
+    lessons: 35,
+    students: "18.6K",
+    rating: 4.8,
+    level: "Beginner",
+    emoji: "⚙️",
+    isFree: true,
+    previewVideoUrl: "https://www.youtube.com/embed/Oe421EPjeBE",
+    shortDescription: "Build REST APIs with Node.js and Express. No cost, no catch.",
+    longDescription:
+      "Understand the server side: HTTP fundamentals, REST API design, Express.js routing, middleware, database connections with MongoDB, and basic authentication. Learn what powers every web application.",
+    skills: ["Node.js", "Express", "REST APIs", "MongoDB"],
+    price: { oneMonth: 0, threeMonth: 0, sixMonth: 0 },
+  },
+  {
+    slug: "gen-ai-essentials-free",
+    title: "Generative AI Essentials (Free)",
+    category: "AI/ML",
+    instructor: "Dr. Sarah Park",
+    duration: "10h",
+    lessons: 24,
+    students: "31.4K",
+    rating: 4.9,
+    level: "All Levels",
+    emoji: "🤖",
+    isFree: true,
+    previewVideoUrl: "https://www.youtube.com/embed/aircAruvnKk",
+    shortDescription: "Understand LLMs, prompt engineering & AI tools. Completely free.",
+    longDescription:
+      "Demystify generative AI: how LLMs work, prompt engineering patterns, RAG pipelines, AI agents, and practical tools like ChatGPT, Claude, and Gemini. Build real AI-powered mini-projects by the end.",
+    skills: ["Prompt Engineering", "LLMs", "AI Agents", "RAG"],
+    price: { oneMonth: 0, threeMonth: 0, sixMonth: 0 },
+  },
+  // ── PAID COURSES ──────────────────────────────────────────────────────────
   {
     slug: "complete-ui-ux-design-bootcamp",
     title: "Complete UI/UX Design Bootcamp",

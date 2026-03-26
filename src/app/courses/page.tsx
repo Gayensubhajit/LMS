@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useMemo, useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -53,6 +54,7 @@ function mergeCourse(bc: BackendCourse): Course | null {
 
 const categories = [
   "All",
+  "Free",
   "Design",
   "Development",
   "AI/ML",
@@ -131,20 +133,60 @@ export default function CoursesPage() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     const base = courses.filter((c) => {
-      const matchesCat = category === "All" || c.category === category;
+      const matchesFree = category === "Free" ? c.isFree === true : true;
+      const matchesCat = category === "All" || category === "Free" || c.category === category;
       const hay = `${c.title} ${c.instructor} ${c.category} ${c.skills.join(" ")} ${c.shortDescription}`.toLowerCase();
-      return matchesCat && (q === "" || hay.includes(q));
+      return matchesFree && matchesCat && (q === "" || hay.includes(q));
     });
     const s = [...base];
     if (sortBy === "rating") s.sort((a, b) => b.rating - a.rating);
     else if (sortBy === "priceLow") s.sort((a, b) => a.price.oneMonth - b.price.oneMonth);
     else if (sortBy === "priceHigh") s.sort((a, b) => b.price.oneMonth - a.price.oneMonth);
     else s.sort((a, b) => parseFloat(b.students) - parseFloat(a.students));
+    // Always bubble free courses to top when not filtering by price
+    if (sortBy === "popular" || sortBy === "rating") s.sort((a, b) => (b.isFree ? 1 : 0) - (a.isFree ? 1 : 0));
     return s;
   }, [query, category, sortBy, courses]);
 
   const chipClick = (chip: string) => router.push(`/courses?q=${encodeURIComponent(chip)}`);
   const clearSearch = () => router.push("/courses");
+
+  const { getToken, userId } = useAuth();
+  const [enrolling, setEnrolling] = useState<string | null>(null);
+
+  const handleEnrollFree = async (courseSlug: string) => {
+    if (!userId) {
+      router.push("/auth/sign-in?redirect_url=/courses");
+      return;
+    }
+
+    try {
+      setEnrolling(courseSlug);
+      const token = await getToken();
+      const res = await fetch(`${BACKEND_URL}/enrollments`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          "x-clerk-user-id": userId
+        },
+        body: JSON.stringify({ courseSlug })
+      });
+
+      const data = await res.json();
+      if (data.ok) {
+        // Success! Redirect to the course page
+        router.push(`/courses/${courseSlug}`);
+      } else {
+        alert(data.error || "Enrollment failed");
+      }
+    } catch (err) {
+      console.error("Enrollment error:", err);
+      alert("Something went wrong during enrollment.");
+    } finally {
+      setEnrolling(null);
+    }
+  };
 
   return (
     <main className={`${montserrat.className} min-h-screen bg-background text-foreground pt-20`}>
@@ -391,12 +433,19 @@ export default function CoursesPage() {
                     style={{ background: `linear-gradient(135deg,${col.bg},rgba(124,58,237,0.08))` }}
                   >
                     {course.emoji}
-                    <span
-                      className="absolute top-3 left-3 text-[10px] font-bold px-2 py-1 rounded-lg"
-                      style={{ background: "rgba(8,8,15,0.75)", color: col.text, border: `1px solid ${col.text}35` }}
-                    >
-                      {course.level}
-                    </span>
+                    {course.isFree && (
+                      <span className="absolute top-3 left-3 text-[10px] font-black px-2 py-1 rounded-lg bg-emerald-500 text-white tracking-wide">
+                        FREE
+                      </span>
+                    )}
+                    {!course.isFree && (
+                      <span
+                        className="absolute top-3 left-3 text-[10px] font-bold px-2 py-1 rounded-lg"
+                        style={{ background: "rgba(8,8,15,0.75)", color: col.text, border: `1px solid ${col.text}35` }}
+                      >
+                        {course.level}
+                      </span>
+                    )}
                     <span
                       className="absolute top-3 right-3 text-[10px] font-bold px-2 py-1 rounded-lg"
                       style={{ background: "rgba(8,8,15,0.75)", color: "#fbbf24" }}
@@ -435,8 +484,14 @@ export default function CoursesPage() {
 
                     <div className="flex items-center justify-between mt-auto">
                       <div>
-                        <span className="text-xl font-black text-white">${course.price.oneMonth}</span>
-                        <span className="text-gray-600 text-xs ml-1">/mo</span>
+                        {course.isFree ? (
+                          <span className="text-xl font-black text-emerald-400">Free</span>
+                        ) : (
+                          <>
+                            <span className="text-xl font-black text-white">${course.price.oneMonth}</span>
+                            <span className="text-gray-600 text-xs ml-1">/mo</span>
+                          </>
+                        )}
                       </div>
                       <div className="flex items-center gap-2">
                         <Link
@@ -446,13 +501,24 @@ export default function CoursesPage() {
                         >
                           Details
                         </Link>
-                        <Link
-                          href={`/checkout?slug=${encodeURIComponent(course.slug)}&plan=1month`}
-                          className="text-xs font-semibold px-3.5 py-2 rounded-xl text-white transition-all hover:opacity-90"
-                          style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}
-                        >
-                          Enroll
-                        </Link>
+                        {course.isFree ? (
+                          <button
+                            onClick={() => handleEnrollFree(course.slug)}
+                            disabled={enrolling === course.slug}
+                            className="text-xs font-semibold px-3.5 py-2 rounded-xl text-white transition-all hover:opacity-90 disabled:opacity-50"
+                            style={{ background: "linear-gradient(135deg,#059669,#10b981)" }}
+                          >
+                            {enrolling === course.slug ? "Enrolling..." : "Enroll Free"}
+                          </button>
+                        ) : (
+                          <Link
+                            href={`/checkout?slug=${encodeURIComponent(course.slug)}&plan=1month`}
+                            className="text-xs font-semibold px-3.5 py-2 rounded-xl text-white transition-all hover:opacity-90"
+                            style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}
+                          >
+                            Enroll
+                          </Link>
+                        )}
                       </div>
                     </div>
                   </div>

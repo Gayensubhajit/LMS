@@ -4,17 +4,17 @@ export async function getUserFromHeader(req, res) {
     if (!clerkUserId) {
         res.status(401).json({
             ok: false,
-            error: "Missing x-clerk-user-id header"
+            error: "Missing x-clerk-user-id header",
         });
         return null;
     }
     const user = await prisma.user.findUnique({
-        where: { clerkUserId }
+        where: { clerkUserId },
     });
     if (!user) {
         res.status(404).json({
             ok: false,
-            error: "User not found. Ensure Clerk webhook sync is configured."
+            error: "User not found. Ensure Clerk webhook sync is configured.",
         });
         return null;
     }

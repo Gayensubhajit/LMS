@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useMemo, useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuth } from "@clerk/nextjs";
 import { motion, AnimatePresence } from "framer-motion";
@@ -121,7 +121,7 @@ function getRelatedChips(q: string): string[] {
   return [];
 }
 
-export default function CoursesPage() {
+function CoursesContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -576,5 +576,13 @@ export default function CoursesPage() {
       </main>
       <Footer />
     </>
+  );
+}
+
+export default function CoursesPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background text-white flex items-center justify-center pt-20">Loading courses...</div>}>
+      <CoursesContent />
+    </Suspense>
   );
 }

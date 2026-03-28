@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
-import { getUserFromHeader } from "../lib/auth";
+import { getUserFromHeader } from "../lib/auth.js";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -8,32 +8,21 @@ const prisma = new PrismaClient();
 // GET /settings - Fetch current user settings
 router.get("/", async (req, res) => {
   try {
-    const clerkUserId = getUserFromHeader(req);
-    if (!clerkUserId) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    const user = await getUserFromHeader(req, res);
+    if (!user) return;
 
-    const user = await prisma.user.findUnique({
-      where: { clerkUserId },
-      select: {
-        id: true,
-        clerkUserId: true,
-        email: true,
-        fullName: true,
-        language: true,
-        timezone: true,
-        twoFactorEnabled: true,
-        newsletterSubscribed: true,
-        isNameVerified: true,
-        verifiedName: true,
-      },
+    res.json({
+        id: user.id,
+        clerkUserId: user.clerkUserId,
+        email: user.email,
+        fullName: user.fullName,
+        language: user.language,
+        timezone: user.timezone,
+        twoFactorEnabled: user.twoFactorEnabled,
+        newsletterSubscribed: user.newsletterSubscribed,
+        isNameVerified: user.isNameVerified,
+        verifiedName: user.verifiedName,
     });
-
-    if (!user) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    res.json(user);
   } catch (error) {
     console.error("Failed to fetch settings:", error);
     res.status(500).json({ error: "Internal server error" });
@@ -43,10 +32,8 @@ router.get("/", async (req, res) => {
 // PATCH /settings - Update user settings
 router.patch("/", async (req, res) => {
   try {
-    const clerkUserId = getUserFromHeader(req);
-    if (!clerkUserId) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
+    const user = await getUserFromHeader(req, res);
+    if (!user) return;
 
     const {
       fullName,
@@ -57,7 +44,7 @@ router.patch("/", async (req, res) => {
     } = req.body;
 
     const updatedUser = await prisma.user.update({
-      where: { clerkUserId },
+      where: { clerkUserId: user.clerkUserId },
       data: {
         fullName,
         language,

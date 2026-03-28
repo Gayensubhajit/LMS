@@ -22,7 +22,7 @@ const durationConfig = [
   { value: "6month" as Duration, label: "6 months", hasFreeUpgrade: true },
 ];
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
 
 export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentModalProps) {
   const { getToken, userId } = useAuth();

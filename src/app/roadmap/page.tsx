@@ -482,8 +482,9 @@ export default function RoadmapPage() {
       return;
     }
     try {
+      const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/dashboard/roadmap?userId=${user.id}`,
+        `${BACKEND_URL}/dashboard/roadmap?userId=${user.id}`,
       );
       if (res.ok) {
         const data: BackendRoadmapResponse = await res.json();

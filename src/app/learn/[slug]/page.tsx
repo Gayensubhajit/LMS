@@ -21,7 +21,7 @@ import {
   Video,
   X,
 } from "lucide-react";
-import PremiumVideoPlayer from "@/components/lms/PremiumVideoPlayer";
+import CourseVideoPlayer from "@/components/lms/CourseVideoPlayer";
 import { motion, AnimatePresence } from "framer-motion";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -459,44 +459,52 @@ export default function LearnCoursePage() {
         <div className="flex-1 overflow-y-auto min-w-0">
           {activeLesson ? (
             <div>
-              {/* VIDEO PLAYER */}
+              {/* VIDEO PLAYER — Coursera-style: padded, max-width, not full-bleed */}
               <div
                 className="w-full"
-                style={{ background: "#000", borderBottom: "1px solid rgba(124,58,237,0.1)" }}
+                style={{ background: "#0a0a14", borderBottom: "1px solid rgba(124,58,237,0.1)" }}
               >
-                {hasEnrollment || activeLesson.isPreview ? (
-                  <PremiumVideoPlayer
-                    url={activeLesson.videoUrl ?? FALLBACK_VIDEO}
-                    title={activeLesson.title}
-                    onEnded={navToNext}
-                  />
-                ) : (
-                  /* Locked state */
-                  <div
-                    className="aspect-video w-full flex flex-col items-center justify-center"
-                    style={{ background: "linear-gradient(135deg,rgba(20,10,50,0.98),rgba(8,8,15,1))" }}
-                  >
-                    <div className="text-center p-8 glass-card rounded-3xl max-w-sm">
-                      <div className="w-16 h-16 rounded-2xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-3xl mx-auto mb-4">
-                        {course.emoji}
-                      </div>
-                      <h3 className="text-xl font-black text-white mb-2">Lesson Locked</h3>
-                      <p className="text-gray-400 text-sm mb-5 leading-relaxed">
-                        This lesson is for enrolled students only. Enroll to unlock the full curriculum.
-                      </p>
-                      <Link
-                        href="/pricing"
-                        className="inline-flex px-6 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold text-sm hover:shadow-lg hover:shadow-violet-600/30 transition-all"
-                      >
-                        Unlock Course
-                      </Link>
+                <div className="max-w-5xl mx-auto px-4 sm:px-8 py-4 sm:py-5">
+                  {hasEnrollment || activeLesson.isPreview ? (
+                    <div className="overflow-hidden rounded-xl shadow-2xl" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(124,58,237,0.15)" }}>
+                      <CourseVideoPlayer
+                        url={activeLesson.videoUrl ?? FALLBACK_VIDEO}
+                        title={activeLesson.title}
+                        startSec={(activeLesson.content as { startSec?: number } | null)?.startSec ?? 0}
+                        endSec={(activeLesson.content as { endSec?: number } | null)?.endSec}
+                        onEnded={navToNext}
+                      />
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    /* Locked state */
+                    <div
+                      className="rounded-xl overflow-hidden"
+                      style={{ aspectRatio: "16/9", maxHeight: "520px", background: "linear-gradient(135deg,rgba(20,10,50,0.98),rgba(8,8,15,1))", border: "1px solid rgba(124,58,237,0.15)" }}
+                    >
+                      <div className="flex items-center justify-center h-full">
+                        <div className="text-center p-8 glass-card rounded-3xl max-w-sm">
+                          <div className="w-16 h-16 rounded-2xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-3xl mx-auto mb-4">
+                            {course.emoji}
+                          </div>
+                          <h3 className="text-xl font-black text-white mb-2">Lesson Locked</h3>
+                          <p className="text-gray-400 text-sm mb-5 leading-relaxed">
+                            This lesson is for enrolled students only. Enroll to unlock the full curriculum.
+                          </p>
+                          <Link
+                            href="/pricing"
+                            className="inline-flex px-6 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold text-sm hover:shadow-lg hover:shadow-violet-600/30 transition-all"
+                          >
+                            Unlock Course
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* LESSON META + ACTIONS */}
-              <div className="max-w-4xl mx-auto px-4 sm:px-6 py-5">
+              <div className="max-w-5xl mx-auto px-4 sm:px-8 py-5">
 
                 {/* Section breadcrumb */}
                 <p className="text-xs text-violet-400 font-semibold mb-1 uppercase tracking-wider">

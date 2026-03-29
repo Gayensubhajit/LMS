@@ -20,7 +20,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "EduNova — AI-Powered Learning Platform",
-  description: "Step into the future of learning. Master UI/UX Design, Development & more with AI-guided roadmaps, real-world projects, and industry mentors.",
+  description:
+    "Step into the future of learning. Master UI/UX Design, Development & more with AI-guided roadmaps, real-world projects, and industry mentors.",
 };
 
 export default function RootLayout({
@@ -29,7 +30,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning data-theme="dark" style={{ colorScheme: "dark" }}>
+    <html
+      lang="en"
+      className="dark"
+      suppressHydrationWarning
+      data-theme="dark"
+      style={{ colorScheme: "dark" }}
+    >
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

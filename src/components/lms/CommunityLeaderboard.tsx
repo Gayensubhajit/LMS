@@ -3,6 +3,9 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useState } from "react";
 import { Trophy, Zap, Users, Star, ArrowUpRight, TrendingUp } from "lucide-react";
+import { Montserrat } from "next/font/google";
+
+const montserrat = Montserrat({ subsets: ["latin"] });
 
 const leaderboardData = [
   { id: 1, name: "Alex Rivera", level: 42, xp: 12450, badge: "Grandmaster", avatar: "AR", color: "from-amber-400 to-orange-500" },
@@ -33,7 +36,7 @@ export default function CommunityLeaderboard() {
   }, []);
 
   return (
-    <section className="relative py-24 px-6 overflow-hidden">
+    <section className={`${montserrat.className} relative py-24 px-6 overflow-hidden`}>
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row gap-12">
           

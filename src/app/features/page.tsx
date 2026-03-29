@@ -1,7 +1,13 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { motion, useInView, useMotionValue, useSpring, useTransform } from "framer-motion";
+import {
+  motion,
+  useInView,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
 import Navbar from "@/components/lms/Navbar";
 import Footer from "@/components/lms/Footer";
 import CommunityLeaderboard from "@/components/lms/CommunityLeaderboard";
@@ -32,6 +38,9 @@ import {
   Map,
   LibraryBig,
 } from "lucide-react";
+import { Montserrat } from "next/font/google";
+
+const montserrat = Montserrat({ subsets: ["latin"] });
 
 const heroBadges = [
   { icon: Star, label: "50,000+ Pioneers" },
@@ -131,10 +140,26 @@ const featureSections = [
     description:
       "Our AI engine analyzes your goals, pace, and learning style to build a dynamic curriculum that evolves with you. No two journeys are the same.",
     features: [
-      { icon: Brain, title: "Adaptive Curriculum", desc: "Courses that evolve based on your strengths and gaps." },
-      { icon: Sparkles, title: "AI Study Assistant", desc: "Get instant explanations, hints, and summaries on any topic." },
-      { icon: BarChart3, title: "Progress Analytics", desc: "Deep insights into your learning trajectory and skill mastery." },
-      { icon: Zap, title: "Smart Reminders", desc: "Never lose momentum with AI-driven nudges and goals." },
+      {
+        icon: Brain,
+        title: "Adaptive Curriculum",
+        desc: "Courses that evolve based on your strengths and gaps.",
+      },
+      {
+        icon: Sparkles,
+        title: "AI Study Assistant",
+        desc: "Get instant explanations, hints, and summaries on any topic.",
+      },
+      {
+        icon: BarChart3,
+        title: "Progress Analytics",
+        desc: "Deep insights into your learning trajectory and skill mastery.",
+      },
+      {
+        icon: Zap,
+        title: "Smart Reminders",
+        desc: "Never lose momentum with AI-driven nudges and goals.",
+      },
     ],
     gradient: "from-violet-600/20 to-purple-900/10",
     accentGlow: "rgba(124,58,237,0.2)",
@@ -150,10 +175,26 @@ const featureSections = [
     description:
       "Every instructor is a vetted professional with 10+ years of industry experience. Access mentor sessions, code reviews, and career advice on demand.",
     features: [
-      { icon: GraduationCap, title: "Vetted Experts", desc: "Instructors from Google, Meta, Amazon, and more." },
-      { icon: Users, title: "Live Sessions", desc: "Weekly Q&As, workshops, and 1-on-1 mentor slots." },
-      { icon: BookOpen, title: "Structured Curriculum", desc: "Battle-tested courses built by domain experts." },
-      { icon: Shield, title: "Quality Guarantee", desc: "100% satisfaction guarantee on all courses." },
+      {
+        icon: GraduationCap,
+        title: "Vetted Experts",
+        desc: "Instructors from Google, Meta, Amazon, and more.",
+      },
+      {
+        icon: Users,
+        title: "Live Sessions",
+        desc: "Weekly Q&As, workshops, and 1-on-1 mentor slots.",
+      },
+      {
+        icon: BookOpen,
+        title: "Structured Curriculum",
+        desc: "Battle-tested courses built by domain experts.",
+      },
+      {
+        icon: Shield,
+        title: "Quality Guarantee",
+        desc: "100% satisfaction guarantee on all courses.",
+      },
     ],
     gradient: "from-blue-600/20 to-cyan-900/10",
     accentGlow: "rgba(59,130,246,0.15)",
@@ -169,10 +210,26 @@ const featureSections = [
     description:
       "Real-world projects, industry certifications, and a hiring network that connects you with top employers. We don't just teach—we help you land the job.",
     features: [
-      { icon: Briefcase, title: "Portfolio Projects", desc: "Build work that impresses hiring managers." },
-      { icon: Rocket, title: "Fast-Track Certs", desc: "Earn recognized credentials in weeks, not years." },
-      { icon: Globe, title: "Global Hiring Network", desc: "Access 2,000+ partner companies seeking EduNova grads." },
-      { icon: Clock, title: "Flexible Pace", desc: "Lifetime access. Learn on your schedule, always." },
+      {
+        icon: Briefcase,
+        title: "Portfolio Projects",
+        desc: "Build work that impresses hiring managers.",
+      },
+      {
+        icon: Rocket,
+        title: "Fast-Track Certs",
+        desc: "Earn recognized credentials in weeks, not years.",
+      },
+      {
+        icon: Globe,
+        title: "Global Hiring Network",
+        desc: "Access 2,000+ partner companies seeking EduNova grads.",
+      },
+      {
+        icon: Clock,
+        title: "Flexible Pace",
+        desc: "Lifetime access. Learn on your schedule, always.",
+      },
     ],
     gradient: "from-emerald-600/20 to-teal-900/10",
     accentGlow: "rgba(16,185,129,0.15)",
@@ -190,11 +247,23 @@ const stats = [
   { value: "2K+", label: "Hiring Partners" },
 ];
 
-function FeatureCard({ card, i, onClick }: { card: typeof featureCards[0]; i: number; onClick?: () => void }) {
+function FeatureCard({
+  card,
+  i,
+  onClick,
+}: {
+  card: (typeof featureCards)[0];
+  i: number;
+  onClick?: () => void;
+}) {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 
-  function handleMouseMove({ currentTarget, clientX, clientY }: React.MouseEvent) {
+  function handleMouseMove({
+    currentTarget,
+    clientX,
+    clientY,
+  }: React.MouseEvent) {
     const { left, top } = currentTarget.getBoundingClientRect();
     mouseX.set(clientX - left);
     mouseY.set(clientY - top);
@@ -202,7 +271,8 @@ function FeatureCard({ card, i, onClick }: { card: typeof featureCards[0]; i: nu
 
   const maskImage = useTransform(
     [mouseX, mouseY],
-    ([x, y]) => `radial-gradient(350px circle at ${x}px ${y}px, white, transparent)`
+    ([x, y]) =>
+      `radial-gradient(350px circle at ${x}px ${y}px, white, transparent)`,
   );
 
   return (
@@ -213,7 +283,7 @@ function FeatureCard({ card, i, onClick }: { card: typeof featureCards[0]; i: nu
       transition={{ duration: 0.5, delay: i * 0.07 }}
       onMouseMove={handleMouseMove}
       onClick={onClick}
-      className={`group relative rounded-3xl p-8 border border-white/[0.08] bg-white/[0.02] backdrop-blur-xl overflow-hidden ${onClick ? 'cursor-pointer' : 'cursor-default'} transition-colors hover:border-white/[0.15]`}
+      className={`${montserrat.className} group relative rounded-3xl p-8 border border-white/8 bg-white/2 backdrop-blur-xl overflow-hidden ${onClick ? "cursor-pointer" : "cursor-default"} transition-colors hover:border-white/15`}
     >
       {/* Interactive spotlight effect */}
       <motion.div
@@ -242,7 +312,10 @@ function FeatureCard({ card, i, onClick }: { card: typeof featureCards[0]; i: nu
               repeat: Infinity,
               ease: "linear",
             }}
-            style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }}
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
           />
         ))}
       </div>
@@ -251,7 +324,7 @@ function FeatureCard({ card, i, onClick }: { card: typeof featureCards[0]; i: nu
       <motion.div
         title={card.title}
         className={`relative w-12 h-12 rounded-2xl bg-gradient-to-br ${card.color} flex items-center justify-center mb-6 shadow-2xl transition-transform duration-300 group-hover:scale-110`}
-        style={{ 
+        style={{
           boxShadow: `0 10px 30px ${card.glow}`,
         }}
       >
@@ -285,20 +358,25 @@ function FeatureCard({ card, i, onClick }: { card: typeof featureCards[0]; i: nu
       )}
 
       {/* Bottom accent glow */}
-      <div className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${card.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+      <div
+        className={`absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r ${card.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}
+      />
     </motion.div>
   );
 }
 
-function FeatureSection({ section, index }: { section: (typeof featureSections)[number]; index: number }) {
+function FeatureSection({
+  section,
+  index,
+}: {
+  section: (typeof featureSections)[number];
+  index: number;
+}) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
 
   return (
-    <section
-      ref={ref}
-      className="relative py-24 overflow-hidden"
-    >
+    <section ref={ref} className="relative py-24 overflow-hidden">
       {/* Background glow */}
       <div
         className="absolute inset-0 pointer-events-none"
@@ -316,12 +394,14 @@ function FeatureSection({ section, index }: { section: (typeof featureSections)[
             initial={{ opacity: 0, x: section.flip ? 40 : -40 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.7 }}
-            className="flex-1"
+            className={`${montserrat.className} flex-1`}
           >
-            <span className={`text-sm font-bold uppercase tracking-widest ${section.tag_color} mb-3 block`}>
+            <span
+              className={`text-sm font-bold uppercase tracking-widest ${section.tag_color} mb-3 block`}
+            >
               {section.tag}
             </span>
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-4 leading-tight">
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-4 leading-tight font-serif">
               {section.title}
             </h2>
             <p className="text-lg text-gray-400 font-medium mb-4">
@@ -332,7 +412,7 @@ function FeatureSection({ section, index }: { section: (typeof featureSections)[
             </p>
             <a
               href="/courses"
-              className={`inline-flex items-center gap-2 bg-gradient-to-r ${section.iconGradient} text-white font-bold px-7 py-3.5 rounded-2xl hover:opacity-90 transition-all hover:scale-105 active:scale-95 shadow-lg`}
+              className={`inline-flex items-center gap-2 bg-linear-to-r ${section.iconGradient} text-white font-bold px-7 py-3.5 rounded-2xl hover:opacity-90 transition-all hover:scale-105 active:scale-95 shadow-lg`}
             >
               Get Started
               <ArrowRight size={18} />
@@ -344,7 +424,7 @@ function FeatureSection({ section, index }: { section: (typeof featureSections)[
             initial={{ opacity: 0, x: section.flip ? -40 : 40 }}
             animate={inView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="flex-1 grid grid-cols-2 gap-4"
+            className={`${montserrat.className} flex-1 grid grid-cols-2 gap-4`}
           >
             {section.features.map((feat, fi) => (
               <motion.div
@@ -352,20 +432,27 @@ function FeatureSection({ section, index }: { section: (typeof featureSections)[
                 initial={{ opacity: 0, y: 20 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.15 + fi * 0.08 }}
-                className={`group relative rounded-2xl p-5 border ${section.border}`}
+                className={`${montserrat.className} group relative rounded-2xl p-5 border ${section.border}`}
                 style={{
                   background: "rgba(255,255,255,0.03)",
                   backdropFilter: "blur(12px)",
                 }}
-                whileHover={{ y: -4, boxShadow: `0 16px 40px ${section.accentGlow}` }}
+                whileHover={{
+                  y: -4,
+                  boxShadow: `0 16px 40px ${section.accentGlow}`,
+                }}
               >
                 <div
-                  className={`w-10 h-10 rounded-xl bg-gradient-to-br ${section.iconGradient} flex items-center justify-center mb-3 shadow-lg`}
+                  className={`w-10 h-10 rounded-xl bg-linear-to-br ${section.iconGradient} flex items-center justify-center mb-3 shadow-lg`}
                 >
                   <feat.icon size={18} className="text-white" />
                 </div>
-                <h4 className="text-sm font-bold text-white mb-1">{feat.title}</h4>
-                <p className="text-xs text-gray-500 leading-relaxed">{feat.desc}</p>
+                <h4 className="text-sm font-bold text-white mb-1">
+                  {feat.title}
+                </h4>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  {feat.desc}
+                </p>
               </motion.div>
             ))}
           </motion.div>
@@ -401,7 +488,8 @@ export default function FeaturesPage() {
         <div
           className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full pointer-events-none"
           style={{
-            background: "radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%)",
+            background:
+              "radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%)",
             filter: "blur(60px)",
           }}
         />
@@ -439,13 +527,14 @@ export default function FeaturesPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-5xl md:text-7xl font-black text-white leading-tight mb-6"
+            className="font-serif text-5xl md:text-7xl font-black text-white leading-tight mb-6"
           >
             Ready to{" "}
             <span
-              className="inline-block"
+              className={`${montserrat.className} inline-block`}
               style={{
-                background: "linear-gradient(135deg, #a78bfa, #c084fc, #f472b6)",
+                background:
+                  "linear-gradient(135deg, #a78bfa, #c084fc, #f472b6)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
               }}
@@ -477,7 +566,10 @@ export default function FeaturesPage() {
           >
             <motion.a
               href="/courses"
-              whileHover={{ scale: 1.05, boxShadow: "0 0 50px rgba(167,139,250,0.5)" }}
+              whileHover={{
+                scale: 1.05,
+                boxShadow: "0 0 50px rgba(167,139,250,0.5)",
+              }}
               whileTap={{ scale: 0.97 }}
               className="px-8 py-4 rounded-2xl font-bold text-white text-base"
               style={{
@@ -545,7 +637,9 @@ export default function FeaturesPage() {
                 >
                   {stat.value}
                 </div>
-                <div className="text-sm text-gray-500 font-medium">{stat.label}</div>
+                <div className="text-sm text-gray-500 font-medium">
+                  {stat.label}
+                </div>
               </motion.div>
             ))}
           </div>
@@ -556,17 +650,30 @@ export default function FeaturesPage() {
       <section className="relative py-24 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-14">
-            <span className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-3 block">Everything You Need</span>
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-4">The building blocks<br />of your success.</h2>
-            <p className="text-gray-500 max-w-xl mx-auto">From AI tutoring to live classes, every tool you need to go from beginner to expert.</p>
+            <span className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-3 block">
+              Everything You Need
+            </span>
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-4 font-serif">
+              The building blocks
+              <br />
+              of your success.
+            </h2>
+            <p className={`${montserrat.className} text-gray-500 max-w-xl mx-auto`}>
+              From AI tutoring to live classes, every tool you need to go from
+              beginner to expert.
+            </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featureCards.map((card, i) => (
-              <FeatureCard 
-                key={i} 
-                card={card} 
-                i={i} 
-                onClick={card.title === "Resource Library" ? () => setIsVaultOpen(true) : undefined}
+              <FeatureCard
+                key={i}
+                card={card}
+                i={i}
+                onClick={
+                  card.title === "Resource Library"
+                    ? () => setIsVaultOpen(true)
+                    : undefined
+                }
               />
             ))}
           </div>
@@ -599,17 +706,20 @@ export default function FeaturesPage() {
             }}
           >
             <Sparkles className="w-10 h-10 text-violet-400 mx-auto mb-6" />
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-4">
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-4 font-serif">
               Begin your journey today
             </h2>
-            <p className="text-gray-400 text-lg mb-10 max-w-xl mx-auto">
+            <p className={`${montserrat.className} text-gray-400 text-lg mb-10 max-w-xl mx-auto`}>
               Join a community of 50,000+ pioneers shaping the future of
               education with EduNova's celestial toolset.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.a
                 href="/auth/sign-up"
-                whileHover={{ scale: 1.05, boxShadow: "0 0 50px rgba(124,58,237,0.5)" }}
+                whileHover={{
+                  scale: 1.05,
+                  boxShadow: "0 0 50px rgba(124,58,237,0.5)",
+                }}
                 whileTap={{ scale: 0.97 }}
                 className="px-10 py-4 rounded-2xl font-bold text-white text-base"
                 style={{
@@ -633,7 +743,10 @@ export default function FeaturesPage() {
         </div>
       </section>
       {/* Resource Vault Modal */}
-      <ResourceVault isOpen={isVaultOpen} onClose={() => setIsVaultOpen(false)} />
+      <ResourceVault
+        isOpen={isVaultOpen}
+        onClose={() => setIsVaultOpen(false)}
+      />
 
       <Footer />
     </main>

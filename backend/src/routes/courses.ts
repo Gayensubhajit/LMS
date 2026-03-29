@@ -138,6 +138,8 @@ coursesRouter.get("/:slug/lessons", async (req, res) => {
               id: true,
               title: true,
               description: true,
+              videoUrl: true,
+              content: true,
               durationMins: true,
               position: true,
               isPreview: true

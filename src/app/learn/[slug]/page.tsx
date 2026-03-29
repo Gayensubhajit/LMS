@@ -6,13 +6,39 @@ import { useParams } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
 import { getCourseBySlug } from "@/lib/courses-data";
 import { backendRequest } from "@/lib/backend-client";
-import { CheckCircle2, ChevronRight, Circle, Lock, PlayCircle } from "lucide-react";
+import {
+  CheckCircle2,
+  ChevronDown,
+  ChevronRight,
+  Circle,
+  Download,
+  FileText,
+  Lock,
+  MessageSquare,
+  NotebookPen,
+  PlayCircle,
+  Sparkles,
+  Video,
+  X,
+} from "lucide-react";
 import PremiumVideoPlayer from "@/components/lms/PremiumVideoPlayer";
+import { motion, AnimatePresence } from "framer-motion";
+
+// ── Types ──────────────────────────────────────────────────────────────────────
+type TranscriptEntry = { time: string; text: string };
+type Resource = { label: string; url: string };
+type LessonContent = {
+  transcript?: TranscriptEntry[];
+  resources?: Resource[];
+  notes?: string | null;
+};
 
 type BackendLesson = {
   id: string;
   title: string;
   description: string | null;
+  videoUrl: string | null;
+  content: LessonContent | null;
   durationMins: number | null;
   position: number;
   isPreview: boolean;
@@ -25,6 +51,20 @@ type BackendSection = {
   lessons: BackendLesson[];
 };
 
+type Tab = "transcript" | "notes" | "downloads";
+
+// ── Constants ──────────────────────────────────────────────────────────────────
+const FALLBACK_VIDEO =
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
+
+const AI_SUGGESTIONS = [
+  "Explain this topic in simple terms",
+  "Give me a summary",
+  "Give me a practice question",
+  "Give me real-life examples",
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
 export default function LearnCoursePage() {
   const { user, isLoaded } = useUser();
   const params = useParams<{ slug: string }>();
@@ -39,36 +79,47 @@ export default function LearnCoursePage() {
   const [loading, setLoading] = useState(true);
   const [markingDone, setMarkingDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<Tab>("transcript");
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [userNote, setUserNote] = useState("");
+  const [noteSaved, setNoteSaved] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [coachInput, setCoachInput] = useState("");
 
+  // flat lesson list
   const lessonItems = useMemo(
     () =>
-      backendSections.flatMap((section) =>
-        section.lessons.map((lesson) => ({
-          ...lesson,
-          sectionTitle: section.title,
-        }))
+      backendSections.flatMap((s) =>
+        s.lessons.map((l) => ({ ...l, sectionTitle: s.title, sectionId: s.id }))
       ),
     [backendSections]
   );
 
+  // ── Data fetching ─────────────────────────────────────────────────────────
   useEffect(() => {
     const run = async () => {
       if (!isLoaded) return;
       if (!user?.id) { setLoading(false); return; }
       try {
-        const lessonsRes = await backendRequest<{ ok: true; item: { sections: BackendSection[] } }>(
-          `/courses/${slug}/lessons`, { clerkUserId: user.id }
-        );
+        const lessonsRes = await backendRequest<{
+          ok: true;
+          item: { sections: BackendSection[] };
+        }>(`/courses/${slug}/lessons`, { clerkUserId: user.id });
         setBackendSections(lessonsRes.item.sections);
 
+        // Expand all sections by default
+        setExpandedSections(new Set(lessonsRes.item.sections.map((s) => s.id)));
+
         const progressRes = await backendRequest<{
-          ok: true; item: { progressPercent: number; hasActiveEnrollment: boolean };
+          ok: true;
+          item: { progressPercent: number; hasActiveEnrollment: boolean };
         }>(`/progress/courses/${slug}`, { clerkUserId: user.id });
         setProgressPercent(progressRes.item.progressPercent);
         setHasEnrollment(progressRes.item.hasActiveEnrollment);
 
         const nextRes = await backendRequest<{
-          ok: true; item: { nextLesson: { id: string } | null };
+          ok: true;
+          item: { nextLesson: { id: string } | null };
         }>(`/progress/courses/${slug}/continue`, { clerkUserId: user.id });
 
         const nextId = nextRes.item.nextLesson?.id;
@@ -83,7 +134,18 @@ export default function LearnCoursePage() {
     void run();
   }, [isLoaded, slug, user?.id]);
 
+  // Reset tab when lesson changes
+  useEffect(() => {
+    setActiveTab("transcript");
+  }, [activeLessonId]);
+
+  // ── Actions ───────────────────────────────────────────────────────────────
   const activeLesson = lessonItems.find((l) => l.id === activeLessonId) ?? lessonItems[0];
+
+  const navToLesson = (id: string) => {
+    setActiveLessonId(id);
+    setSidebarOpen(false);
+  };
 
   const navToNext = () => {
     const idx = lessonItems.findIndex((l) => l.id === activeLessonId);
@@ -105,23 +167,40 @@ export default function LearnCoursePage() {
         `/progress/courses/${slug}`, { clerkUserId: user.id }
       );
       setProgressPercent(progressRes.item.progressPercent);
-      // Auto-advance to next lesson
       navToNext();
-    } catch (err) {
-      setError((err as Error).message || "Unable to update progress");
+    } catch {
+      // silently fail
     } finally {
       setMarkingDone(false);
     }
   };
 
+  const toggleSection = (id: string) => {
+    setExpandedSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const saveNote = () => {
+    setNoteSaved(true);
+    setTimeout(() => setNoteSaved(false), 2000);
+  };
+
+  // ── Guards ────────────────────────────────────────────────────────────────
   if (!course) {
     return (
       <main className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
-        <div className="glass-card rounded-3xl border border-violet-500/20 p-10 max-w-md text-center">
+        <div className="glass-card rounded-3xl p-10 max-w-md text-center">
           <div className="text-5xl mb-4">🔍</div>
           <h1 className="text-2xl font-black text-white mb-2">Course not found</h1>
           <p className="text-gray-400 mb-6">The learning path is unavailable.</p>
-          <Link href="/courses" className="inline-flex bg-gradient-to-r from-violet-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold">
+          <Link
+            href="/courses"
+            className="inline-flex bg-gradient-to-r from-violet-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold"
+          >
             Browse Courses
           </Link>
         </div>
@@ -133,267 +212,567 @@ export default function LearnCoursePage() {
     ? Math.max(progressPercent, Math.round((completed.size / lessonItems.length) * 100))
     : progressPercent;
 
-  return (
-    <main className="min-h-screen bg-background text-foreground">
-      {/* Top Bar */}
-      <header
-        className="flex items-center justify-between px-6 py-3 sticky top-0 z-40"
-        style={{ background: "rgba(10,10,20,0.95)", borderBottom: "1px solid rgba(124,58,237,0.2)", backdropFilter: "blur(12px)" }}
-      >
-        <div className="flex items-center gap-3 min-w-0">
-          <Link href="/my-courses" className="text-violet-300 hover:text-violet-200 text-sm flex-shrink-0">← My Courses</Link>
-          <span className="text-gray-700 hidden sm:block">|</span>
-          <span className="text-white font-semibold text-sm truncate hidden sm:block">{course.title}</span>
+  const currentIdx = lessonItems.findIndex((l) => l.id === activeLessonId);
+  const totalLessons = lessonItems.length;
+  const transcript = activeLesson?.content?.transcript ?? [];
+  const resources = activeLesson?.content?.resources ?? [];
+  const lessonNote = activeLesson?.content?.notes ?? "";
+
+  // ── Loading UI ────────────────────────────────────────────────────────────
+  if (!isLoaded || loading) {
+    return (
+      <main className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-14 h-14 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-500 text-sm">Loading your lessons…</p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex-col items-end hidden sm:flex">
-            <span className="text-xs text-gray-500 mb-0.5">{displayProgress}% complete</span>
-            <div className="w-32 h-1.5 rounded-full bg-white/10 overflow-hidden">
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{ width: `${displayProgress}%`, background: "linear-gradient(90deg,#7c3aed,#a855f7)" }}
-              />
-            </div>
+      </main>
+    );
+  }
+
+  // ── Error UI ──────────────────────────────────────────────────────────────
+  if (error) {
+    return (
+      <main className="min-h-screen bg-background flex items-center justify-center px-6">
+        <div className="glass-card rounded-3xl p-10 max-w-md text-center">
+          <div className="text-4xl mb-4">⚠️</div>
+          <h2 className="text-xl font-bold text-white mb-2">Could not load lessons</h2>
+          <p className="text-red-400 text-sm mb-1">{error}</p>
+          <p className="text-gray-600 text-xs">cd backend &amp;&amp; npm run dev</p>
+        </div>
+      </main>
+    );
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  return (
+    <main className="min-h-screen bg-background text-foreground flex flex-col">
+      {/* ── TOP BAR ──────────────────────────────────────────────────────── */}
+      <header
+        className="flex items-center justify-between px-4 sm:px-6 h-14 sticky top-0 z-50 flex-shrink-0"
+        style={{
+          background: "rgba(8,8,15,0.97)",
+          borderBottom: "1px solid rgba(124,58,237,0.18)",
+          backdropFilter: "blur(14px)",
+        }}
+      >
+        {/* Left */}
+        <div className="flex items-center gap-3 min-w-0">
+          <Link
+            href="/my-courses"
+            className="text-xs text-violet-400 hover:text-violet-300 transition-colors flex-shrink-0 flex items-center gap-1"
+          >
+            <ChevronRight size={12} className="rotate-180" />
+            My Learning
+          </Link>
+          <span className="text-gray-700 hidden sm:block text-xs">|</span>
+          <span className="text-white font-semibold text-sm truncate hidden sm:block max-w-xs">
+            {course.title}
+          </span>
+        </div>
+
+        {/* Center — progress */}
+        <div className="hidden md:flex items-center gap-3">
+          <span className="text-xs text-gray-500">
+            {currentIdx + 1} / {totalLessons} lessons
+          </span>
+          <div className="w-36 h-1.5 rounded-full bg-white/10 overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-700"
+              style={{
+                width: `${displayProgress}%`,
+                background: "linear-gradient(90deg,#7c3aed,#a855f7,#ec4899)",
+                boxShadow: "0 0 8px rgba(168,85,247,0.5)",
+              }}
+            />
           </div>
-          <Link href={`/courses/${course.slug}`} className="text-xs text-gray-500 hover:text-gray-300 transition-colors hidden sm:block">
-            Course details
+          <span className="text-xs text-violet-400 font-bold">{displayProgress}%</span>
+        </div>
+
+        {/* Right */}
+        <div className="flex items-center gap-2">
+          {/* Mobile sidebar toggle */}
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
+          >
+            <FileText size={18} />
+          </button>
+          <Link
+            href={`/courses/${course.slug}`}
+            className="hidden sm:block text-xs text-gray-500 hover:text-gray-300 transition-colors"
+          >
+            Course Info
           </Link>
         </div>
       </header>
 
-      {!isLoaded || loading ? (
-        <div className="flex items-center justify-center min-h-[80vh]">
-          <div className="text-center">
-            <div className="w-12 h-12 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-gray-400 text-sm">Loading your lessons…</p>
-          </div>
-        </div>
-      ) : false ? (
-        <div className="flex items-center justify-center min-h-[80vh] px-6">
-          <div className="glass-card rounded-3xl border border-violet-500/20 p-10 max-w-md text-center">
-            <h2 className="text-2xl font-bold text-white mb-2">Sign in required</h2>
-            <p className="text-gray-400 mb-6">Please sign in to access your learning player.</p>
-            <Link href="/auth/sign-in" className="inline-flex bg-gradient-to-r from-violet-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold">
-              Sign In
-            </Link>
-          </div>
-        </div>
-      ) : error ? (
-        <div className="flex items-center justify-center min-h-[80vh] px-6">
-          <div className="glass-card rounded-3xl border border-red-500/20 p-8 max-w-md text-center">
-            <h2 className="text-xl font-bold text-white mb-2">Something went wrong</h2>
-            <p className="text-red-300 text-sm">{error}</p>
-          </div>
-        </div>
-      ) : (
-        <div className="flex h-[calc(100vh-57px)]">
-          {/* Sidebar */}
+      {/* ── BODY ─────────────────────────────────────────────────────────── */}
+      <div className="flex flex-1 overflow-hidden">
+
+        {/* ── SIDEBAR ──────────────────────────────────────────────────── */}
+        <>
+          {/* Mobile overlay */}
+          <AnimatePresence>
+            {sidebarOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 bg-black/70 z-40 lg:hidden"
+                onClick={() => setSidebarOpen(false)}
+              />
+            )}
+          </AnimatePresence>
+
           <aside
-            className="w-72 flex-shrink-0 hidden lg:flex flex-col overflow-hidden"
-            style={{ borderRight: "1px solid rgba(124,58,237,0.15)", background: "rgba(12,12,25,0.98)" }}
+            className={`
+              w-80 flex-shrink-0 flex flex-col overflow-hidden transition-transform duration-300
+              fixed inset-y-14 left-0 z-40 lg:relative lg:inset-auto lg:translate-x-0
+              ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+            `}
+            style={{
+              background: "rgba(10,10,20,0.99)",
+              borderRight: "1px solid rgba(124,58,237,0.15)",
+            }}
           >
-            <div className="px-4 py-3 border-b" style={{ borderColor: "rgba(124,58,237,0.15)" }}>
-              <p className="text-xs font-bold uppercase tracking-widest text-gray-600 mb-1">Course Content</p>
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-500">{lessonItems.length} lessons</span>
-                <span className="text-xs text-violet-400 font-semibold">{displayProgress}%</span>
+            {/* Sidebar header */}
+            <div
+              className="px-4 py-3 flex items-center justify-between flex-shrink-0"
+              style={{ borderBottom: "1px solid rgba(124,58,237,0.12)" }}
+            >
+              <div>
+                <p className="text-[10px] font-extrabold uppercase tracking-widest text-violet-500 mb-0.5">
+                  Course Content
+                </p>
+                <p className="text-xs text-gray-500">
+                  {totalLessons} lessons · {displayProgress}% complete
+                </p>
               </div>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="lg:hidden p-1.5 rounded-lg text-gray-600 hover:text-white hover:bg-white/5"
+              >
+                <X size={16} />
+              </button>
             </div>
+
+            {/* Section list */}
             <div className="flex-1 overflow-y-auto py-2">
-              {backendSections.map((section) => (
-                <div key={section.id}>
-                  <div className="px-4 py-2">
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-gray-600">{section.title}</p>
+              {backendSections.map((section) => {
+                const isExpanded = expandedSections.has(section.id);
+                const sectionDone = section.lessons.filter((l) => completed.has(l.id)).length;
+                return (
+                  <div key={section.id}>
+                    {/* Section header */}
+                    <button
+                      onClick={() => toggleSection(section.id)}
+                      className="w-full flex items-center justify-between px-4 py-3 hover:bg-white/3 transition-colors group"
+                    >
+                      <div className="flex-1 min-w-0 text-left">
+                        <p className="text-[11px] font-bold text-gray-300 group-hover:text-white transition-colors leading-tight">
+                          {section.title}
+                        </p>
+                        <p className="text-[10px] text-gray-600 mt-0.5">
+                          {sectionDone}/{section.lessons.length} done
+                        </p>
+                      </div>
+                      <ChevronDown
+                        size={14}
+                        className={`text-gray-600 flex-shrink-0 ml-2 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                      />
+                    </button>
+
+                    {/* Lessons */}
+                    <AnimatePresence initial={false}>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          {section.lessons.map((lesson) => {
+                            const isDone = completed.has(lesson.id);
+                            const isActive = lesson.id === activeLessonId;
+                            const isLocked = !hasEnrollment && !lesson.isPreview;
+                            return (
+                              <button
+                                key={lesson.id}
+                                onClick={() => !isLocked && navToLesson(lesson.id)}
+                                disabled={isLocked}
+                                className={`w-full text-left px-4 py-2.5 flex items-start gap-3 transition-all duration-150 border-l-2 ${
+                                  isActive
+                                    ? "bg-violet-500/10 border-violet-500"
+                                    : "border-transparent hover:bg-white/4 hover:border-violet-500/30"
+                                } ${isLocked ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
+                              >
+                                {/* Icon */}
+                                <div className="mt-0.5 flex-shrink-0">
+                                  {isLocked ? (
+                                    <Lock size={12} className="text-gray-600" />
+                                  ) : isDone ? (
+                                    <CheckCircle2 size={12} className="text-violet-400" fill="rgba(124,58,237,0.35)" />
+                                  ) : isActive ? (
+                                    <PlayCircle size={12} className="text-violet-400" fill="rgba(124,58,237,0.35)" />
+                                  ) : (
+                                    <Video size={12} className="text-gray-600" />
+                                  )}
+                                </div>
+                                {/* Text */}
+                                <div className="flex-1 min-w-0">
+                                  <p
+                                    className={`text-xs leading-snug ${
+                                      isActive ? "text-white font-semibold" : isDone ? "text-gray-400" : "text-gray-400"
+                                    }`}
+                                  >
+                                    {lesson.title}
+                                  </p>
+                                  <div className="flex items-center gap-2 mt-0.5">
+                                    {lesson.durationMins && (
+                                      <p className="text-[10px] text-gray-600">
+                                        {lesson.durationMins}m
+                                      </p>
+                                    )}
+                                    {lesson.isPreview && !hasEnrollment && (
+                                      <span className="text-[9px] text-violet-400 border border-violet-500/30 px-1 py-0.5 rounded">
+                                        FREE
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                  {section.lessons.map((lesson) => {
-                    const isDone = completed.has(lesson.id);
-                    const isActive = lesson.id === activeLessonId;
-                    const isLocked = !hasEnrollment && !lesson.isPreview;
-                    return (
-                      <button
-                        key={lesson.id}
-                        onClick={() => !isLocked && setActiveLessonId(lesson.id)}
-                        disabled={isLocked}
-                        className={`w-full text-left px-4 py-2.5 flex items-start gap-3 transition-colors ${
-                          isActive ? "bg-violet-500/15" : "hover:bg-white/5"
-                        } ${isLocked ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-                      >
-                        <div className="mt-0.5 flex-shrink-0">
-                          {isLocked ? (
-                            <Lock size={13} className="text-gray-600" />
-                          ) : isDone ? (
-                            <CheckCircle2 size={13} className="text-violet-400" fill="rgba(124,58,237,0.3)" />
-                          ) : isActive ? (
-                            <PlayCircle size={13} className="text-violet-400" fill="rgba(124,58,237,0.3)" />
-                          ) : (
-                            <Circle size={13} className="text-gray-700" />
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className={`text-xs leading-snug ${isActive ? "text-white font-semibold" : "text-gray-400"}`}>
-                            {lesson.title}
-                          </p>
-                          {lesson.durationMins && (
-                            <p className="text-[10px] text-gray-700 mt-0.5">{lesson.durationMins}m</p>
-                          )}
-                        </div>
-                        {lesson.isPreview && !hasEnrollment && (
-                          <span className="text-[9px] text-violet-400 border border-violet-500/30 px-1 py-0.5 rounded flex-shrink-0">FREE</span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </aside>
+        </>
 
-          {/* Main Player */}
-          <div className="flex-1 overflow-y-auto">
-            {activeLesson ? (
-              <div className="flex flex-col h-full">
-                {/* Video area */}
-                <div className="w-full bg-black">
-                  {hasEnrollment || activeLesson.isPreview ? (
-                    <PremiumVideoPlayer
-                      url="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-                      title={activeLesson.title}
-                      onEnded={navToNext}
-                    />
-                  ) : (
-                    <div 
-                      className="aspect-video w-full flex flex-col items-center justify-center relative overflow-hidden"
-                      style={{ background: "linear-gradient(135deg,rgba(30,12,60,0.95),rgba(15,15,30,1))" }}
-                    >
-                      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10" />
-                      <div className="text-center relative z-10 p-8 glass-card border-white/5 rounded-[40px] max-w-sm">
-                        <div className="w-20 h-20 rounded-3xl bg-violet-600/20 flex items-center justify-center text-4xl mx-auto mb-6 border border-violet-500/30">
-                          {course.emoji}
-                        </div>
-                        <h3 className="text-xl font-black text-white mb-2">Lesson Locked</h3>
-                        <p className="text-gray-400 text-sm mb-6 leading-relaxed">
-                          This deep-dive session is reserved for enrolled students. 
-                          Join the course to unlock the full curriculum.
-                        </p>
-                        <Link
-                          href={`/pricing`}
-                          className="inline-flex px-8 py-3 rounded-2xl bg-violet-600 text-white font-black text-sm hover:bg-violet-500 transition-all shadow-lg shadow-violet-600/20"
-                        >
-                          Unlock Course
-                        </Link>
+        {/* ── MAIN CONTENT AREA ──────────────────────────────────────────── */}
+        <div className="flex-1 overflow-y-auto min-w-0">
+          {activeLesson ? (
+            <div>
+              {/* VIDEO PLAYER */}
+              <div
+                className="w-full"
+                style={{ background: "#000", borderBottom: "1px solid rgba(124,58,237,0.1)" }}
+              >
+                {hasEnrollment || activeLesson.isPreview ? (
+                  <PremiumVideoPlayer
+                    url={activeLesson.videoUrl ?? FALLBACK_VIDEO}
+                    title={activeLesson.title}
+                    onEnded={navToNext}
+                  />
+                ) : (
+                  /* Locked state */
+                  <div
+                    className="aspect-video w-full flex flex-col items-center justify-center"
+                    style={{ background: "linear-gradient(135deg,rgba(20,10,50,0.98),rgba(8,8,15,1))" }}
+                  >
+                    <div className="text-center p-8 glass-card rounded-3xl max-w-sm">
+                      <div className="w-16 h-16 rounded-2xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-3xl mx-auto mb-4">
+                        {course.emoji}
                       </div>
+                      <h3 className="text-xl font-black text-white mb-2">Lesson Locked</h3>
+                      <p className="text-gray-400 text-sm mb-5 leading-relaxed">
+                        This lesson is for enrolled students only. Enroll to unlock the full curriculum.
+                      </p>
+                      <Link
+                        href="/pricing"
+                        className="inline-flex px-6 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold text-sm hover:shadow-lg hover:shadow-violet-600/30 transition-all"
+                      >
+                        Unlock Course
+                      </Link>
                     </div>
-                  )}
+                  </div>
+                )}
+              </div>
+
+              {/* LESSON META + ACTIONS */}
+              <div className="max-w-4xl mx-auto px-4 sm:px-6 py-5">
+
+                {/* Section breadcrumb */}
+                <p className="text-xs text-violet-400 font-semibold mb-1 uppercase tracking-wider">
+                  {activeLesson.sectionTitle}
+                </p>
+
+                {/* Title row */}
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-5">
+                  <div className="min-w-0">
+                    <h1 className="text-xl sm:text-2xl font-black text-white leading-tight">
+                      {activeLesson.title}
+                    </h1>
+                    {activeLesson.description && (
+                      <p className="text-gray-400 text-sm mt-1.5 leading-relaxed">
+                        {activeLesson.description}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {hasEnrollment || activeLesson.isPreview ? (
+                      <button
+                        onClick={markCompleted}
+                        disabled={completed.has(activeLesson.id) || markingDone}
+                        className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all disabled:opacity-60"
+                        style={{
+                          background: completed.has(activeLesson.id)
+                            ? "rgba(124,58,237,0.15)"
+                            : "linear-gradient(135deg,#7c3aed,#a855f7)",
+                          border: completed.has(activeLesson.id) ? "1px solid rgba(124,58,237,0.4)" : "none",
+                          color: completed.has(activeLesson.id) ? "#a78bfa" : "white",
+                        }}
+                      >
+                        {completed.has(activeLesson.id) ? (
+                          <><CheckCircle2 size={14} /> Completed</>
+                        ) : markingDone ? (
+                          "Saving…"
+                        ) : (
+                          "Mark Complete"
+                        )}
+                      </button>
+                    ) : null}
+
+                    {currentIdx < totalLessons - 1 && (
+                      <button
+                        onClick={navToNext}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-gray-400 hover:text-white border border-white/10 hover:border-violet-500/40 transition-all"
+                      >
+                        Next <ChevronRight size={14} />
+                      </button>
+                    )}
+                  </div>
                 </div>
 
-                {/* Lesson info */}
-                <div className="max-w-4xl mx-auto px-6 py-6">
-                  <div className="flex items-start justify-between gap-4 mb-4">
-                    <div>
-                      <p className="text-xs text-violet-400 font-semibold mb-1">{activeLesson.sectionTitle}</p>
-                      <h1 className="text-2xl font-black text-white">{activeLesson.title}</h1>
-                      {activeLesson.description && (
-                        <p className="text-gray-400 text-sm mt-2">{activeLesson.description}</p>
-                      )}
+                {/* ── AI COACH BLOCK ──────────────────────────────────── */}
+                <div
+                  className="rounded-2xl mb-6 overflow-hidden"
+                  style={{
+                    background: "rgba(12,12,25,0.8)",
+                    border: "1px solid rgba(124,58,237,0.2)",
+                  }}
+                >
+                  <div className="flex items-center gap-3 px-4 py-3 border-b border-white/5">
+                    <div className="w-7 h-7 rounded-lg bg-violet-600/20 border border-violet-500/30 flex items-center justify-center flex-shrink-0">
+                      <Sparkles size={13} className="text-violet-400" />
                     </div>
-                    <div className="flex gap-2 flex-shrink-0">
-                      {hasEnrollment || activeLesson.isPreview ? (
+                    <div>
+                      <p className="text-sm font-bold text-white">EduNova Coach</p>
+                      <p className="text-[10px] text-gray-600">AI-powered learning assistant • Powered by GPT-4</p>
+                    </div>
+                    <div className="ml-auto flex items-center gap-1.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="text-[10px] text-emerald-500">Online</span>
+                    </div>
+                  </div>
+
+                  <div className="p-4">
+                    <p className="text-xs text-gray-400 mb-3">
+                      Let me know if you have any questions about this lesson. I&apos;m here to help!
+                    </p>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {AI_SUGGESTIONS.map((s) => (
                         <button
-                          onClick={markCompleted}
-                          disabled={completed.has(activeLesson.id) || markingDone}
-                          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all disabled:opacity-50"
+                          key={s}
+                          onClick={() => setCoachInput(s)}
+                          className="text-[11px] px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5"
                           style={{
-                            background: completed.has(activeLesson.id)
-                              ? "rgba(124,58,237,0.2)"
-                              : "linear-gradient(135deg,#7c3aed,#a855f7)",
-                            border: completed.has(activeLesson.id) ? "1px solid rgba(124,58,237,0.4)" : "none",
-                            color: completed.has(activeLesson.id) ? "#a78bfa" : "white",
+                            background: "rgba(124,58,237,0.08)",
+                            borderColor: "rgba(124,58,237,0.25)",
+                            color: "#c4b5fd",
                           }}
                         >
-                          {completed.has(activeLesson.id) ? (
-                            <><CheckCircle2 size={14} /> Completed</>
-                          ) : markingDone ? (
-                            "Saving…"
-                          ) : (
-                            <>Mark Complete</>
-                          )}
+                          <Sparkles size={10} />
+                          {s}
                         </button>
-                      ) : (
-                        <Link
-                          href={`/checkout?slug=${encodeURIComponent(slug)}&plan=1month`}
-                          className="px-4 py-2 rounded-xl text-sm font-semibold text-white"
+                      ))}
+                    </div>
+                    {coachInput && (
+                      <div className="flex gap-2 items-center">
+                        <input
+                          value={coachInput}
+                          onChange={(e) => setCoachInput(e.target.value)}
+                          className="flex-1 text-xs bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
+                          placeholder="Ask the coach anything..."
+                          onKeyDown={(e) => e.key === "Escape" && setCoachInput("")}
+                        />
+                        <button
+                          onClick={() => setCoachInput("")}
+                          className="p-2 rounded-lg text-gray-600 hover:text-white hover:bg-white/5"
+                        >
+                          <X size={14} />
+                        </button>
+                        <button
+                          className="px-3 py-2 rounded-lg text-xs font-bold text-white"
                           style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}
                         >
-                          Enroll to Continue
-                        </Link>
-                      )}
-                    </div>
+                          Ask →
+                        </button>
+                      </div>
+                    )}
                   </div>
+                </div>
 
-                  {/* Next lesson button */}
-                  {lessonItems.findIndex(l => l.id === activeLessonId) < lessonItems.length - 1 && (
-                    <button
-                      onClick={navToNext}
-                      className="flex items-center gap-2 text-sm text-violet-300 hover:text-violet-200 transition-colors"
-                    >
-                      Next lesson <ChevronRight size={14} />
-                      <span className="text-gray-500">
-                        {lessonItems[lessonItems.findIndex(l => l.id === activeLessonId) + 1]?.title}
-                      </span>
-                    </button>
-                  )}
+                {/* ── TABS ────────────────────────────────────────────── */}
+                <div style={{ borderBottom: "1px solid rgba(124,58,237,0.15)" }} className="mb-5">
+                  <div className="flex gap-0">
+                    {(
+                      [
+                        { id: "transcript", label: "Transcript", icon: <MessageSquare size={13} /> },
+                        { id: "notes", label: "Notes", icon: <NotebookPen size={13} /> },
+                        { id: "downloads", label: "Downloads", icon: <Download size={13} /> },
+                      ] as { id: Tab; label: string; icon: React.ReactNode }[]
+                    ).map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActiveTab(tab.id)}
+                        className="flex items-center gap-2 px-4 py-2.5 text-xs font-bold transition-all relative"
+                        style={{
+                          color: activeTab === tab.id ? "#c4b5fd" : "#6060a0",
+                          borderBottom: activeTab === tab.id ? "2px solid #7c3aed" : "2px solid transparent",
+                        }}
+                      >
+                        {tab.icon}
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
-                  {/* Mobile lesson list */}
-                  <div className="mt-6 lg:hidden">
-                    <p className="text-sm font-bold text-white mb-3">Course Lessons</p>
-                    <div className="space-y-1">
-                      {lessonItems.map((lesson) => {
-                        const isDone = completed.has(lesson.id);
-                        const isActive = lesson.id === activeLessonId;
-                        return (
-                          <button
-                            key={lesson.id}
-                            onClick={() => setActiveLessonId(lesson.id)}
-                            className={`w-full text-left px-3 py-2 rounded-xl flex items-center gap-2 text-xs transition-colors ${
-                              isActive ? "bg-violet-500/15 text-white" : "text-gray-400 hover:bg-white/5"
-                            }`}
+                {/* TAB: Transcript */}
+                {activeTab === "transcript" && (
+                  <div className="space-y-3 pb-10">
+                    {transcript.length > 0 ? (
+                      transcript.map((entry, i) => (
+                        <motion.div
+                          key={i}
+                          initial={{ opacity: 0, x: -6 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.04 }}
+                          className="flex gap-4 group cursor-pointer"
+                        >
+                          <span
+                            className="text-xs font-mono flex-shrink-0 mt-0.5 px-2 py-0.5 rounded font-bold transition-colors"
+                            style={{
+                              color: "#7c3aed",
+                              background: "rgba(124,58,237,0.1)",
+                              minWidth: "3.5rem",
+                              textAlign: "center",
+                            }}
                           >
-                            {isDone
-                              ? <CheckCircle2 size={12} className="text-violet-400 flex-shrink-0" />
-                              : <Circle size={12} className="text-gray-700 flex-shrink-0" />
-                            }
-                            {lesson.title}
-                          </button>
-                        );
-                      })}
+                            {entry.time}
+                          </span>
+                          <p className="text-sm text-gray-300 leading-relaxed group-hover:text-white transition-colors">
+                            {entry.text}
+                          </p>
+                        </motion.div>
+                      ))
+                    ) : (
+                      <div className="text-center py-10">
+                        <MessageSquare size={32} className="text-gray-700 mx-auto mb-3" />
+                        <p className="text-gray-600 text-sm">No transcript available for this lesson.</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* TAB: Notes */}
+                {activeTab === "notes" && (
+                  <div className="pb-10">
+                    {lessonNote && (
+                      <div
+                        className="mb-4 rounded-xl p-4 text-sm text-gray-300 leading-relaxed"
+                        style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.2)" }}
+                      >
+                        <p className="text-[10px] text-violet-400 font-bold uppercase tracking-wider mb-2">
+                          📌 Instructor Note
+                        </p>
+                        {lessonNote}
+                      </div>
+                    )}
+                    <textarea
+                      value={userNote}
+                      onChange={(e) => setUserNote(e.target.value)}
+                      placeholder="Write your personal notes for this lesson…"
+                      rows={8}
+                      className="w-full text-sm text-gray-200 rounded-xl px-4 py-3 resize-none focus:outline-none transition-colors placeholder-gray-700"
+                      style={{
+                        background: "rgba(12,12,25,0.8)",
+                        border: "1px solid rgba(124,58,237,0.2)",
+                      }}
+                    />
+                    <div className="flex items-center justify-between mt-3">
+                      <p className="text-xs text-gray-600">Notes are local to this session.</p>
+                      <button
+                        onClick={saveNote}
+                        className="px-4 py-2 rounded-lg text-xs font-bold text-white transition-all"
+                        style={{ background: noteSaved ? "rgba(124,58,237,0.3)" : "linear-gradient(135deg,#7c3aed,#a855f7)" }}
+                      >
+                        {noteSaved ? "✓ Saved!" : "Save Note"}
+                      </button>
                     </div>
                   </div>
-                </div>
+                )}
+
+                {/* TAB: Downloads */}
+                {activeTab === "downloads" && (
+                  <div className="pb-10">
+                    {resources.length > 0 ? (
+                      <div className="space-y-2">
+                        {resources.map((r, i) => (
+                          <a
+                            key={i}
+                            href={r.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all group"
+                            style={{ background: "rgba(12,12,25,0.8)", border: "1px solid rgba(124,58,237,0.15)" }}
+                          >
+                            <div
+                              className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                              style={{ background: "rgba(124,58,237,0.15)" }}
+                            >
+                              <Download size={15} className="text-violet-400" />
+                            </div>
+                            <span className="text-sm text-gray-300 group-hover:text-white transition-colors font-medium">
+                              {r.label}
+                            </span>
+                            <ChevronRight size={14} className="text-gray-700 group-hover:text-violet-400 ml-auto transition-colors" />
+                          </a>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-10">
+                        <Download size={32} className="text-gray-700 mx-auto mb-3" />
+                        <p className="text-gray-600 text-sm">No downloads available for this lesson.</p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-            ) : (
-              <div className="flex items-center justify-center h-full">
-                <div className="text-center">
-                  <div className="text-5xl mb-4">{course.emoji}</div>
-                  <p className="text-gray-400 text-sm">
-                    {lessonItems.length === 0
-                      ? "No lessons available yet for this course."
-                      : "Select a lesson to begin."}
-                  </p>
-                  {!hasEnrollment && (
-                    <Link
-                      href={`/checkout?slug=${encodeURIComponent(slug)}&plan=1month`}
-                      className="inline-flex mt-4 px-6 py-3 rounded-xl text-white font-semibold text-sm"
-                      style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}
-                    >
-                      Enroll Now
-                    </Link>
-                  )}
-                </div>
+            </div>
+          ) : (
+            /* No lesson selected */
+            <div className="flex items-center justify-center h-full min-h-[60vh]">
+              <div className="text-center">
+                <div className="text-6xl mb-4">{course.emoji}</div>
+                <p className="text-gray-400 text-sm">
+                  {totalLessons === 0
+                    ? "No lessons available yet."
+                    : "Select a lesson to begin."}
+                </p>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </main>
   );
 }

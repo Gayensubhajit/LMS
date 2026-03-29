@@ -1,241 +1,301 @@
 import { PrismaClient, CourseLevel } from "@prisma/client";
-
 const prisma = new PrismaClient();
 
-/**
- * VIDEO SOURCES (all verified FreeCodeCamp YouTube videos):
- *
- * HTML Full Course (Dave Gray, 4h09m):   https://www.youtube.com/watch?v=kUMe1FH4CHE
- * CSS Full Course (Dave Gray, 11h30m):   https://www.youtube.com/watch?v=n4R2E7O-Ngo
- * JavaScript Course (Beau Carnes, 3h):   https://www.youtube.com/watch?v=PkZNo7MFNFg
- * Node.js + Express (fCC, 8h):           https://www.youtube.com/watch?v=Oe421EPjeBE
- * Prompt Engineering (Ania Kubów, 1h):   https://www.youtube.com/watch?v=dOxUW9nQ894
- * LLM Concepts (fCC, 1h30m):             https://www.youtube.com/watch?v=ztBJqzBU5kc
- *
- * Each lesson uses startSec/endSec to slice a specific topic from the video.
- */
+// Helper: convert HH:MM:SS or MM:SS to seconds
+function ts(time: string): number {
+  const parts = time.split(":").map(Number);
+  if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+  return parts[0] * 60 + parts[1];
+}
 
 async function main() {
   console.log("Seeding database...");
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // FREE COURSE 1: Frontend Fundamentals
-  // ═══════════════════════════════════════════════════════════════════════
-  const fe = await prisma.course.upsert({
-    where: { slug: "frontend-fundamentals-free" },
+  // ════════════════════════════════════════════════════════════════════════
+  // COURSE 1: GENERATIVE AI ESSENTIALS (FREE)
+  // Source: "GenAI Essentials – Full Course for Beginners" by ExamPro
+  // URL:    https://www.youtube.com/watch?v=nJ25yl34Uqw
+  // Total:  ~22 hours, chapters verified from official freeCodeCamp description
+  //
+  // Chapter timestamps (from YouTube description):
+  //  00:00:00  Introduction
+  //  00:54:16  AI and ML Fundamentals
+  //  03:02:21  Gen AI Primer
+  //  03:32:55  Data and ML
+  //  03:47:56  LLM Basics
+  //  04:12:22  AI Powered Assistants
+  //  04:24:42  Env Setup
+  //  06:12:17  Prompt Engineering
+  //  07:00:25  WorkBenches and Playgrounds
+  //  07:44:09  Model as a Service
+  //  08:36:26  LLM DevTools and Workflow
+  //  11:52:07  AI Code Assistants
+  //  14:04:37  App Prototyping
+  //  17:21:06  Containers
+  //  18:12:43  Serving
+  //  18:19:51  AI Delivery Platform
+  //  19:40:45  GenAI Hardware
+  //  19:50:21  Framework
+  //  19:51:49  LLM Customization
+  //  19:52:35  SFT
+  //  19:56:25  Size Optimization
+  //  20:26:04  RAGS
+  //  22:21:19  Agents
+  // ════════════════════════════════════════════════════════════════════════
+  const AI_VIDEO = "https://www.youtube.com/watch?v=nJ25yl34Uqw";
+
+  const aiCourse = await prisma.course.upsert({
+    where: { slug: "gen-ai-essentials-free" },
     update: { isFree: true, isPublished: true },
     create: {
-      slug: "frontend-fundamentals-free",
-      title: "Frontend Fundamentals (Free)",
-      shortDescription: "Learn HTML, CSS & JavaScript from scratch. Completely free.",
-      longDescription: "Build a solid foundation with semantic HTML5, modern CSS layouts (Flexbox, Grid), and JavaScript ES6+. This course uses real freeCodeCamp video content.",
-      category: "Development",
-      level: CourseLevel.BEGINNER,
-      instructorName: "Dave Gray / freeCodeCamp",
+      slug: "gen-ai-essentials-free",
+      title: "Generative AI Essentials (Free)",
+      shortDescription: "Understand LLMs, prompt engineering, RAG & AI Agents. Completely free.",
+      longDescription:
+        "A comprehensive 22-hour deep dive into Generative AI — from AI/ML fundamentals and LLM internals, to practical prompt engineering, AI-powered dev tools, RAG pipelines, and autonomous agents. Taught by ExamPro on freeCodeCamp.",
+      category: "AI/ML",
+      level: CourseLevel.ALL_LEVELS,
+      instructorName: "ExamPro / freeCodeCamp",
       oneMonthPrice: 0, threeMonthPrice: 0, sixMonthPrice: 0,
       isFree: true, isPublished: true,
     },
   });
 
-  // ── Module 1: HTML Foundations ───────────────────────────────────────
-  // Source: "Learn HTML – Full Tutorial for Beginners" by Dave Gray
-  // URL: https://www.youtube.com/watch?v=kUMe1FH4CHE
-  const s1 = await prisma.courseSection.upsert({
-    where: { id: "fe-sec-1" }, update: { title: "Module 1: HTML Foundations", position: 1 },
-    create: { id: "fe-sec-1", courseId: fe.id, title: "Module 1: HTML Foundations", position: 1 },
+  // ── Module 1: AI Foundations ──────────────────────────────────────────
+  const aiS1 = await prisma.courseSection.upsert({
+    where: { id: "ai-sec-1" },
+    update: { title: "Module 1: AI & ML Foundations", position: 1 },
+    create: { id: "ai-sec-1", courseId: aiCourse.id, title: "Module 1: AI & ML Foundations", position: 1 },
   });
 
-  const htmlBase = "https://www.youtube.com/watch?v=kUMe1FH4CHE";
-
-  await prisma.lesson.upsert({ where: { id: "fe-l-1" }, update: {}, create: {
-    id: "fe-l-1", sectionId: s1.id, position: 1, isPreview: true,
-    title: "Introduction & Getting Started",
-    description: "Set up VS Code, understand what HTML is, and write your very first HTML file.",
-    videoUrl: htmlBase, durationMins: 9,
-    content: { startSec: 0, endSec: 540, transcript: [
-      { time: "0:00", text: "Welcome to the full HTML course by Dave Gray on freeCodeCamp. I'm Dave, and I'll walk you through everything." },
-      { time: "0:35", text: "HTML stands for HyperText Markup Language — it is the foundation of every webpage on the internet." },
-      { time: "1:20", text: "We'll be using VS Code as our editor. Download it from code.visualstudio.com if you haven't already." },
-      { time: "3:00", text: "Let's create our first file: index.html. This is always the entry point for a website." },
-      { time: "4:40", text: "Every HTML document begins with a !DOCTYPE html declaration, followed by an html element that wraps everything." },
-    ], resources: [{ label: "VS Code Download", url: "https://code.visualstudio.com/" }],
-    notes: "HTML is a markup language, not a programming language. It describes structure, not logic." },
+  await prisma.lesson.upsert({ where: { id: "ai-l-01" }, update: {}, create: {
+    id: "ai-l-01", sectionId: aiS1.id, position: 1, isPreview: true,
+    title: "Introduction to Generative AI",
+    description: "What generative AI is, why it matters now, and an overview of the full course roadmap.",
+    videoUrl: AI_VIDEO, durationMins: 54,
+    content: {
+      startSec: ts("0:00:00"), endSec: ts("0:54:16"),
+      notes: "Generative AI produces new content (text, images, code) from learned patterns. This course covers the complete AI development lifecycle from models to deployment.",
+      transcript: [
+        { time: "0:00", text: "Learn the essentials of working with AI in the cloud from ExamPro." },
+        { time: "2:30", text: "This course covers the complete generative AI development lifecycle — from fundamentals to deployment." },
+        { time: "10:00", text: "We'll look at how LLMs work, how to prompt them effectively, and how to build AI-powered applications." },
+      ],
+    },
   }});
 
-  await prisma.lesson.upsert({ where: { id: "fe-l-2" }, update: {}, create: {
-    id: "fe-l-2", sectionId: s1.id, position: 2, isPreview: true,
-    title: "HTML Head Element & Metadata",
-    description: "Everything that goes in the <head>: title, meta tags, charset, viewport, and more.",
-    videoUrl: htmlBase, durationMins: 12,
-    content: { startSec: 540, endSec: 1260, transcript: [
-      { time: "9:00", text: "The <head> element contains metadata about the page — information the browser needs but users don't see directly." },
-      { time: "9:45", text: "The <title> tag sets what appears in the browser tab and search engine results." },
-      { time: "11:00", text: "The meta charset='UTF-8' tag ensures your page supports all international characters correctly." },
-      { time: "12:30", text: "The viewport meta tag is crucial for responsive design: name='viewport' content='width=device-width, initial-scale=1.0'." },
-    ], resources: [{ label: "Meta Tags Reference", url: "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta" }],
-    notes: "Always include the viewport meta tag — without it, your site will look broken on mobile devices." },
+  await prisma.lesson.upsert({ where: { id: "ai-l-02" }, update: {}, create: {
+    id: "ai-l-02", sectionId: aiS1.id, position: 2, isPreview: false,
+    title: "AI and ML Fundamentals",
+    description: "Supervised vs unsupervised learning, neural network basics, training pipelines, and where generative AI fits in the ML landscape.",
+    videoUrl: AI_VIDEO, durationMins: 128,
+    content: {
+      startSec: ts("0:54:16"), endSec: ts("3:02:21"),
+      notes: "Machine Learning is a subset of AI. Deep Learning is a subset of ML using neural networks with many layers. Generative AI builds on these foundations.",
+      transcript: [
+        { time: "54:16", text: "Artificial Intelligence is a broad field. Machine learning is a way to achieve AI through data-driven models." },
+        { time: "1:10:00", text: "Supervised learning requires labeled data — the model learns from input/output pairs." },
+        { time: "2:00:00", text: "Neural networks are inspired by the brain. Deep learning stacks many layers to learn complex representations." },
+      ],
+    },
   }});
 
-  await prisma.lesson.upsert({ where: { id: "fe-l-3" }, update: {}, create: {
-    id: "fe-l-3", sectionId: s1.id, position: 3, isPreview: false,
-    title: "Text Elements: Headings & Paragraphs",
-    description: "Use h1–h6 tags, paragraphs, line breaks, horizontal rules, and text formatting.",
-    videoUrl: htmlBase, durationMins: 14,
-    content: { startSec: 1260, endSec: 2100, transcript: [
-      { time: "21:00", text: "Headings go from h1 to h6. h1 is the most important — use only one h1 per page for SEO." },
-      { time: "22:10", text: "h2 through h6 define subtopics in order of importance. Think of them like an outline." },
-      { time: "24:00", text: "The <p> tag defines a paragraph. Browsers automatically add spacing above and below paragraphs." },
-      { time: "26:30", text: "Use <br> for a single line break. Use <hr> for a horizontal divider line." },
-      { time: "28:00", text: "For bold text, use <strong>. For italic, use <em>. These carry semantic meaning for screen readers." },
-    ], resources: [{ label: "HTML Text Elements Cheatsheet (PDF)", url: "#" }],
-    notes: "Semantics matter! <strong> means 'important', not just 'bold'. Use semantic tags for accessibility." },
+  await prisma.lesson.upsert({ where: { id: "ai-l-03" }, update: {}, create: {
+    id: "ai-l-03", sectionId: aiS1.id, position: 3, isPreview: false,
+    title: "GenAI Primer & Data and ML",
+    description: "What makes generative AI different from discriminative AI, data roles in ML, and training data considerations.",
+    videoUrl: AI_VIDEO, durationMins: 45,
+    content: {
+      startSec: ts("3:02:21"), endSec: ts("3:47:56"),
+      notes: "Generative models learn the distribution of training data to produce new samples. Data quality and quantity critically impact model behaviour.",
+      transcript: [
+        { time: "3:02:21", text: "Discriminative models classify inputs. Generative models create new outputs that look like training data." },
+        { time: "3:20:00", text: "Transformers are the core architecture behind modern LLMs like GPT-4, Gemini, and Claude." },
+        { time: "3:32:55", text: "Data is the foundation of all ML. Understanding where it comes from and how it's cleaned matters enormously." },
+      ],
+    },
   }});
 
-  await prisma.lesson.upsert({ where: { id: "fe-l-4" }, update: {}, create: {
-    id: "fe-l-4", sectionId: s1.id, position: 4, isPreview: false,
-    title: "Links, Images & Lists",
-    description: "Create hyperlinks with anchor tags, embed images, and build ordered and unordered lists.",
-    videoUrl: htmlBase, durationMins: 16,
-    content: { startSec: 2100, endSec: 3060, transcript: [
-      { time: "35:00", text: "The anchor tag <a> creates hyperlinks. The href attribute defines the destination URL." },
-      { time: "36:15", text: "To open a link in a new tab, add target='_blank' and rel='noopener noreferrer' for security." },
-      { time: "38:30", text: "Images use the <img> tag with src for the file path and alt for accessibility text." },
-      { time: "41:00", text: "<ul> creates an unordered (bulleted) list. <ol> creates an ordered (numbered) list." },
-      { time: "43:20", text: "Each item in a list goes inside an <li> (list item) tag." },
-    ], resources: [{ label: "HTML Lists Reference", url: "#" }],
-    notes: "Always include the alt attribute on images. Screen readers use it to describe images to visually impaired users." },
-  }});
-
-  // ── Module 2: CSS Styling ─────────────────────────────────────────────
-  // Source: "CSS Full Course - Learn CSS in 11 Hours" - freeCodeCamp
-  // URL: https://www.youtube.com/watch?v=n4R2E7O-Ngo
-  const s2 = await prisma.courseSection.upsert({
-    where: { id: "fe-sec-2" }, update: { title: "Module 2: CSS Styling", position: 2 },
-    create: { id: "fe-sec-2", courseId: fe.id, title: "Module 2: CSS Styling", position: 2 },
+  // ── Module 2: Working with LLMs ───────────────────────────────────────
+  const aiS2 = await prisma.courseSection.upsert({
+    where: { id: "ai-sec-2" },
+    update: { title: "Module 2: Working with LLMs", position: 2 },
+    create: { id: "ai-sec-2", courseId: aiCourse.id, title: "Module 2: Working with LLMs", position: 2 },
   });
 
-  const cssBase = "https://www.youtube.com/watch?v=n4R2E7O-Ngo";
-
-  await prisma.lesson.upsert({ where: { id: "fe-l-5" }, update: {}, create: {
-    id: "fe-l-5", sectionId: s2.id, position: 1, isPreview: false,
-    title: "Introduction to CSS & Selectors",
-    description: "What CSS is, how to link it, and how to target HTML elements with selectors.",
-    videoUrl: cssBase, durationMins: 12,
-    content: { startSec: 0, endSec: 720, transcript: [
-      { time: "0:00", text: "CSS — Cascading Style Sheets — is the language we use to style HTML documents." },
-      { time: "0:40", text: "There are three ways to add CSS: inline styles, a <style> block, or an external stylesheet (best practice)." },
-      { time: "2:00", text: "A CSS rule has a selector and a declaration block: p { color: red; font-size: 16px; }" },
-      { time: "4:30", text: "Class selectors start with a dot: .my-class { }. ID selectors start with a hash: #my-id { }." },
-    ], resources: [{ label: "CSS Selectors Reference - MDN", url: "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_selectors" }],
-    notes: "Prefer class selectors over ID selectors for reusability. IDs must be unique per page." },
+  await prisma.lesson.upsert({ where: { id: "ai-l-04" }, update: {}, create: {
+    id: "ai-l-04", sectionId: aiS2.id, position: 1, isPreview: false,
+    title: "LLM Basics",
+    description: "Tokens, context windows, temperature, top-p sampling — how large language models actually generate output.",
+    videoUrl: AI_VIDEO, durationMins: 25,
+    content: {
+      startSec: ts("3:47:56"), endSec: ts("4:12:22"),
+      notes: "LLMs predict the next token. Temperature controls randomness. Context window limits how much the model can 'see' at once.",
+      transcript: [
+        { time: "3:47:56", text: "A Large Language Model is trained on billions of tokens — chunks of text — to predict what comes next." },
+        { time: "3:55:00", text: "The context window is the maximum amount of text the model processes in a single call." },
+        { time: "4:05:00", text: "Temperature: 0 = deterministic, 1 = balanced, 2 = highly random. Top-p limits the vocabulary sample pool." },
+      ],
+    },
   }});
 
-  await prisma.lesson.upsert({ where: { id: "fe-l-6" }, update: {}, create: {
-    id: "fe-l-6", sectionId: s2.id, position: 2, isPreview: false,
-    title: "Colors, Fonts & Text Styling",
-    description: "Work with colors (hex, rgb, hsl), Google Fonts, and text properties.",
-    videoUrl: cssBase, durationMins: 14,
-    content: { startSec: 720, endSec: 1560, transcript: [
-      { time: "12:00", text: "Colors can be written as color names, hex (#7c3aed), rgb(124,58,237), or hsl(263,83%,58%)." },
-      { time: "14:00", text: "HSL gives you the most intuitive control: Hue (0–360°), Saturation (%), Lightness (%)." },
-      { time: "16:30", text: "Import Google Fonts by adding a link tag in your HTML head and then setting font-family in CSS." },
-      { time: "18:00", text: "Text properties: font-size, font-weight, text-align, letter-spacing, line-height, text-decoration." },
-    ], resources: [{ label: "Google Fonts", url: "https://fonts.google.com" }],
-    notes: "Use HSL for theming — it's easy to create lighter/darker variants by only changing the Lightness value." },
+  await prisma.lesson.upsert({ where: { id: "ai-l-05" }, update: {}, create: {
+    id: "ai-l-05", sectionId: aiS2.id, position: 2, isPreview: false,
+    title: "AI Powered Assistants & Env Setup",
+    description: "Overview of AI assistant products (ChatGPT, Gemini, Claude), their APIs, and setting up your development environment.",
+    videoUrl: AI_VIDEO, durationMins: 108,
+    content: {
+      startSec: ts("4:12:22"), endSec: ts("6:12:17"),
+      notes: "Different AI assistants are built on different base models. API access is how developers build applications on top of these models.",
+      transcript: [
+        { time: "4:12:22", text: "AI-powered assistants like ChatGPT, Gemini, and Claude are built on top of large language models." },
+        { time: "4:24:42", text: "Setting up your environment: install Python, configure API keys, set up virtual environments." },
+        { time: "5:00:00", text: "The OpenAI Python SDK lets you call GPT-4 with a simple API call and get structured responses." },
+      ],
+    },
   }});
 
-  await prisma.lesson.upsert({ where: { id: "fe-l-7" }, update: {}, create: {
-    id: "fe-l-7", sectionId: s2.id, position: 3, isPreview: false,
-    title: "The CSS Box Model",
-    description: "Understand margin, padding, border, and how to use box-sizing: border-box.",
-    videoUrl: cssBase, durationMins: 13,
-    content: { startSec: 1560, endSec: 2340, transcript: [
-      { time: "26:00", text: "Every HTML element is a box. The box model has four layers: content, padding, border, and margin." },
-      { time: "27:20", text: "Padding is space inside the border. Margin is space outside it." },
-      { time: "29:00", text: "By default, width includes only content. With box-sizing: border-box, width includes padding and border too." },
-      { time: "31:00", text: "Use * { box-sizing: border-box; } at the top of your CSS to apply it to all elements globally." },
-    ], resources: [{ label: "Box Model Visualizer", url: "#" }],
-    notes: "The box model is the #1 concept to master in CSS. Almost every layout issue traces back to it." },
+  await prisma.lesson.upsert({ where: { id: "ai-l-06" }, update: {}, create: {
+    id: "ai-l-06", sectionId: aiS2.id, position: 3, isPreview: false,
+    title: "Prompt Engineering",
+    description: "Zero-shot, few-shot, chain-of-thought, role prompting, and structured output — all the core techniques with real examples.",
+    videoUrl: AI_VIDEO, durationMins: 104,
+    content: {
+      startSec: ts("6:12:17"), endSec: ts("7:44:09"),
+      notes: "Prompt engineering is the skill of crafting inputs that reliably produce the output you want. Chain-of-thought is one of the most impactful techniques.",
+      transcript: [
+        { time: "6:12:17", text: "Prompt engineering means crafting your input carefully to reliably get the output you want from an LLM." },
+        { time: "6:30:00", text: "Zero-shot: ask without examples. Few-shot: give 2–5 examples to guide format and style." },
+        { time: "7:00:00", text: "Chain-of-thought: add 'think step by step' to dramatically improve reasoning on complex tasks." },
+      ],
+    },
   }});
 
-  await prisma.lesson.upsert({ where: { id: "fe-l-8" }, update: {}, create: {
-    id: "fe-l-8", sectionId: s2.id, position: 4, isPreview: false,
-    title: "Flexbox Layout",
-    description: "Build powerful one-dimensional layouts using the Flexbox model.",
-    videoUrl: cssBase, durationMins: 18,
-    content: { startSec: 2340, endSec: 3420, transcript: [
-      { time: "39:00", text: "Flexbox is a one-dimensional layout system. Add display: flex to a container to activate it." },
-      { time: "40:15", text: "flex-direction sets the main axis: row (horizontal, default) or column (vertical)." },
-      { time: "42:00", text: "justify-content distributes space along the main axis: flex-start, center, space-between, space-around." },
-      { time: "44:30", text: "align-items aligns on the cross axis: stretch (default), center, flex-start, flex-end." },
-      { time: "47:00", text: "flex-wrap: wrap allows items to wrap to a new line when they overflow the container." },
-    ], resources: [{ label: "Flexbox Froggy (Practice Game)", url: "https://flexboxfroggy.com/" }],
-    notes: "Flexbox shines for 1D layouts like navbars and card rows. For 2D grids, use CSS Grid." },
-  }});
-
-  // ── Module 3: JavaScript ──────────────────────────────────────────────
-  // Source: "Learn JavaScript - Full Course for Beginners" by Beau Carnes (fCC)
-  // URL: https://www.youtube.com/watch?v=PkZNo7MFNFg
-  const s3 = await prisma.courseSection.upsert({
-    where: { id: "fe-sec-3" }, update: { title: "Module 3: JavaScript Essentials", position: 3 },
-    create: { id: "fe-sec-3", courseId: fe.id, title: "Module 3: JavaScript Essentials", position: 3 },
+  // ── Module 3: AI Development Tools ───────────────────────────────────
+  const aiS3 = await prisma.courseSection.upsert({
+    where: { id: "ai-sec-3" },
+    update: { title: "Module 3: AI Development Tools", position: 3 },
+    create: { id: "ai-sec-3", courseId: aiCourse.id, title: "Module 3: AI Development Tools", position: 3 },
   });
 
-  const jsBase = "https://www.youtube.com/watch?v=PkZNo7MFNFg";
-
-  await prisma.lesson.upsert({ where: { id: "fe-l-9" }, update: {}, create: {
-    id: "fe-l-9", sectionId: s3.id, position: 1, isPreview: false,
-    title: "Variables & Data Types",
-    description: "let, const, var — when to use each. Strings, numbers, booleans, null, and undefined.",
-    videoUrl: jsBase, durationMins: 15,
-    content: { startSec: 0, endSec: 900, transcript: [
-      { time: "0:00", text: "JavaScript is the programming language that makes websites interactive. Let's start with variables." },
-      { time: "0:45", text: "A variable is a named container for a value. We declare variables using let, const, or var." },
-      { time: "2:00", text: "Use const when the value won't change. Use let when it might. Avoid var in modern JavaScript." },
-      { time: "4:00", text: "JavaScript has 7 primitive data types: string, number, bigint, boolean, null, undefined, and symbol." },
-    ], resources: [{ label: "MDN: JavaScript Data Types", url: "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Data_structures" }],
-    notes: "const doesn't mean the value can never change for objects/arrays — it means the binding can't be reassigned." },
+  await prisma.lesson.upsert({ where: { id: "ai-l-07" }, update: {}, create: {
+    id: "ai-l-07", sectionId: aiS3.id, position: 1, isPreview: false,
+    title: "Workbenches, Playgrounds & Model-as-a-Service",
+    description: "Using OpenAI Playground, Google AI Studio, Amazon Bedrock, and other platforms to experiment with and deploy LLMs.",
+    videoUrl: AI_VIDEO, durationMins: 116,
+    content: {
+      startSec: ts("7:00:25"), endSec: ts("8:36:26"),
+      notes: "Model-as-a-Service lets you use powerful LLMs via API without managing infrastructure. AWS Bedrock, Google Vertex AI, and Azure OpenAI Service are the top providers.",
+      transcript: [
+        { time: "7:00:25", text: "Workbenches and playgrounds let you experiment with models interactively before writing code." },
+        { time: "7:44:09", text: "Model-as-a-Service means you call a hosted model via API — no GPUs, no training, just inference." },
+        { time: "8:00:00", text: "AWS Bedrock, Google Vertex AI, and Azure OpenAI Service all offer enterprise-grade LLM APIs." },
+      ],
+    },
   }});
 
-  await prisma.lesson.upsert({ where: { id: "fe-l-10" }, update: {}, create: {
-    id: "fe-l-10", sectionId: s3.id, position: 2, isPreview: false,
-    title: "Functions & Scope",
-    description: "Define functions, understand parameters vs arguments, and learn about variable scope.",
-    videoUrl: jsBase, durationMins: 16,
-    content: { startSec: 900, endSec: 1860, transcript: [
-      { time: "15:00", text: "Functions are reusable blocks of code. Define once, call many times." },
-      { time: "16:00", text: "Arrow functions are a modern shorthand: const add = (a, b) => a + b;" },
-      { time: "18:30", text: "Parameters are variables in the function definition. Arguments are the values you pass in." },
-      { time: "21:00", text: "Scope determines where a variable is accessible. Block scope (let/const) vs function scope (var)." },
-    ], resources: [],
-    notes: "Arrow functions don't have their own 'this' context — keep this in mind when using them as methods." },
+  await prisma.lesson.upsert({ where: { id: "ai-l-08" }, update: {}, create: {
+    id: "ai-l-08", sectionId: aiS3.id, position: 2, isPreview: false,
+    title: "LLM DevTools, Workflow & AI Code Assistants",
+    description: "LangChain, LlamaIndex, GitHub Copilot, Cursor, and how AI coding tools work under the hood.",
+    videoUrl: AI_VIDEO, durationMins: 252,
+    content: {
+      startSec: ts("8:36:26"), endSec: ts("14:04:37"),
+      notes: "LangChain and LlamaIndex are frameworks for building LLM-powered pipelines. AI code assistants like Copilot use the same LLM APIs under the hood.",
+      transcript: [
+        { time: "8:36:26", text: "LangChain is a framework for building LLM-powered applications — chains, agents, and memory." },
+        { time: "11:52:07", text: "AI code assistants like GitHub Copilot send your code context to an LLM and return completions." },
+        { time: "13:00:00", text: "These tools use the same API you've been learning — they just automate the prompt construction." },
+      ],
+    },
   }});
 
-  await prisma.lesson.upsert({ where: { id: "fe-l-11" }, update: {}, create: {
-    id: "fe-l-11", sectionId: s3.id, position: 3, isPreview: false,
-    title: "DOM Manipulation",
-    description: "Select HTML elements with JavaScript and make your page interactive.",
-    videoUrl: jsBase, durationMins: 18,
-    content: { startSec: 1860, endSec: 2940, transcript: [
-      { time: "31:00", text: "The DOM (Document Object Model) represents your HTML as a tree of objects that JavaScript can access." },
-      { time: "32:00", text: "document.querySelector('.my-class') selects the first element matching a CSS selector." },
-      { time: "34:30", text: "Change text with element.textContent = 'New text'. Change HTML with element.innerHTML." },
-      { time: "37:00", text: "Add event listeners to respond to user actions: button.addEventListener('click', () => { ... })" },
-    ], resources: [{ label: "MDN DOM Reference", url: "https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model" }],
-    notes: "Prefer querySelector over getElementById — it's more flexible and uses the same selectors as CSS." },
+  await prisma.lesson.upsert({ where: { id: "ai-l-09" }, update: {}, create: {
+    id: "ai-l-09", sectionId: aiS3.id, position: 3, isPreview: false,
+    title: "App Prototyping with AI",
+    description: "Building full AI-powered application prototypes, from chat interfaces to AI pipelines, using modern tooling.",
+    videoUrl: AI_VIDEO, durationMins: 196,
+    content: {
+      startSec: ts("14:04:37"), endSec: ts("17:21:06"),
+      notes: "Rapid prototyping with AI tools can compress weeks of work into hours. The key is understanding which LLM capabilities to leverage for each use case.",
+      transcript: [
+        { time: "14:04:37", text: "We'll build real application prototypes using AI APIs — going from idea to working demo quickly." },
+        { time: "15:00:00", text: "A chat interface needs: a message history array, an API call per message, and streaming responses." },
+        { time: "16:30:00", text: "Tool use / function calling lets LLMs execute real code and interact with external services." },
+      ],
+    },
   }});
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // FREE COURSE 2: Backend Basics with Node.js
-  // ═══════════════════════════════════════════════════════════════════════
-  const be = await prisma.course.upsert({
-    where: { slug: "backend-basics-free" },
+  // ── Module 4: Advanced GenAI ──────────────────────────────────────────
+  const aiS4 = await prisma.courseSection.upsert({
+    where: { id: "ai-sec-4" },
+    update: { title: "Module 4: Advanced GenAI — RAG & Agents", position: 4 },
+    create: { id: "ai-sec-4", courseId: aiCourse.id, title: "Module 4: Advanced GenAI — RAG & Agents", position: 4 },
+  });
+
+  await prisma.lesson.upsert({ where: { id: "ai-l-10" }, update: {}, create: {
+    id: "ai-l-10", sectionId: aiS4.id, position: 1, isPreview: false,
+    title: "LLM Customization: Fine-tuning & SFT",
+    description: "When to fine-tune vs prompt, supervised fine-tuning (SFT), data preparation, and size optimization techniques like quantization.",
+    videoUrl: AI_VIDEO, durationMins: 33,
+    content: {
+      startSec: ts("19:51:49"), endSec: ts("20:26:04"),
+      notes: "Fine-tuning adjusts model weights on your own data. Quantization reduces model size for cheaper inference. Usually prompting + RAG is enough before needing fine-tuning.",
+      transcript: [
+        { time: "19:51:49", text: "LLM customization means adapting a pre-trained model to your specific domain or task." },
+        { time: "19:52:35", text: "SFT (Supervised Fine-Tuning) trains the model on your own labeled input-output examples." },
+        { time: "19:56:25", text: "Size optimization: quantization reduces model weights from 32-bit to 4-bit floats, dramatically cutting memory usage." },
+      ],
+    },
+  }});
+
+  await prisma.lesson.upsert({ where: { id: "ai-l-11" }, update: {}, create: {
+    id: "ai-l-11", sectionId: aiS4.id, position: 2, isPreview: false,
+    title: "RAG — Retrieval Augmented Generation",
+    description: "Build a RAG pipeline: embeddings, vector stores, semantic search, and grounding LLM responses in your own knowledge base.",
+    videoUrl: AI_VIDEO, durationMins: 115,
+    content: {
+      startSec: ts("20:26:04"), endSec: ts("22:21:19"),
+      notes: "RAG = Retrieval + Generation. Rather than fine-tuning, you retrieve relevant documents and inject them into the prompt context at inference time.",
+      transcript: [
+        { time: "20:26:04", text: "RAG solves the hallucination problem by grounding the LLM in your own verified knowledge base." },
+        { time: "20:45:00", text: "Step 1: Chunk your documents. Step 2: Embed them as vectors. Step 3: Store in a vector database." },
+        { time: "21:30:00", text: "At query time, embed the user's question, find similar chunks, and inject them into the LLM prompt." },
+      ],
+    },
+  }});
+
+  await prisma.lesson.upsert({ where: { id: "ai-l-12" }, update: {}, create: {
+    id: "ai-l-12", sectionId: aiS4.id, position: 3, isPreview: false,
+    title: "AI Agents",
+    description: "Build autonomous AI agents that plan, use tools, and complete multi-step tasks without human intervention.",
+    videoUrl: AI_VIDEO, durationMins: 8,
+    content: {
+      startSec: ts("22:21:19"), endSec: ts("22:28:47"),
+      notes: "Agents use LLMs as a reasoning engine to decide which tools to call, in what order, to complete a goal. ReAct (Reason + Act) is the foundational pattern.",
+      transcript: [
+        { time: "22:21:19", text: "An agent reasons about a goal and autonomously decides which tools to call to accomplish it." },
+        { time: "22:24:00", text: "The ReAct pattern: Reason about the situation, then Act by calling a tool, observe the output, and repeat." },
+        { time: "22:27:00", text: "Agents can browse the web, write and run code, and interact with APIs — all without human intervention." },
+      ],
+    },
+  }});
+
+  // ════════════════════════════════════════════════════════════════════════
+  // COURSE 2: FRONTEND FUNDAMENTALS (FREE)
+  // Source: freeCodeCamp "Front End Developer Learning Path" playlist
+  // Playlist: https://www.youtube.com/playlist?list=PLWKjhJtqVAbmMuZ3saqRIBimAKIMYkt0E
+  // 22 individual videos — each lesson = one full video
+  // ════════════════════════════════════════════════════════════════════════
+  const feCourse = await prisma.course.upsert({
+    where: { slug: "frontend-fundamentals-free" },
     update: { isFree: true, isPublished: true },
     create: {
-      slug: "backend-basics-free",
-      title: "Backend Basics with Node.js (Free)",
-      shortDescription: "Build REST APIs with Node.js and Express. No cost, no catch.",
-      longDescription: "Understand the server side: HTTP fundamentals, REST API design, Express.js routing, middleware, and database integration. Powered by freeCodeCamp content.",
+      slug: "frontend-fundamentals-free",
+      title: "Frontend Fundamentals (Free)",
+      shortDescription: "The complete freeCodeCamp Frontend Learning Path — HTML, CSS, JavaScript, React, Git & more.",
+      longDescription:
+        "22 full-length tutorials from freeCodeCamp covering everything a front-end developer needs: HTML, CSS, JavaScript, VS Code, Git, React, TypeScript, Next.js, and more. Each lesson is a complete, standalone video course.",
       category: "Development",
       level: CourseLevel.BEGINNER,
       instructorName: "freeCodeCamp",
@@ -244,179 +304,393 @@ async function main() {
     },
   });
 
-  // Source: "Node.js and Express.js - Full Course" by freeCodeCamp
-  // URL: https://www.youtube.com/watch?v=Oe421EPjeBE
-  const beBase = "https://www.youtube.com/watch?v=Oe421EPjeBE";
-
-  const be1 = await prisma.courseSection.upsert({
-    where: { id: "be-sec-1" }, update: { title: "Module 1: Node.js Foundations", position: 1 },
-    create: { id: "be-sec-1", courseId: be.id, title: "Module 1: Node.js Foundations", position: 1 },
+  // ── Module 1: The Web Foundations ─────────────────────────────────────
+  const feS1 = await prisma.courseSection.upsert({
+    where: { id: "fe-sec-1" },
+    update: { title: "Module 1: Web Foundations", position: 1 },
+    create: { id: "fe-sec-1", courseId: feCourse.id, title: "Module 1: Web Foundations", position: 1 },
   });
 
-  await prisma.lesson.upsert({ where: { id: "be-l-1" }, update: {}, create: {
-    id: "be-l-1", sectionId: be1.id, position: 1, isPreview: true,
-    title: "What is Node.js & How It Works",
-    description: "The Node.js runtime, the V8 engine, and the event loop explained.",
-    videoUrl: beBase, durationMins: 10,
-    content: { startSec: 0, endSec: 600, transcript: [
-      { time: "0:00", text: "Node.js is a JavaScript runtime built on Chrome's V8 engine, allowing JavaScript to run on a server." },
-      { time: "1:00", text: "Before Node.js, JavaScript could only run in the browser. Node opened up a whole new world." },
-      { time: "2:30", text: "Node.js uses an event-driven, non-blocking I/O model — it handles many requests at once without blocking." },
-      { time: "4:00", text: "The event loop is the heart of Node.js. It processes callbacks from the event queue continuously." },
-    ], resources: [{ label: "Node.js Official Documentation", url: "https://nodejs.org/en/docs/" }],
-    notes: "Node.js is single-threaded but handles concurrency through the event loop — don't confuse this with parallelism." },
-  }});
+  const feVideos = [
+    // [id, position, sectionId, isPreview, title, description, videoId, durationMins, notes]
+    {
+      id: "fe-l-01", pos: 1, sec: "fe-sec-1", preview: true,
+      title: "Front End Developer Roadmap",
+      desc: "An overview of all the technologies you need to learn to become a front-end developer, and in what order to tackle them.",
+      vid: "9He4UBLyk8Y", mins: 12,
+      notes: "This video is your roadmap. Bookmark it and return to it as you progress through the course.",
+    },
+    {
+      id: "fe-l-02", pos: 2, sec: "fe-sec-1", preview: false,
+      title: "HTML Tutorial – Website Crash Course for Beginners",
+      desc: "A complete HTML crash course: document structure, semantic elements, forms, tables, links, images, and more.",
+      vid: "916GWv2Qs08", mins: 45,
+      notes: "HTML is the skeleton of every webpage. Focus on semantic elements — they matter for SEO and accessibility.",
+    },
+    {
+      id: "fe-l-03", pos: 3, sec: "fe-sec-1", preview: false,
+      title: "CSS Tutorial – Full Course for Beginners",
+      desc: "An 11-hour complete CSS course: from selectors and colors to Flexbox, Grid, animations, and responsive design.",
+      vid: "OXGznpKZ_sA", mins: 668,
+      notes: "CSS is vast. Master the box model, Flexbox, and Grid first — these cover 90% of real-world front-end work.",
+    },
+    {
+      id: "fe-l-04", pos: 4, sec: "fe-sec-1", preview: false,
+      title: "Visual Studio Code Crash Course",
+      desc: "Master VS Code: keyboard shortcuts, extensions, integrated terminal, debugging, and Git integration.",
+      vid: "WPqXP_kLzpo", mins: 92,
+      notes: "A good editor setup dramatically speeds up development. Learn these shortcuts now and save thousands of hours.",
+    },
+  ];
 
-  await prisma.lesson.upsert({ where: { id: "be-l-2" }, update: {}, create: {
-    id: "be-l-2", sectionId: be1.id, position: 2, isPreview: false,
-    title: "Your First Node.js App & NPM",
-    description: "Write Node.js scripts, work with the file system, and manage packages using NPM.",
-    videoUrl: beBase, durationMins: 14,
-    content: { startSec: 600, endSec: 1440, transcript: [
-      { time: "10:00", text: "Create a file called app.js and run it with: node app.js from your terminal." },
-      { time: "12:00", text: "Node has built-in modules like 'fs' for file system and 'path' for file paths." },
-      { time: "14:00", text: "NPM (Node Package Manager) manages external packages. Run npm init to create a package.json." },
-      { time: "16:00", text: "Install packages with npm install package-name. They get saved to node_modules." },
-    ], resources: [{ label: "npmjs.com package registry", url: "https://www.npmjs.com/" }],
-    notes: "Never commit node_modules to Git. Add it to your .gitignore file." },
-  }});
-
-  const be2 = await prisma.courseSection.upsert({
-    where: { id: "be-sec-2" }, update: { title: "Module 2: Express.js & REST APIs", position: 2 },
-    create: { id: "be-sec-2", courseId: be.id, title: "Module 2: Express.js & REST APIs", position: 2 },
+  // ── Module 2: JavaScript & Logic ─────────────────────────────────────
+  const feS2 = await prisma.courseSection.upsert({
+    where: { id: "fe-sec-2" },
+    update: { title: "Module 2: JavaScript & Logic", position: 2 },
+    create: { id: "fe-sec-2", courseId: feCourse.id, title: "Module 2: JavaScript & Logic", position: 2 },
   });
 
-  await prisma.lesson.upsert({ where: { id: "be-l-3" }, update: {}, create: {
-    id: "be-l-3", sectionId: be2.id, position: 1, isPreview: false,
-    title: "Express.js: Server & Routes",
-    description: "Install Express, create a server, and define your first GET and POST routes.",
-    videoUrl: beBase, durationMins: 16,
-    content: { startSec: 1440, endSec: 2400, transcript: [
-      { time: "24:00", text: "Express.js is a lightweight web framework for Node.js. Install it: npm install express." },
-      { time: "25:30", text: "Create an app: const express = require('express'); const app = express();" },
-      { time: "27:00", text: "Define a GET route: app.get('/api/users', (req, res) => { res.json({ users: [] }); });" },
-      { time: "30:00", text: "Start the server: app.listen(3000, () => console.log('Server running on port 3000'));" },
-    ], resources: [{ label: "Express.js Official Docs", url: "https://expressjs.com/" }],
-    notes: "REST API routes follow a convention: GET = read, POST = create, PUT/PATCH = update, DELETE = remove." },
-  }});
+  const feVideos2 = [
+    {
+      id: "fe-l-05", pos: 1, sec: "fe-sec-2", preview: false,
+      title: "JavaScript Programming – Full Course",
+      desc: "A 7.5-hour comprehensive JavaScript course: variables, functions, DOM, async/await, fetch API, and projects.",
+      vid: "jS4aFq5-91M", mins: 464,
+      notes: "JavaScript makes pages interactive. Focus on understanding the event loop, closures, and async programming.",
+    },
+    {
+      id: "fe-l-06", pos: 2, sec: "fe-sec-2", preview: false,
+      title: "Prompt Engineering Tutorial – Master ChatGPT and LLMs",
+      desc: "Learn to write effective prompts for ChatGPT, Claude, and other LLMs to boost your dev productivity.",
+      vid: "_ZvnD73m40o", mins: 41,
+      notes: "As a developer, using AI tools effectively is a multiplier on your productivity. Master prompts to write better code faster.",
+    },
+    {
+      id: "fe-l-07", pos: 3, sec: "fe-sec-2", preview: false,
+      title: "Build a Simple Website with HTML, CSS, JavaScript",
+      desc: "End-to-end project: build a complete real-world website applying everything from Modules 1 and 2 together.",
+      vid: "krfUjg0S2uI", mins: 432,
+      notes: "Project-based learning cements concepts. Build this fully before moving to frameworks.",
+    },
+    {
+      id: "fe-l-08", pos: 4, sec: "fe-sec-2", preview: false,
+      title: "Web App Tutorial – JavaScript, Mobile First, Accessibility",
+      desc: "Build an accessible, mobile-first web app using vanilla JavaScript — no frameworks needed.",
+      vid: "y51Cv4wnsPw", mins: 121,
+      notes: "Mobile-first means designing for small screens first, then scaling up. Accessibility benefits all users.",
+    },
+  ];
 
-  await prisma.lesson.upsert({ where: { id: "be-l-4" }, update: {}, create: {
-    id: "be-l-4", sectionId: be2.id, position: 2, isPreview: false,
-    title: "Middleware & Request/Response Cycle",
-    description: "Understand middleware, use express.json(), and handle errors properly.",
-    videoUrl: beBase, durationMins: 14,
-    content: { startSec: 2400, endSec: 3240, transcript: [
-      { time: "40:00", text: "Middleware functions run between the request arriving and the route handler executing." },
-      { time: "41:30", text: "Use app.use(express.json()) to parse incoming JSON request bodies automatically." },
-      { time: "43:00", text: "The order of middleware matters — they execute in the order you call app.use()." },
-      { time: "46:00", text: "Error-handling middleware has 4 parameters: (err, req, res, next). Place it last in your middleware chain." },
-    ], resources: [],
-    notes: "Think of middleware as a pipeline. Each function either passes control to the next or sends a response." },
-  }});
+  // ── Module 3: Tooling & Frameworks ────────────────────────────────────
+  const feS3 = await prisma.courseSection.upsert({
+    where: { id: "fe-sec-3" },
+    update: { title: "Module 3: Tools, Git & CSS Frameworks", position: 3 },
+    create: { id: "fe-sec-3", courseId: feCourse.id, title: "Module 3: Tools, Git & CSS Frameworks", position: 3 },
+  });
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // FREE COURSE 3: Generative AI Essentials
-  // ═══════════════════════════════════════════════════════════════════════
-  const ai = await prisma.course.upsert({
-    where: { slug: "gen-ai-essentials-free" },
+  const feVideos3 = [
+    {
+      id: "fe-l-09", pos: 1, sec: "fe-sec-3", preview: false,
+      title: "Git and GitHub for Beginners – Crash Course",
+      desc: "Learn version control with Git: commit, branch, merge, pull requests, and collaborating on GitHub.",
+      vid: "RGOj5yH7evk", mins: 68,
+      notes: "Git is non-negotiable for every developer. Branching and pull requests are the heart of team collaboration.",
+    },
+    {
+      id: "fe-l-10", pos: 2, sec: "fe-sec-3", preview: false,
+      title: "Learn Bootstrap 5 and SASS",
+      desc: "Build responsive sites faster with Bootstrap 5 and write maintainable CSS with SASS variables and mixins.",
+      vid: "iJKCj8uAHz8", mins: 302,
+      notes: "Bootstrap lets you prototype quickly. SASS makes CSS maintainable at scale — especially useful in large teams.",
+    },
+    {
+      id: "fe-l-11", pos: 3, sec: "fe-sec-3", preview: false,
+      title: "Learn Tailwind CSS – Course for Beginners",
+      desc: "Utility-first CSS with Tailwind: apply styles directly in HTML without writing custom CSS files.",
+      vid: "ft30zcMlFao", mins: 252,
+      notes: "Tailwind is utility-first — every class does one thing. It enforces consistency and speeds up UI development dramatically.",
+    },
+    {
+      id: "fe-l-12", pos: 4, sec: "fe-sec-3", preview: false,
+      title: "Learn Vite – Frontend Build Tool Course",
+      desc: "Use Vite to set up fast, modern front-end development environments with Hot Module Replacement and bundling.",
+      vid: "VAeRhmpcWEQ", mins: 91,
+      notes: "Vite is the new standard for front-end tooling. It's dramatically faster than webpack for development builds.",
+    },
+  ];
+
+  // ── Module 4: React, Testing & Advanced ──────────────────────────────
+  const feS4 = await prisma.courseSection.upsert({
+    where: { id: "fe-sec-4" },
+    update: { title: "Module 4: React, TypeScript & Beyond", position: 4 },
+    create: { id: "fe-sec-4", courseId: feCourse.id, title: "Module 4: React, TypeScript & Beyond", position: 4 },
+  });
+
+  const feVideos4 = [
+    {
+      id: "fe-l-13", pos: 1, sec: "fe-sec-4", preview: false,
+      title: "Learn React 18 with Redux Toolkit",
+      desc: "A mastery-level 14-hour React course: hooks, context, Redux Toolkit, and building production-quality apps.",
+      vid: "2-crBg6wpp0", mins: 851,
+      notes: "React is the most in-demand front-end skill. Hooks (useState, useEffect, useCallback) are the foundation of modern React.",
+    },
+    {
+      id: "fe-l-14", pos: 2, sec: "fe-sec-4", preview: false,
+      title: "Testing JavaScript with Cypress – Full Course",
+      desc: "Write end-to-end tests for web apps using Cypress: selectors, assertions, and CI integration.",
+      vid: "u8vMu7viCm8", mins: 159,
+      notes: "Testing prevents regressions. E2E tests simulate real user flows — the most valuable kind of automated test.",
+    },
+    {
+      id: "fe-l-15", pos: 3, sec: "fe-sec-4", preview: false,
+      title: "React Testing Course for Beginners",
+      desc: "Unit and integration testing for React components with React Testing Library and Jest.",
+      vid: "8vfQ6SWBZ-U", mins: 124,
+      notes: "Test behavior, not implementation. React Testing Library encourages testing the way users actually use your app.",
+    },
+    {
+      id: "fe-l-16", pos: 4, sec: "fe-sec-4", preview: false,
+      title: "Learn TypeScript – Full Tutorial",
+      desc: "A complete TypeScript course: types, interfaces, generics, enums, and integrating TypeScript into React projects.",
+      vid: "30LWjhZzg50", mins: 286,
+      notes: "TypeScript catches bugs at compile time. In large codebases, it is essentially mandatory for maintainability.",
+    },
+    {
+      id: "fe-l-17", pos: 5, sec: "fe-sec-4", preview: false,
+      title: "GraphQL Course for Beginners",
+      desc: "Learn the query language for APIs: schemas, resolvers, queries, mutations, and using GraphQL with React.",
+      vid: "5199E50O7SI", mins: 89,
+      notes: "GraphQL lets clients request exactly the data they need — no over-fetching, no under-fetching.",
+    },
+    {
+      id: "fe-l-18", pos: 6, sec: "fe-sec-4", preview: false,
+      title: "Next.js React Framework Course",
+      desc: "Build full-stack apps with Next.js: App Router, Server Components, Server Actions, SSR, and deployment.",
+      vid: "KjY94sAKLlw", mins: 287,
+      notes: "Next.js is the most popular React framework. Server Components reduce client JavaScript and improve performance.",
+    },
+    {
+      id: "fe-l-19", pos: 7, sec: "fe-sec-4", preview: false,
+      title: "React Native Course",
+      desc: "Build cross-platform iOS and Android apps with React Native using the same React skills you already have.",
+      vid: "obH0Po_RdWk", mins: 280,
+      notes: "React Native code shares ~80% logic with web React. Learning it multiplies your value as a developer.",
+    },
+    {
+      id: "fe-l-20", pos: 8, sec: "fe-sec-4", preview: false,
+      title: "Astro Web Framework Crash Course",
+      desc: "Build ultra-fast content sites with Astro: islands architecture, Markdown, MDX, and static site generation.",
+      vid: "e-hTm5VmofI", mins: 76,
+      notes: "Astro ships zero JavaScript by default. Perfect for blogs, docs, and marketing sites where performance matters most.",
+    },
+    {
+      id: "fe-l-21", pos: 9, sec: "fe-sec-4", preview: false,
+      title: "OWASP API Security Top 10 Course",
+      desc: "Learn the most critical API security vulnerabilities and how to protect your apps against them.",
+      vid: "YYe0FdfdgDU", mins: 87,
+      notes: "Security is every developer's responsibility. The OWASP Top 10 is the standard reference for web vulnerabilities.",
+    },
+    {
+      id: "fe-l-22", pos: 10, sec: "fe-sec-4", preview: false,
+      title: "How does the Internet Work?",
+      desc: "Understand the full internet stack: DNS, HTTP, TCP/IP, HTTPS, browsers, and how your code gets to users.",
+      vid: "zN8YNNHcaZc", mins: 102,
+      notes: "Every front-end developer should understand what happens when a user types a URL and presses Enter.",
+    },
+  ];
+
+  // Create all frontend lessons
+  const allFeLessons = [
+    ...feVideos.map(v => ({ ...v, sectionKey: "fe-sec-1" })),
+    ...feVideos2.map(v => ({ ...v, sectionKey: "fe-sec-2" })),
+    ...feVideos3.map(v => ({ ...v, sectionKey: "fe-sec-3" })),
+    ...feVideos4.map(v => ({ ...v, sectionKey: "fe-sec-4" })),
+  ];
+
+  const sectionMap: Record<string, string> = {
+    "fe-sec-1": feS1.id,
+    "fe-sec-2": feS2.id,
+    "fe-sec-3": feS3.id,
+    "fe-sec-4": feS4.id,
+  };
+
+  for (const l of allFeLessons) {
+    await prisma.lesson.upsert({
+      where: { id: l.id },
+      update: {},
+      create: {
+        id: l.id,
+        sectionId: sectionMap[l.sec],
+        position: l.pos,
+        isPreview: l.preview,
+        title: l.title,
+        description: l.desc,
+        videoUrl: `https://www.youtube.com/watch?v=${l.vid}`,
+        durationMins: l.mins,
+        content: {
+          startSec: 0,
+          notes: l.notes,
+          transcript: [],
+        },
+      },
+    });
+  }
+
+  // ════════════════════════════════════════════════════════════════════════
+  // COURSE 3: BACKEND BASICS WITH NODE.JS (FREE)
+  // Source: "Intro to Backend Web Development – Node.js & Express Tutorial"
+  // URL:    https://www.youtube.com/watch?v=KOutPbKc9UM
+  // Total:  ~1 hour 11 minutes (4,303 seconds)
+  // Divided based on logical content progression
+  // ════════════════════════════════════════════════════════════════════════
+  const BE_VIDEO = "https://www.youtube.com/watch?v=KOutPbKc9UM";
+
+  const beCourse = await prisma.course.upsert({
+    where: { slug: "backend-basics-free" },
     update: { isFree: true, isPublished: true },
     create: {
-      slug: "gen-ai-essentials-free",
-      title: "Generative AI Essentials (Free)",
-      shortDescription: "Understand LLMs, prompt engineering & AI tools. Completely free.",
-      longDescription: "Demystify generative AI: how LLMs work, prompt engineering patterns, and practical tools like ChatGPT, Gemini, and Claude.",
-      category: "AI/ML",
-      level: CourseLevel.ALL_LEVELS,
-      instructorName: "Ania Kubów / freeCodeCamp",
+      slug: "backend-basics-free",
+      title: "Backend Basics with Node.js (Free)",
+      shortDescription: "Build a real backend with Node.js, Express & MongoDB. Completely free.",
+      longDescription:
+        "Build a production-style backend from scratch using Node.js, Express.js, and MongoDB. This course by freeCodeCamp covers server setup, REST API design, routing, middleware, and full CRUD database operations.",
+      category: "Development",
+      level: CourseLevel.BEGINNER,
+      instructorName: "freeCodeCamp",
       oneMonthPrice: 0, threeMonthPrice: 0, sixMonthPrice: 0,
       isFree: true, isPublished: true,
     },
   });
 
-  // Source: "Learn Prompt Engineering - Full Course" by Ania Kubów (fCC)
-  // URL: https://www.youtube.com/watch?v=dOxUW9nQ894
-  const aiBase = "https://www.youtube.com/watch?v=dOxUW9nQ894";
-
-  const ai1 = await prisma.courseSection.upsert({
-    where: { id: "ai-sec-1" }, update: { title: "Module 1: Understanding AI & LLMs", position: 1 },
-    create: { id: "ai-sec-1", courseId: ai.id, title: "Module 1: Understanding AI & LLMs", position: 1 },
+  // ── Module 1: Introduction & Setup ────────────────────────────────────
+  const beS1 = await prisma.courseSection.upsert({
+    where: { id: "be-sec-1" },
+    update: { title: "Module 1: Introduction & Setup", position: 1 },
+    create: { id: "be-sec-1", courseId: beCourse.id, title: "Module 1: Introduction & Setup", position: 1 },
   });
 
-  await prisma.lesson.upsert({ where: { id: "ai-l-1" }, update: {}, create: {
-    id: "ai-l-1", sectionId: ai1.id, position: 1, isPreview: true,
-    title: "What is Generative AI?",
-    description: "An introduction to generative AI, LLMs, and how tools like ChatGPT work.",
-    videoUrl: aiBase, durationMins: 10,
-    content: { startSec: 0, endSec: 600, transcript: [
-      { time: "0:00", text: "Welcome to the Prompt Engineering course from freeCodeCamp! I'm Ania Kubów." },
-      { time: "0:30", text: "Generative AI refers to AI systems that can generate text, images, code, and other content." },
-      { time: "1:30", text: "Large Language Models (LLMs) like GPT-4, Gemini, and Claude are trained on massive amounts of text." },
-      { time: "3:00", text: "They don't 'understand' in the human sense — they predict the most likely next token based on training data." },
-      { time: "5:00", text: "This makes them incredibly powerful for writing, reasoning, and coding — but also prone to 'hallucinations'." },
-    ], resources: [
-      { label: "OpenAI - What is ChatGPT?", url: "https://openai.com/chatgpt" },
-      { label: "Google Gemini", url: "https://gemini.google.com" },
-    ], notes: "LLMs are next-token predictors at scale. All the emergent capabilities come from this simple mechanism." },
+  await prisma.lesson.upsert({ where: { id: "be-l-01" }, update: {}, create: {
+    id: "be-l-01", sectionId: beS1.id, position: 1, isPreview: true,
+    title: "What is Backend Development?",
+    description: "Frontend vs backend explained, what a server does, and the role of Node.js, Express, and MongoDB in a modern web stack.",
+    videoUrl: BE_VIDEO, durationMins: 8,
+    content: {
+      startSec: 0, endSec: 480,
+      notes: "Backend = the server-side logic that handles data, authentication, and business rules. The frontend is what users see; the backend is what makes it work.",
+      transcript: [
+        { time: "0:00", text: "In this course we'll build a backend using Node.js, Express, and MongoDB." },
+        { time: "1:30", text: "The backend handles requests from the browser, processes business logic, and talks to the database." },
+        { time: "4:00", text: "Node.js runs JavaScript on the server. Express is a framework that makes building APIs fast." },
+      ],
+    },
   }});
 
-  await prisma.lesson.upsert({ where: { id: "ai-l-2" }, update: {}, create: {
-    id: "ai-l-2", sectionId: ai1.id, position: 2, isPreview: false,
-    title: "How LLMs Generate Text",
-    description: "Tokens, temperature, top-p sampling — understanding how the model makes decisions.",
-    videoUrl: aiBase, durationMins: 12,
-    content: { startSec: 600, endSec: 1320, transcript: [
-      { time: "10:00", text: "LLMs work by converting text into tokens — small chunks of characters or words." },
-      { time: "11:30", text: "The model assigns a probability to each possible next token and samples from these probabilities." },
-      { time: "13:00", text: "'Temperature' controls randomness. 0 = deterministic, 1 = creative, 2 = chaotic." },
-      { time: "15:00", text: "Top-p (nucleus sampling) limits choices to the smallest set of tokens whose probabilities sum to P." },
-    ], resources: [{ label: "Transformer Architecture Paper", url: "https://arxiv.org/abs/1706.03762" }],
-    notes: "Lower temperature for factual tasks, higher for creative writing. Most APIs default to around 0.7." },
+  await prisma.lesson.upsert({ where: { id: "be-l-02" }, update: {}, create: {
+    id: "be-l-02", sectionId: beS1.id, position: 2, isPreview: false,
+    title: "Setting Up Node.js & Your Project",
+    description: "Install Node.js, initialize an NPM project, install Express, and create your first server file.",
+    videoUrl: BE_VIDEO, durationMins: 7,
+    content: {
+      startSec: 480, endSec: 900,
+      notes: "Run 'node -v' and 'npm -v' to verify installation. Always add node_modules to .gitignore.",
+      transcript: [
+        { time: "8:00", text: "Download Node.js from nodejs.org. The LTS version is recommended for stability." },
+        { time: "9:30", text: "Create a new folder, open your terminal, and run 'npm init -y' to create package.json." },
+        { time: "11:00", text: "Install Express with 'npm install express'. Create index.js and require Express." },
+      ],
+    },
   }});
 
-  const ai2 = await prisma.courseSection.upsert({
-    where: { id: "ai-sec-2" }, update: { title: "Module 2: Prompt Engineering", position: 2 },
-    create: { id: "ai-sec-2", courseId: ai.id, title: "Module 2: Prompt Engineering", position: 2 },
+  // ── Module 2: Building with Express ──────────────────────────────────
+  const beS2 = await prisma.courseSection.upsert({
+    where: { id: "be-sec-2" },
+    update: { title: "Module 2: Express.js & REST APIs", position: 2 },
+    create: { id: "be-sec-2", courseId: beCourse.id, title: "Module 2: Express.js & REST APIs", position: 2 },
   });
 
-  await prisma.lesson.upsert({ where: { id: "ai-l-3" }, update: {}, create: {
-    id: "ai-l-3", sectionId: ai2.id, position: 1, isPreview: false,
-    title: "Zero-Shot & Few-Shot Prompting",
-    description: "The two most foundational prompt techniques and when to use each.",
-    videoUrl: aiBase, durationMins: 14,
-    content: { startSec: 1320, endSec: 2160, transcript: [
-      { time: "22:00", text: "Zero-shot prompting means asking the model without any examples. 'Translate this to French: Hello.'" },
-      { time: "23:30", text: "Few-shot prompting means providing 2–5 examples before your actual request to guide the model's format." },
-      { time: "26:00", text: "Example: Input: 'cat' -> Output: 'feline'. Input: 'dog' -> Output: 'canine'. Input: 'bird' -> Output: ?" },
-      { time: "29:00", text: "Few-shot reliably improves quality for classification, translation, and structured output tasks." },
-    ], resources: [{ label: "Prompt Engineering Guide", url: "https://www.promptingguide.ai/" }],
-    notes: "Start with zero-shot. If outputs are inconsistent, add 2–3 examples to show the model exactly what you want." },
+  await prisma.lesson.upsert({ where: { id: "be-l-03" }, update: {}, create: {
+    id: "be-l-03", sectionId: beS2.id, position: 1, isPreview: false,
+    title: "HTTP & Building Your First Server",
+    description: "How HTTP requests and responses work, creating an Express server, and handling GET routes.",
+    videoUrl: BE_VIDEO, durationMins: 10,
+    content: {
+      startSec: 900, endSec: 1500,
+      notes: "HTTP is stateless — each request is independent. REST APIs use HTTP verbs (GET, POST, PUT, DELETE) to map to CRUD operations.",
+      transcript: [
+        { time: "15:00", text: "HTTP is the protocol browsers use to talk to servers. Every request has a method, URL, headers, and body." },
+        { time: "17:00", text: "app.get('/api', (req, res) => { res.json({ message: 'Hello World' }); }) — your first API endpoint." },
+        { time: "19:00", text: "app.listen(3000) starts the server. Visit localhost:3000 in your browser to test it." },
+      ],
+    },
   }});
 
-  await prisma.lesson.upsert({ where: { id: "ai-l-4" }, update: {}, create: {
-    id: "ai-l-4", sectionId: ai2.id, position: 2, isPreview: false,
-    title: "Chain-of-Thought & Role Prompting",
-    description: "Make the model think step-by-step and assign it a persona for better responses.",
-    videoUrl: aiBase, durationMins: 13,
-    content: { startSec: 2160, endSec: 2940, transcript: [
-      { time: "36:00", text: "Chain-of-thought prompting instructs the model to 'think step by step' before answering." },
-      { time: "37:30", text: "This dramatically improves accuracy for math, logic, and multi-step reasoning tasks." },
-      { time: "39:00", text: "Role prompting assigns the model a persona: 'You are an expert Python developer. Code review this...'" },
-      { time: "41:00", text: "Combining techniques: 'As a data scientist, analyze this dataset step by step and identify anomalies.'" },
-    ], resources: [],
-    notes: "Chain-of-thought is one of the most impactful techniques — always add it for complex reasoning tasks." },
+  await prisma.lesson.upsert({ where: { id: "be-l-04" }, update: {}, create: {
+    id: "be-l-04", sectionId: beS2.id, position: 2, isPreview: false,
+    title: "Express Routing & Middleware",
+    description: "Route parameters, query strings, POST requests with body parsing, and the request-response middleware pipeline.",
+    videoUrl: BE_VIDEO, durationMins: 15,
+    content: {
+      startSec: 1500, endSec: 2400,
+      notes: "Middleware is a function that runs between request and response. Order matters — place middleware BEFORE route handlers.",
+      transcript: [
+        { time: "25:00", text: "Route parameters: app.get('/users/:id', ...) captures the :id from the URL as req.params.id." },
+        { time: "28:00", text: "Use express.json() middleware to parse JSON request bodies: app.use(express.json())." },
+        { time: "32:00", text: "Middleware chain: each function calls next() to pass control to the next handler." },
+      ],
+    },
   }});
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // PAID COURSE 1: Complete UI/UX Design Bootcamp
-  // ═══════════════════════════════════════════════════════════════════════
-  const ux = await prisma.course.upsert({
+  // ── Module 3: MongoDB & CRUD Operations ──────────────────────────────
+  const beS3 = await prisma.courseSection.upsert({
+    where: { id: "be-sec-3" },
+    update: { title: "Module 3: MongoDB & Database CRUD", position: 3 },
+    create: { id: "be-sec-3", courseId: beCourse.id, title: "Module 3: MongoDB & Database CRUD", position: 3 },
+  });
+
+  await prisma.lesson.upsert({ where: { id: "be-l-05" }, update: {}, create: {
+    id: "be-l-05", sectionId: beS3.id, position: 1, isPreview: false,
+    title: "Introduction to MongoDB & Mongoose",
+    description: "NoSQL vs SQL, setting up MongoDB Atlas, connecting from Express with Mongoose, and defining schemas.",
+    videoUrl: BE_VIDEO, durationMins: 15,
+    content: {
+      startSec: 2400, endSec: 3300,
+      notes: "MongoDB stores data as JSON-like documents, not rows and tables. Mongoose adds schemas and validation on top of the raw MongoDB driver.",
+      transcript: [
+        { time: "40:00", text: "MongoDB is a NoSQL database that stores data as flexible JSON documents instead of fixed rows and columns." },
+        { time: "43:00", text: "Create a free MongoDB Atlas cluster. Copy the connection string and store it in a .env file." },
+        { time: "46:00", text: "Mongoose.connect() establishes the connection. Define a Schema to enforce the shape of your documents." },
+      ],
+    },
+  }});
+
+  await prisma.lesson.upsert({ where: { id: "be-l-06" }, update: {}, create: {
+    id: "be-l-06", sectionId: beS3.id, position: 2, isPreview: false,
+    title: "Full CRUD Operations",
+    description: "Create, Read, Update, and Delete data in MongoDB through Express API routes from start to finish.",
+    videoUrl: BE_VIDEO, durationMins: 17,
+    content: {
+      startSec: 3300, endSec: 4303,
+      notes: "CRUD = Create (POST), Read (GET), Update (PUT/PATCH), Delete (DELETE). These four operations are the foundation of every data-driven API.",
+      transcript: [
+        { time: "55:00", text: "POST /users — create a new user: const user = new User(req.body); await user.save();" },
+        { time: "58:00", text: "GET /users/:id — read one user: const user = await User.findById(req.params.id);" },
+        { time: "1:01:00", text: "PUT /users/:id — update: await User.findByIdAndUpdate(id, req.body, { new: true });" },
+        { time: "1:05:00", text: "DELETE /users/:id — remove: await User.findByIdAndDelete(req.params.id);" },
+      ],
+    },
+  }});
+
+  // ════════════════════════════════════════════════════════════════════════
+  // PAID COURSES (keep existing structure)
+  // ════════════════════════════════════════════════════════════════════════
+  await prisma.course.upsert({
     where: { slug: "complete-ui-ux-design-bootcamp" },
-    update: { isFree: false },
+    update: {},
     create: {
       slug: "complete-ui-ux-design-bootcamp",
       title: "Complete UI/UX Design Bootcamp",
       shortDescription: "Master the art of designing beautiful and functional user interfaces.",
-      longDescription: "This comprehensive bootcamp covers everything from design principles and wireframing to high-fidelity prototyping using Figma.",
+      longDescription: "Covers design principles, wireframing, and high-fidelity prototyping in Figma.",
       category: "Design",
       level: CourseLevel.BEGINNER,
       instructorName: "Jessica Willis",
@@ -425,33 +699,9 @@ async function main() {
     },
   });
 
-  const ux1 = await prisma.courseSection.upsert({
-    where: { id: "ux-sec-1" }, update: { title: "Module 1: Design Foundations", position: 1 },
-    create: { id: "ux-sec-1", courseId: ux.id, title: "Module 1: Design Foundations", position: 1 },
-  });
-
-  // Source: "UI / UX Design Tutorial – Wireframe, Mockup & Design in Figma" (fCC)
-  // URL: https://www.youtube.com/watch?v=c9Wg6Cb_YlU
-  await prisma.lesson.upsert({ where: { id: "ux-l-1" }, update: {}, create: {
-    id: "ux-l-1", sectionId: ux1.id, position: 1, isPreview: true,
-    title: "UI Design Fundamentals",
-    description: "Core principles of visual design: contrast, alignment, repetition, and proximity.",
-    videoUrl: "https://www.youtube.com/watch?v=c9Wg6Cb_YlU", durationMins: 12,
-    content: { startSec: 0, endSec: 720, transcript: [
-      { time: "0:00", text: "UI Design is about creating the layouts and visual elements users interact with." },
-      { time: "1:30", text: "The four core design principles are: Contrast, Alignment, Repetition, and Proximity (CARP)." },
-      { time: "3:00", text: "Contrast makes important elements stand out. Use it with color, size, and typography." },
-      { time: "5:00", text: "Alignment creates order. Every element should be aligned to something else intentionally." },
-    ], resources: [{ label: "Design Principles Reference", url: "#" }],
-    notes: "CARP: Contrast, Alignment, Repetition, Proximity. These four principles govern almost all good design decisions." },
-  }});
-
-  // ═══════════════════════════════════════════════════════════════════════
-  // PAID COURSE 2: React & Next.js Mastery 2026
-  // ═══════════════════════════════════════════════════════════════════════
-  const react = await prisma.course.upsert({
+  await prisma.course.upsert({
     where: { slug: "react-nextjs-mastery-2026" },
-    update: { isFree: false },
+    update: {},
     create: {
       slug: "react-nextjs-mastery-2026",
       title: "React & Next.js Mastery 2026",
@@ -464,27 +714,6 @@ async function main() {
       isFree: false, isPublished: true,
     },
   });
-
-  const r1 = await prisma.courseSection.upsert({
-    where: { id: "react-sec-1" }, update: { title: "Module 1: React Core Concepts", position: 1 },
-    create: { id: "react-sec-1", courseId: react.id, title: "Module 1: React Core Concepts", position: 1 },
-  });
-
-  // Source: "React Course - Beginner's Tutorial for React JavaScript Library" (fCC)
-  // URL: https://www.youtube.com/watch?v=bMknfKXIFA8
-  await prisma.lesson.upsert({ where: { id: "react-l-1" }, update: {}, create: {
-    id: "react-l-1", sectionId: r1.id, position: 1, isPreview: true,
-    title: "Why React & JSX Fundamentals",
-    description: "What problems React solves, component-based thinking, and JSX syntax.",
-    videoUrl: "https://www.youtube.com/watch?v=bMknfKXIFA8", durationMins: 15,
-    content: { startSec: 0, endSec: 900, transcript: [
-      { time: "0:00", text: "React is a JavaScript library for building user interfaces. It was created by Facebook in 2013." },
-      { time: "1:20", text: "React's core idea is components — small, reusable pieces of UI that you compose together to build applications." },
-      { time: "3:00", text: "JSX is a syntax extension for JavaScript that lets you write HTML-like code inside JavaScript files." },
-      { time: "5:30", text: "Behind the scenes, JSX gets compiled to React.createElement() calls by Babel." },
-    ], resources: [{ label: "React Official Documentation", url: "https://react.dev/" }],
-    notes: "Think in components. Break every UI into small, self-contained pieces that manage their own state." },
-  }});
 
   console.log("Database seeded successfully!");
 }

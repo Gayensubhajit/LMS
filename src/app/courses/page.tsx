@@ -34,6 +34,7 @@ type BackendCourse = {
   oneMonthPrice: number;
   threeMonthPrice: number;
   sixMonthPrice: number;
+  imageUrl: string | null;
 };
 
 // Merge backend DB fields on top of local display metadata (emoji, skills, duration, etc.)
@@ -50,6 +51,7 @@ function mergeCourse(bc: BackendCourse): Course | null {
     category: bc.category as Course["category"],
     level,
     instructor: bc.instructorName,
+    img: bc.imageUrl ?? local.img,
     price: {
       oneMonth: bc.oneMonthPrice,
       threeMonth: bc.threeMonthPrice,
@@ -242,7 +244,7 @@ function CoursesContent() {
                    <button onClick={() => setQuery("")} className="mt-4 text-violet-400 underline underline-offset-4">Clear all filters</button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {filtered.map((course, i) => {
                     const col = categoryColors[course.category] ?? { text: "#a78bfa", bg: "rgba(139,92,246,0.12)" };
                     return (
@@ -290,15 +292,15 @@ function CoursesContent() {
                              </div>
                              
                              <div className="flex items-center gap-2">
-                                <Link href={`/courses/${course.slug}`} className="px-5 py-2.5 rounded-2xl text-[11px] font-bold text-violet-300 border border-violet-500/20 hover:bg-violet-500/10 transition-all">Details</Link>
+                                <Link href={`/courses/${course.slug}`} className="px-4 py-2 rounded-xl text-[10px] font-bold text-violet-300 border border-violet-500/20 hover:bg-violet-500/10 transition-all">Details</Link>
                                 {enrolledSlugs.has(course.slug) ? (
-                                  <Link href={`/learn/${course.slug}`} className="px-5 py-2.5 rounded-2xl text-[11px] font-bold bg-emerald-600 text-white hover:bg-emerald-500 transition-all">Start</Link>
+                                  <Link href={`/learn/${course.slug}`} className="px-4 py-2 rounded-xl text-[10px] font-bold bg-violet-600 text-white hover:bg-violet-500 transition-all">Go to course</Link>
                                 ) : (
                                   <Link 
                                     href={course.isFree ? `/learn/${course.slug}` : `/checkout?slug=${course.slug}&plan=1month`} 
-                                    className="px-5 py-2.5 rounded-2xl text-[11px] font-bold bg-violet-600 text-white hover:bg-violet-500 transition-all flex items-center gap-1.5"
+                                    className="px-4 py-2 rounded-xl text-[10px] font-bold bg-violet-600/20 text-violet-300 border border-violet-500/30 hover:bg-violet-600 hover:text-white transition-all flex items-center gap-1.5"
                                   >
-                                    Enroll <ArrowRight size={12} />
+                                    Enroll <ArrowRight size={10} />
                                   </Link>
                                 )}
                              </div>

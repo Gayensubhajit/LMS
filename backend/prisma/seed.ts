@@ -50,18 +50,19 @@ async function main() {
 
   const aiCourse = await prisma.course.upsert({
     where: { slug: "gen-ai-essentials-free" },
-    update: { isFree: true, isPublished: true },
+    update: { isFree: true, isPublished: true, imageUrl: "https://images.unsplash.com/photo-1676299081847-824916de030a?q=80&w=800&auto=format&fit=crop" },
     create: {
       slug: "gen-ai-essentials-free",
       title: "Generative AI Essentials (Free)",
       shortDescription: "Understand LLMs, prompt engineering, RAG & AI Agents. Completely free.",
       longDescription:
-        "A comprehensive 22-hour deep dive into Generative AI — from AI/ML fundamentals and LLM internals, to practical prompt engineering, AI-powered dev tools, RAG pipelines, and autonomous agents. Taught by ExamPro on freeCodeCamp.",
+        "A comprehensive 22-hour deep dive into Generative AI — from AI/ML fundamentals and LLM internals, to practical prompt engineering, AI-powered dev tools, RAG pipelines, and autonomous agents.",
       category: "AI/ML",
       level: CourseLevel.ALL_LEVELS,
       instructorName: "ExamPro / freeCodeCamp",
       oneMonthPrice: 0, threeMonthPrice: 0, sixMonthPrice: 0,
       isFree: true, isPublished: true,
+      imageUrl: "https://images.unsplash.com/photo-1676299081847-824916de030a?q=80&w=800&auto=format&fit=crop",
     },
   });
 
@@ -289,18 +290,19 @@ async function main() {
   // ════════════════════════════════════════════════════════════════════════
   const feCourse = await prisma.course.upsert({
     where: { slug: "frontend-fundamentals-free" },
-    update: { isFree: true, isPublished: true },
+    update: { isFree: true, isPublished: true, imageUrl: "https://images.unsplash.com/photo-1547658719-da2b51169166?q=80&w=800&auto=format&fit=crop" },
     create: {
       slug: "frontend-fundamentals-free",
       title: "Frontend Fundamentals (Free)",
       shortDescription: "The complete freeCodeCamp Frontend Learning Path — HTML, CSS, JavaScript, React, Git & more.",
       longDescription:
-        "22 full-length tutorials from freeCodeCamp covering everything a front-end developer needs: HTML, CSS, JavaScript, VS Code, Git, React, TypeScript, Next.js, and more. Each lesson is a complete, standalone video course.",
+        "22 full-length tutorials from freeCodeCamp covering everything a front-end developer needs: HTML, CSS, JavaScript, VS Code, Git, React, TypeScript, Next.js, and more.",
       category: "Development",
       level: CourseLevel.BEGINNER,
       instructorName: "freeCodeCamp",
       oneMonthPrice: 0, threeMonthPrice: 0, sixMonthPrice: 0,
       isFree: true, isPublished: true,
+      imageUrl: "https://images.unsplash.com/photo-1547658719-da2b51169166?q=80&w=800&auto=format&fit=crop",
     },
   });
 
@@ -546,18 +548,19 @@ async function main() {
 
   const beCourse = await prisma.course.upsert({
     where: { slug: "backend-basics-free" },
-    update: { isFree: true, isPublished: true },
+    update: { isFree: true, isPublished: true, imageUrl: "https://images.unsplash.com/photo-1627390642289-4b6848039600?q=80&w=800&auto=format&fit=crop" },
     create: {
       slug: "backend-basics-free",
       title: "Backend Basics with Node.js (Free)",
       shortDescription: "Build a real backend with Node.js, Express & MongoDB. Completely free.",
       longDescription:
-        "Build a production-style backend from scratch using Node.js, Express.js, and MongoDB. This course by freeCodeCamp covers server setup, REST API design, routing, middleware, and full CRUD database operations.",
+        "Build a production-style backend from scratch using Node.js, Express.js, and MongoDB. This course covers server setup, REST API design, routing, middleware, and full CRUD database operations.",
       category: "Development",
       level: CourseLevel.BEGINNER,
       instructorName: "freeCodeCamp",
       oneMonthPrice: 0, threeMonthPrice: 0, sixMonthPrice: 0,
       isFree: true, isPublished: true,
+      imageUrl: "https://images.unsplash.com/photo-1627390642289-4b6848039600?q=80&w=800&auto=format&fit=crop",
     },
   });
 
@@ -684,7 +687,10 @@ async function main() {
   // ════════════════════════════════════════════════════════════════════════
   await prisma.course.upsert({
     where: { slug: "complete-ui-ux-design-bootcamp" },
-    update: {},
+    update: { 
+      imageUrl: "https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?q=80&w=800&auto=format&fit=crop",
+      oneMonthPrice: 19, threeMonthPrice: 49, sixMonthPrice: 89
+    },
     create: {
       slug: "complete-ui-ux-design-bootcamp",
       title: "Complete UI/UX Design Bootcamp",
@@ -695,12 +701,16 @@ async function main() {
       instructorName: "Jessica Willis",
       oneMonthPrice: 19, threeMonthPrice: 49, sixMonthPrice: 89,
       isFree: false, isPublished: true,
+      imageUrl: "https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?q=80&w=800&auto=format&fit=crop",
     },
   });
 
   await prisma.course.upsert({
     where: { slug: "react-nextjs-mastery-2026" },
-    update: {},
+    update: { 
+      imageUrl: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=800&auto=format&fit=crop",
+      oneMonthPrice: 29, threeMonthPrice: 79, sixMonthPrice: 139
+    },
     create: {
       slug: "react-nextjs-mastery-2026",
       title: "React & Next.js Mastery 2026",
@@ -711,70 +721,147 @@ async function main() {
       instructorName: "Alex Chen",
       oneMonthPrice: 29, threeMonthPrice: 79, sixMonthPrice: 139,
       isFree: false, isPublished: true,
+      imageUrl: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=800&auto=format&fit=crop",
+    },
+  });
+
+  await prisma.course.upsert({
+    where: { slug: "ai-machine-learning-for-designers" },
+    update: { 
+      imageUrl: "https://images.unsplash.com/photo-1620712943543-bcc4628c9757?q=80&w=800&auto=format&fit=crop",
+      oneMonthPrice: 119, threeMonthPrice: 309, sixMonthPrice: 569
+    },
+    create: {
+      slug: "ai-machine-learning-for-designers",
+      title: "AI & Machine Learning for Designers",
+      shortDescription: "Use modern AI workflows to improve design outcomes.",
+      longDescription: "Understand practical ML concepts, prompt engineering, AI-assisted UX research, and automation.",
+      category: "AI/ML",
+      level: CourseLevel.ALL_LEVELS,
+      instructorName: "Dr. Sarah Park",
+      oneMonthPrice: 119, threeMonthPrice: 309, sixMonthPrice: 569,
+      isFree: false, isPublished: true,
+      imageUrl: "https://images.unsplash.com/photo-1620712943543-bcc4628c9757?q=80&w=800&auto=format&fit=crop",
+    },
+  });
+
+  await prisma.course.upsert({
+    where: { slug: "mobile-app-design-with-figma" },
+    update: { 
+      imageUrl: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=800&auto=format&fit=crop",
+      oneMonthPrice: 79, threeMonthPrice: 199, sixMonthPrice: 359
+    },
+    create: {
+      slug: "mobile-app-design-with-figma",
+      title: "Mobile App Design with Figma",
+      shortDescription: "Design polished mobile interfaces and interactions in Figma.",
+      longDescription: "Design iOS and Android app flows, create reusable components, and build prototypes.",
+      category: "Design",
+      level: CourseLevel.BEGINNER,
+      instructorName: "Marcus Lee",
+      oneMonthPrice: 79, threeMonthPrice: 199, sixMonthPrice: 359,
+      isFree: false, isPublished: true,
+      imageUrl: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=800&auto=format&fit=crop",
+    },
+  });
+
+  await prisma.course.upsert({
+    where: { slug: "full-stack-development-accelerator" },
+    update: { 
+      imageUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop",
+      oneMonthPrice: 149, threeMonthPrice: 389, sixMonthPrice: 719
+    },
+    create: {
+      slug: "full-stack-development-accelerator",
+      title: "Full-Stack Development Accelerator",
+      shortDescription: "Build and deploy full-stack applications from scratch.",
+      longDescription: "Create scalable systems with backend APIs, databases, auth, and cloud deployment.",
+      category: "Development",
+      level: CourseLevel.ADVANCED,
+      instructorName: "Ryan Torres",
+      oneMonthPrice: 149, threeMonthPrice: 389, sixMonthPrice: 719,
+      isFree: false, isPublished: true,
+      imageUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop",
     },
   });
 
   await prisma.course.upsert({
     where: { slug: "prompt-engineering-for-business" },
-    update: {},
+    update: { 
+      imageUrl: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=800&auto=format&fit=crop",
+      oneMonthPrice: 24, threeMonthPrice: 59, sixMonthPrice: 99
+    },
     create: {
       slug: "prompt-engineering-for-business",
       title: "Prompt Engineering for Business",
       shortDescription: "Scale your business productivity 10x with advanced AI prompt engineering.",
-      longDescription: "Learn to automate customer service, content generation, and market analysis using high-level prompt engineering patterns.",
+      longDescription: "Learn to automate customer service, content generation, and market analysis.",
       category: "AI/ML",
       level: CourseLevel.ALL_LEVELS,
       instructorName: "Kevin Roy",
       oneMonthPrice: 24, threeMonthPrice: 59, sixMonthPrice: 99,
       isFree: false, isPublished: true,
+      imageUrl: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=800&auto=format&fit=crop",
     },
   });
 
   await prisma.course.upsert({
     where: { slug: "python-for-data-science" },
-    update: {},
+    update: { 
+      imageUrl: "https://images.unsplash.com/photo-1551288049-bbda3865cbb0?q=80&w=800&auto=format&fit=crop",
+      oneMonthPrice: 34, threeMonthPrice: 89, sixMonthPrice: 159
+    },
     create: {
       slug: "python-for-data-science",
       title: "Python for Data Science",
       shortDescription: "Master Python libraries like Pandas, NumPy, and Scikit-Learn for data analysis.",
-      longDescription: "A complete path from basic Python syntax to complex data modeling and visualization for data scientists.",
+      longDescription: "A complete path from basic Python syntax to complex data modeling for data scientists.",
       category: "AI/ML",
       level: CourseLevel.BEGINNER,
       instructorName: "Arjun Patel",
       oneMonthPrice: 34, threeMonthPrice: 89, sixMonthPrice: 159,
       isFree: false, isPublished: true,
+      imageUrl: "https://images.unsplash.com/photo-1551288049-bbda3865cbb0?q=80&w=800&auto=format&fit=crop",
     },
   });
 
   await prisma.course.upsert({
     where: { slug: "digital-marketing-mastery" },
-    update: {},
+    update: { 
+      imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
+      oneMonthPrice: 19, threeMonthPrice: 49, sixMonthPrice: 89
+    },
     create: {
       slug: "digital-marketing-mastery",
       title: "Digital Marketing Mastery",
       shortDescription: "Dominate SEO, Social Media, and Paid Ads in 2026.",
-      longDescription: "Practical frameworks for growth marketing, funnel optimization, and scaling brands from scratch.",
+      longDescription: "Practical frameworks for growth marketing, funnel optimization, and scaling brands.",
       category: "Marketing",
       level: CourseLevel.ALL_LEVELS,
       instructorName: "Leah Kim",
       oneMonthPrice: 19, threeMonthPrice: 49, sixMonthPrice: 89,
       isFree: false, isPublished: true,
+      imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=800&auto=format&fit=crop",
     },
   });
 
   await prisma.course.upsert({
     where: { slug: "product-management-elite" },
-    update: {},
+    update: { 
+      imageUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=800&auto=format&fit=crop",
+      oneMonthPrice: 39, threeMonthPrice: 99, sixMonthPrice: 179
+    },
     create: {
       slug: "product-management-elite",
       title: "Product Management Elite",
       shortDescription: "Master product strategy, roadmap prioritization, and data-driven execution.",
-      longDescription: "Learn the frameworks used by top FAANG product managers to build and ship world-class products.",
+      longDescription: "Learn the frameworks used by top FAANG product managers to build and ship products.",
       category: "Business",
       level: CourseLevel.INTERMEDIATE,
       instructorName: "Emily Watson",
       oneMonthPrice: 39, threeMonthPrice: 99, sixMonthPrice: 179,
       isFree: false, isPublished: true,
+      imageUrl: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=800&auto=format&fit=crop",
     },
   });
 

@@ -398,17 +398,19 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
             >
               <div className="p-8">
                 {/* Price Display */}
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <span className="text-4xl font-black text-white">${course.isFree ? "0" : course.price.oneMonth}</span>
-                    <span className="text-gray-500 ml-2">/ month</span>
+                {!isEnrolled && (
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <span className="text-4xl font-black text-white">${course.isFree ? "0" : course.price.oneMonth}</span>
+                      <span className="text-gray-500 ml-2">/ month</span>
+                    </div>
+                    {course.isFree && (
+                      <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded-lg border border-emerald-500/30 uppercase tracking-widest">
+                        FREE
+                      </span>
+                    )}
                   </div>
-                  {course.isFree && (
-                    <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded-lg border border-emerald-500/30 uppercase tracking-widest">
-                      FREE
-                    </span>
-                  )}
-                </div>
+                )}
 
                 <div className="flex flex-col gap-3">
                   <button

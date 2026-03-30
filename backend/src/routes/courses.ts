@@ -52,7 +52,8 @@ coursesRouter.get("/", async (req, res) => {
       previewVideoUrl: true,
       oneMonthPrice: true,
       threeMonthPrice: true,
-      sixMonthPrice: true
+      sixMonthPrice: true,
+      imageUrl: true
     }
   });
 
@@ -90,6 +91,7 @@ coursesRouter.get("/:slug", async (req, res) => {
       oneMonthPrice: true,
       threeMonthPrice: true,
       sixMonthPrice: true,
+      imageUrl: true,
       createdAt: true,
       updatedAt: true
     }

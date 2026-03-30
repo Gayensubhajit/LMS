@@ -85,6 +85,7 @@ model Course {
   oneMonthPrice    Int
   threeMonthPrice  Int
   sixMonthPrice    Int
+  imageUrl         String?
   isFree           Boolean       @default(false)
   isPublished      Boolean       @default(false)
   createdAt        DateTime      @default(now())

@@ -23,7 +23,7 @@ import {
 } from "lucide-react";
 import CourseVideoPlayer from "@/components/lms/CourseVideoPlayer";
 import { motion, AnimatePresence } from "framer-motion";
-import { dark } from "@clerk/ui/themes";
+import { dark } from "@clerk/themes";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type TranscriptEntry = { time: string; text: string };
@@ -298,7 +298,7 @@ export default function LearnCoursePage() {
 
   // ─────────────────────────────────────────────────────────────────────────
   return (
-    <main className="min-h-screen bg-background text-foreground flex flex-col">
+    <main className="h-screen bg-background text-foreground flex flex-col overflow-hidden">
       {/* ── TOP BAR ──────────────────────────────────────────────────────── */}
       <header
         className="flex items-center justify-between px-4 sm:px-6 h-14 sticky top-0 z-50 shrink-0"

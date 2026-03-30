@@ -9,6 +9,10 @@ function ts(time: string): number {
 }
 
 async function main() {
+  console.log("Cleaning up legacy data...");
+  await prisma.lesson.deleteMany({});
+  await prisma.courseSection.deleteMany({});
+  
   console.log("Seeding database...");
 
   // ════════════════════════════════════════════════════════════════════════
@@ -70,11 +74,9 @@ async function main() {
 
   await prisma.lesson.upsert({ where: { id: "ai-l-01" }, update: {}, create: {
     id: "ai-l-01", sectionId: aiS1.id, position: 1, isPreview: true,
-    title: "Introduction to Generative AI",
-    description: "What generative AI is, why it matters now, and an overview of the full course roadmap.",
     title: "Course Introduction & Goals",
     description: "A quick overview of what you will learn in this 22-hour Generative AI masterclass and the course roadmap.",
-    videoUrl: AI_VIDEO, durationMins: 10,
+    videoUrl: "nJ25yl34Uqw", durationMins: 10,
     content: {
       startSec: 0, endSec: 600,
       notes: "Welcome to the world of GenAI. We will cover the entire lifecycle from prompting to agent deployment.",
@@ -89,7 +91,7 @@ async function main() {
     id: "ai-l-01-deep", sectionId: aiS1.id, position: 2, isPreview: false,
     title: "GenAI Industry Overview",
     description: "Deep dive into the current AI landscape, cloud providers, and the architecture of large language models.",
-    videoUrl: AI_VIDEO, durationMins: 44,
+    videoUrl: "nJ25yl34Uqw", durationMins: 44,
     content: {
       startSec: 600, endSec: 3256,
       notes: "The AI lifecycle involves data preparation, model selection, and iterative prompting.",
@@ -103,7 +105,7 @@ async function main() {
     id: "ai-l-02", sectionId: aiS1.id, position: 3, isPreview: false,
     title: "AI and ML Fundamentals",
     description: "Supervised vs unsupervised learning, neural network basics, training pipelines, and where generative AI fits in the ML landscape.",
-    videoUrl: AI_VIDEO, durationMins: 128,
+    videoUrl: "nJ25yl34Uqw", durationMins: 128,
     content: {
       startSec: 3256, endSec: 10941,
       notes: "Neural networks and transformers are the engines behind modern GenAI systems.",
@@ -126,7 +128,7 @@ async function main() {
     id: "ai-l-04", sectionId: aiS2.id, position: 1, isPreview: false,
     title: "LLM Basics",
     description: "Tokens, context windows, temperature, top-p sampling — how large language models actually generate output.",
-    videoUrl: AI_VIDEO, durationMins: 25,
+    videoUrl: "nJ25yl34Uqw", durationMins: 25,
     content: {
       startSec: ts("3:47:56"), endSec: ts("4:12:22"),
       notes: "LLMs predict the next token. Temperature controls randomness. Context window limits how much the model can 'see' at once.",
@@ -142,7 +144,7 @@ async function main() {
     id: "ai-l-05", sectionId: aiS2.id, position: 2, isPreview: false,
     title: "AI Powered Assistants & Env Setup",
     description: "Overview of AI assistant products (ChatGPT, Gemini, Claude), their APIs, and setting up your development environment.",
-    videoUrl: AI_VIDEO, durationMins: 108,
+    videoUrl: "nJ25yl34Uqw", durationMins: 108,
     content: {
       startSec: ts("4:12:22"), endSec: ts("6:12:17"),
       notes: "Different AI assistants are built on different base models. API access is how developers build applications on top of these models.",
@@ -158,7 +160,7 @@ async function main() {
     id: "ai-l-06", sectionId: aiS2.id, position: 3, isPreview: false,
     title: "Prompt Engineering",
     description: "Zero-shot, few-shot, chain-of-thought, role prompting, and structured output — all the core techniques with real examples.",
-    videoUrl: AI_VIDEO, durationMins: 104,
+    videoUrl: "nJ25yl34Uqw", durationMins: 104,
     content: {
       startSec: ts("6:12:17"), endSec: ts("7:44:09"),
       notes: "Prompt engineering is the skill of crafting inputs that reliably produce the output you want. Chain-of-thought is one of the most impactful techniques.",
@@ -181,7 +183,7 @@ async function main() {
     id: "ai-l-07", sectionId: aiS3.id, position: 1, isPreview: false,
     title: "Workbenches, Playgrounds & Model-as-a-Service",
     description: "Using OpenAI Playground, Google AI Studio, Amazon Bedrock, and other platforms to experiment with and deploy LLMs.",
-    videoUrl: AI_VIDEO, durationMins: 116,
+    videoUrl: "nJ25yl34Uqw", durationMins: 116,
     content: {
       startSec: ts("7:00:25"), endSec: ts("8:36:26"),
       notes: "Model-as-a-Service lets you use powerful LLMs via API without managing infrastructure. AWS Bedrock, Google Vertex AI, and Azure OpenAI Service are the top providers.",
@@ -197,7 +199,7 @@ async function main() {
     id: "ai-l-08", sectionId: aiS3.id, position: 2, isPreview: false,
     title: "LLM DevTools, Workflow & AI Code Assistants",
     description: "LangChain, LlamaIndex, GitHub Copilot, Cursor, and how AI coding tools work under the hood.",
-    videoUrl: AI_VIDEO, durationMins: 252,
+    videoUrl: "nJ25yl34Uqw", durationMins: 252,
     content: {
       startSec: ts("8:36:26"), endSec: ts("14:04:37"),
       notes: "LangChain and LlamaIndex are frameworks for building LLM-powered pipelines. AI code assistants like Copilot use the same LLM APIs under the hood.",
@@ -213,7 +215,7 @@ async function main() {
     id: "ai-l-09", sectionId: aiS3.id, position: 3, isPreview: false,
     title: "App Prototyping with AI",
     description: "Building full AI-powered application prototypes, from chat interfaces to AI pipelines, using modern tooling.",
-    videoUrl: AI_VIDEO, durationMins: 196,
+    videoUrl: "nJ25yl34Uqw", durationMins: 196,
     content: {
       startSec: ts("14:04:37"), endSec: ts("17:21:06"),
       notes: "Rapid prototyping with AI tools can compress weeks of work into hours. The key is understanding which LLM capabilities to leverage for each use case.",
@@ -236,7 +238,7 @@ async function main() {
     id: "ai-l-10", sectionId: aiS4.id, position: 1, isPreview: false,
     title: "LLM Customization: Fine-tuning & SFT",
     description: "When to fine-tune vs prompt, supervised fine-tuning (SFT), data preparation, and size optimization techniques like quantization.",
-    videoUrl: AI_VIDEO, durationMins: 33,
+    videoUrl: "nJ25yl34Uqw", durationMins: 33,
     content: {
       startSec: ts("19:51:49"), endSec: ts("20:26:04"),
       notes: "Fine-tuning adjusts model weights on your own data. Quantization reduces model size for cheaper inference. Usually prompting + RAG is enough before needing fine-tuning.",
@@ -252,7 +254,7 @@ async function main() {
     id: "ai-l-11", sectionId: aiS4.id, position: 2, isPreview: false,
     title: "RAG — Retrieval Augmented Generation",
     description: "Build a RAG pipeline: embeddings, vector stores, semantic search, and grounding LLM responses in your own knowledge base.",
-    videoUrl: AI_VIDEO, durationMins: 115,
+    videoUrl: "nJ25yl34Uqw", durationMins: 115,
     content: {
       startSec: ts("20:26:04"), endSec: ts("22:21:19"),
       notes: "RAG = Retrieval + Generation. Rather than fine-tuning, you retrieve relevant documents and inject them into the prompt context at inference time.",
@@ -268,7 +270,7 @@ async function main() {
     id: "ai-l-12", sectionId: aiS4.id, position: 3, isPreview: false,
     title: "AI Agents",
     description: "Build autonomous AI agents that plan, use tools, and complete multi-step tasks without human intervention.",
-    videoUrl: AI_VIDEO, durationMins: 8,
+    videoUrl: "nJ25yl34Uqw", durationMins: 8,
     content: {
       startSec: ts("22:21:19"), endSec: ts("22:28:47"),
       notes: "Agents use LLMs as a reasoning engine to decide which tools to call, in what order, to complete a goal. ReAct (Reason + Act) is the foundational pattern.",

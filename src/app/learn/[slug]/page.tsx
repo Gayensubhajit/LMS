@@ -665,13 +665,13 @@ export default function LearnCoursePage() {
 
                 {/* ── AI COACH BLOCK ──────────────────────────────────── */}
                 <div
-                  className="rounded-2xl mb-6 overflow-hidden hidden lg:block"
+                  className="rounded-2xl mb-6 overflow-hidden"
                   style={{
                     background: "rgba(12,12,25,0.8)",
                     border: "1px solid rgba(124,58,237,0.2)",
                   }}
                 >
-                  <div className="flex items-center gap-3 px-4 py-3 border-b border-white/5">
+                  <div className="hidden sm:flex items-center gap-3 px-4 py-3 border-b border-white/5">
                     <div className="w-7 h-7 rounded-lg bg-violet-600/20 border border-violet-500/30 flex items-center justify-center shrink-0">
                       <Sparkles size={13} className="text-violet-400" />
                     </div>
@@ -691,24 +691,23 @@ export default function LearnCoursePage() {
                     </div>
                   </div>
 
-                  <div className="p-4">
-                    <p className="text-xs text-gray-400 mb-3">
-                      Let me know if you have any questions about this lesson.
-                      I&apos;m here to help!
+                  <div className="p-3 sm:p-4">
+                    <p className="text-[10px] sm:text-xs text-gray-500 sm:text-gray-400 mb-2 sm:mb-3">
+                      Ask the AI Coach anything about this lesson:
                     </p>
-                    <div className="flex flex-wrap gap-2 mb-3">
+                    <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3">
                       {AI_SUGGESTIONS.map((s) => (
                         <button
                           key={s}
                           onClick={() => setCoachInput(s)}
-                          className="text-[11px] px-3 py-1.5 rounded-lg border transition-all flex items-center gap-1.5"
+                          className="text-[9px] sm:text-[11px] px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg border transition-all flex items-center gap-1.5"
                           style={{
-                            background: "rgba(124,58,237,0.08)",
-                            borderColor: "rgba(124,58,237,0.25)",
+                            background: "rgba(124,58,237,0.06)",
+                            borderColor: "rgba(124,58,237,0.15)",
                             color: "#c4b5fd",
                           }}
                         >
-                          <Sparkles size={10} />
+                          <Sparkles size={9} className="sm:size-[10px]" />
                           {s}
                         </button>
                       ))}

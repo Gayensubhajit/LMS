@@ -548,7 +548,7 @@ async function main() {
 
   const beCourse = await prisma.course.upsert({
     where: { slug: "backend-basics-free" },
-    update: { isFree: true, isPublished: true, imageUrl: "https://images.unsplash.com/photo-1627390642289-4b6848039600?q=80&w=800&auto=format&fit=crop" },
+    update: { isFree: true, isPublished: true, imageUrl: "https://images.unsplash.com/photo-1623282033815-40b05d96c903?q=80&w=800&auto=format&fit=crop" },
     create: {
       slug: "backend-basics-free",
       title: "Backend Basics with Node.js (Free)",
@@ -560,7 +560,7 @@ async function main() {
       instructorName: "freeCodeCamp",
       oneMonthPrice: 0, threeMonthPrice: 0, sixMonthPrice: 0,
       isFree: true, isPublished: true,
-      imageUrl: "https://images.unsplash.com/photo-1627390642289-4b6848039600?q=80&w=800&auto=format&fit=crop",
+      imageUrl: "https://images.unsplash.com/photo-1623282033815-40b05d96c903?q=80&w=800&auto=format&fit=crop",
     },
   });
 
@@ -688,7 +688,7 @@ async function main() {
   await prisma.course.upsert({
     where: { slug: "complete-ui-ux-design-bootcamp" },
     update: { 
-      imageUrl: "https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?q=80&w=800&auto=format&fit=crop",
+      imageUrl: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=800&auto=format&fit=crop",
       oneMonthPrice: 19, threeMonthPrice: 49, sixMonthPrice: 89
     },
     create: {
@@ -701,7 +701,7 @@ async function main() {
       instructorName: "Jessica Willis",
       oneMonthPrice: 19, threeMonthPrice: 49, sixMonthPrice: 89,
       isFree: false, isPublished: true,
-      imageUrl: "https://images.unsplash.com/photo-1586717791821-3f44a563eb4c?q=80&w=800&auto=format&fit=crop",
+      imageUrl: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=800&auto=format&fit=crop",
     },
   });
 
@@ -728,7 +728,7 @@ async function main() {
   await prisma.course.upsert({
     where: { slug: "ai-machine-learning-for-designers" },
     update: { 
-      imageUrl: "https://images.unsplash.com/photo-1620712943543-bcc4628c9757?q=80&w=800&auto=format&fit=crop",
+      imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&auto=format&fit=crop",
       oneMonthPrice: 119, threeMonthPrice: 309, sixMonthPrice: 569
     },
     create: {
@@ -741,7 +741,7 @@ async function main() {
       instructorName: "Dr. Sarah Park",
       oneMonthPrice: 119, threeMonthPrice: 309, sixMonthPrice: 569,
       isFree: false, isPublished: true,
-      imageUrl: "https://images.unsplash.com/photo-1620712943543-bcc4628c9757?q=80&w=800&auto=format&fit=crop",
+      imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&auto=format&fit=crop",
     },
   });
 
@@ -808,7 +808,7 @@ async function main() {
   await prisma.course.upsert({
     where: { slug: "python-for-data-science" },
     update: { 
-      imageUrl: "https://images.unsplash.com/photo-1551288049-bbda3865cbb0?q=80&w=800&auto=format&fit=crop",
+      imageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop",
       oneMonthPrice: 34, threeMonthPrice: 89, sixMonthPrice: 159
     },
     create: {
@@ -821,7 +821,7 @@ async function main() {
       instructorName: "Arjun Patel",
       oneMonthPrice: 34, threeMonthPrice: 89, sixMonthPrice: 159,
       isFree: false, isPublished: true,
-      imageUrl: "https://images.unsplash.com/photo-1551288049-bbda3865cbb0?q=80&w=800&auto=format&fit=crop",
+      imageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=800&auto=format&fit=crop",
     },
   });
 

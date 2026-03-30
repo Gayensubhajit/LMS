@@ -51,7 +51,7 @@ function mergeCourse(bc: BackendCourse): Course | null {
     category: bc.category as Course["category"],
     level,
     instructor: bc.instructorName,
-    img: bc.imageUrl ?? local.img,
+    img: bc.imageUrl || local.img,
     price: {
       oneMonth: bc.oneMonthPrice,
       threeMonth: bc.threeMonthPrice,
@@ -207,9 +207,9 @@ function CoursesContent() {
             </div>
           </header>
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 items-start">
             {/* Sidebar Filters */}
-            <aside className="hidden lg:block space-y-8">
+            <aside className="hidden lg:block space-y-8 sticky top-28 self-start">
               <div>
                 <h3 className="text-white font-bold mb-4 flex items-center gap-2">
                   <SlidersHorizontal size={16} className="text-violet-400" /> Categories
@@ -257,7 +257,7 @@ function CoursesContent() {
                       >
                         <div className="relative h-56 overflow-hidden">
                            {course.img ? (
-                             <img src={course.img} alt={course.title} className="w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" />
+                             <img src={course.img} alt={course.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                            ) : (
                              <div className="w-full h-full flex items-center justify-center text-8xl bg-indigo-900/20">{course.emoji}</div>
                            )}

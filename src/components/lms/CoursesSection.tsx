@@ -71,9 +71,10 @@ export default function CoursesSection() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
 
   const filtered =
-    activeCategory === "All"
+    (activeCategory === "All"
       ? courses
-      : courses.filter((c) => c.category === activeCategory);
+      : courses.filter((c) => c.category === activeCategory)
+    ).slice(0, 4);
 
   return (
     <section className="relative py-28 overflow-hidden" id="courses">
@@ -138,7 +139,7 @@ export default function CoursesSection() {
 
         {/* Course cards */}
         <div
-          className={`${montserrat.className} grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6`}
+          className={`${montserrat.className} grid grid-cols-1 md:grid-cols-2 gap-8`}
         >
           {filtered.map((course, i) => {
             const accent = accentMap[course.category] ?? "rgba(124,58,237,0.5)";
@@ -176,7 +177,7 @@ export default function CoursesSection() {
                     <img 
                       src={course.img} 
                       alt={course.title}
-                      className="w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-700" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                     />
                   ) : (
                     <motion.div

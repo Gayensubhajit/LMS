@@ -240,7 +240,7 @@ function CheckoutContent() {
                   className="w-full bg-violet-600 hover:bg-violet-500 disabled:bg-violet-900/50 disabled:text-gray-500 text-white font-black py-6 rounded-[2.5rem] tracking-[0.2em] uppercase text-[11px] transition-all shadow-[0_20px_60px_rgba(124,58,237,0.3)] hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-4"
                 >
                   {processing ? <Loader2 className="animate-spin" size={20} /> : <CreditCard size={20} />}
-                  {processing ? "Starting Transaction..." : "Pay with Razorpay"}
+                  {processing ? "Processing Order..." : "Continue to Payment"}
                 </button>
                 <div className="flex items-center justify-center gap-6 pt-4 opacity-40">
                   <span className="text-[10px] font-black text-white">UPI</span>

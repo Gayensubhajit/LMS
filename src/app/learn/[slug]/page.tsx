@@ -749,7 +749,7 @@ export default function LearnCoursePage() {
                   style={{ borderBottom: "1px solid rgba(124,58,237,0.15)" }}
                   className="mb-5"
                 >
-                  <div className="flex gap-0">
+                  <div className="flex gap-0 overflow-x-auto no-scrollbar">
                     {(
                       [
                         {

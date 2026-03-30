@@ -189,204 +189,22 @@ export default function MyCoursesPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-24 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
           {/* ── LEFT SIDEBAR ── */}
-          <aside className="hidden lg:block">
-            {/* User greeting */}
-            <div className="mb-6">
-              <div
-                className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center text-xl font-black text-white mb-3"
-                style={{
-                  background: "linear-gradient(135deg,#7c3aed,#a855f7)",
-                }}
-              >
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt={initials}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  initials
-                )}
-              </div>
-              <h1 className="text-xl font-bold text-white">
-                {greeting}, {displayName}
-              </h1>
-              <p className="text-sm mt-0.5 text-gray-400">
-                {enrollments.length === 0
-                  ? "Start your learning journey"
-                  : `${enrollments.length} course${enrollments.length !== 1 ? "s" : ""} enrolled`}
-              </p>
-            </div>
+          {/* ── MOBILE: GREETING ── */}
+          <div className="lg:hidden mb-2">
+            <h1 className="text-2xl font-black text-white">
+              {greeting}, {displayName}
+            </h1>
+            <p className="text-sm text-gray-400">
+              {enrollments.length === 0
+                ? "Start your learning journey"
+                : `${enrollments.length} course${enrollments.length !== 1 ? "s" : ""} enrolled`}
+            </p>
+          </div>
 
-            {/* Today's goals — clickable */}
-            <div
-              className="rounded-lg p-4 mb-4"
-              style={{
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(255,255,255,0.08)",
-              }}
-            >
-              <div className="flex items-center gap-2 mb-3">
-                <Star size={14} className="text-yellow-400" fill="#facc15" />
-                <h3 className="text-sm font-bold text-white">
-                  Today&apos;s goals
-                </h3>
-              </div>
-              <ul className="space-y-2.5">
-                {[
-                  {
-                    label: "Complete any 3 learning items • 0/3",
-                    href: "/courses",
-                  },
-                  { label: "Complete a reading", href: "/courses?q=reading" },
-                  { label: "Continue your weekly streak", href: "/my-courses" },
-                ].map((goal, i) => (
-                  <li key={i}>
-                    <Link
-                      href={goal.href}
-                      className="flex items-start gap-2.5 text-sm group hover:text-violet-300 transition-colors text-gray-400"
-                    >
-                      <div className="w-4 h-4 rounded-full border mt-0.5 shrink-0 flex items-center justify-center border-gray-600 group-hover:border-violet-500 transition-colors">
-                        <div className="w-1.5 h-1.5 rounded-full bg-violet-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      </div>
-                      {goal.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Learning plan — full month calendar */}
-            <div
-              className="rounded-lg p-4 mb-4"
-              style={{
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid rgba(255,255,255,0.08)",
-              }}
-            >
-              <h3 className="text-sm font-bold mb-1 text-white">
-                Learning plan
-              </h3>
-
-              {/* Month nav */}
-              <div className="flex items-center justify-between mb-3">
-                <button
-                  onClick={prevMonth}
-                  className="p-0.5 rounded hover:bg-white/10 transition-colors text-gray-400"
-                >
-                  <ChevronLeft size={14} />
-                </button>
-                <span className="text-xs font-semibold text-gray-300">
-                  {calMonthLabel}
-                </span>
-                <button
-                  onClick={nextMonth}
-                  className="p-0.5 rounded hover:bg-white/10 transition-colors text-gray-400"
-                >
-                  <ChevronRight size={14} />
-                </button>
-              </div>
-
-              {/* Day headers */}
-              <div className="grid grid-cols-7 mb-1">
-                {CAL_HEADERS.map((h) => (
-                  <div
-                    key={h}
-                    className="text-center text-[10px] font-bold py-0.5 text-gray-500"
-                  >
-                    {h}
-                  </div>
-                ))}
-              </div>
-
-              {/* Day cells */}
-              <div className="grid grid-cols-7 gap-y-0.5">
-                {calCells.map((day, i) => {
-                  const isToday =
-                    day === todayDate &&
-                    calMonth === todayMonth &&
-                    calYear === todayYear;
-                  const isPast =
-                    day !== null &&
-                    (calYear < todayYear ||
-                      (calYear === todayYear && calMonth < todayMonth) ||
-                      (calYear === todayYear &&
-                        calMonth === todayMonth &&
-                        day < todayDate));
-                  return (
-                    <div
-                      key={i}
-                      className="flex items-center justify-center h-7 text-[11px] font-medium rounded-full mx-0.5"
-                      style={
-                        isToday
-                          ? {
-                              background: "#7c3aed",
-                              color: "#fff",
-                              fontWeight: 700,
-                            }
-                          : isPast
-                            ? { color: "#6b7280" }
-                            : { color: day ? "#d1d5db" : "transparent" }
-                      }
-                    >
-                      {day ?? ""}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Legend */}
-              <div
-                className="mt-3 pt-3 flex items-center gap-4 text-[10px] text-gray-500"
-                style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}
-              >
-                <span className="flex items-center gap-1">
-                  <span
-                    className="w-2.5 h-2.5 rounded-full inline-block"
-                    style={{ background: "#7c3aed" }}
-                  />
-                  Today
-                </span>
-                <span className="flex items-center gap-1">
-                  <span
-                    className="w-2.5 h-2.5 rounded-full inline-block"
-                    style={{ background: "rgba(124,58,237,0.3)" }}
-                  />
-                  1+ daily goals completed
-                </span>
-              </div>
-            </div>
-
-            {/* Upgrade */}
-            <div
-              className="rounded-lg p-5 mt-2"
-              style={{
-                background: "rgba(124,58,237,0.05)",
-                border: "1px solid rgba(124,58,237,0.15)",
-              }}
-            >
-              <div className="w-10 h-10 rounded-xl bg-violet-600/20 flex items-center justify-center mb-4">
-                <GraduationCap size={20} className="text-violet-400" />
-              </div>
-              <h3 className="text-sm font-bold mb-1 text-white">
-                Upgrade to Plus
-              </h3>
-              <p className="text-xs mb-4 text-gray-400 leading-relaxed">
-                Get unlimited access to 7,000+ courses and certifications.
-              </p>
-              <Link
-                href="/pricing"
-                className="text-xs font-bold text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-1"
-              >
-                View Plans <ArrowRight size={12} />
-              </Link>
-            </div>
-          </aside>
-
-          {/* ── RIGHT: COURSES ── */}
-          <section>
+          {/* ── RIGHT: COURSES (SHOW FIRST ON MOBILE) ── */}
+          <section className="order-1 lg:order-2">
             {/* Tabs */}
-            <div className="flex gap-1 mb-6 border-b border-white/5">
+            <div className="flex gap-1 mb-6 border-b border-white/5 overflow-x-auto no-scrollbar">
               {(["in-progress", "completed"] as TabType[]).map((tab) => (
                 <button
                   key={tab}
@@ -633,6 +451,99 @@ export default function MyCoursesPage() {
               )}
             </AnimatePresence>
           </section>
+
+          {/* ── SIDEBAR (SHOW BELOW COURSES ON MOBILE) ── */}
+          <aside className="order-2 lg:order-1">
+            {/* Desktop greeting (Hidden on mobile) */}
+            <div className="hidden lg:block mb-6">
+              <div
+                className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center text-xl font-black text-white mb-3"
+                style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}
+              >
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt={initials} className="w-full h-full object-cover" />
+                ) : (
+                  initials
+                )}
+              </div>
+              <h1 className="text-xl font-bold text-white">
+                {greeting}, {displayName}
+              </h1>
+              <p className="text-sm mt-0.5 text-gray-400">
+                {enrollments.length === 0 ? "Start your learning journey" : `${enrollments.length} course${enrollments.length !== 1 ? "s" : ""} enrolled`}
+              </p>
+            </div>
+
+            {/* Today's goals */}
+            <div
+              className="rounded-lg p-4 mb-4"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <Star size={14} className="text-yellow-400" fill="#facc15" />
+                <h3 className="text-sm font-bold text-white">Today&apos;s goals</h3>
+              </div>
+              <ul className="space-y-2.5">
+                {[
+                  { label: "Complete any 3 learning items • 0/3", href: "/courses" },
+                  { label: "Complete a reading", href: "/courses?q=reading" },
+                  { label: "Continue your weekly streak", href: "/my-courses" },
+                ].map((goal, i) => (
+                  <li key={i}>
+                    <Link href={goal.href} className="flex items-start gap-2.5 text-sm group hover:text-violet-300 transition-colors text-gray-400">
+                      <div className="w-4 h-4 rounded-full border mt-0.5 shrink-0 flex items-center justify-center border-gray-600 group-hover:border-violet-500 transition-colors">
+                        <div className="w-1.5 h-1.5 rounded-full bg-violet-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                      {goal.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Learning plan */}
+            <div
+              className="rounded-lg p-4 mb-4"
+              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}
+            >
+              <h3 className="text-sm font-bold mb-1 text-white">Learning plan</h3>
+              <div className="flex items-center justify-between mb-3">
+                <button onClick={prevMonth} className="p-0.5 rounded hover:bg-white/10 transition-colors text-gray-400"><ChevronLeft size={14} /></button>
+                <span className="text-xs font-semibold text-gray-300">{calMonthLabel}</span>
+                <button onClick={nextMonth} className="p-0.5 rounded hover:bg-white/10 transition-colors text-gray-400"><ChevronRight size={14} /></button>
+              </div>
+              <div className="grid grid-cols-7 mb-1">
+                {CAL_HEADERS.map(h => <div key={h} className="text-center text-[10px] font-bold py-0.5 text-gray-500">{h}</div>)}
+              </div>
+              <div className="grid grid-cols-7 gap-y-0.5">
+                {calCells.map((day, i) => {
+                  const isToday = day === todayDate && calMonth === todayMonth && calYear === todayYear;
+                  return (
+                    <div key={i} className="flex items-center justify-center h-7 text-[11px] font-medium rounded-full mx-0.5"
+                      style={isToday ? { background: "#7c3aed", color: "#fff", fontWeight: 700 } : { color: day ? "#d1d5db" : "transparent" }}
+                    >
+                      {day ?? ""}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Upgrade */}
+            <div
+              className="rounded-lg p-5 mt-2"
+              style={{ background: "rgba(124,58,237,0.05)", border: "1px solid rgba(124,58,237,0.15)" }}
+            >
+              <div className="w-10 h-10 rounded-xl bg-violet-600/20 flex items-center justify-center mb-4">
+                <GraduationCap size={20} className="text-violet-400" />
+              </div>
+              <h3 className="text-sm font-bold mb-1 text-white">Upgrade to Plus</h3>
+              <p className="text-xs mb-4 text-gray-400 leading-relaxed">Get unlimited access to 7,000+ courses and certifications.</p>
+              <Link href="/pricing" className="text-xs font-bold text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-1">
+                View Plans <ArrowRight size={12} />
+              </Link>
+            </div>
+          </aside>
         </div>
       </div>
     </div>

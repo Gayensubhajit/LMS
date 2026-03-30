@@ -1,3 +1,7 @@
+/*
+  For Terms of services and Refund Policy
+*/
+
 import SimplePage from "@/components/lms/SimplePage";
 
 export default function TermsPage() {
@@ -10,4 +14,3 @@ export default function TermsPage() {
     />
   );
 }
-

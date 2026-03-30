@@ -150,13 +150,13 @@ export default function FAQSection() {
           <div className="flex items-center justify-center gap-3">
             <a
               href="/support?tab=chat"
-              className="bg-gradient-to-r from-violet-600 to-purple-600 text-white  font-semibold px-2 py-3 md:px-6 md:py-3 rounded-xl hover:shadow-[0_0_25px_rgba(124,58,237,0.5)] transition-shadow text-xs md:text-md"
+              className="bg-linear-to-r from-violet-600 to-purple-600 text-white px-4 py-3 md:px-6 md:py-3 rounded-xl hover:shadow-[0_0_25px_rgba(124,58,237,0.5)] transition-all duration-200 ease-in-out text-xs md:text-lg lg:text-xl font-semibold"
             >
               Chat with Us
             </a>
             <a
               href="/support?tab=email"
-              className="border border-violet-500/30 text-violet-300 text-xs md:text-md font-semibold px-2 py-3 md:px-6 md:py-3 rounded-xl hover:bg-violet-600/10 transition-colors"
+              className="border border-violet-500/30 font-semibold text-violet-300 text-xs md:text-lg lg:text-xl px-4 py-3 md:px-6 md:py-3 rounded-xl hover:bg-violet-600/10 transition-all duration-200 ease-in-out"
             >
               Email Support
             </a>

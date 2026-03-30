@@ -182,21 +182,21 @@ function CoursesContent() {
               </Link>
             </div>
 
-            <div className="flex flex-col md:flex-row items-center gap-4 bg-white/5 p-2 rounded-3xl border border-violet-500/20">
+            <div className="flex flex-col sm:flex-row items-center gap-4 bg-white/5 p-2 rounded-3xl border border-violet-500/20">
                <div className="relative flex-1 w-full">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                   <input 
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="What do you want to learn today?"
-                    className="w-full bg-transparent text-white px-12 py-4 outline-none placeholder:text-gray-600"
+                    placeholder="Search courses..."
+                    className="w-full bg-transparent text-white px-12 py-4 outline-none placeholder:text-gray-600 text-sm sm:text-base"
                   />
                </div>
-               <div className="flex items-center gap-2 p-2">
+               <div className="flex items-center gap-2 p-2 w-full sm:w-auto">
                  <select 
                     value={sortBy} 
                     onChange={(e) => setSortBy(e.target.value as any)}
-                    className="bg-background/50 border border-violet-500/20 text-gray-300 text-sm px-4 py-2 rounded-2xl outline-none"
+                    className="w-full sm:w-auto bg-background/50 border border-violet-500/20 text-gray-300 text-xs sm:text-sm px-4 py-2 rounded-2xl outline-none"
                   >
                    <option value="popular">Popular</option>
                    <option value="rating">Top Rated</option>
@@ -204,6 +204,25 @@ function CoursesContent() {
                    <option value="priceHigh">Price: High to Low</option>
                  </select>
                </div>
+            </div>
+
+            {/* Mobile Categories (Horizontal Scroll) */}
+            <div className="lg:hidden mt-8 overflow-x-auto no-scrollbar pb-4 -mx-6 px-6">
+              <div className="flex items-center gap-3 min-w-max">
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setCategory(cat)}
+                    className={`whitespace-nowrap px-6 py-2.5 rounded-2xl text-[11px] font-bold uppercase tracking-wider transition-all border ${
+                      category === cat 
+                        ? "bg-violet-600 border-violet-600 text-white shadow-lg shadow-violet-500/20" 
+                        : "bg-white/5 border-white/10 text-gray-400 hover:text-white"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
             </div>
           </header>
 

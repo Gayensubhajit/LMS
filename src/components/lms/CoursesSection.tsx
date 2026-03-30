@@ -1,9 +1,10 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { motion, useInView } from "framer-motion";
 import { Star, Clock, Users, Play, ArrowRight, BookOpen } from "lucide-react";
 import { Montserrat } from "next/font/google";
+import { useAuth } from "@clerk/nextjs";
 import { coursesData } from "@/lib/courses-data";
 import Link from "next/link";
 
@@ -63,12 +64,42 @@ const badgeMap: Record<string, { label: string; color: string }> = {
 
 // Show all relevant courses from local data (now 12+)
 const courses = coursesData;
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_API_URL ??
+  process.env.NEXT_PUBLIC_BACKEND_URL ??
+  "http://localhost:4000";
 
 export default function CoursesSection() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const [activeCategory, setActiveCategory] = useState("All");
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
+  const [enrolledSlugs, setEnrolledSlugs] = useState<Set<string>>(new Set());
+  const { getToken, userId } = useAuth();
+
+  const fetchEnrollments = useCallback(async () => {
+    if (!userId) {
+      setEnrolledSlugs(new Set());
+      return;
+    }
+    try {
+      const token = await getToken();
+      const res = await fetch(`${BACKEND_URL}/enrollments/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "x-clerk-user-id": userId,
+        },
+      });
+      const data = await res.json();
+      if (data.ok && data.items) {
+        setEnrolledSlugs(new Set(data.items.map((e: any) => e.course.slug)));
+      }
+    } catch (err) {}
+  }, [userId, getToken]);
+
+  useEffect(() => {
+    void fetchEnrollments();
+  }, [fetchEnrollments]);
 
   const filtered =
     (activeCategory === "All"
@@ -171,7 +202,7 @@ export default function CoursesSection() {
               >
                 {/* Thumbnail */}
                 <div
-                  className={`relative h-44 bg-linear-to-br ${gradient} flex items-center justify-center overflow-hidden`}
+                  className={`relative h-44 bg-gradient-to-br ${gradient} flex items-center justify-center overflow-hidden`}
                 >
                   {course.img ? (
                     <img 
@@ -189,7 +220,7 @@ export default function CoursesSection() {
                     </motion.div>
                   )}
                   {course.img && (
-                    <div className="absolute inset-0 flex items-center justify-center text-5xl transform group-hover:scale-125 transition-transform duration-700 drop-shadow-2xl">
+                    <div className="absolute inset-0 flex items-center justify-center text-5xl transform group-hover:scale-125 transition-transform duration-700 drop-shadow-2xl opacity-0 group-hover:opacity-100">
                        {course.emoji}
                     </div>
                    )}
@@ -232,22 +263,21 @@ export default function CoursesSection() {
                   <h3 className="text-base font-bold text-white mb-2 line-clamp-2 leading-snug">
                     {course.title}
                   </h3>
-                  <p className="text-xs text-gray-400 mb-3">
+                  <p className="text-xs text-gray-400 mb-2">
                     by {course.instructor}
                   </p>
 
-                  {/* Skills as tags */}
-                  <div className="flex flex-wrap gap-1.5 mb-4">
-                    {course.skills
-                      .slice(0, 3)
-                      .map((skill: string, j: number) => (
-                        <span
-                          key={j}
-                          className="text-xs bg-white/5 text-gray-400 px-2 py-0.5 rounded-md"
-                        >
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex flex-wrap gap-1.5">
+                      {course.skills.slice(0, 3).map((skill: string, j: number) => (
+                        <span key={j} className="text-[10px] bg-white/5 text-gray-400 px-2 py-0.5 rounded-md">
                           {skill}
                         </span>
                       ))}
+                    </div>
+                    <div className="text-sm font-bold text-violet-400">
+                      {course.isFree ? "Free" : `$${course.price.oneMonth}/m`}
+                    </div>
                   </div>
 
                   {/* Meta */}
@@ -267,27 +297,34 @@ export default function CoursesSection() {
                   </div>
 
                     <div className="flex items-center gap-2 mt-auto pt-2">
-                       <Link
-                          href={`/courses/${course.slug}`}
-                          className="flex-1 flex items-center justify-center gap-1.5 h-10 border border-violet-500/30 text-violet-300 text-[11px] font-bold rounded-xl hover:bg-violet-500/10 transition-all"
+                      <Link
+                        href={`/courses/${course.slug}`}
+                        className="flex-1 flex items-center justify-center gap-1.5 h-10 border border-violet-500/30 text-violet-300 text-[11px] font-bold rounded-xl hover:bg-violet-500/10 transition-all"
+                      >
+                        Details
+                      </Link>
+                      {enrolledSlugs.has(course.slug) ? (
+                        <Link
+                          href={`/learn/${course.slug}`}
+                          className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-violet-600 hover:bg-violet-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-lg shadow-violet-500/20"
                         >
-                          Details
+                          Go to Course
                         </Link>
-                        {course.isFree ? (
-                           <Link
-                              href={`/learn/${course.slug}`}
-                              className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/20"
-                            >
-                              Enroll Free
-                           </Link>
-                        ) : (
-                           <Link
-                              href={`/checkout?slug=${course.slug}&plan=1month`}
-                              className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-[11px] font-bold rounded-xl hover:opacity-90 transition-all shadow-lg shadow-violet-500/20"
-                            >
-                              Enroll <ArrowRight size={12} />
-                           </Link>
-                        )}
+                      ) : course.isFree ? (
+                        <Link
+                          href={`/learn/${course.slug}`}
+                          className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/20"
+                        >
+                          Enroll Free
+                        </Link>
+                      ) : (
+                        <Link
+                          href={`/checkout?slug=${course.slug}&plan=1month`}
+                          className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-[11px] font-bold rounded-xl hover:opacity-90 transition-all shadow-lg shadow-violet-500/20"
+                        >
+                          Enroll <ArrowRight size={12} />
+                        </Link>
+                      )}
                     </div>
                 </div>
               </motion.div>

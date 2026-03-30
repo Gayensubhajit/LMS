@@ -693,7 +693,7 @@ async function main() {
       category: "Design",
       level: CourseLevel.BEGINNER,
       instructorName: "Jessica Willis",
-      oneMonthPrice: 999, threeMonthPrice: 2499, sixMonthPrice: 4499,
+      oneMonthPrice: 19, threeMonthPrice: 49, sixMonthPrice: 89,
       isFree: false, isPublished: true,
     },
   });
@@ -709,7 +709,71 @@ async function main() {
       category: "Development",
       level: CourseLevel.INTERMEDIATE,
       instructorName: "Alex Chen",
-      oneMonthPrice: 1499, threeMonthPrice: 3999, sixMonthPrice: 6999,
+      oneMonthPrice: 29, threeMonthPrice: 79, sixMonthPrice: 139,
+      isFree: false, isPublished: true,
+    },
+  });
+
+  await prisma.course.upsert({
+    where: { slug: "prompt-engineering-for-business" },
+    update: {},
+    create: {
+      slug: "prompt-engineering-for-business",
+      title: "Prompt Engineering for Business",
+      shortDescription: "Scale your business productivity 10x with advanced AI prompt engineering.",
+      longDescription: "Learn to automate customer service, content generation, and market analysis using high-level prompt engineering patterns.",
+      category: "AI/ML",
+      level: CourseLevel.ALL_LEVELS,
+      instructorName: "Kevin Roy",
+      oneMonthPrice: 24, threeMonthPrice: 59, sixMonthPrice: 99,
+      isFree: false, isPublished: true,
+    },
+  });
+
+  await prisma.course.upsert({
+    where: { slug: "python-for-data-science" },
+    update: {},
+    create: {
+      slug: "python-for-data-science",
+      title: "Python for Data Science",
+      shortDescription: "Master Python libraries like Pandas, NumPy, and Scikit-Learn for data analysis.",
+      longDescription: "A complete path from basic Python syntax to complex data modeling and visualization for data scientists.",
+      category: "AI/ML",
+      level: CourseLevel.BEGINNER,
+      instructorName: "Arjun Patel",
+      oneMonthPrice: 34, threeMonthPrice: 89, sixMonthPrice: 159,
+      isFree: false, isPublished: true,
+    },
+  });
+
+  await prisma.course.upsert({
+    where: { slug: "digital-marketing-mastery" },
+    update: {},
+    create: {
+      slug: "digital-marketing-mastery",
+      title: "Digital Marketing Mastery",
+      shortDescription: "Dominate SEO, Social Media, and Paid Ads in 2026.",
+      longDescription: "Practical frameworks for growth marketing, funnel optimization, and scaling brands from scratch.",
+      category: "Marketing",
+      level: CourseLevel.ALL_LEVELS,
+      instructorName: "Leah Kim",
+      oneMonthPrice: 19, threeMonthPrice: 49, sixMonthPrice: 89,
+      isFree: false, isPublished: true,
+    },
+  });
+
+  await prisma.course.upsert({
+    where: { slug: "product-management-elite" },
+    update: {},
+    create: {
+      slug: "product-management-elite",
+      title: "Product Management Elite",
+      shortDescription: "Master product strategy, roadmap prioritization, and data-driven execution.",
+      longDescription: "Learn the frameworks used by top FAANG product managers to build and ship world-class products.",
+      category: "Business",
+      level: CourseLevel.INTERMEDIATE,
+      instructorName: "Emily Watson",
+      oneMonthPrice: 39, threeMonthPrice: 99, sixMonthPrice: 179,
       isFree: false, isPublished: true,
     },
   });

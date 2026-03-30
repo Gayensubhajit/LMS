@@ -61,8 +61,8 @@ const badgeMap: Record<string, { label: string; color: string }> = {
   },
 };
 
-// Show first 6 courses from local data
-const courses = coursesData.slice(0, 6);
+// Show all relevant courses from local data (now 12+)
+const courses = coursesData;
 
 export default function CoursesSection() {
   const ref = useRef(null);
@@ -265,23 +265,29 @@ export default function CoursesSection() {
                     </span>
                   </div>
 
-                  {/* Price + CTA */}
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-xl font-black text-white">
-                        ${course.price.oneMonth}
-                      </span>
-                      <span className="text-xs text-gray-500 ml-1 line-through">
-                        ${Math.round(course.price.oneMonth * 1.6)}
-                      </span>
+                    <div className="flex items-center gap-2 mt-auto pt-2">
+                       <Link
+                          href={`/courses/${course.slug}`}
+                          className="flex-1 flex items-center justify-center gap-1.5 h-10 border border-violet-500/30 text-violet-300 text-[11px] font-bold rounded-xl hover:bg-violet-500/10 transition-all"
+                        >
+                          Details
+                        </Link>
+                        {course.isFree ? (
+                           <Link
+                              href={`/learn/${course.slug}`}
+                              className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/20"
+                            >
+                              Enroll Free
+                           </Link>
+                        ) : (
+                           <Link
+                              href={`/checkout?slug=${course.slug}&plan=1month`}
+                              className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-[11px] font-bold rounded-xl hover:opacity-90 transition-all shadow-lg shadow-violet-500/20"
+                            >
+                              Enroll <ArrowRight size={12} />
+                           </Link>
+                        )}
                     </div>
-                    <Link
-                      href={`/courses/${course.slug}`}
-                      className="flex items-center gap-1.5 bg-linear-to-r from-violet-600 to-purple-600 text-white text-xs font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition-all"
-                    >
-                      View Details <ArrowRight size={12} />
-                    </Link>
-                  </div>
                 </div>
               </motion.div>
             );

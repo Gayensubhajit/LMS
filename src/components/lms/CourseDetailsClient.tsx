@@ -185,264 +185,272 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
     : course.lessons;
 
   return (
-    <main className="min-h-screen bg-background text-foreground px-6 py-14">
-      <div className="max-w-6xl mx-auto">
+    <main className="min-h-screen bg-background text-foreground pt-24 pb-20">
+      <div className="max-w-7xl mx-auto px-6">
         <Link href="/courses" className="inline-flex mb-6 text-violet-300 hover:text-violet-200 text-sm">
           ← Back to courses
         </Link>
 
-        <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <article className="lg:col-span-2 glass-card rounded-3xl border border-violet-500/20 overflow-hidden">
-            <div className="h-52 bg-gradient-to-br from-violet-900/40 to-purple-900/20 flex items-center justify-center text-7xl">
+        <section className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <article className="lg:col-span-2">
+            <div className="h-72 bg-gradient-to-br from-violet-900/40 to-purple-900/20 flex items-center justify-center text-9xl rounded-3xl mb-8 border border-violet-500/20">
               {course.emoji}
             </div>
 
-            <div className="p-7">
-              <div className="text-xs text-violet-400 font-medium mb-2">{course.category}</div>
-              <h1 className="text-3xl font-black text-white mb-2">{course.title}</h1>
-              <p className="text-gray-400 mb-6">by {course.instructor}</p>
+            <div className="mb-8">
+              <div className="text-sm text-violet-400 font-medium mb-2">{course.category}</div>
+              <h1 className="text-4xl md:text-5xl font-black text-white mb-4">{course.title}</h1>
+              <p className="text-xl text-gray-400">by {course.instructor}</p>
+            </div>
 
-              <div className="flex flex-wrap gap-2 mb-6">
-                {(["overview", "syllabus", "reviews"] as const).map(t => (
-                  <button
-                    key={t}
-                    onClick={() => setTab(t)}
-                    className={`px-4 py-2 rounded-xl text-sm font-medium capitalize ${tab === t ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white" : "bg-white/5 border border-violet-500/20 text-gray-300"}`}
-                  >
-                    {t}
-                  </button>
+            <div className="flex flex-wrap gap-2 mb-10">
+              {(["overview", "syllabus", "reviews"] as const).map(t => (
+                <button
+                  key={t}
+                  onClick={() => setTab(t)}
+                  className={`px-6 py-2.5 rounded-full text-sm font-medium capitalize transition-all ${tab === t ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-500/20" : "bg-white/5 border border-violet-500/20 text-gray-300 hover:bg-white/10"}`}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+
+            {/* Video Preview */}
+            <div className="mb-10 rounded-3xl overflow-hidden border border-violet-500/20 bg-black/30 shadow-2xl">
+              <div className="px-6 py-4 border-b border-violet-500/20 flex items-center justify-between">
+                <div className="text-sm font-semibold text-white flex items-center gap-2">
+                  <PlayCircle size={18} className="text-violet-300" />
+                  Course Preview
+                </div>
+                <span className="text-xs text-gray-500 uppercase tracking-wider">Free preview lesson</span>
+              </div>
+              <div className="aspect-video">
+                <iframe
+                  className="w-full h-full"
+                  src={course.previewVideoUrl}
+                  title={`${course.title} preview`}
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+
+            {/* Overview Tab */}
+            {tab === "overview" && (
+              <div>
+                <p className="text-lg text-gray-300 leading-relaxed mb-10">{course.longDescription}</p>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+                  <div className="rounded-2xl bg-white/5 border border-violet-500/15 p-4">
+                    <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Rating</div>
+                    <div className="text-white font-bold text-lg">{course.rating} / 5</div>
+                  </div>
+                  <div className="rounded-2xl bg-white/5 border border-violet-500/15 p-4">
+                    <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Duration</div>
+                    <div className="text-white font-bold text-lg">{course.duration}</div>
+                  </div>
+                  <div className="rounded-2xl bg-white/5 border border-violet-500/15 p-4">
+                    <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Lessons</div>
+                    <div className="text-white font-bold text-lg">{totalLessons}</div>
+                  </div>
+                  <div className="rounded-2xl bg-white/5 border border-violet-500/15 p-4">
+                    <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Students</div>
+                    <div className="text-white font-bold text-lg">{course.students}</div>
+                  </div>
+                </div>
+
+                <div>
+                  <h2 className="text-2xl font-bold text-white mb-6">What you will learn</h2>
+                  <div className="flex flex-wrap gap-3">
+                    {course.skills.map((skill) => (
+                      <span key={skill} className="text-sm bg-violet-600/10 border border-violet-500/20 text-violet-300 px-4 py-2 rounded-full">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-12 rounded-3xl border border-violet-500/20 bg-white/5 p-8">
+                  <div className="flex items-start gap-6">
+                    <div className="w-16 h-16 rounded-2xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-violet-300 flex-shrink-0">
+                      <UserRound size={32} />
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-1">{course.instructor}</h3>
+                      <p className="text-sm text-violet-300 mb-4">{instructor.role}</p>
+                      <p className="text-gray-400 leading-relaxed mb-4">{instructor.bio}</p>
+                      <p className="text-sm text-gray-500">Taught learners: {instructor.learners}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Syllabus Tab */}
+            {tab === "syllabus" && (
+              <div>
+                {!sectionsLoaded ? (
+                  <div className="space-y-4">
+                    {[1, 2, 3].map(i => (
+                      <div key={i} className="h-20 rounded-2xl bg-white/5 border border-violet-500/10 animate-pulse" />
+                    ))}
+                  </div>
+                ) : sections.length > 0 ? (
+                  <div className="space-y-4">
+                    {sections.map((section, index) => (
+                      <div key={section.id} className="rounded-2xl border border-violet-500/20 bg-white/5 p-6">
+                        <button
+                          onClick={() => setOpenSectionIndex(openSectionIndex === index ? null : index)}
+                          className="w-full flex items-center justify-between text-left"
+                        >
+                          <div>
+                            <h3 className="text-lg font-semibold text-white">{section.title}</h3>
+                            <div className="text-sm text-gray-500 mt-1">
+                              {section.lessons.length} lessons
+                            </div>
+                          </div>
+                          <ChevronDown
+                            size={20}
+                            className={`text-violet-300 transition-transform ${openSectionIndex === index ? "rotate-180" : ""}`}
+                          />
+                        </button>
+
+                        {openSectionIndex === index && (
+                          <ul className="mt-6 pt-6 border-t border-violet-500/15 space-y-4">
+                            {section.lessons.map(lesson => (
+                              <li key={lesson.id} className="flex items-center gap-4 text-sm">
+                                <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
+                                  style={{ background: lesson.isPreview ? "rgba(124,58,237,0.2)" : "rgba(255,255,255,0.05)" }}>
+                                  {lesson.isPreview
+                                    ? <Play size={12} className="text-violet-400" fill="currentColor" />
+                                    : <Lock size={12} className="text-gray-600" />
+                                  }
+                                </div>
+                                <span className={lesson.isPreview ? "text-gray-200" : "text-gray-500"}>
+                                  {lesson.title}
+                                </span>
+                                {lesson.durationMins && (
+                                  <span className="ml-auto text-xs text-gray-600">{lesson.durationMins}m</span>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {fallbackModules.map((module, index) => (
+                      <div key={module.title} className="rounded-2xl border border-violet-500/20 bg-white/5 p-6">
+                        <button
+                          onClick={() => setOpenSectionIndex(openSectionIndex === index ? null : index)}
+                          className="w-full flex items-center justify-between text-left"
+                        >
+                          <div>
+                            <h3 className="text-lg font-semibold text-white">{module.title}</h3>
+                            <div className="text-sm text-gray-500 mt-1">{module.lessons.length} lessons</div>
+                          </div>
+                          <ChevronDown size={20} className={`text-violet-300 transition-transform ${openSectionIndex === index ? "rotate-180" : ""}`} />
+                        </button>
+                        {openSectionIndex === index && (
+                          <ul className="mt-6 pt-6 border-t border-violet-500/15 space-y-4">
+                            {module.lessons.map(lesson => (
+                              <li key={lesson} className="text-sm text-gray-300 flex items-start gap-3">
+                                <span className="text-violet-400 mt-0.5">•</span>
+                                <span>{lesson}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Reviews Tab */}
+            {tab === "reviews" && (
+              <div className="space-y-4">
+                {reviews.map(review => (
+                  <div key={review.name} className="rounded-2xl border border-violet-500/20 bg-white/5 p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-white font-semibold">{review.name}</span>
+                      <span className="text-yellow-400 text-sm flex items-center gap-1">
+                        <Star size={14} fill="currentColor" /> {review.rating}.0
+                      </span>
+                    </div>
+                    <p className="text-gray-400 leading-relaxed">{review.text}</p>
+                  </div>
                 ))}
               </div>
+            )}
+          </article>
 
-              {/* Video Preview */}
-              <div className="mb-7 rounded-2xl overflow-hidden border border-violet-500/20 bg-black/30">
-                <div className="px-4 py-3 border-b border-violet-500/20 flex items-center justify-between">
-                  <div className="text-sm font-semibold text-white flex items-center gap-2">
-                    <PlayCircle size={16} className="text-violet-300" />
-                    Course Preview
-                  </div>
-                  <span className="text-xs text-gray-500">Free preview lesson</span>
-                </div>
-                <div className="aspect-video">
-                  <iframe
-                    className="w-full h-full"
-                    src={course.previewVideoUrl}
-                    title={`${course.title} preview`}
-                    loading="lazy"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    allowFullScreen
-                  />
-                </div>
-              </div>
-
-              {/* Overview Tab */}
-              {tab === "overview" && (
-                <div>
-                  <p className="text-gray-300 leading-relaxed mb-6">{course.longDescription}</p>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-                    <div className="rounded-xl bg-white/5 border border-violet-500/15 p-3">
-                      <div className="text-xs text-gray-500">Rating</div>
-                      <div className="text-white font-bold">{course.rating} / 5</div>
-                    </div>
-                    <div className="rounded-xl bg-white/5 border border-violet-500/15 p-3">
-                      <div className="text-xs text-gray-500">Duration</div>
-                      <div className="text-white font-bold">{course.duration}</div>
-                    </div>
-                    <div className="rounded-xl bg-white/5 border border-violet-500/15 p-3">
-                      <div className="text-xs text-gray-500">Lessons</div>
-                      <div className="text-white font-bold">{totalLessons}</div>
-                    </div>
-                    <div className="rounded-xl bg-white/5 border border-violet-500/15 p-3">
-                      <div className="text-xs text-gray-500">Students</div>
-                      <div className="text-white font-bold">{course.students}</div>
-                    </div>
-                  </div>
-
+          {/* Sidebar / CTA card */}
+          <aside className="lg:col-span-1 space-y-6">
+            <div 
+              className="sticky top-28 glass-card rounded-3xl border border-violet-500/20 overflow-hidden shadow-2xl shadow-violet-500/10"
+              style={{ background: "rgba(15,15,30,0.9)" }}
+            >
+              <div className="p-8">
+                {/* Price Display */}
+                <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-lg font-bold text-white mb-3">What you will learn</h2>
-                    <div className="flex flex-wrap gap-2">
-                      {course.skills.map((skill) => (
-                        <span key={skill} className="text-sm bg-violet-600/15 border border-violet-500/20 text-violet-300 px-3 py-1.5 rounded-lg">
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
+                    <span className="text-4xl font-black text-white">${course.isFree ? "0" : course.price.oneMonth}</span>
+                    <span className="text-gray-500 ml-2">/ month</span>
                   </div>
-
-                  <div className="mt-8 rounded-2xl border border-violet-500/20 bg-white/5 p-5">
-                    <div className="flex items-start gap-3">
-                      <div className="w-11 h-11 rounded-xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-violet-300">
-                        <UserRound size={18} />
-                      </div>
-                      <div>
-                        <h3 className="text-white font-semibold">{course.instructor}</h3>
-                        <p className="text-xs text-violet-300 mb-2">{instructor.role}</p>
-                        <p className="text-sm text-gray-400 leading-relaxed mb-2">{instructor.bio}</p>
-                        <p className="text-xs text-gray-500">Taught learners: {instructor.learners}</p>
-                      </div>
-                    </div>
-                  </div>
+                  {course.isFree && (
+                    <span className="px-3 py-1 bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded-lg border border-emerald-500/30 uppercase tracking-widest">
+                      FREE
+                    </span>
+                  )}
                 </div>
-              )}
 
-              {/* Syllabus Tab — Real sections from backend */}
-              {tab === "syllabus" && (
-                <div>
-                  {!sectionsLoaded ? (
-                    <div className="space-y-3">
-                      {[1, 2, 3].map(i => (
-                        <div key={i} className="h-16 rounded-2xl bg-white/5 border border-violet-500/10 animate-pulse" />
-                      ))}
-                    </div>
-                  ) : sections.length > 0 ? (
-                    <div className="space-y-3">
-                      {sections.map((section, index) => (
-                        <div key={section.id} className="rounded-2xl border border-violet-500/20 bg-white/5 p-4">
-                          <button
-                            onClick={() => setOpenSectionIndex(openSectionIndex === index ? null : index)}
-                            className="w-full flex items-center justify-between text-left"
-                          >
-                            <div>
-                              <h3 className="text-white font-semibold">{section.title}</h3>
-                              <div className="text-xs text-gray-500 mt-1">
-                                {section.lessons.length} lessons
-                                {section.lessons.some(l => l.isPreview) && (
-                                  <span className="ml-2 text-violet-400">• Some free previews</span>
-                                )}
-                              </div>
-                            </div>
-                            <ChevronDown
-                              size={18}
-                              className={`text-violet-300 transition-transform flex-shrink-0 ml-2 ${openSectionIndex === index ? "rotate-180" : ""}`}
-                            />
-                          </button>
-
-                          {openSectionIndex === index && (
-                            <ul className="mt-4 pt-3 border-t border-violet-500/15 space-y-2">
-                              {section.lessons.map(lesson => (
-                                <li key={lesson.id} className="flex items-center gap-3 text-sm py-1">
-                                  <div className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                                    style={{ background: lesson.isPreview ? "rgba(124,58,237,0.2)" : "rgba(255,255,255,0.05)" }}>
-                                    {lesson.isPreview
-                                      ? <Play size={10} className="text-violet-400" fill="currentColor" />
-                                      : <Lock size={10} className="text-gray-600" />
-                                    }
-                                  </div>
-                                  <span className={lesson.isPreview ? "text-gray-200" : "text-gray-500"}>
-                                    {lesson.title}
-                                  </span>
-                                  {lesson.durationMins && (
-                                    <span className="ml-auto text-xs text-gray-600">{lesson.durationMins}m</span>
-                                  )}
-                                  {lesson.isPreview && (
-                                    <span className="text-[10px] text-violet-400 border border-violet-500/30 px-1.5 py-0.5 rounded-md">Free</span>
-                                  )}
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    // Fallback to generated modules
-                    <div className="space-y-3">
-                      {fallbackModules.map((module, index) => (
-                        <div key={module.title} className="rounded-2xl border border-violet-500/20 bg-white/5 p-4">
-                          <button
-                            onClick={() => setOpenSectionIndex(openSectionIndex === index ? null : index)}
-                            className="w-full flex items-center justify-between text-left"
-                          >
-                            <div>
-                              <h3 className="text-white font-semibold">{module.title}</h3>
-                              <div className="text-xs text-gray-500 mt-1">{module.lessons.length} lessons</div>
-                            </div>
-                            <ChevronDown size={18} className={`text-violet-300 transition-transform ${openSectionIndex === index ? "rotate-180" : ""}`} />
-                          </button>
-                          {openSectionIndex === index && (
-                            <ul className="mt-4 pt-3 border-t border-violet-500/15 space-y-2">
-                              {module.lessons.map(lesson => (
-                                <li key={lesson} className="text-sm text-gray-300 flex items-start gap-2">
-                                  <span className="text-violet-400 mt-0.5">•</span>
-                                  <span>{lesson}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          )}
-                        </div>
-                      ))}
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={handleEnrollClick}
+                    disabled={enrolling || checkingEnrollment}
+                    className="w-full bg-violet-600 text-white font-bold px-6 py-4 rounded-xl hover:bg-violet-700 transition-all duration-200 shadow-lg shadow-violet-600/20 disabled:opacity-50 flex items-center justify-center gap-2 text-base"
+                  >
+                    {enrolling ? (
+                      <>
+                        <Loader2 size={18} className="animate-spin" />
+                        Enrolling...
+                      </>
+                    ) : checkingEnrollment ? (
+                      "Checking..."
+                    ) : isEnrolled ? (
+                      "Go to course"
+                    ) : (
+                      course.isFree ? "Enroll for free" : "Enroll Now"
+                    )}
+                  </button>
+                  {isEnrolled && (
+                    <div className="flex items-center justify-center gap-2 text-sm text-emerald-400 font-medium">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      Already enrolled
                     </div>
                   )}
                 </div>
-              )}
 
-              {/* Reviews Tab */}
-              {tab === "reviews" && (
-                <div className="space-y-3">
-                  {reviews.map(review => (
-                    <div key={review.name} className="rounded-2xl border border-violet-500/20 bg-white/5 p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-white font-semibold">{review.name}</span>
-                        <span className="text-yellow-400 text-sm flex items-center gap-1">
-                          <Star size={13} fill="currentColor" /> {review.rating}.0
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-400">{review.text}</p>
-                    </div>
-                  ))}
+                <div className="mt-8 pt-8 border-t border-violet-500/15 text-sm text-gray-400 space-y-4">
+                  <div className="flex items-center gap-3">
+                    <BookOpen size={18} className="text-violet-400" />
+                    <span>{totalLessons} structured lessons</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <Play size={18} className="text-violet-400" />
+                    <span>{sections.length} sections · {sections.filter(s => s.lessons.some(l => l.isPreview)).length} free previews</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <MessageSquare size={18} className="text-violet-400" />
+                    <span>Community Q&A and mentor support</span>
+                  </div>
                 </div>
-              )}
-            </div>
-          </article>
-
-          {/* Sidebar */}
-          <aside className="glass-card rounded-3xl border border-violet-500/20 p-6 h-fit sticky top-8">
-            <h2 className="text-xl font-black text-white mb-2">Enroll in this course</h2>
-            <p className="text-sm text-gray-500 mb-6">Choose your subscription duration and get started today</p>
-
-            <div className="flex flex-col gap-3">
-              <button
-                onClick={handleEnrollClick}
-                disabled={enrolling || checkingEnrollment}
-                className="w-full bg-blue-600 text-white font-bold px-4 py-4 rounded-lg hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-50 flex items-center justify-center gap-2 text-base"
-              >
-                {enrolling ? (
-                  <>
-                    <Loader2 size={18} className="animate-spin" />
-                    Enrolling...
-                  </>
-                ) : checkingEnrollment ? (
-                  "Checking enrollment..."
-                ) : isEnrolled ? (
-                  "Go to course"
-                ) : (
-                  course.isFree ? "Enroll for free" : "Enroll Now"
-                )}
-              </button>
-              {isEnrolled && (
-                <div className="flex items-center justify-center gap-2 text-sm text-gray-400 font-medium">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Already enrolled
-                </div>
-              )}
-            </div>
-
-            <div className="mt-5 pt-4 border-t border-violet-500/15 text-xs text-gray-500 space-y-2">
-              <div className="flex items-center gap-2">
-                <BookOpen size={14} />
-                <span>{totalLessons} structured lessons</span>
-              </div>
-              {sections.length > 0 && (
-                <div className="flex items-center gap-2">
-                  <Play size={14} />
-                  <span>{sections.length} sections · {sections.filter(s => s.lessons.some(l => l.isPreview)).length} free previews</span>
-                </div>
-              )}
-              <div className="flex items-center gap-2">
-                <MessageSquare size={14} />
-                <span>Community Q&A and mentor support</span>
               </div>
             </div>
           </aside>

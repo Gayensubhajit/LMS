@@ -84,7 +84,7 @@ export default function CTASection() {
                     "0 0 60px rgba(124,58,237,0.7), 0 0 100px rgba(124,58,237,0.3)",
                 }}
                 whileTap={{ scale: 0.97 }}
-                className="group relative flex items-center gap-2 bg-gradient-to-r from-violet-600 via-purple-600 to-violet-600 background-size-200 text-white font-bold px-10 py-4 rounded-2xl text-lg overflow-hidden"
+                className="group relative flex items-center gap-2 bg-linear-to-r from-violet-600 via-purple-600 to-violet-600 background-size-200 text-white font-bold px-10 py-4 rounded-2xl text-lg overflow-hidden"
                 style={{
                   backgroundSize: "200% 100%",
                   backgroundPosition: "0% 0%",
@@ -92,19 +92,21 @@ export default function CTASection() {
                   boxShadow: "0 0 30px rgba(124,58,237,0.4)",
                 }}
               >
-                <Zap size={20} className="text-yellow-300" />
-                Start Free Trial Now
-                <ArrowRight
-                  size={18}
-                  className="group-hover:translate-x-1 transition-transform"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-violet-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <span className="realtive z-10 flex items-center text-sm md:text-lg">
+                  <Zap size={20} className="text-yellow-300" />
+                  Start Free Trial Now
+                  <ArrowRight
+                    size={18}
+                    className="group-hover:translate-x-1 transition-transform"
+                  />
+                </span>
+                <div className="absolute z-0 inset-0 bg-linear-to-r from-violet-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </motion.a>
 
               <motion.a
                 href="/courses"
                 whileHover={{ scale: 1.04 }}
-                className="flex items-center gap-2 border border-violet-500/40 text-violet-300 font-semibold px-8 py-4 rounded-2xl text-lg hover:bg-violet-600/10 transition-colors"
+                className="flex items-center gap-2 border border-violet-500/40 text-violet-300 font-semibold px-8 py-4 rounded-2xl hover:bg-violet-600/10 transition-colors text-sm md:text-lg"
               >
                 Browse Courses
               </motion.a>

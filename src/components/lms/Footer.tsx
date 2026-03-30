@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { Montserrat } from "next/font/google";
+import { useUser } from "@clerk/nextjs";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -88,6 +89,8 @@ const footerRouteMap: Record<string, string> = {
 };
 
 export default function Footer() {
+  const { isSignedIn } = useUser();
+
   return (
     <footer
       className={`${montserrat.className} relative border-t border-violet-500/10 pt-16 pb-8 overflow-hidden`}
@@ -103,30 +106,33 @@ export default function Footer() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         {/* Newsletter bar */}
-        <div className="glass-card rounded-2xl p-6 mb-14 flex flex-col sm:flex-row items-center justify-between gap-6 max-w-5xl mx-auto">
-          <div className="">
-            <h3 className="text-lg font-bold whitespace-nowrap text-white mb-1">
-              Stay ahead of the curve
-            </h3>
-            <p className="text-sm text-gray-400">
-              Weekly insights, new courses, and career tips straight to your
-              inbox.
-            </p>
+
+        {!isSignedIn && (
+          <div className="glass-card rounded-2xl p-6 mb-14 flex flex-col sm:flex-row items-center justify-between gap-6 max-w-5xl mx-auto">
+            <div className="">
+              <h3 className="text-lg font-bold whitespace-nowrap text-white mb-1">
+                Stay ahead of the curve
+              </h3>
+              <p className="text-sm text-gray-400">
+                Weekly insights, new courses, and career tips straight to your
+                inbox.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
+              <input
+                type="email"
+                placeholder="your@email.com"
+                className="flex-1 sm:w-64 bg-white/5 border border-violet-500/20 text-white placeholder-gray-500 text-sm px-4 py-2.5 rounded-xl focus:outline-none focus:border-violet-500/60 transition-colors"
+              />
+              <Link
+                href="/auth/sign-up"
+                className="flex w-full md:w-auto justify-center items-center gap-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap hover:shadow-[0_0_20px_rgba(124,58,237,0.4)] transition-shadow"
+              >
+                Subscribe <ArrowRight size={14} />
+              </Link>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2 w-full md:w-auto">
-            <input
-              type="email"
-              placeholder="your@email.com"
-              className="flex-1 sm:w-64 bg-white/5 border border-violet-500/20 text-white placeholder-gray-500 text-sm px-4 py-2.5 rounded-xl focus:outline-none focus:border-violet-500/60 transition-colors"
-            />
-            <Link
-              href="/auth/sign-up"
-              className="flex w-full md:w-auto justify-center items-center gap-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap hover:shadow-[0_0_20px_rgba(124,58,237,0.4)] transition-shadow"
-            >
-              Subscribe <ArrowRight size={14} />
-            </Link>
-          </div>
-        </div>
+        )}
 
         {/* Main footer grid */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8 mb-12">

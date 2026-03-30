@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
+import { SignIn, useUser } from "@clerk/nextjs";
 import { getCourseBySlug } from "@/lib/courses-data";
 import { backendRequest } from "@/lib/backend-client";
 import {
@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import CourseVideoPlayer from "@/components/lms/CourseVideoPlayer";
 import { motion, AnimatePresence } from "framer-motion";
+import { dark } from "@clerk/ui/themes";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type TranscriptEntry = { time: string; text: string };
@@ -66,7 +67,7 @@ const AI_SUGGESTIONS = [
 
 // ─────────────────────────────────────────────────────────────────────────────
 export default function LearnCoursePage() {
-  const { user, isLoaded } = useUser();
+  const { user, isLoaded, isSignedIn } = useUser();
   const params = useParams<{ slug: string }>();
   const slug = params?.slug ?? "";
   const course = getCourseBySlug(slug);
@@ -80,7 +81,9 @@ export default function LearnCoursePage() {
   const [markingDone, setMarkingDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("transcript");
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(
+    new Set(),
+  );
   const [userNote, setUserNote] = useState("");
   const [noteSaved, setNoteSaved] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -90,16 +93,23 @@ export default function LearnCoursePage() {
   const lessonItems = useMemo(
     () =>
       backendSections.flatMap((s) =>
-        s.lessons.map((l) => ({ ...l, sectionTitle: s.title, sectionId: s.id }))
+        s.lessons.map((l) => ({
+          ...l,
+          sectionTitle: s.title,
+          sectionId: s.id,
+        })),
       ),
-    [backendSections]
+    [backendSections],
   );
 
   // ── Data fetching ─────────────────────────────────────────────────────────
   useEffect(() => {
     const run = async () => {
       if (!isLoaded) return;
-      if (!user?.id) { setLoading(false); return; }
+      if (!user?.id) {
+        setLoading(false);
+        return;
+      }
       try {
         const lessonsRes = await backendRequest<{
           ok: true;
@@ -140,7 +150,8 @@ export default function LearnCoursePage() {
   }, [activeLessonId]);
 
   // ── Actions ───────────────────────────────────────────────────────────────
-  const activeLesson = lessonItems.find((l) => l.id === activeLessonId) ?? lessonItems[0];
+  const activeLesson =
+    lessonItems.find((l) => l.id === activeLessonId) ?? lessonItems[0];
 
   const navToLesson = (id: string) => {
     setActiveLessonId(id);
@@ -162,10 +173,15 @@ export default function LearnCoursePage() {
         clerkUserId: user.id,
         body: { isCompleted: true },
       });
-      setCompleted((prev) => { const n = new Set(prev); n.add(activeLesson.id); return n; });
-      const progressRes = await backendRequest<{ ok: true; item: { progressPercent: number } }>(
-        `/progress/courses/${slug}`, { clerkUserId: user.id }
-      );
+      setCompleted((prev) => {
+        const n = new Set(prev);
+        n.add(activeLesson.id);
+        return n;
+      });
+      const progressRes = await backendRequest<{
+        ok: true;
+        item: { progressPercent: number };
+      }>(`/progress/courses/${slug}`, { clerkUserId: user.id });
       setProgressPercent(progressRes.item.progressPercent);
       navToNext();
     } catch {
@@ -190,16 +206,44 @@ export default function LearnCoursePage() {
   };
 
   // ── Guards ────────────────────────────────────────────────────────────────
+
+  // Check if data is loaded
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-[#0a0a16] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // Check if user is signed in
+  if (!isSignedIn) {
+    return (
+      <div className="min-h-screen bg-[#080a10] text-white flex items-center justify-center pt-20">
+        <SignIn
+          appearance={{
+            theme: dark,
+          }}
+        />
+      </div>
+    );
+  }
+
+  // Check if course is available
   if (!course) {
     return (
       <main className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
         <div className="glass-card rounded-3xl p-10 max-w-md text-center">
           <div className="text-5xl mb-4">🔍</div>
-          <h1 className="text-2xl font-black text-white mb-2">Course not found</h1>
-          <p className="text-gray-400 mb-6">The learning path is unavailable.</p>
+          <h1 className="text-2xl font-black text-white mb-2">
+            Course not found
+          </h1>
+          <p className="text-gray-400 mb-6">
+            The learning path is unavailable.
+          </p>
           <Link
             href="/courses"
-            className="inline-flex bg-gradient-to-r from-violet-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold"
+            className="inline-flex bg-linear-to-r from-violet-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold"
           >
             Browse Courses
           </Link>
@@ -209,7 +253,10 @@ export default function LearnCoursePage() {
   }
 
   const displayProgress = lessonItems.length
-    ? Math.max(progressPercent, Math.round((completed.size / lessonItems.length) * 100))
+    ? Math.max(
+        progressPercent,
+        Math.round((completed.size / lessonItems.length) * 100),
+      )
     : progressPercent;
 
   const currentIdx = lessonItems.findIndex((l) => l.id === activeLessonId);
@@ -236,9 +283,13 @@ export default function LearnCoursePage() {
       <main className="min-h-screen bg-background flex items-center justify-center px-6">
         <div className="glass-card rounded-3xl p-10 max-w-md text-center">
           <div className="text-4xl mb-4">⚠️</div>
-          <h2 className="text-xl font-bold text-white mb-2">Could not load lessons</h2>
+          <h2 className="text-xl font-bold text-white mb-2">
+            Could not load lessons
+          </h2>
           <p className="text-red-400 text-sm mb-1">{error}</p>
-          <p className="text-gray-600 text-xs">cd backend &amp;&amp; npm run dev</p>
+          <p className="text-gray-600 text-xs">
+            cd backend &amp;&amp; npm run dev
+          </p>
         </div>
       </main>
     );
@@ -249,7 +300,7 @@ export default function LearnCoursePage() {
     <main className="min-h-screen bg-background text-foreground flex flex-col">
       {/* ── TOP BAR ──────────────────────────────────────────────────────── */}
       <header
-        className="flex items-center justify-between px-4 sm:px-6 h-14 sticky top-0 z-50 flex-shrink-0"
+        className="flex items-center justify-between px-4 sm:px-6 h-14 sticky top-0 z-50 shrink-0"
         style={{
           background: "rgba(8,8,15,0.97)",
           borderBottom: "1px solid rgba(124,58,237,0.18)",
@@ -260,7 +311,7 @@ export default function LearnCoursePage() {
         <div className="flex items-center gap-3 min-w-0">
           <Link
             href="/my-courses"
-            className="text-xs text-violet-400 hover:text-violet-300 transition-colors flex-shrink-0 flex items-center gap-1"
+            className="text-xs text-violet-400 hover:text-violet-300 transition-colors shrink-0 flex items-center gap-1"
           >
             <ChevronRight size={12} className="rotate-180" />
             My Learning
@@ -286,7 +337,9 @@ export default function LearnCoursePage() {
               }}
             />
           </div>
-          <span className="text-xs text-violet-400 font-bold">{displayProgress}%</span>
+          <span className="text-xs text-violet-400 font-bold">
+            {displayProgress}%
+          </span>
         </div>
 
         {/* Right */}
@@ -309,7 +362,6 @@ export default function LearnCoursePage() {
 
       {/* ── BODY ─────────────────────────────────────────────────────────── */}
       <div className="flex flex-1 overflow-hidden">
-
         {/* ── SIDEBAR ──────────────────────────────────────────────────── */}
         <>
           {/* Mobile overlay */}
@@ -327,7 +379,7 @@ export default function LearnCoursePage() {
 
           <aside
             className={`
-              w-80 flex-shrink-0 flex flex-col overflow-hidden transition-transform duration-300
+              w-80 shrink-0 flex flex-col overflow-hidden transition-transform duration-300
               fixed inset-y-14 left-0 z-40 lg:relative lg:inset-auto lg:translate-x-0
               ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
             `}
@@ -338,7 +390,7 @@ export default function LearnCoursePage() {
           >
             {/* Sidebar header */}
             <div
-              className="px-4 py-3 flex items-center justify-between flex-shrink-0"
+              className="px-4 py-3 flex items-center justify-between shrink-0"
               style={{ borderBottom: "1px solid rgba(124,58,237,0.12)" }}
             >
               <div>
@@ -361,7 +413,9 @@ export default function LearnCoursePage() {
             <div className="flex-1 overflow-y-auto py-2">
               {backendSections.map((section) => {
                 const isExpanded = expandedSections.has(section.id);
-                const sectionDone = section.lessons.filter((l) => completed.has(l.id)).length;
+                const sectionDone = section.lessons.filter((l) =>
+                  completed.has(l.id),
+                ).length;
                 return (
                   <div key={section.id}>
                     {/* Section header */}
@@ -379,7 +433,7 @@ export default function LearnCoursePage() {
                       </div>
                       <ChevronDown
                         size={14}
-                        className={`text-gray-600 flex-shrink-0 ml-2 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
+                        className={`text-gray-600 shrink-0 ml-2 transition-transform duration-200 ${isExpanded ? "rotate-180" : ""}`}
                       />
                     </button>
 
@@ -396,11 +450,14 @@ export default function LearnCoursePage() {
                           {section.lessons.map((lesson) => {
                             const isDone = completed.has(lesson.id);
                             const isActive = lesson.id === activeLessonId;
-                            const isLocked = !hasEnrollment && !lesson.isPreview;
+                            const isLocked =
+                              !hasEnrollment && !lesson.isPreview;
                             return (
                               <button
                                 key={lesson.id}
-                                onClick={() => !isLocked && navToLesson(lesson.id)}
+                                onClick={() =>
+                                  !isLocked && navToLesson(lesson.id)
+                                }
                                 disabled={isLocked}
                                 className={`w-full text-left px-4 py-2.5 flex items-start gap-3 transition-all duration-150 border-l-2 ${
                                   isActive
@@ -409,22 +466,37 @@ export default function LearnCoursePage() {
                                 } ${isLocked ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
                               >
                                 {/* Icon */}
-                                <div className="mt-0.5 flex-shrink-0">
+                                <div className="mt-0.5 shrink-0">
                                   {isLocked ? (
                                     <Lock size={12} className="text-gray-600" />
                                   ) : isDone ? (
-                                    <CheckCircle2 size={12} className="text-violet-400" fill="rgba(124,58,237,0.35)" />
+                                    <CheckCircle2
+                                      size={12}
+                                      className="text-violet-400"
+                                      fill="rgba(124,58,237,0.35)"
+                                    />
                                   ) : isActive ? (
-                                    <PlayCircle size={12} className="text-violet-400" fill="rgba(124,58,237,0.35)" />
+                                    <PlayCircle
+                                      size={12}
+                                      className="text-violet-400"
+                                      fill="rgba(124,58,237,0.35)"
+                                    />
                                   ) : (
-                                    <Video size={12} className="text-gray-600" />
+                                    <Video
+                                      size={12}
+                                      className="text-gray-600"
+                                    />
                                   )}
                                 </div>
                                 {/* Text */}
                                 <div className="flex-1 min-w-0">
                                   <p
                                     className={`text-xs leading-snug ${
-                                      isActive ? "text-white font-semibold" : isDone ? "text-gray-400" : "text-gray-400"
+                                      isActive
+                                        ? "text-white font-semibold"
+                                        : isDone
+                                          ? "text-gray-400"
+                                          : "text-gray-400"
                                     }`}
                                   >
                                     {lesson.title}
@@ -462,16 +534,31 @@ export default function LearnCoursePage() {
               {/* VIDEO PLAYER — Coursera-style: padded, max-width, not full-bleed */}
               <div
                 className="w-full"
-                style={{ background: "#0a0a14", borderBottom: "1px solid rgba(124,58,237,0.1)" }}
+                style={{
+                  background: "#0a0a14",
+                  borderBottom: "1px solid rgba(124,58,237,0.1)",
+                }}
               >
                 <div className="max-w-5xl mx-auto px-4 sm:px-8 py-4 sm:py-5">
                   {hasEnrollment || activeLesson.isPreview ? (
-                    <div className="overflow-hidden rounded-xl shadow-2xl" style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(124,58,237,0.15)" }}>
+                    <div
+                      className="overflow-hidden rounded-xl shadow-2xl"
+                      style={{
+                        boxShadow:
+                          "0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(124,58,237,0.15)",
+                      }}
+                    >
                       <CourseVideoPlayer
                         url={activeLesson.videoUrl ?? FALLBACK_VIDEO}
                         title={activeLesson.title}
-                        startSec={(activeLesson.content as { startSec?: number } | null)?.startSec ?? 0}
-                        endSec={(activeLesson.content as { endSec?: number } | null)?.endSec}
+                        startSec={
+                          (activeLesson.content as { startSec?: number } | null)
+                            ?.startSec ?? 0
+                        }
+                        endSec={
+                          (activeLesson.content as { endSec?: number } | null)
+                            ?.endSec
+                        }
                         onEnded={navToNext}
                       />
                     </div>
@@ -479,20 +566,29 @@ export default function LearnCoursePage() {
                     /* Locked state */
                     <div
                       className="rounded-xl overflow-hidden"
-                      style={{ aspectRatio: "16/9", maxHeight: "520px", background: "linear-gradient(135deg,rgba(20,10,50,0.98),rgba(8,8,15,1))", border: "1px solid rgba(124,58,237,0.15)" }}
+                      style={{
+                        aspectRatio: "16/9",
+                        maxHeight: "520px",
+                        background:
+                          "linear-gradient(135deg,rgba(20,10,50,0.98),rgba(8,8,15,1))",
+                        border: "1px solid rgba(124,58,237,0.15)",
+                      }}
                     >
                       <div className="flex items-center justify-center h-full">
                         <div className="text-center p-8 glass-card rounded-3xl max-w-sm">
                           <div className="w-16 h-16 rounded-2xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-3xl mx-auto mb-4">
                             {course.emoji}
                           </div>
-                          <h3 className="text-xl font-black text-white mb-2">Lesson Locked</h3>
+                          <h3 className="text-xl font-black text-white mb-2">
+                            Lesson Locked
+                          </h3>
                           <p className="text-gray-400 text-sm mb-5 leading-relaxed">
-                            This lesson is for enrolled students only. Enroll to unlock the full curriculum.
+                            This lesson is for enrolled students only. Enroll to
+                            unlock the full curriculum.
                           </p>
                           <Link
                             href="/pricing"
-                            className="inline-flex px-6 py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold text-sm hover:shadow-lg hover:shadow-violet-600/30 transition-all"
+                            className="inline-flex px-6 py-2.5 rounded-xl bg-linear-to-r from-violet-600 to-purple-600 text-white font-bold text-sm hover:shadow-lg hover:shadow-violet-600/30 transition-all"
                           >
                             Unlock Course
                           </Link>
@@ -505,7 +601,6 @@ export default function LearnCoursePage() {
 
               {/* LESSON META + ACTIONS */}
               <div className="max-w-5xl mx-auto px-4 sm:px-8 py-5">
-
                 {/* Section breadcrumb */}
                 <p className="text-xs text-violet-400 font-semibold mb-1 uppercase tracking-wider">
                   {activeLesson.sectionTitle}
@@ -524,7 +619,7 @@ export default function LearnCoursePage() {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-2 flex-shrink-0">
+                  <div className="flex items-center gap-2 shrink-0">
                     {hasEnrollment || activeLesson.isPreview ? (
                       <button
                         onClick={markCompleted}
@@ -534,12 +629,18 @@ export default function LearnCoursePage() {
                           background: completed.has(activeLesson.id)
                             ? "rgba(124,58,237,0.15)"
                             : "linear-gradient(135deg,#7c3aed,#a855f7)",
-                          border: completed.has(activeLesson.id) ? "1px solid rgba(124,58,237,0.4)" : "none",
-                          color: completed.has(activeLesson.id) ? "#a78bfa" : "white",
+                          border: completed.has(activeLesson.id)
+                            ? "1px solid rgba(124,58,237,0.4)"
+                            : "none",
+                          color: completed.has(activeLesson.id)
+                            ? "#a78bfa"
+                            : "white",
                         }}
                       >
                         {completed.has(activeLesson.id) ? (
-                          <><CheckCircle2 size={14} /> Completed</>
+                          <>
+                            <CheckCircle2 size={14} /> Completed
+                          </>
                         ) : markingDone ? (
                           "Saving…"
                         ) : (
@@ -568,22 +669,29 @@ export default function LearnCoursePage() {
                   }}
                 >
                   <div className="flex items-center gap-3 px-4 py-3 border-b border-white/5">
-                    <div className="w-7 h-7 rounded-lg bg-violet-600/20 border border-violet-500/30 flex items-center justify-center flex-shrink-0">
+                    <div className="w-7 h-7 rounded-lg bg-violet-600/20 border border-violet-500/30 flex items-center justify-center shrink-0">
                       <Sparkles size={13} className="text-violet-400" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-white">EduNova Coach</p>
-                      <p className="text-[10px] text-gray-600">AI-powered learning assistant • Powered by GPT-4</p>
+                      <p className="text-sm font-bold text-white">
+                        EduNova Coach
+                      </p>
+                      <p className="text-[10px] text-gray-600">
+                        AI-powered learning assistant • Powered by GPT-4
+                      </p>
                     </div>
                     <div className="ml-auto flex items-center gap-1.5">
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className="text-[10px] text-emerald-500">Online</span>
+                      <span className="text-[10px] text-emerald-500">
+                        Online
+                      </span>
                     </div>
                   </div>
 
                   <div className="p-4">
                     <p className="text-xs text-gray-400 mb-3">
-                      Let me know if you have any questions about this lesson. I&apos;m here to help!
+                      Let me know if you have any questions about this lesson.
+                      I&apos;m here to help!
                     </p>
                     <div className="flex flex-wrap gap-2 mb-3">
                       {AI_SUGGESTIONS.map((s) => (
@@ -609,7 +717,9 @@ export default function LearnCoursePage() {
                           onChange={(e) => setCoachInput(e.target.value)}
                           className="flex-1 text-xs bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-white placeholder-gray-600 focus:outline-none focus:border-violet-500/50 transition-colors"
                           placeholder="Ask the coach anything..."
-                          onKeyDown={(e) => e.key === "Escape" && setCoachInput("")}
+                          onKeyDown={(e) =>
+                            e.key === "Escape" && setCoachInput("")
+                          }
                         />
                         <button
                           onClick={() => setCoachInput("")}
@@ -619,7 +729,10 @@ export default function LearnCoursePage() {
                         </button>
                         <button
                           className="px-3 py-2 rounded-lg text-xs font-bold text-white"
-                          style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}
+                          style={{
+                            background:
+                              "linear-gradient(135deg,#7c3aed,#a855f7)",
+                          }}
                         >
                           Ask →
                         </button>
@@ -629,13 +742,28 @@ export default function LearnCoursePage() {
                 </div>
 
                 {/* ── TABS ────────────────────────────────────────────── */}
-                <div style={{ borderBottom: "1px solid rgba(124,58,237,0.15)" }} className="mb-5">
+                <div
+                  style={{ borderBottom: "1px solid rgba(124,58,237,0.15)" }}
+                  className="mb-5"
+                >
                   <div className="flex gap-0">
                     {(
                       [
-                        { id: "transcript", label: "Transcript", icon: <MessageSquare size={13} /> },
-                        { id: "notes", label: "Notes", icon: <NotebookPen size={13} /> },
-                        { id: "downloads", label: "Downloads", icon: <Download size={13} /> },
+                        {
+                          id: "transcript",
+                          label: "Transcript",
+                          icon: <MessageSquare size={13} />,
+                        },
+                        {
+                          id: "notes",
+                          label: "Notes",
+                          icon: <NotebookPen size={13} />,
+                        },
+                        {
+                          id: "downloads",
+                          label: "Downloads",
+                          icon: <Download size={13} />,
+                        },
                       ] as { id: Tab; label: string; icon: React.ReactNode }[]
                     ).map((tab) => (
                       <button
@@ -644,7 +772,10 @@ export default function LearnCoursePage() {
                         className="flex items-center gap-2 px-4 py-2.5 text-xs font-bold transition-all relative"
                         style={{
                           color: activeTab === tab.id ? "#c4b5fd" : "#6060a0",
-                          borderBottom: activeTab === tab.id ? "2px solid #7c3aed" : "2px solid transparent",
+                          borderBottom:
+                            activeTab === tab.id
+                              ? "2px solid #7c3aed"
+                              : "2px solid transparent",
                         }}
                       >
                         {tab.icon}
@@ -667,7 +798,7 @@ export default function LearnCoursePage() {
                           className="flex gap-4 group cursor-pointer"
                         >
                           <span
-                            className="text-xs font-mono flex-shrink-0 mt-0.5 px-2 py-0.5 rounded font-bold transition-colors"
+                            className="text-xs font-mono shrink-0 mt-0.5 px-2 py-0.5 rounded font-bold transition-colors"
                             style={{
                               color: "#7c3aed",
                               background: "rgba(124,58,237,0.1)",
@@ -684,8 +815,13 @@ export default function LearnCoursePage() {
                       ))
                     ) : (
                       <div className="text-center py-10">
-                        <MessageSquare size={32} className="text-gray-700 mx-auto mb-3" />
-                        <p className="text-gray-600 text-sm">No transcript available for this lesson.</p>
+                        <MessageSquare
+                          size={32}
+                          className="text-gray-700 mx-auto mb-3"
+                        />
+                        <p className="text-gray-600 text-sm">
+                          No transcript available for this lesson.
+                        </p>
                       </div>
                     )}
                   </div>
@@ -697,7 +833,10 @@ export default function LearnCoursePage() {
                     {lessonNote && (
                       <div
                         className="mb-4 rounded-xl p-4 text-sm text-gray-300 leading-relaxed"
-                        style={{ background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.2)" }}
+                        style={{
+                          background: "rgba(124,58,237,0.08)",
+                          border: "1px solid rgba(124,58,237,0.2)",
+                        }}
                       >
                         <p className="text-[10px] text-violet-400 font-bold uppercase tracking-wider mb-2">
                           📌 Instructor Note
@@ -717,11 +856,17 @@ export default function LearnCoursePage() {
                       }}
                     />
                     <div className="flex items-center justify-between mt-3">
-                      <p className="text-xs text-gray-600">Notes are local to this session.</p>
+                      <p className="text-xs text-gray-600">
+                        Notes are local to this session.
+                      </p>
                       <button
                         onClick={saveNote}
                         className="px-4 py-2 rounded-lg text-xs font-bold text-white transition-all"
-                        style={{ background: noteSaved ? "rgba(124,58,237,0.3)" : "linear-gradient(135deg,#7c3aed,#a855f7)" }}
+                        style={{
+                          background: noteSaved
+                            ? "rgba(124,58,237,0.3)"
+                            : "linear-gradient(135deg,#7c3aed,#a855f7)",
+                        }}
                       >
                         {noteSaved ? "✓ Saved!" : "Save Note"}
                       </button>
@@ -741,10 +886,13 @@ export default function LearnCoursePage() {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all group"
-                            style={{ background: "rgba(12,12,25,0.8)", border: "1px solid rgba(124,58,237,0.15)" }}
+                            style={{
+                              background: "rgba(12,12,25,0.8)",
+                              border: "1px solid rgba(124,58,237,0.15)",
+                            }}
                           >
                             <div
-                              className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                              className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
                               style={{ background: "rgba(124,58,237,0.15)" }}
                             >
                               <Download size={15} className="text-violet-400" />
@@ -752,14 +900,22 @@ export default function LearnCoursePage() {
                             <span className="text-sm text-gray-300 group-hover:text-white transition-colors font-medium">
                               {r.label}
                             </span>
-                            <ChevronRight size={14} className="text-gray-700 group-hover:text-violet-400 ml-auto transition-colors" />
+                            <ChevronRight
+                              size={14}
+                              className="text-gray-700 group-hover:text-violet-400 ml-auto transition-colors"
+                            />
                           </a>
                         ))}
                       </div>
                     ) : (
                       <div className="text-center py-10">
-                        <Download size={32} className="text-gray-700 mx-auto mb-3" />
-                        <p className="text-gray-600 text-sm">No downloads available for this lesson.</p>
+                        <Download
+                          size={32}
+                          className="text-gray-700 mx-auto mb-3"
+                        />
+                        <p className="text-gray-600 text-sm">
+                          No downloads available for this lesson.
+                        </p>
                       </div>
                     )}
                   </div>

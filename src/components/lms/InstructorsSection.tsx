@@ -102,16 +102,22 @@ export default function InstructorsSection() {
           <h2 className="font-serif text-4xl md:text-6xl font-black text-white mb-4">
             Learn from Industry Leaders
             <br />
-            <span className={`${montserrat.className} gradient-text`}>&amp; Top Creators</span>
+            <span className={`${montserrat.className} gradient-text`}>
+              &amp; Top Creators
+            </span>
           </h2>
-          <p className={`${montserrat.className} text-gray-400 text-lg max-w-xl mx-auto`}>
+          <p
+            className={`${montserrat.className} text-gray-400 text-lg max-w-xl mx-auto`}
+          >
             Our instructors aren&apos;t just teachers — they&apos;re
             practitioners actively working at the world&apos;s best companies.
           </p>
         </motion.div>
 
         {/* Instructors grid */}
-        <div className={`${montserrat.className} grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6`}>
+        <div
+          className={`${montserrat.className} grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6`}
+        >
           {instructors.map((inst, i) => (
             <motion.div
               key={inst.id}
@@ -130,7 +136,7 @@ export default function InstructorsSection() {
             >
               {/* Avatar area */}
               <div
-                className={`relative h-36 bg-gradient-to-br ${inst.bgColor} flex items-center justify-center overflow-hidden`}
+                className={`relative h-36 bg-linear-to-br ${inst.bgColor} flex items-center justify-center overflow-hidden`}
               >
                 {/* Animated rings */}
                 <motion.div
@@ -140,7 +146,7 @@ export default function InstructorsSection() {
                       : {}
                   }
                   transition={{ duration: 2, repeat: Infinity }}
-                  className="absolute w-24 h-24 rounded-full border border-violet-500/20"
+                  className="absolute w-24 h-24 rounded-full"
                 />
                 <motion.div
                   animate={
@@ -149,14 +155,14 @@ export default function InstructorsSection() {
                       : {}
                   }
                   transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
-                  className="absolute w-24 h-24 rounded-full border border-violet-500/20"
+                  className="absolute w-24 h-24 rounded-full border border-violet-500/10"
                 />
 
                 {/* Avatar */}
                 <motion.div
                   animate={hovered === i ? { scale: 1.05 } : { scale: 1 }}
                   transition={{ duration: 0.3 }}
-                  className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${inst.color} flex items-center justify-center text-white text-2xl font-black shadow-xl relative z-10`}
+                  className={`w-20 h-20 rounded-full bg-linear-to-br ${inst.color} flex items-center justify-center text-white text-2xl font-black shadow-xl relative z-10`}
                   style={{
                     boxShadow:
                       hovered === i ? "0 10px 40px rgba(124,58,237,0.5)" : "",

@@ -26,10 +26,11 @@ import {
   Monitor,
   Zap,
 } from "lucide-react";
-import { useUser } from "@clerk/nextjs";
+import { SignIn, useUser } from "@clerk/nextjs";
+import { dark } from "@clerk/ui/themes";
 
 export default function ProfilePage() {
-  const { user } = useUser();
+  const { user, isSignedIn, isLoaded } = useUser();
 
   const desiredRoles = [
     {
@@ -63,6 +64,26 @@ export default function ProfilePage() {
       },
     },
   };
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-[#0a0a16] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isSignedIn) {
+    return (
+      <div className="min-h-screen bg-[#080a10] text-white flex items-center justify-center pt-20">
+        <SignIn
+          appearance={{
+            theme: dark,
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <main className="relative min-h-screen bg-[#080a10] overflow-x-hidden pt-20 font-sans selection:bg-violet-500/30">

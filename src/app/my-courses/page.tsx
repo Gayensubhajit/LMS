@@ -20,6 +20,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { dark } from "@clerk/ui/themes";
 
 type DashboardCourseItem = {
   enrollmentId: string;
@@ -163,15 +164,19 @@ export default function MyCoursesPage() {
     "?";
 
   if (!isLoaded) {
-    return <div className="min-h-screen bg-[#08080f]" />; // Or a skeleton loader
+    return (
+      <div className="min-h-screen bg-[#0a0a16] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
+      </div>
+    );
   }
+
   if (!isSignedIn) {
     return (
-      <div className="min-h-screen bg-[#08080f] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#080a10] text-white flex items-center justify-center pt-20">
         <SignIn
-          routing="hash"
           appearance={{
-            variables: { colorPrimary: "#7c3aed" }, // Match your violet theme
+            theme: dark,
           }}
         />
       </div>

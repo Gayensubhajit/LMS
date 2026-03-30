@@ -15,7 +15,6 @@ import {
 import { coursesData, type Course } from "@/lib/courses-data";
 import { Montserrat } from "next/font/google";
 import Navbar from "@/components/lms/Navbar";
-import Footer from "@/components/lms/Footer";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 const BACKEND_URL =
@@ -279,7 +278,7 @@ function CoursesContent() {
     <>
       <Navbar />
       <main
-        className={`${montserrat.className} min-h-screen bg-background text-foreground pt-20`}
+        className={`${montserrat.className} mb-16 min-h-screen bg-background text-foreground pt-20`}
       >
         <div className="max-w-6xl mx-auto px-6 py-10">
           <>
@@ -334,7 +333,7 @@ function CoursesContent() {
                         `/courses?q=${encodeURIComponent(query.trim())}`,
                       )
                     }
-                    className="mr-1.5 w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0 hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20"
+                    className="mr-1.5 w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center shrink-0 hover:bg-blue-500 transition-colors shadow-lg shadow-blue-500/20"
                   >
                     <Search size={16} className="text-white" />
                   </button>
@@ -581,7 +580,7 @@ function CoursesContent() {
                     }}
                   >
                     <div
-                      className="relative h-36 flex items-center justify-center text-5xl flex-shrink-0"
+                      className="relative h-36 flex items-center justify-center text-5xl shrink-0"
                       style={{
                         background: `linear-gradient(135deg,${col.bg},rgba(124,58,237,0.08))`,
                       }}
@@ -715,7 +714,6 @@ function CoursesContent() {
           )}
         </div>
       </main>
-      <Footer />
     </>
   );
 }

@@ -18,9 +18,10 @@ import {
   Zap,
 } from "lucide-react";
 import Navbar from "@/components/lms/Navbar";
-import Footer from "@/components/lms/Footer";
-import { useUser } from "@clerk/nextjs";
+
+import { SignIn, useUser } from "@clerk/nextjs";
 import { backendRequest } from "@/lib/backend-client";
+import { dark } from "@clerk/ui/themes";
 
 interface Certificate {
   id: string;
@@ -40,7 +41,7 @@ interface Profile {
 }
 
 export default function AccomplishmentsPage() {
-  const { user, isLoaded } = useUser();
+  const { user, isLoaded, isSignedIn } = useUser();
   const [certificates, setCertificates] = useState<any[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -87,7 +88,7 @@ export default function AccomplishmentsPage() {
           method: "POST",
           clerkUserId: user.id,
           body: { name: newName },
-        }
+        },
       );
 
       if (data.ok) {
@@ -104,6 +105,17 @@ export default function AccomplishmentsPage() {
     return (
       <div className="min-h-screen bg-[#020617] flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
+  if (!isSignedIn) {
+    return (
+      <div className="min-h-screen bg-[#080a10] text-white flex items-center justify-center pt-20">
+        <SignIn
+          appearance={{
+            theme: dark,
+          }}
+        />
       </div>
     );
   }
@@ -128,7 +140,8 @@ export default function AccomplishmentsPage() {
             transition={{ delay: 0.1 }}
             className="text-slate-400 text-lg max-w-2xl"
           >
-            Track your milestones, view earned credentials, and share your path to mastery with the world.
+            Track your milestones, view earned credentials, and share your path
+            to mastery with the world.
           </motion.p>
         </div>
 
@@ -146,18 +159,24 @@ export default function AccomplishmentsPage() {
                 <ShieldCheck className="w-8 h-8 text-violet-400" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-white mb-2">Name Verification</h2>
+                <h2 className="text-xl font-bold text-white mb-2">
+                  Name Verification
+                </h2>
                 <div className="flex items-center gap-2 text-slate-300 mb-3">
                   <span>Your name,</span>
                   <span className="font-semibold text-violet-400">
                     {profile?.verifiedName || user?.fullName || "Not Verified"}
                   </span>
-                  <span>is {profile?.isNameVerified ? "verified" : "not verified"}.</span>
-                  {profile?.isNameVerified && <CheckCircle2 className="w-4 h-4 text-emerald-400" />}
+                  <span>
+                    is {profile?.isNameVerified ? "verified" : "not verified"}.
+                  </span>
+                  {profile?.isNameVerified && (
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  )}
                 </div>
                 <p className="text-sm text-slate-500 max-w-lg">
-                  This is the name that will appear on your official EduNova certificates.
-                  Ensure it matches your government-issued ID.
+                  This is the name that will appear on your official EduNova
+                  certificates. Ensure it matches your government-issued ID.
                 </p>
               </div>
             </div>
@@ -200,9 +219,12 @@ export default function AccomplishmentsPage() {
             <div className="w-20 h-20 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-6">
               <Zap className="w-10 h-10 text-slate-600" />
             </div>
-            <h4 className="text-xl font-semibold text-slate-300 mb-2">No certificates yet</h4>
+            <h4 className="text-xl font-semibold text-slate-300 mb-2">
+              No certificates yet
+            </h4>
             <p className="text-slate-500 mb-8 max-w-sm mx-auto">
-              Complete your first course to earn an official certificate and showcase your skills.
+              Complete your first course to earn an official certificate and
+              showcase your skills.
             </p>
             <button className="px-8 py-3 bg-violet-600 hover:bg-violet-500 text-white rounded-xl font-bold shadow-lg shadow-violet-600/20 transition-all active:scale-95 flex items-center gap-2 mx-auto">
               Explore Our Catalog
@@ -224,8 +246,12 @@ export default function AccomplishmentsPage() {
                   {/* Certificate Preview/Thumbnail */}
                   <div className="w-48 h-32 rounded-xl bg-gradient-to-br from-indigo-900 to-slate-900 overflow-hidden relative border border-white/5 shrink-0">
                     <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-                      <div className="text-[10px] text-violet-400 font-bold uppercase tracking-[0.2em] mb-1">EduNova</div>
-                      <div className="text-[8px] text-slate-500 font-medium text-center line-clamp-2">{cert.course.title}</div>
+                      <div className="text-[10px] text-violet-400 font-bold uppercase tracking-[0.2em] mb-1">
+                        EduNova
+                      </div>
+                      <div className="text-[8px] text-slate-500 font-medium text-center line-clamp-2">
+                        {cert.course.title}
+                      </div>
                       <Award className="w-8 h-8 text-amber-500/50 mt-2 rotate-12" />
                     </div>
                     {/* Corner Decoration */}
@@ -238,12 +264,16 @@ export default function AccomplishmentsPage() {
                     <div>
                       <div className="flex items-center gap-2 mb-2">
                         <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                        <span className="text-xs font-bold text-amber-500/80 uppercase tracking-widest leading-none bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20 h-6 flex items-center justify-center">Course</span>
+                        <span className="text-xs font-bold text-amber-500/80 uppercase tracking-widest leading-none bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20 h-6 flex items-center justify-center">
+                          Course
+                        </span>
                       </div>
                       <h4 className="text-xl font-bold text-white mb-1 group-hover:text-violet-400 transition-colors line-clamp-2 leading-tight">
                         {cert.course.title}
                       </h4>
-                      <p className="text-sm text-slate-500 mb-4">{cert.course.instructorName} • EduNova</p>
+                      <p className="text-sm text-slate-500 mb-4">
+                        {cert.course.instructorName} • EduNova
+                      </p>
                     </div>
 
                     <div className="flex items-center justify-between pt-4 border-t border-white/5">
@@ -268,7 +298,9 @@ export default function AccomplishmentsPage() {
 
         {/* Support Section */}
         <div className="mt-24 pt-12 border-t border-white/5 flex flex-col items-center text-center">
-          <p className="text-slate-500 mb-6 text-sm">Didn't find what you were looking for? Check out our support docs.</p>
+          <p className="text-slate-500 mb-6 text-sm">
+            Didn't find what you were looking for? Check out our support docs.
+          </p>
           <button className="text-violet-400 font-semibold hover:text-violet-300 transition-colors flex items-center gap-2 underline underline-offset-4 decoration-violet-500/30">
             View Accomplishments Support
             <ChevronRight className="w-4 h-4" />
@@ -292,13 +324,18 @@ export default function AccomplishmentsPage() {
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               className="relative w-full max-w-md bg-slate-900 border border-white/10 rounded-3xl p-8 shadow-2xl shadow-violet-500/10"
             >
-              <h3 className="text-2xl font-bold text-white mb-2">Request Name Change</h3>
+              <h3 className="text-2xl font-bold text-white mb-2">
+                Request Name Change
+              </h3>
               <p className="text-slate-400 text-sm mb-6">
-                Enter your full legal name as it should appear on your certificates.
+                Enter your full legal name as it should appear on your
+                certificates.
               </p>
 
               <div className="mb-6">
-                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Verified Name</label>
+                <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">
+                  Verified Name
+                </label>
                 <input
                   type="text"
                   value={newName}
@@ -326,8 +363,6 @@ export default function AccomplishmentsPage() {
           </div>
         )}
       </AnimatePresence>
-
-      <Footer />
     </div>
   );
 }

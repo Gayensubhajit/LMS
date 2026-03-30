@@ -214,6 +214,7 @@ export default function LearnCoursePage() {
 
   const currentIdx = lessonItems.findIndex((l) => l.id === activeLessonId);
   const totalLessons = lessonItems.length;
+  const nextLesson = lessonItems[currentIdx + 1];
   const transcript = activeLesson?.content?.transcript ?? [];
   const resources = activeLesson?.content?.resources ?? [];
   const lessonNote = activeLesson?.content?.notes ?? "";
@@ -473,6 +474,8 @@ export default function LearnCoursePage() {
                         startSec={(activeLesson.content as { startSec?: number } | null)?.startSec ?? 0}
                         endSec={(activeLesson.content as { endSec?: number } | null)?.endSec}
                         onEnded={navToNext}
+                        nextLessonTitle={nextLesson?.title}
+                        onNextUpConfirm={markCompleted}
                       />
                     </div>
                   ) : (

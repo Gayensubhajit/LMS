@@ -72,46 +72,45 @@ async function main() {
     id: "ai-l-01", sectionId: aiS1.id, position: 1, isPreview: true,
     title: "Introduction to Generative AI",
     description: "What generative AI is, why it matters now, and an overview of the full course roadmap.",
-    videoUrl: AI_VIDEO, durationMins: 54,
+    title: "Course Introduction & Goals",
+    description: "A quick overview of what you will learn in this 22-hour Generative AI masterclass and the course roadmap.",
+    videoUrl: AI_VIDEO, durationMins: 10,
     content: {
-      startSec: ts("0:00:00"), endSec: ts("0:54:16"),
-      notes: "Generative AI produces new content (text, images, code) from learned patterns. This course covers the complete AI development lifecycle from models to deployment.",
+      startSec: 0, endSec: 600,
+      notes: "Welcome to the world of GenAI. We will cover the entire lifecycle from prompting to agent deployment.",
       transcript: [
         { time: "0:00", text: "Learn the essentials of working with AI in the cloud from ExamPro." },
         { time: "2:30", text: "This course covers the complete generative AI development lifecycle — from fundamentals to deployment." },
+      ],
+    },
+  }});
+
+  await prisma.lesson.upsert({ where: { id: "ai-l-01-deep" }, update: {}, create: {
+    id: "ai-l-01-deep", sectionId: aiS1.id, position: 2, isPreview: false,
+    title: "GenAI Industry Overview",
+    description: "Deep dive into the current AI landscape, cloud providers, and the architecture of large language models.",
+    videoUrl: AI_VIDEO, durationMins: 44,
+    content: {
+      startSec: 600, endSec: 3256,
+      notes: "The AI lifecycle involves data preparation, model selection, and iterative prompting.",
+      transcript: [
         { time: "10:00", text: "We'll look at how LLMs work, how to prompt them effectively, and how to build AI-powered applications." },
       ],
     },
   }});
 
   await prisma.lesson.upsert({ where: { id: "ai-l-02" }, update: {}, create: {
-    id: "ai-l-02", sectionId: aiS1.id, position: 2, isPreview: false,
+    id: "ai-l-02", sectionId: aiS1.id, position: 3, isPreview: false,
     title: "AI and ML Fundamentals",
     description: "Supervised vs unsupervised learning, neural network basics, training pipelines, and where generative AI fits in the ML landscape.",
     videoUrl: AI_VIDEO, durationMins: 128,
     content: {
-      startSec: ts("0:54:16"), endSec: ts("3:02:21"),
-      notes: "Machine Learning is a subset of AI. Deep Learning is a subset of ML using neural networks with many layers. Generative AI builds on these foundations.",
+      startSec: 3256, endSec: 10941,
+      notes: "Neural networks and transformers are the engines behind modern GenAI systems.",
       transcript: [
         { time: "54:16", text: "Artificial Intelligence is a broad field. Machine learning is a way to achieve AI through data-driven models." },
         { time: "1:10:00", text: "Supervised learning requires labeled data — the model learns from input/output pairs." },
         { time: "2:00:00", text: "Neural networks are inspired by the brain. Deep learning stacks many layers to learn complex representations." },
-      ],
-    },
-  }});
-
-  await prisma.lesson.upsert({ where: { id: "ai-l-03" }, update: {}, create: {
-    id: "ai-l-03", sectionId: aiS1.id, position: 3, isPreview: false,
-    title: "GenAI Primer & Data and ML",
-    description: "What makes generative AI different from discriminative AI, data roles in ML, and training data considerations.",
-    videoUrl: AI_VIDEO, durationMins: 45,
-    content: {
-      startSec: ts("3:02:21"), endSec: ts("3:47:56"),
-      notes: "Generative models learn the distribution of training data to produce new samples. Data quality and quantity critically impact model behaviour.",
-      transcript: [
-        { time: "3:02:21", text: "Discriminative models classify inputs. Generative models create new outputs that look like training data." },
-        { time: "3:20:00", text: "Transformers are the core architecture behind modern LLMs like GPT-4, Gemini, and Claude." },
-        { time: "3:32:55", text: "Data is the foundation of all ML. Understanding where it comes from and how it's cleaned matters enormously." },
       ],
     },
   }});
@@ -285,7 +284,6 @@ async function main() {
   // COURSE 2: FRONTEND FUNDAMENTALS (FREE)
   // Source: freeCodeCamp "Front End Developer Learning Path" playlist
   // Playlist: https://www.youtube.com/playlist?list=PLWKjhJtqVAbmMuZ3saqRIBimAKIMYkt0E
-  // 22 individual videos — each lesson = one full video
   // ════════════════════════════════════════════════════════════════════════
   const feCourse = await prisma.course.upsert({
     where: { slug: "frontend-fundamentals-free" },
@@ -312,7 +310,6 @@ async function main() {
   });
 
   const feVideos = [
-    // [id, position, sectionId, isPreview, title, description, videoId, durationMins, notes]
     {
       id: "fe-l-01", pos: 1, sec: "fe-sec-1", preview: true,
       title: "Front End Developer Roadmap",

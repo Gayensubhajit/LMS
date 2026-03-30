@@ -220,7 +220,7 @@ export default function CoursesSection() {
                     </motion.div>
                   )}
                   {course.img && (
-                    <div className="absolute inset-0 flex items-center justify-center text-5xl transform group-hover:scale-125 transition-transform duration-700 drop-shadow-2xl opacity-0 group-hover:opacity-100">
+                    <div className="absolute inset-0 flex items-center justify-center text-5xl transform group-hover:scale-125 transition-all duration-700 drop-shadow-2xl opacity-0 group-hover:opacity-100">
                        {course.emoji}
                     </div>
                    )}

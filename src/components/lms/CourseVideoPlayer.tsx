@@ -4,7 +4,7 @@ import React, { useRef, useState, useEffect, useCallback, useMemo } from "react"
 import { 
   Play, Pause, Volume2, VolumeX, RotateCcw, RotateCw, 
   Maximize, Minimize, Settings, ChevronRight, MonitorDot, 
-  X, ExternalLink 
+  X, ExternalLink, GripHorizontal 
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -69,22 +69,28 @@ const CourseVideoPlayer = ({ url, title, startSec = 0, endSec, onEnded, nextLess
     );
   }, []);
 
-  // Smart Cursor Timer
-  useEffect(() => {
-    let timer: NodeJS.Timeout;
-    const handleActivity = () => {
-      setShowCursor(true);
-      clearTimeout(timer);
-      if (isFullscreen) {
-        timer = setTimeout(() => setShowCursor(false), 2000);
-      }
-    };
-    window.addEventListener("mousemove", handleActivity);
-    return () => {
-      window.removeEventListener("mousemove", handleActivity);
-      clearTimeout(timer);
-    };
+  // Timer Ref for activity tracking
+  const activityTimerRef = useRef<NodeJS.Timeout>(null);
+
+  const resetActivityTimer = useCallback(() => {
+    setShowCursor(true);
+    if (activityTimerRef.current) clearTimeout(activityTimerRef.current);
+    
+    // In fullscreen, hide after 2 seconds
+    if (isFullscreen) {
+      activityTimerRef.current = setTimeout(() => {
+        setShowCursor(false);
+        setShowSettingsMenu(false); // Close settings if hiding
+      }, 2000);
+    }
   }, [isFullscreen]);
+
+  useEffect(() => {
+    resetActivityTimer();
+    return () => {
+      if (activityTimerRef.current) clearTimeout(activityTimerRef.current);
+    };
+  }, [isFullscreen, resetActivityTimer]);
 
   const handleSliceEnd = useCallback(() => {
     ytCommand("pauseVideo");
@@ -145,18 +151,21 @@ const CourseVideoPlayer = ({ url, title, startSec = 0, endSec, onEnded, nextLess
     if (isPlaying) ytCommand("pauseVideo");
     else ytCommand("playVideo");
     setIsPlaying(!isPlaying);
+    resetActivityTimer();
   };
 
   const toggleMute = () => {
     if (isMuted) ytCommand("unMute");
     else ytCommand("mute");
     setIsMuted(!isMuted);
+    resetActivityTimer();
   };
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = parseFloat(e.target.value);
     setVolume(v);
     ytCommand("setVolume", [v * 100]);
+    resetActivityTimer();
   };
 
   const rewind = () => ytCommand("seekTo", [Math.max(0, (currentTime + startSec) - 10), true]);
@@ -176,6 +185,7 @@ const CourseVideoPlayer = ({ url, title, startSec = 0, endSec, onEnded, nextLess
       document.exitFullscreen();
       setIsFullscreen(false);
     }
+    resetActivityTimer();
   };
 
   const cycleSpeed = () => {
@@ -184,9 +194,13 @@ const CourseVideoPlayer = ({ url, title, startSec = 0, endSec, onEnded, nextLess
     const newSpeed = speeds[nextIdx];
     setPlaybackSpeed(newSpeed);
     ytCommand("setPlaybackRate", [newSpeed]);
+    resetActivityTimer();
   };
 
-  const togglePipMode = () => setIsPipMode(!isPipMode);
+  const togglePipMode = () => {
+    setIsPipMode(!isPipMode);
+    if (!isPipMode) setIsFullscreen(false); // Can't be fullscreen and PiP
+  };
 
   function formatTime(secs: number) {
     if (!isFinite(secs) || secs < 0) return "0:00";
@@ -199,19 +213,35 @@ const CourseVideoPlayer = ({ url, title, startSec = 0, endSec, onEnded, nextLess
 
   return (
     <>
-      {/* ── INTERNAL PIP CONTAINER ───────────────────────────────────── */}
       <div 
         ref={playerContainerRef}
+        onMouseMove={resetActivityTimer}
+        onMouseEnter={resetActivityTimer}
         className={`
           relative bg-[#050510] overflow-hidden group/player select-none 
           transition-all duration-500 ease-in-out shadow-2xl ring-1 ring-white/5
           ${isPipMode 
-            ? "fixed bottom-6 right-6 w-[340px] aspect-video z-[9999] rounded-xl ring-2 ring-violet-500/50" 
+            ? "fixed bottom-6 right-6 w-[360px] aspect-video z-[9999] rounded-xl ring-2 ring-violet-500/50" 
             : "w-full aspect-video rounded-2xl"}
           ${!isPipMode && !isFullscreen ? "z-10" : ""}
           ${!showCursor && isFullscreen ? "cursor-none" : "cursor-default"}
         `}
       >
+        {/* DRAG HANDLE FOR PIP */}
+        {isPipMode && (
+          <motion.div 
+            drag
+            dragConstraints={{ left: -1000, right: 0, top: -800, bottom: 0 }}
+            className="absolute inset-0 z-[100] cursor-move"
+            style={{ pointerEvents: isPipMode ? "auto" : "none" }}
+          >
+            <div className="absolute top-2 left-1/2 -translate-x-1/2 p-1.5 bg-black/40 backdrop-blur-md rounded-full text-violet-400 opacity-0 group-hover/player:opacity-100 transition-opacity flex items-center gap-2">
+              <GripHorizontal size={14} />
+              <span className="text-[10px] font-black uppercase tracking-widest pr-2">Drag to move</span>
+            </div>
+          </motion.div>
+        )}
+
         {/* Next Up Overlay */}
         <AnimatePresence>
           {showNextUp && !isPipMode && (
@@ -246,14 +276,22 @@ const CourseVideoPlayer = ({ url, title, startSec = 0, endSec, onEnded, nextLess
           )}
         </AnimatePresence>
 
-        {/* Exit PiP Button */}
+        {/* Exit PiP Buttons */}
         {isPipMode && (
-          <button 
-            onClick={togglePipMode}
-            className="absolute top-2 right-2 z-50 p-2 bg-black/60 rounded-full text-white backdrop-blur-md opacity-0 group-hover/player:opacity-100 transition-opacity"
-          >
-            <Maximize size={16} />
-          </button>
+          <div className="absolute top-2 right-2 z-[110] flex gap-2 opacity-0 group-hover/player:opacity-100 transition-opacity">
+            <button 
+              onClick={togglePipMode}
+              className="p-2 bg-black/60 rounded-full text-white backdrop-blur-md hover:bg-violet-600/80 transition-colors"
+            >
+              <Maximize size={16} />
+            </button>
+            <button 
+              onClick={togglePlay}
+              className="p-2 bg-black/60 rounded-full text-white backdrop-blur-md hover:bg-red-600/80 transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
         )}
 
         <iframe
@@ -265,18 +303,23 @@ const CourseVideoPlayer = ({ url, title, startSec = 0, endSec, onEnded, nextLess
         />
 
         {/* CLICK OVERLAY */}
-        <div className="absolute inset-0 z-10 cursor-pointer" onClick={togglePlay} aria-label="Toggle Play" />
+        <div 
+          className="absolute inset-0 z-10 cursor-pointer" 
+          onClick={togglePlay} 
+          onMouseMove={resetActivityTimer}
+          aria-label="Toggle Play" 
+        />
 
-        {/* CONTROLS */}
+        {/* CONTROLS OVERLAY - NO CSS HOVER ON DESKTOP FULLSCREEN TO PREVENT STICKY CONTROLS */}
         <div className={`
           absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-transparent 
           transition-opacity duration-300 z-20 pointer-events-none
-          ${showCursor || !isFullscreen ? "opacity-100" : "opacity-0"}
+          ${(showCursor || !isFullscreen) ? "opacity-100" : "opacity-0"}
           ${!isPipMode ? "group-hover/player:opacity-100" : "opacity-0 hover:opacity-100"}
         `}>
           <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-6 pointer-events-auto">
             {/* Progress Bar */}
-            <div className={`relative h-1 w-full bg-white/10 rounded-full mb-4 sm:mb-6 group/progress cursor-pointer overflow-hidden ${isPipMode ? 'mb-2' : ''}`} onClick={handleSeek}>
+            <div className={`relative h-1 w-full bg-white/10 rounded-full mb-4 sm:mb-6 group/progress cursor-pointer overflow-hidden ${isPipMode ? 'mb-2 h-0.5' : ''}`} onClick={handleSeek}>
               <div
                 className="absolute top-0 left-0 h-full bg-violet-600 rounded-full transition-all duration-150"
                 style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }}
@@ -311,7 +354,7 @@ const CourseVideoPlayer = ({ url, title, startSec = 0, endSec, onEnded, nextLess
                         />
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
                       <button onClick={rewind} className="hidden sm:block text-gray-500 hover:text-white transition-colors">
                         <RotateCcw size={18} />
                       </button>
@@ -338,8 +381,8 @@ const CourseVideoPlayer = ({ url, title, startSec = 0, endSec, onEnded, nextLess
                     </button>
 
                     <button
-                      onClick={() => setCaptionsEnabled(!captionsEnabled)}
-                      className={`relative ${captionsEnabled ? "text-violet-400" : "text-gray-500 hover:text-white"}`}
+                      onClick={() => { setCaptionsEnabled(!captionsEnabled); resetActivityTimer(); }}
+                      className={`relative transition-colors ${captionsEnabled ? "text-violet-400" : "text-gray-500 hover:text-white"}`}
                     >
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <rect x="2" y="5" width="20" height="14" rx="2" />
@@ -349,7 +392,7 @@ const CourseVideoPlayer = ({ url, title, startSec = 0, endSec, onEnded, nextLess
 
                     <div className="relative">
                       <button
-                        onClick={(e) => { e.stopPropagation(); setShowSettingsMenu(!showSettingsMenu); }}
+                        onClick={(e) => { e.stopPropagation(); setShowSettingsMenu(!showSettingsMenu); resetActivityTimer(); }}
                         className={`transition-all ${showSettingsMenu ? "text-violet-400 rotate-45" : "text-gray-500 hover:text-white"}`}
                       >
                         <Settings size={20} />

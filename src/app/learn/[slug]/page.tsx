@@ -12,7 +12,7 @@ import {
   ChevronRight,
   Circle,
   Download,
-  FileText,
+  LayoutList,
   Lock,
   MessageSquare,
   NotebookPen,
@@ -350,7 +350,7 @@ export default function LearnCoursePage() {
             onClick={() => setSidebarOpen(true)}
             className="lg:hidden p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
           >
-            <FileText size={18} />
+            <LayoutList size={18} />
           </button>
           <Link
             href={`/courses/${course.slug}`}
@@ -665,7 +665,7 @@ export default function LearnCoursePage() {
 
                 {/* ── AI COACH BLOCK ──────────────────────────────────── */}
                 <div
-                  className="rounded-2xl mb-6 overflow-hidden"
+                  className="rounded-2xl mb-6 overflow-hidden hidden lg:block"
                   style={{
                     background: "rgba(12,12,25,0.8)",
                     border: "1px solid rgba(124,58,237,0.2)",

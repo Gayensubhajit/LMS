@@ -86,7 +86,7 @@ export default function AssistantWidget() {
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          className="fixed right-6 bottom-6 z-50 w-14 h-14 rounded-full flex items-center justify-center border border-violet-500/30 group"
+          className="fixed right-6 bottom-6 z-50 w-14 h-14 rounded-full hidden md:flex items-center justify-center border border-violet-500/30 group"
           style={{
             background: "rgba(124,58,237,0.15)",
             backdropFilter: "blur(12px)",

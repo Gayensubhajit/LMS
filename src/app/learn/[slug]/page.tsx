@@ -7,6 +7,7 @@ import { SignIn, useUser } from "@clerk/nextjs";
 import { getCourseBySlug } from "@/lib/courses-data";
 import { backendRequest } from "@/lib/backend-client";
 import {
+  Award,
   CheckCircle2,
   ChevronDown,
   ChevronRight,
@@ -22,8 +23,10 @@ import {
   X,
 } from "lucide-react";
 import CourseVideoPlayer from "@/components/lms/CourseVideoPlayer";
+import CertificateModal from "@/components/lms/CertificateModal";
 import { motion, AnimatePresence } from "framer-motion";
 import { dark } from "@clerk/themes";
+import confetti from "canvas-confetti";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type TranscriptEntry = { time: string; text: string };
@@ -75,6 +78,7 @@ export default function LearnCoursePage() {
   const [backendSections, setBackendSections] = useState<BackendSection[]>([]);
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [activeLessonId, setActiveLessonId] = useState<string>("");
+  const [initialTime, setInitialTime] = useState<number>(0);
   const [progressPercent, setProgressPercent] = useState<number>(0);
   const [hasEnrollment, setHasEnrollment] = useState<boolean>(true);
   const [loading, setLoading] = useState(true);
@@ -88,6 +92,8 @@ export default function LearnCoursePage() {
   const [noteSaved, setNoteSaved] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [coachInput, setCoachInput] = useState("");
+  const [showCertModal, setShowCertModal] = useState(false);
+  const [certificateData, setCertificateData] = useState<any>(null);
 
   // flat lesson list
   const lessonItems = useMemo(
@@ -129,12 +135,24 @@ export default function LearnCoursePage() {
 
         const nextRes = await backendRequest<{
           ok: true;
-          item: { nextLesson: { id: string } | null };
+          item: { nextLesson: { id: string, lastPlayedSeconds?: number } | null };
         }>(`/progress/courses/${slug}/continue`, { clerkUserId: user.id });
 
-        const nextId = nextRes.item.nextLesson?.id;
+        const next = nextRes.item.nextLesson;
         const fallbackId = lessonsRes.item.sections[0]?.lessons[0]?.id ?? "";
-        setActiveLessonId(nextId ?? fallbackId);
+        setActiveLessonId(next?.id ?? fallbackId);
+        if (next?.lastPlayedSeconds) {
+          setInitialTime(next.lastPlayedSeconds);
+        }
+
+        // Check for certificates if completion is high
+        if (progressRes.item.progressPercent === 100) {
+           const certsRes = await backendRequest<{ ok: true; certificates: any[] }>("/accomplishments", { clerkUserId: user.id });
+           const cert = certsRes.certificates.find((c: any) => c.course.slug === slug);
+           if (cert) {
+              setCertificateData(cert);
+           }
+        }
       } catch (err) {
         setError((err as Error).message || "Failed to load learning data");
       } finally {
@@ -143,6 +161,14 @@ export default function LearnCoursePage() {
     };
     void run();
   }, [isLoaded, slug, user?.id]);
+
+  useEffect(() => {
+    // Confetti if just hit 100%
+    if (progressPercent === 100 && !certificateData) {
+       // @ts-ignore
+       confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+    }
+  }, [progressPercent]);
 
   // Reset tab when lesson changes
   useEffect(() => {
@@ -198,6 +224,17 @@ export default function LearnCoursePage() {
       else next.add(id);
       return next;
     });
+  };
+
+  const handleProgressSync = async (seconds: number) => {
+    if (!activeLessonId || !user?.id) return;
+    try {
+      await backendRequest(`/progress/lessons/${activeLessonId}/watch`, {
+        method: "PATCH",
+        clerkUserId: user.id,
+        body: { seconds }
+      });
+    } catch { /* background sync, fail silently */ }
   };
 
   const saveNote = () => {
@@ -352,6 +389,15 @@ export default function LearnCoursePage() {
           >
             <LayoutList size={18} />
           </button>
+          {progressPercent === 100 && (
+            <button
+               onClick={() => setShowCertModal(true)}
+               className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all shadow-lg hover:shadow-emerald-500/20"
+            >
+               <Award size={14} />
+               Claim Certificate
+            </button>
+          )}
           <Link
             href={`/courses/${course.slug}`}
             className="hidden sm:block text-xs text-gray-500 hover:text-gray-300 transition-colors"
@@ -552,6 +598,9 @@ export default function LearnCoursePage() {
                       <CourseVideoPlayer
                         url={activeLesson.videoUrl ?? FALLBACK_VIDEO}
                         title={activeLesson.title}
+                        lessonId={activeLesson.id}
+                        initialTime={initialTime}
+                        onTimeUpdate={handleProgressSync}
                         startSec={
                           (activeLesson.content as { startSec?: number } | null)
                             ?.startSec ?? 0
@@ -560,7 +609,7 @@ export default function LearnCoursePage() {
                           (activeLesson.content as { endSec?: number } | null)
                             ?.endSec
                         }
-                        onEnded={navToNext}
+                        onEnded={markCompleted}
                         nextLessonTitle={nextLesson?.title}
                         onNextUpConfirm={markCompleted}
                       />
@@ -939,6 +988,15 @@ export default function LearnCoursePage() {
           )}
         </div>
       </div>
+
+      <CertificateModal 
+        isOpen={showCertModal}
+        onClose={() => setShowCertModal(false)}
+        courseTitle={course.title}
+        studentName={certificateData?.verifiedName || user?.fullName || "Student"}
+        issueDate={certificateData?.issuedAt ? new Date(certificateData.issuedAt) : new Date()}
+        certificateId={certificateData?.certificateId || "CERT-" + Math.random().toString(36).substring(7).toUpperCase()}
+      />
     </main>
   );
 }

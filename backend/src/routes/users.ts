@@ -6,6 +6,16 @@ import { createClerkClient } from "@clerk/backend";
 
 export const usersRouter = Router();
 
+import { getUserFromHeader } from "../lib/auth.js";
+
+// GET /users/me
+usersRouter.get("/me", async (req, res) => {
+  const user = await getUserFromHeader(req, res);
+  if (!user) return; // Error already handled by helper
+
+  return res.status(200).json({ ok: true, item: user });
+});
+
 // POST /users/sync  — called by the frontend silently when any signed-in user lands on the site.
 // This handles existing Clerk users who signed up before the webhook was configured.
 usersRouter.post("/sync", async (req, res) => {

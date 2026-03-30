@@ -19,9 +19,33 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "EduNova — AI-Powered Learning Platform",
-  description:
-    "Step into the future of learning. Master UI/UX Design, Development & more with AI-guided roadmaps, real-world projects, and industry mentors.",
+  metadataBase: new URL("http://localhost:3000"),
+  title: {
+    default: "EduNova — AI-Powered 2026 Learning Platform",
+    template: "%s | EduNova"
+  },
+  description: "Step into the future of learning. Master UI/UX Design, Development & more with AI-guided roadmaps, real-world projects, and industry mentors.",
+  keywords: ["LMS", "AI Learning", "UI/UX Course", "Next.js 15", "Web Development", "2026 Skills", "EduNova"],
+  authors: [{ name: "Subhajit Gayen" }],
+  creator: "EduNova",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://edunova-lms.vercel.app",
+    siteName: "EduNova",
+    images: [{
+      url: "/og-image.png",
+      width: 1200,
+      height: 630,
+      alt: "EduNova Learning Platform"
+    }]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "EduNova — AI-Powered Learning",
+    description: "Master high-income skills with AI-guided roadmaps.",
+    images: ["/og-image.png"],
+  }
 };
 
 export default function RootLayout({

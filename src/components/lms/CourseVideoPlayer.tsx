@@ -16,9 +16,24 @@ interface Props {
   onEnded?: () => void;
   nextLessonTitle?: string;
   onNextUpConfirm?: () => void;
+  // Progress Sync Features
+  lessonId?: string;
+  initialTime?: number;
+  onTimeUpdate?: (seconds: number) => void;
 }
 
-const CourseVideoPlayer = ({ url, title, startSec = 0, endSec, onEnded, nextLessonTitle, onNextUpConfirm }: Props) => {
+const CourseVideoPlayer = ({ 
+  url, 
+  title, 
+  startSec = 0, 
+  endSec, 
+  onEnded, 
+  nextLessonTitle, 
+  onNextUpConfirm,
+  lessonId,
+  initialTime = 0,
+  onTimeUpdate
+}: Props) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const playerContainerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -138,6 +153,37 @@ const CourseVideoPlayer = ({ url, title, startSec = 0, endSec, onEnded, nextLess
       clearInterval(interval);
     };
   }, [videoId, startSec, endSec, handleSliceEnd]);
+
+  // Periodic Progress Sync
+  const lastSyncTimeRef = useRef<number>(0);
+  useEffect(() => {
+    if (!isPlaying || !lessonId || !onTimeUpdate) return;
+
+    const syncInterval = setInterval(() => {
+      // Only sync if time has moved significantly (e.g. > 5s)
+      if (Math.abs(currentTime - lastSyncTimeRef.current) >= 10) {
+        onTimeUpdate(Math.floor(currentTime));
+        lastSyncTimeRef.current = currentTime;
+      }
+    }, 10000); // Check every 10s
+
+    return () => clearInterval(syncInterval);
+  }, [isPlaying, lessonId, currentTime, onTimeUpdate]);
+
+  // Initial Resume logic
+  const hasResumedRef = useRef(false);
+  useEffect(() => {
+    if (initialTime > 0 && duration > 0 && !hasResumedRef.current) {
+      ytCommand("seekTo", [startSec + initialTime, true]);
+      hasResumedRef.current = true;
+    }
+  }, [initialTime, duration, startSec, ytCommand]);
+
+  useEffect(() => {
+    // Reset resume flag when lesson changes
+    hasResumedRef.current = false;
+    lastSyncTimeRef.current = 0;
+  }, [lessonId]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;

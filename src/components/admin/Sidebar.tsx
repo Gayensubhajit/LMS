@@ -1,0 +1,100 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { 
+  LayoutDashboard, 
+  BookOpen, 
+  Users, 
+  BarChart3, 
+  Settings, 
+  PlusCircle,
+  GraduationCap
+} from "lucide-react";
+import { motion } from "framer-motion";
+
+const SIDEBAR_LINKS = [
+  { href: "/admin", label: "Overview", icon: LayoutDashboard },
+  { href: "/admin/courses", label: "My Courses", icon: BookOpen },
+  { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/admin/users", label: "Students", icon: Users },
+  { href: "/admin/settings", label: "Settings", icon: Settings },
+];
+
+export default function AdminSidebar() {
+  const pathname = usePathname();
+
+  return (
+    <div className="w-64 h-screen bg-[#080a12] border-r border-white/5 flex flex-col sticky top-0 overflow-hidden">
+      {/* Brand */}
+      <div className="p-6 border-b border-white/5 bg-gradient-to-br from-violet-600/5 to-transparent">
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center shadow-[0_0_20px_rgba(124,58,237,0.4)] group-hover:scale-110 transition-transform duration-300">
+            <GraduationCap className="text-white size-5 fill-white" />
+          </div>
+          <span className="font-black text-white tracking-widest text-sm uppercase">
+            EduNova <span className="text-violet-500">Pro</span>
+          </span>
+        </Link>
+      </div>
+
+      {/* Navigation */}
+      <nav className="flex-1 p-4 space-y-1 overflow-y-auto no-scrollbar">
+        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4 px-3">
+          Instructor Panel
+        </p>
+        
+        {SIDEBAR_LINKS.map((link) => {
+          const isActive = pathname === link.href;
+          const Icon = link.icon;
+
+          return (
+            <Link key={link.href} href={link.href} className="block relative">
+              <div
+                className={`
+                  flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 group
+                  ${isActive 
+                    ? "text-white bg-violet-600/20 shadow-[inset_0_0_20px_rgba(124,58,237,0.1)]" 
+                    : "text-gray-500 hover:text-white hover:bg-white/5"}
+                `}
+              >
+                <div className={`
+                  p-1.5 rounded-lg transition-all 
+                  ${isActive ? "bg-violet-600 text-white" : "bg-white/5 group-hover:bg-violet-600/20 group-hover:text-violet-400"}
+                `}>
+                  <Icon size={16} strokeWidth={isActive ? 2.5 : 2} />
+                </div>
+                {link.label}
+                {isActive && (
+                  <motion.div 
+                    layoutId="sidebar-active"
+                    className="absolute right-2 w-1 h-4 bg-violet-600 rounded-full"
+                  />
+                )}
+              </div>
+            </Link>
+          );
+        })}
+
+        <div className="pt-6">
+          <Link href="/admin/courses/create">
+            <button className="w-full bg-white text-black flex items-center justify-center gap-2 py-3 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-105 active:scale-95 transition-all shadow-xl shadow-white/5">
+              <PlusCircle size={16} />
+              Create Course
+            </button>
+          </Link>
+        </div>
+      </nav>
+
+      {/* Footer info */}
+      <div className="p-4 border-t border-white/5 bg-violet-600/5">
+        <div className="flex items-center gap-3 px-2">
+          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+          <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+            System Live
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

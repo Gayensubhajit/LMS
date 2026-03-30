@@ -83,6 +83,8 @@ enrollmentsRouter.post("/", async (req, res) => {
   const expiresAt = addMonths(startsAt, months);
   const amountPaid = getAmountForPlan(plan, course.isFree, course);
 
+  const status = course.isFree ? EnrollmentStatus.ACTIVE : EnrollmentStatus.PENDING;
+
   const enrollment = await prisma.enrollment.upsert({
     where: {
       userId_courseId: {
@@ -95,14 +97,14 @@ enrollmentsRouter.post("/", async (req, res) => {
       courseId: course.id,
       plan: planEnum,
       amountPaid,
-      status: EnrollmentStatus.ACTIVE,
+      status,
       startsAt,
       expiresAt
     },
     update: {
       plan: planEnum,
       amountPaid,
-      status: EnrollmentStatus.ACTIVE,
+      status,
       startsAt,
       expiresAt
     },

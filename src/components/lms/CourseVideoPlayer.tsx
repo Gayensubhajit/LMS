@@ -228,6 +228,8 @@ const CourseVideoPlayer = ({ url, title, startSec = 0, endSec, onEnded, nextLess
         layout
         drag={isPipMode}
         dragMomentum={false}
+        // Reset position when PiP is toggled off
+        animate={isPipMode ? {} : { x: 0, y: 0 }}
         onMouseMove={resetActivityTimer}
         onMouseEnter={resetActivityTimer}
         className={`
@@ -283,7 +285,11 @@ const CourseVideoPlayer = ({ url, title, startSec = 0, endSec, onEnded, nextLess
         />
 
         {/* CLICK OVERLAY */}
-        <div className="absolute inset-0 z-10 cursor-pointer" onClick={togglePlay} onMouseMove={resetActivityTimer} />
+        <div 
+          className={`absolute inset-0 z-10 cursor-pointer ${!showCursor && isFullscreen ? "!cursor-none" : ""}`} 
+          onClick={togglePlay} 
+          onMouseMove={resetActivityTimer} 
+        />
 
         {/* CONTROLS */}
         <div className={`

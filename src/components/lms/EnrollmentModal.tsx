@@ -97,21 +97,21 @@ export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentM
         className="relative w-full max-w-md rounded-2xl overflow-hidden shadow-2xl animate-slide-up"
         style={{
           background: "rgba(15,15,30,0.97)",
-          border: "1px solid rgba(124,58,237,0.35)",
-          boxShadow: "0 0 60px rgba(124,58,237,0.25), 0 25px 50px rgba(0,0,0,0.6)",
+          border: "1px solid rgba(59,130,246,0.35)",
+          boxShadow: "0 0 60px rgba(59,130,246,0.25), 0 25px 50px rgba(0,0,0,0.6)",
         }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Gradient top edge */}
         <div
           className="absolute top-0 left-0 right-0 h-px"
-          style={{ background: "linear-gradient(90deg, transparent, #7c3aed, #a855f7, transparent)" }}
+          style={{ background: "linear-gradient(90deg, transparent, #3b82f6, #6366f1, transparent)" }}
         />
 
         {/* Header */}
         <div
           className="px-7 pt-7 pb-5 relative"
-          style={{ background: "linear-gradient(135deg, rgba(124,58,237,0.25) 0%, rgba(168,85,247,0.1) 100%)" }}
+          style={{ background: "linear-gradient(135deg, rgba(59,130,246,0.25) 0%, rgba(99,102,241,0.1) 100%)" }}
         >
           <button
             onClick={onClose}
@@ -122,7 +122,9 @@ export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentM
           </button>
           <div className="inline-flex items-center gap-2 mb-3">
             <span className="text-2xl">{course.emoji}</span>
-            <span className="tag-purple text-xs">4-Course Specialization</span>
+            <span className="bg-blue-500/20 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded-md border border-blue-500/30 uppercase tracking-widest">
+              Specialization
+            </span>
           </div>
           <h2 className="text-white text-xl font-bold leading-tight mb-1">
             Enroll in this Specialization
@@ -141,9 +143,9 @@ export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentM
               <div key={i} className="flex items-start gap-2">
                 <div
                   className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"
-                  style={{ background: "rgba(124,58,237,0.3)", border: "1px solid rgba(124,58,237,0.5)" }}
+                  style={{ background: "rgba(59,130,246,0.3)", border: "1px solid rgba(59,130,246,0.5)" }}
                 >
-                  <Check size={10} className="text-violet-300" />
+                  <Check size={10} className="text-blue-300" />
                 </div>
                 <span className="text-gray-300 text-sm leading-snug">{benefit}</span>
               </div>
@@ -171,21 +173,21 @@ export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentM
                     className="flex flex-col items-center px-2 py-3 rounded-xl text-sm font-medium transition-all"
                     style={{
                       border: selected
-                        ? "1px solid rgba(168,85,247,0.7)"
-                        : "1px solid rgba(124,58,237,0.2)",
+                        ? "1px solid rgba(99,102,241,0.7)"
+                        : "1px solid rgba(59,130,246,0.2)",
                       background: selected
-                        ? "rgba(124,58,237,0.2)"
+                        ? "rgba(59,130,246,0.2)"
                         : "rgba(255,255,255,0.03)",
-                      color: selected ? "#c084fc" : "#9ca3af",
-                      boxShadow: selected ? "0 0 16px rgba(124,58,237,0.3)" : "none",
+                      color: selected ? "#60a5fa" : "#9ca3af",
+                      boxShadow: selected ? "0 0 16px rgba(59,130,246,0.3)" : "none",
                     }}
                   >
                     <span
                       className="w-3.5 h-3.5 rounded-full border-2 mb-1.5 flex items-center justify-center"
-                      style={{ borderColor: selected ? "#a855f7" : "#4b5563" }}
+                      style={{ borderColor: selected ? "#3b82f6" : "#4b5563" }}
                     >
                       {selected && (
-                        <span className="w-1.5 h-1.5 rounded-full bg-violet-400" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                       )}
                     </span>
                     {d.label}
@@ -193,9 +195,9 @@ export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentM
                   {d.hasFreeUpgrade && (
                     <div
                       className="absolute -top-2.5 left-1/2 -translate-x-1/2 text-white text-[9px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap"
-                      style={{ background: "linear-gradient(90deg, #7c3aed, #a855f7)" }}
+                      style={{ background: "linear-gradient(90deg, #2563eb, #4f46e5)" }}
                     >
-                      FREE UPGRADE
+                      SAVINGS UPGRADE
                     </div>
                   )}
                 </label>
@@ -207,8 +209,8 @@ export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentM
           <div
             className="flex items-center justify-between py-3.5 px-4 rounded-xl mb-5"
             style={{
-              background: "rgba(124,58,237,0.1)",
-              border: "1px solid rgba(124,58,237,0.2)",
+              background: "rgba(59,130,246,0.1)",
+              border: "1px solid rgba(59,130,246,0.2)",
             }}
           >
             <div>
@@ -216,7 +218,7 @@ export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentM
               <p className="text-white font-semibold text-sm">5 hours/week</p>
             </div>
             <div className="text-right">
-              <p className="text-violet-300 font-bold text-base">{monthlyPriceFormatted}<span className="text-gray-400 font-normal text-xs">/mo</span></p>
+              <p className="text-blue-300 font-bold text-base">{monthlyPriceFormatted}<span className="text-gray-400 font-normal text-xs">/mo</span></p>
               <p className="text-gray-500 text-xs">Total {totalPriceFormatted}</p>
             </div>
           </div>
@@ -245,10 +247,10 @@ export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentM
             <Link
               href={`/checkout?slug=${encodeURIComponent(course.slug)}&plan=${selectedDuration}`}
               onClick={onClose}
-              className="block w-full text-center py-3 rounded-xl text-white font-semibold text-sm transition-all hover:opacity-90 active:scale-[0.98]"
+              className="block w-full text-center py-4 rounded-xl text-white font-bold text-sm transition-all hover:opacity-90 active:scale-[0.98]"
               style={{
-                background: "linear-gradient(135deg, #7c3aed, #a855f7)",
-                boxShadow: "0 0 20px rgba(124,58,237,0.4)",
+                background: "linear-gradient(135deg, #0056D2, #0041a3)",
+                boxShadow: "0 0 20px rgba(0,86,210,0.4)",
               }}
             >
               Continue to Checkout →

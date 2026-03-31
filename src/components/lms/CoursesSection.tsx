@@ -8,6 +8,7 @@ import { useAuth } from "@clerk/nextjs";
 import { coursesData, type Course } from "@/lib/courses-data";
 import { mergeCourse, unionCourses } from "@/lib/course-utils";
 import Link from "next/link";
+import { formatLocalPrice } from "@/lib/utils/currency";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -290,7 +291,7 @@ export default function CoursesSection() {
                       ))}
                     </div>
                     <div className="text-sm font-bold text-violet-400">
-                      {course.isFree ? "Free" : `$${course.price.oneMonth}/m`}
+                      {course.isFree ? "Free" : `${formatLocalPrice(course.price.oneMonth)}/mo`}
                     </div>
                   </div>
 

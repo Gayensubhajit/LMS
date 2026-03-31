@@ -74,11 +74,18 @@ function CheckoutContent() {
   };
 
   const handleRazorpayPayment = async () => {
-    if (!userId || !course) return;
+    if (!userId || !course) {
+       console.error("Payment failed: User ID or Course not loaded", { userId, course });
+       toast.error("User or Course information is missing. Please refresh.");
+       return;
+    }
+    
     setProcessing(true);
+    console.log("💳 Initializing payment for:", course.title, "Plan:", plan);
 
     try {
       // 1. Create/Check Enrollment (it will be PENDING)
+      console.log("Step 1: Creating/Checking Enrollment...");
       const enrollRes = await backendRequest<{ ok: boolean; item: { id: string } }>("/enrollments", {
         method: "POST",
         body: { courseSlug: course.slug, plan },
@@ -86,10 +93,12 @@ function CheckoutContent() {
       });
 
       if (!enrollRes.ok) {
-        throw new Error("Failed to initialize enrollment");
+        throw new Error("Failed to initialize enrollment records on the server.");
       }
+      console.log("Enrollment initialized:", enrollRes.item.id);
 
       // 2. Create Razorpay Order
+      console.log("Step 2: Creating Razorpay Order via Backend...");
       const orderRes = await backendRequest<{ 
         ok: boolean; 
         item: { orderId: string; amount: number; keyId: string; currency: string } 
@@ -100,12 +109,19 @@ function CheckoutContent() {
       });
 
       if (!orderRes.ok) {
-        throw new Error("Failed to create provider order");
+        throw new Error("The payment server rejected the order creation.");
       }
 
       const { orderId, amount, keyId, currency } = orderRes.item;
+      console.log("Order generated successfully:", orderId);
 
       // 3. Trigger Razorpay Modal
+      if (!window.Razorpay) {
+        console.error("Razorpay SDK not found on window object.");
+        throw new Error("Razorpay SDK failed to load. Please check your internet connection.");
+      }
+
+      console.log("Step 3: Opening Razorpay Checkout Modal...");
       const options = {
         key: keyId,
         amount: amount,
@@ -115,21 +131,27 @@ function CheckoutContent() {
         image: "https://cdn-icons-png.flaticon.com/512/3413/3413535.png",
         order_id: orderId,
         handler: function (response: any) {
-          // Success Callback (The webhook will also handle this for security)
+          console.log("✅ Payment authorized by Razorpay:", response.razorpay_payment_id);
           toast.success("Payment successful! Redirecting...");
-          router.push(`/checkout/success?slug=${course.slug}`);
+          // Give small delay for backend webhook to process
+          setTimeout(() => {
+            router.push(`/checkout/success?slug=${course.slug}`);
+          }, 1500);
         },
         prefill: {
           name: user?.fullName || "",
           email: user?.primaryEmailAddress?.emailAddress || "",
         },
         theme: {
-          color: "#7c3aed",
+          color: "#0056D2",
         },
         modal: {
           ondismiss: function() {
+            console.warn("Payment modal dismissed by user.");
             setProcessing(false);
-          }
+          },
+          escape: true,
+          backdropclose: false
         }
       };
 
@@ -137,14 +159,15 @@ function CheckoutContent() {
       rzp1.open();
 
     } catch (err: any) {
-      toast.error(err.message || "Something went wrong during checkout");
+      console.error("❌ Checkout Error:", err);
+      toast.error(err.message || "Something went wrong during checkout. Check console for details.");
       setProcessing(false);
     }
   };
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-[#050510]">
-       <Loader2 className="w-10 h-10 text-violet-500 animate-spin" />
+       <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
     </div>
   );
 
@@ -155,8 +178,8 @@ function CheckoutContent() {
   return (
     <div className="min-h-screen bg-[#050510] relative overflow-hidden">
       {/* Abstract Background Glows */}
-      <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-violet-900/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-blue-900/10 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
+      <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-blue-900/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-indigo-900/10 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
       <div className="max-w-6xl mx-auto px-6 py-12 lg:py-24 relative z-10">
         <Link href={`/courses/${course.slug}`} className="inline-flex items-center gap-2 text-gray-500 hover:text-white transition-colors group mb-12">
@@ -168,7 +191,7 @@ function CheckoutContent() {
           {/* Order Summary (Left) */}
           <div className="lg:col-span-7 space-y-12">
             <div className="space-y-4">
-              <h1 className="text-4xl lg:text-5xl font-black text-white tracking-tight">Complete your <span className="text-violet-500">Enrollment</span></h1>
+              <h1 className="text-4xl lg:text-5xl font-black text-white tracking-tight">Complete your <span className="text-blue-500">Enrollment</span></h1>
               <p className="text-gray-400 font-bold uppercase tracking-widest text-[11px] leading-relaxed max-w-lg">
                 Join 10,000+ students mastering {course.category} with EduNova&apos;s premium learning paths.
               </p>
@@ -177,11 +200,11 @@ function CheckoutContent() {
             <div className="p-8 lg:p-10 rounded-[48px] bg-white/[0.03] border border-white/10 backdrop-blur-md relative overflow-hidden group">
                {/* Course Image Preview */}
                <div className="flex flex-col sm:flex-row items-center gap-8">
-                  <div className="w-32 h-32 rounded-3xl bg-violet-600/20 flex items-center justify-center shrink-0 border border-violet-500/20">
+                  <div className="w-32 h-32 rounded-3xl bg-blue-600/20 flex items-center justify-center shrink-0 border border-blue-500/20">
                      <span className="text-5xl">{course.emoji}</span>
                   </div>
                   <div className="space-y-2 text-center sm:text-left">
-                    <span className="text-[10px] font-black bg-violet-600/10 text-violet-400 px-3 py-1 rounded-full uppercase tracking-widest border border-violet-500/20">
+                    <span className="text-[10px] font-black bg-blue-600/10 text-blue-400 px-3 py-1 rounded-full uppercase tracking-widest border border-blue-500/20">
                       {course.category}
                     </span>
                     <h2 className="text-2xl font-black text-white">{course.title}</h2>
@@ -203,7 +226,7 @@ function CheckoutContent() {
                   <div className="h-px bg-white/10 pt-4" />
                   <div className="flex justify-between items-end">
                     <span className="text-xs font-black text-white uppercase tracking-widest">Total Amount</span>
-                    <span className="text-3xl font-black text-violet-500 tracking-tight">{formatLocalPrice(finalPrice)}</span>
+                    <span className="text-3xl font-black text-blue-500 tracking-tight">{formatLocalPrice(finalPrice)}</span>
                   </div>
                </div>
             </div>
@@ -222,10 +245,10 @@ function CheckoutContent() {
 
           {/* Payment Section (Right) */}
           <div className="lg:col-span-5 space-y-8">
-            <div className="p-10 rounded-[56px] bg-white/[0.05] border-2 border-white/10 relative shadow-[0_40px_100px_rgba(0,0,0,0.4)]">
+            <div className="p-10 rounded-[56px] bg-[#0a0a20] border-2 border-white/5 relative shadow-[0_40px_100px_rgba(0,0,0,0.6)]">
               <div className="space-y-6 mb-12">
                 <div className="flex items-center gap-3">
-                  <Lock className="text-violet-500" size={20} />
+                  <Lock className="text-blue-500" size={20} />
                   <h3 className="text-sm font-black text-white uppercase tracking-widest">Secure Checkout</h3>
                 </div>
                 <p className="text-xs font-bold text-gray-500 leading-relaxed italic">
@@ -237,7 +260,7 @@ function CheckoutContent() {
                 <button 
                   onClick={handleRazorpayPayment}
                   disabled={processing}
-                  className="w-full bg-violet-600 hover:bg-violet-500 disabled:bg-violet-900/50 disabled:text-gray-500 text-white font-black py-6 rounded-[2.5rem] tracking-[0.2em] uppercase text-[11px] transition-all shadow-[0_20px_60px_rgba(124,58,237,0.3)] hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-4"
+                  className="w-full bg-[#0056D2] hover:bg-[#0041a3] disabled:bg-blue-900/50 disabled:text-gray-500 text-white font-black py-6 rounded-[2.5rem] tracking-[0.2em] uppercase text-[11px] transition-all shadow-[0_20px_60px_rgba(0,86,210,0.3)] hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-4"
                 >
                   {processing ? <Loader2 className="animate-spin" size={20} /> : <CreditCard size={20} />}
                   {processing ? "Processing Order..." : "Continue to Payment"}
@@ -273,7 +296,7 @@ export default function CheckoutPage() {
   return (
     <Suspense fallback={
         <div className="min-h-screen flex items-center justify-center bg-[#050510]">
-           <Loader2 className="w-10 h-10 text-violet-500 animate-spin" />
+           <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
         </div>
     }>
       <CheckoutContent />

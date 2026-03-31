@@ -17,6 +17,7 @@ import { coursesData, type Course } from "@/lib/courses-data";
 import { mergeCourse, unionCourses, type BackendCourse } from "@/lib/course-utils";
 import { Montserrat } from "next/font/google";
 import Navbar from "@/components/lms/Navbar";
+import { formatLocalPrice } from "@/lib/utils/currency";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 const BACKEND_URL =
@@ -282,7 +283,7 @@ function CoursesContent() {
                              <div>
                                <p className="text-xs text-gray-600 uppercase font-bold tracking-wider mb-1">Pricing</p>
                                <p className="text-xl font-black text-white">
-                                  {course.isFree ? <span className="text-emerald-400">Free</span> : `$${course.price.oneMonth}`}
+                                  {course.isFree ? <span className="text-emerald-400">Free</span> : formatLocalPrice(course.price.oneMonth)}
                                   {!course.isFree && <span className="text-[10px] text-gray-600 ml-1 font-normal">/mo</span>}
                                </p>
                              </div>

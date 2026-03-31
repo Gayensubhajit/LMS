@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import { SignIn, useUser } from "@clerk/nextjs";
-import { getCourseBySlug } from "@/lib/courses-data";
+// Removed static import
 import { backendRequest } from "@/lib/backend-client";
 import {
   Award,
@@ -73,8 +73,9 @@ export default function LearnCoursePage() {
   const { user, isLoaded, isSignedIn } = useUser();
   const params = useParams<{ slug: string }>();
   const slug = params?.slug ?? "";
-  const course = getCourseBySlug(slug);
 
+  const [course, setCourse] = useState<any>(null);
+  const [courseLoaded, setCourseLoaded] = useState(false);
   const [backendSections, setBackendSections] = useState<BackendSection[]>([]);
   const [completed, setCompleted] = useState<Set<string>>(new Set());
   const [activeLessonId, setActiveLessonId] = useState<string>("");
@@ -85,9 +86,7 @@ export default function LearnCoursePage() {
   const [markingDone, setMarkingDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("transcript");
-  const [expandedSections, setExpandedSections] = useState<Set<string>>(
-    new Set(),
-  );
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [userNote, setUserNote] = useState("");
   const [noteSaved, setNoteSaved] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -117,6 +116,20 @@ export default function LearnCoursePage() {
         return;
       }
       try {
+        // Fetch course details first
+        const courseRes = await backendRequest<{ok: boolean, item: any}>(`/courses/${slug}`);
+        if (!courseRes.ok || !courseRes.item) {
+          setError("Course not found");
+          setLoading(false);
+          setCourseLoaded(true);
+          return;
+        }
+        
+        // Merge with local utils using a dynamic import to avoid breaking the client component
+        const { mergeCourse } = await import("@/lib/course-utils");
+        setCourse(mergeCourse(courseRes.item));
+        setCourseLoaded(true);
+
         const lessonsRes = await backendRequest<{
           ok: true;
           item: { sections: BackendSection[] };
@@ -267,7 +280,7 @@ export default function LearnCoursePage() {
   }
 
   // Check if course is available
-  if (!course) {
+  if (courseLoaded && !course) {
     return (
       <main className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
         <div className="glass-card rounded-3xl p-10 max-w-md text-center">

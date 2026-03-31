@@ -5,7 +5,8 @@ import { motion, useInView } from "framer-motion";
 import { Star, Clock, Users, Play, ArrowRight, BookOpen } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import { useAuth } from "@clerk/nextjs";
-import { coursesData } from "@/lib/courses-data";
+import { coursesData, type Course } from "@/lib/courses-data";
+import { mergeCourse } from "@/lib/course-utils";
 import Link from "next/link";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
@@ -62,8 +63,7 @@ const badgeMap: Record<string, { label: string; color: string }> = {
   },
 };
 
-// Show all relevant courses from local data (now 12+)
-const courses = coursesData;
+// Show all relevant courses from live database
 const BACKEND_URL =
   process.env.NEXT_PUBLIC_API_URL ??
   process.env.NEXT_PUBLIC_BACKEND_URL ??
@@ -75,7 +75,20 @@ export default function CoursesSection() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [enrolledSlugs, setEnrolledSlugs] = useState<Set<string>>(new Set());
+  const [courses, setCourses] = useState<Course[]>(coursesData);
   const { getToken, userId } = useAuth();
+
+  const fetchCourses = useCallback(async () => {
+    try {
+      const res = await fetch(`${BACKEND_URL}/courses`);
+      if (!res.ok) return;
+      const data = await res.json();
+      if (data.ok && data.items?.length) {
+        const merged = data.items.map(mergeCourse);
+        if (merged.length > 0) setCourses(merged);
+      }
+    } catch (err) {}
+  }, []);
 
   const fetchEnrollments = useCallback(async () => {
     if (!userId) {
@@ -98,8 +111,9 @@ export default function CoursesSection() {
   }, [userId, getToken]);
 
   useEffect(() => {
+    void fetchCourses();
     void fetchEnrollments();
-  }, [fetchEnrollments]);
+  }, [fetchCourses, fetchEnrollments]);
 
   const filtered =
     (activeCategory === "All"

@@ -14,6 +14,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { coursesData, type Course } from "@/lib/courses-data";
+import { mergeCourse, type BackendCourse } from "@/lib/course-utils";
 import { Montserrat } from "next/font/google";
 import Navbar from "@/components/lms/Navbar";
 
@@ -22,43 +23,6 @@ const BACKEND_URL =
   process.env.NEXT_PUBLIC_API_URL ??
   process.env.NEXT_PUBLIC_BACKEND_URL ??
   "http://localhost:4000";
-
-type BackendCourse = {
-  id: string;
-  slug: string;
-  title: string;
-  shortDescription: string;
-  category: string;
-  level: string;
-  instructorName: string;
-  oneMonthPrice: number;
-  threeMonthPrice: number;
-  sixMonthPrice: number;
-  imageUrl: string | null;
-};
-
-// Merge backend DB fields on top of local display metadata (emoji, skills, duration, etc.)
-function mergeCourse(bc: BackendCourse): Course | null {
-  const local = coursesData.find((c) => c.slug === bc.slug);
-  if (!local) return null;
-  const levelRaw = bc.level.replace("_", " ");
-  const level = (levelRaw.charAt(0) +
-    levelRaw.slice(1).toLowerCase()) as Course["level"];
-  return {
-    ...local,
-    title: bc.title,
-    shortDescription: bc.shortDescription,
-    category: bc.category as Course["category"],
-    level,
-    instructor: bc.instructorName,
-    img: bc.imageUrl || local.img,
-    price: {
-      oneMonth: bc.oneMonthPrice,
-      threeMonth: bc.threeMonthPrice,
-      sixMonth: bc.sixMonthPrice,
-    },
-  };
-}
 
 const categories = [
   "All",

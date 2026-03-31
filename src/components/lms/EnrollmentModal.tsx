@@ -247,10 +247,9 @@ export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentM
             <Link
               href={`/checkout?slug=${encodeURIComponent(course.slug)}&plan=${selectedDuration}`}
               onClick={onClose}
-              className="block w-full text-center py-4 rounded-xl text-white font-bold text-sm transition-all hover:opacity-90 active:scale-[0.98]"
+              className="block w-full text-center py-4 rounded-2xl text-white font-bold text-sm transition-all hover:opacity-90 active:scale-[0.98] shadow-[0_15px_35px_rgba(0,86,210,0.25)]"
               style={{
                 background: "linear-gradient(135deg, #0056D2, #0041a3)",
-                boxShadow: "0 0 20px rgba(0,86,210,0.4)",
               }}
             >
               Continue to Checkout →

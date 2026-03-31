@@ -243,10 +243,9 @@ function CheckoutContent() {
             </div>
           </div>
 
-          {/* Payment Section (Right) */}
-          <div className="lg:col-span-5 space-y-8">
-            <div className="p-10 rounded-[56px] bg-[#0a0a20] border-2 border-white/5 relative shadow-[0_40px_100px_rgba(0,0,0,0.6)]">
-              <div className="space-y-6 mb-12">
+          <div className="lg:col-span-12 xl:col-span-5 space-y-8">
+            <div className="p-8 lg:p-10 rounded-[40px] bg-[#0a0a20] border border-white/10 relative shadow-[0_40px_100px_rgba(0,0,0,0.6)]">
+              <div className="space-y-6 mb-10">
                 <div className="flex items-center gap-3">
                   <Lock className="text-blue-500" size={20} />
                   <h3 className="text-sm font-black text-white uppercase tracking-widest">Secure Checkout</h3>
@@ -260,9 +259,9 @@ function CheckoutContent() {
                 <button 
                   onClick={handleRazorpayPayment}
                   disabled={processing}
-                  className="w-full bg-[#0056D2] hover:bg-[#0041a3] disabled:bg-blue-900/50 disabled:text-gray-500 text-white font-black py-6 rounded-[2.5rem] tracking-[0.2em] uppercase text-[11px] transition-all shadow-[0_20px_60px_rgba(0,86,210,0.3)] hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-4"
+                  className="w-full bg-[#0056D2] hover:bg-[#0041a3] disabled:bg-blue-900/50 disabled:text-gray-500 text-white font-bold py-4 rounded-2xl tracking-[0.1em] uppercase text-[12px] transition-all shadow-[0_15px_40px_rgba(0,86,210,0.25)] hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3"
                 >
-                  {processing ? <Loader2 className="animate-spin" size={20} /> : <CreditCard size={20} />}
+                  {processing ? <Loader2 className="animate-spin" size={18} /> : <CreditCard size={18} />}
                   {processing ? "Processing Order..." : "Continue to Payment"}
                 </button>
                 <div className="flex items-center justify-center gap-6 pt-4 opacity-40">

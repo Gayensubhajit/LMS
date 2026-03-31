@@ -64,10 +64,14 @@ paymentsRouter.post("/create-order", async (req, res) => {
     });
   }
 
-  const amountInMinor = enrollment.amountPaid * 100;
+  const USD_TO_INR_RATE = 94;
+  let amountInMinor = enrollment.amountPaid * 100;
 
   try {
     if (provider === "razorpay") {
+      // Automatic conversion for INR-only provider
+      amountInMinor = Math.round(enrollment.amountPaid * USD_TO_INR_RATE * 100);
+
       const razorpay = getRazorpayClient();
       if (!razorpay) {
         return res.status(500).json({

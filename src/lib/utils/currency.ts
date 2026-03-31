@@ -9,7 +9,7 @@ export interface CurrencyInfo {
 // Supported currencies and their conversion rates from USD
 export const SUPPORTED_CURRENCIES: Record<string, CurrencyInfo> = {
   'US': { code: 'USD', symbol: '$', rate: 1 },
-  'IN': { code: 'INR', symbol: '₹', rate: 83 },
+  'IN': { code: 'INR', symbol: '₹', rate: 94 },
   'GB': { code: 'GBP', symbol: '£', rate: 0.79 },
   'EU': { code: 'EUR', symbol: '€', rate: 0.92 },
   'JP': { code: 'JPY', symbol: '¥', rate: 149 },

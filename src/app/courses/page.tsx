@@ -146,26 +146,39 @@ function CoursesContent() {
               </Link>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-4 bg-white/5 p-2 rounded-3xl border border-violet-500/20">
-               <div className="relative flex-1 w-full">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+            <div className="flex flex-col sm:flex-row items-center gap-4 bg-white/5 p-2 rounded-3xl border border-violet-500/20 backdrop-blur-xl">
+               <div className="relative flex-1 w-full flex items-center">
+                  <Search className="absolute left-4 text-gray-500" size={18} />
                   <input 
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search courses..."
-                    className="w-full bg-transparent text-white px-12 py-4 outline-none placeholder:text-gray-600 text-sm sm:text-base"
+                    className="w-full bg-transparent text-white px-12 py-4 outline-none placeholder:text-gray-600 text-sm sm:text-base font-medium"
                   />
+                  <button className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white px-6 py-2.5 rounded-2xl text-xs font-bold transition-all shadow-lg shadow-violet-500/20 mr-1 active:scale-95">
+                    Search <ArrowRight size={14} />
+                  </button>
                </div>
-               <div className="flex items-center gap-2 p-2 w-full sm:w-auto">
+               <div className="flex items-center gap-2 p-2 w-full sm:w-auto border-t sm:border-t-0 sm:border-l border-white/10">
+                 <div className="flex items-center gap-2 px-3">
+                   <TrendingUp size={14} className="text-violet-400" />
+                   <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap">Sort By</span>
+                 </div>
                  <select 
                     value={sortBy} 
                     onChange={(e) => setSortBy(e.target.value as any)}
-                    className="w-full sm:w-auto bg-background/50 border border-violet-500/20 text-gray-300 text-xs sm:text-sm px-4 py-2 rounded-2xl outline-none"
+                    className="w-full sm:w-auto bg-[#0a0a1a] border border-violet-500/20 text-gray-300 text-xs font-bold px-4 py-2.5 rounded-2xl outline-none cursor-pointer hover:border-violet-500/40 transition-all appearance-none pr-8 relative"
+                    style={{
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%237c3aed'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='Length19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`,
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'right 12px center',
+                      backgroundSize: '12px',
+                    }}
                   >
-                   <option value="popular">Popular</option>
-                   <option value="rating">Top Rated</option>
-                   <option value="priceLow">Price: Low to High</option>
-                   <option value="priceHigh">Price: High to Low</option>
+                   <option value="popular" className="bg-[#0a0a1a] text-white">Most Popular</option>
+                   <option value="rating" className="bg-[#0a0a1a] text-white">Top Rated</option>
+                   <option value="priceLow" className="bg-[#0a0a1a] text-white">Price: Low to High</option>
+                   <option value="priceHigh" className="bg-[#0a0a1a] text-white">Price: High to Low</option>
                  </select>
                </div>
             </div>

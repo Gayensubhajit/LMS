@@ -6,7 +6,7 @@ import { Star, Clock, Users, Play, ArrowRight, BookOpen } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import { useAuth } from "@clerk/nextjs";
 import { coursesData, type Course } from "@/lib/courses-data";
-import { mergeCourse } from "@/lib/course-utils";
+import { mergeCourse, unionCourses } from "@/lib/course-utils";
 import Link from "next/link";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
@@ -85,7 +85,7 @@ export default function CoursesSection() {
       const data = await res.json();
       if (data.ok && data.items?.length) {
         const merged = data.items.map(mergeCourse);
-        if (merged.length > 0) setCourses(merged);
+        if (merged.length > 0) setCourses(unionCourses(coursesData, merged));
       }
     } catch (err) {}
   }, []);
@@ -116,10 +116,9 @@ export default function CoursesSection() {
   }, [fetchCourses, fetchEnrollments]);
 
   const filtered =
-    (activeCategory === "All"
+    activeCategory === "All"
       ? courses
-      : courses.filter((c) => c.category === activeCategory)
-    ).slice(0, 4);
+      : courses.filter((c) => c.category === activeCategory);
 
   return (
     <section className="relative py-28 overflow-hidden" id="courses">

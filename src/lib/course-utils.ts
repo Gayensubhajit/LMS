@@ -74,3 +74,24 @@ export function mergeCourse(bc: BackendCourse): Course {
     },
   };
 }
+
+/**
+ * Uniquely merges backend courses into the static course list.
+ * Backend versions with the same slug take precedence.
+ */
+export function unionCourses(staticCourses: Course[], backendCourses: Course[]): Course[] {
+  const combined = [...staticCourses];
+  
+  backendCourses.forEach(bc => {
+    const idx = combined.findIndex(c => c.slug === bc.slug);
+    if (idx !== -1) {
+      // Update existing
+      combined[idx] = { ...combined[idx], ...bc };
+    } else {
+      // Add new
+      combined.push(bc);
+    }
+  });
+
+  return combined;
+}

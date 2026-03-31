@@ -14,7 +14,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { coursesData, type Course } from "@/lib/courses-data";
-import { mergeCourse, type BackendCourse } from "@/lib/course-utils";
+import { mergeCourse, unionCourses, type BackendCourse } from "@/lib/course-utils";
 import { Montserrat } from "next/font/google";
 import Navbar from "@/components/lms/Navbar";
 
@@ -75,7 +75,7 @@ function CoursesContent() {
       const data = await res.json();
       if (data.ok && data.items?.length) {
         const merged = data.items.map(mergeCourse).filter((c: any): c is Course => c !== null);
-        if (merged.length > 0) setCourses(merged);
+        if (merged.length > 0) setCourses(unionCourses(coursesData, merged));
       }
     } catch (err) {} finally { setBackendLoaded(true); }
   }, []);

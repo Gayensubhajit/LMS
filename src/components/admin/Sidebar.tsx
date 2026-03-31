@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useUser } from "@clerk/nextjs";
+import { backendRequest } from "@/lib/backend-client";
 import { 
   LayoutDashboard, 
   BookOpen, 
@@ -17,12 +20,30 @@ const SIDEBAR_LINKS = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/courses", label: "My Courses", icon: BookOpen },
   { href: "/admin/analytics", label: "Analytics", icon: BarChart3 },
-  { href: "/admin/users", label: "Students", icon: Users },
+  { href: "/admin/users", label: "User Mgmt", icon: Users },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const { user, isLoaded } = useUser();
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isLoaded || !user?.id) return;
+    backendRequest<{ ok: boolean; item: { role: string } }>("/users/me", {
+      clerkUserId: user.id,
+    })
+      .then((res) => {
+        if (res.ok) setUserRole(res.item.role);
+      })
+      .catch(() => setUserRole(null));
+  }, [isLoaded, user?.id]);
+
+  const filteredLinks = SIDEBAR_LINKS.filter((link) => {
+    if (link.label === "User Mgmt") return userRole === "ADMIN";
+    return true;
+  });
 
   return (
     <div className="w-64 h-screen bg-[#080a12] border-r border-white/5 flex flex-col sticky top-0 overflow-hidden">
@@ -44,7 +65,7 @@ export default function AdminSidebar() {
           Instructor Panel
         </p>
         
-        {SIDEBAR_LINKS.map((link) => {
+        {filteredLinks.map((link) => {
           const isActive = pathname === link.href;
           const Icon = link.icon;
 

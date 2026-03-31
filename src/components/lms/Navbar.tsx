@@ -21,6 +21,7 @@ import {
   Globe,
   Bell,
   ArrowLeft,
+  LayoutDashboard,
 } from "lucide-react";
 import { coursesData } from "@/lib/courses-data";
 import { useRouter, usePathname } from "next/navigation";
@@ -102,6 +103,7 @@ export default function Navbar() {
   const [mobileQuery, setMobileQuery] = useState("");
   const [profileOpen, setProfileOpen] = useState(false);
   const [hasEnrollments, setHasEnrollments] = useState(false);
+  const [userRole, setUserRole] = useState<string | null>(null);
   const [focusMobileSearch, setFocusMobileSearch] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -210,11 +212,19 @@ export default function Navbar() {
       /* silent — not critical */
     });
 
-    backendRequest<{ ok: boolean; items: unknown[] }>("/dashboard/my-courses", {
+    backendRequest<{ ok: boolean; items: any[] }>("/dashboard/my-courses", {
       clerkUserId: user.id,
     })
       .then((res) => setHasEnrollments(res.items.length > 0))
       .catch(() => setHasEnrollments(false));
+
+    backendRequest<{ ok: boolean; item: { role: string } }>("/users/me", {
+      clerkUserId: user.id,
+    })
+      .then((res) => {
+        if (res.ok) setUserRole(res.item.role);
+      })
+      .catch(() => setUserRole(null));
   }, [isLoaded, user?.id]);
 
   const addRecentSearch = (term: string, slug?: string) => {
@@ -808,6 +818,16 @@ export default function Navbar() {
 
                       {/* Menu items */}
                       <div className="py-1.5">
+                        {(userRole === "ADMIN" || userRole === "INSTRUCTOR") && (
+                          <a
+                            href="/admin"
+                            onClick={() => setProfileOpen(false)}
+                            className="flex items-center gap-3 px-4 py-2.5 text-sm text-violet-400 hover:text-white hover:bg-violet-500/10 transition-all duration-150 border-b border-white/5 mb-1"
+                          >
+                            <LayoutDashboard size={15} className="shrink-0" />
+                            Admin Dashboard
+                          </a>
+                        )}
                         {profileMenuItems.map((item) => {
                           const Icon = item.icon;
                           return (

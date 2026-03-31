@@ -189,3 +189,38 @@ adminRouter.delete("/lessons/:id", async (req, res) => {
 
   return res.status(200).json({ ok: true, message: "Lesson deleted" });
 });
+
+// GET /admin/users - List all users (protected: Admin ONLY)
+adminRouter.get("/users", async (req, res) => {
+  const user = await requireRole(req, res, [UserRole.ADMIN]);
+  if (!user) return;
+
+  const users = await prisma.user.findMany({
+    orderBy: { createdAt: "desc" },
+    include: {
+      _count: { select: { enrollments: true } }
+    }
+  });
+
+  return res.status(200).json({ ok: true, items: users });
+});
+
+// PATCH /admin/users/:id/role - Update a user's role (protected: Admin ONLY)
+adminRouter.patch("/users/:id/role", async (req, res) => {
+  const user = await requireRole(req, res, [UserRole.ADMIN]);
+  if (!user) return;
+
+  const { id } = req.params;
+  const { role } = req.body;
+
+  if (!Object.values(UserRole).includes(role)) {
+    return res.status(400).json({ ok: false, error: "Invalid role" });
+  }
+
+  const updated = await prisma.user.update({
+    where: { id },
+    data: { role }
+  });
+
+  return res.status(200).json({ ok: true, item: updated });
+});

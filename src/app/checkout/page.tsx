@@ -112,7 +112,7 @@ function CheckoutContent() {
         currency: currency,
         name: "EduNova LMS",
         description: `Enrollment for ${course.title} (${getDurationLabel()})`,
-        image: "https://your-logo-url.com/logo.png",
+        image: "https://cdn-icons-png.flaticon.com/512/3413/3413535.png",
         order_id: orderId,
         handler: function (response: any) {
           // Success Callback (The webhook will also handle this for security)

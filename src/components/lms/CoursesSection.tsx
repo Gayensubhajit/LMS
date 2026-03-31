@@ -115,10 +115,11 @@ export default function CoursesSection() {
     void fetchEnrollments();
   }, [fetchCourses, fetchEnrollments]);
 
-  const filtered =
+  const filtered = (
     activeCategory === "All"
       ? courses
-      : courses.filter((c) => c.category === activeCategory);
+      : courses.filter((c) => c.category === activeCategory)
+  ).slice(0, 4);
 
   return (
     <section className="relative py-28 overflow-hidden" id="courses">

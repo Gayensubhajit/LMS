@@ -90,7 +90,10 @@ function CoursesContent() {
       });
       const data = await res.json();
       if (data.ok && data.items) {
-        setEnrolledSlugs(new Set(data.items.map((e: any) => e.course.slug)));
+        const activeSlugs = data.items
+          .filter((e: any) => e.status === "ACTIVE")
+          .map((e: any) => e.course.slug);
+        setEnrolledSlugs(new Set(activeSlugs));
       }
     } catch (err) {}
   }, [userId, getToken]);

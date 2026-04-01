@@ -136,7 +136,7 @@ export default function CoursesSection() {
       />
 
       <div
-        className={`${montserrat.className} relative z-10 max-w-7xl mx-auto px-6`}
+        className={`${montserrat.className} relative z-10 max-w-5xl mx-auto px-6`}
         ref={ref}
       >
         {/* Header */}
@@ -177,7 +177,7 @@ export default function CoursesSection() {
               onClick={() => setActiveCategory(cat)}
               className={`${montserrat.className} px-5 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                 activeCategory === cat
-                  ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-[0_0_20px_rgba(124,58,237,0.4)]"
+                  ? "bg-linear-to-r from-violet-600 to-purple-600 text-white shadow-[0_0_20px_rgba(124,58,237,0.4)]"
                   : "glass-card text-gray-400 hover:text-white hover:border-violet-500/40"
               }`}
             >
@@ -220,7 +220,7 @@ export default function CoursesSection() {
               >
                 {/* Thumbnail */}
                 <div
-                  className={`relative h-44 bg-gradient-to-br ${gradient} flex items-center justify-center overflow-hidden`}
+                  className={`relative h-44 bg-linear-to-br ${gradient} flex items-center justify-center overflow-hidden`}
                 >
                   {course.img ? (
                     <img 

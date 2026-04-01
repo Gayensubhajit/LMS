@@ -8,13 +8,16 @@ export default function SignInPage() {
     return (
       <main className="min-h-screen bg-background text-foreground flex items-center justify-center px-6 py-14">
         <div className="max-w-xl w-full glass-card rounded-3xl border border-violet-500/20 p-8">
-          <h1 className="text-3xl font-black text-white mb-3">Clerk not configured yet</h1>
+          <h1 className="text-3xl font-black text-white mb-3">
+            Clerk not configured yet
+          </h1>
           <p className="text-gray-400 mb-4">
-            Add `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` to enable Clerk auth.
+            Add `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` to
+            enable Clerk auth.
           </p>
           <Link
             href="/auth/sign-up"
-            className="inline-flex items-center justify-center bg-gradient-to-r from-violet-600 to-purple-600 text-white px-5 py-2.5 rounded-xl font-semibold"
+            className="inline-flex items-center justify-center bg-linear-to-r from-violet-600 to-purple-600 text-white px-5 py-2.5 rounded-xl font-semibold"
           >
             Go to Sign Up
           </Link>

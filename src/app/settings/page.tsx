@@ -80,13 +80,6 @@ export default function SettingsPage() {
     }
   };
 
-  if (!isLoaded || loading) {
-    return (
-      <div className="min-h-screen bg-[#0a0a16] flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
-      </div>
-    );
-  }
   if (!isSignedIn) {
     return (
       <div className="min-h-screen bg-[#080a10] text-white flex items-center justify-center pt-20">
@@ -95,6 +88,14 @@ export default function SettingsPage() {
             theme: dark,
           }}
         />
+      </div>
+    );
+  }
+
+  if (!isLoaded || loading) {
+    return (
+      <div className="min-h-screen bg-[#0a0a16] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
       </div>
     );
   }

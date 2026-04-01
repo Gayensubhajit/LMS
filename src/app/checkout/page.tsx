@@ -30,7 +30,7 @@ declare global {
 function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { user } = useUser();
+  const { user, isSignedIn, isLoaded } = useUser();
   const { getToken, userId } = useAuth();
 
   const slug = searchParams.get("slug");
@@ -185,7 +185,11 @@ function CheckoutContent() {
     }
   };
 
-  if (loading)
+  if(!isSignedIn){
+    
+  }
+
+  if (!isLoaded || loading)
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#050510]">
         <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />

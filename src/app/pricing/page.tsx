@@ -315,7 +315,9 @@ export default function PricingPage() {
           <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-violet-600/5 rounded-full blur-[140px]" />
         </div>
 
-        <main className={`${montserrat.className} relative z-10 max-w-6xl mx-auto px-6 pt-28 pb-32`}>
+        <main
+          className={`${montserrat.className} relative z-10 max-w-6xl mx-auto px-6 pt-28 pb-32`}
+        >
           {/* ── Hero ── */}
           <div className="text-center mb-14">
             <motion.div
@@ -333,7 +335,9 @@ export default function PricingPage() {
               className="font-serif text-5xl md:text-6xl font-black mb-5 leading-[1.1] tracking-tight"
             >
               Flexible Plans for <br />
-              <span className={`${montserrat.className} bg-linear-to-r from-violet-400 to-purple-500 bg-clip-text text-transparent`}>
+              <span
+                className={`${montserrat.className} bg-linear-to-r from-violet-400 to-purple-500 bg-clip-text text-transparent`}
+              >
                 Every Career Level
               </span>
             </motion.h1>
@@ -402,55 +406,57 @@ export default function PricingPage() {
               </h2>
             </div>
 
-            <div className="rounded-2xl overflow-hidden border border-white/[0.07] bg-white/[0.02]">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-white/[0.06]">
-                    <th className="py-5 px-6 text-left text-xs font-black text-gray-500 uppercase tracking-widest">
-                      Feature
-                    </th>
-                    <th className="py-5 px-4 text-center text-xs font-black text-gray-400 uppercase tracking-widest">
-                      Single
-                    </th>
-                    <th className="py-5 px-4 text-center text-xs font-black text-violet-400 uppercase tracking-widest">
-                      Plus
-                    </th>
-                    <th className="py-5 px-4 text-center text-xs font-black text-blue-400 uppercase tracking-widest">
-                      Enterprise
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/[0.04]">
-                  {COMPARISON.map((row) => (
-                    <tr
-                      key={row.feature}
-                      className="hover:bg-white/[0.02] transition-colors"
-                    >
-                      <td className="py-4 px-6 text-sm text-gray-300 font-medium">
-                        {row.feature}
-                      </td>
-                      {[row.free, row.plus, row.ent].map((val, idx) => (
-                        <td key={idx} className="py-4 px-4 text-center">
-                          {val ? (
-                            <Check
-                              size={16}
-                              className={
-                                idx === 1
-                                  ? "text-violet-400 mx-auto"
-                                  : idx === 2
-                                    ? "text-blue-400 mx-auto"
-                                    : "text-gray-500 mx-auto"
-                              }
-                            />
-                          ) : (
-                            <div className="w-4 h-px bg-white/10 mx-auto" />
-                          )}
-                        </td>
-                      ))}
+            <div className="rounded-2xl border border-white/7 bg-white/2 overflow-hidden">
+              <div className="w-full overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-white/6">
+                      <th className="py-5 px-6 text-left text-xs font-black text-gray-500 uppercase tracking-widest">
+                        Feature
+                      </th>
+                      <th className="py-5 px-4 text-center text-xs font-black text-gray-400 uppercase tracking-widest">
+                        Single
+                      </th>
+                      <th className="py-5 px-4 text-center text-xs font-black text-violet-400 uppercase tracking-widest">
+                        Plus
+                      </th>
+                      <th className="py-5 px-4 text-center text-xs font-black text-blue-400 uppercase tracking-widest">
+                        Enterprise
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="divide-y divide-white/4">
+                    {COMPARISON.map((row) => (
+                      <tr
+                        key={row.feature}
+                        className="hover:bg-white/2 transition-colors"
+                      >
+                        <td className="py-4 px-6 text-sm text-gray-300 font-medium">
+                          {row.feature}
+                        </td>
+                        {[row.free, row.plus, row.ent].map((val, idx) => (
+                          <td key={idx} className="py-4 px-4 text-center">
+                            {val ? (
+                              <Check
+                                size={16}
+                                className={
+                                  idx === 1
+                                    ? "text-violet-400 mx-auto"
+                                    : idx === 2
+                                      ? "text-blue-400 mx-auto"
+                                      : "text-gray-500 mx-auto"
+                                }
+                              />
+                            ) : (
+                              <div className="w-4 h-px bg-white/10 mx-auto" />
+                            )}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 

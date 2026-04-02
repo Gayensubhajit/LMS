@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-
 import { coursesData } from "@/lib/courses-data";
 
 type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
@@ -11,19 +10,22 @@ export async function POST(req: Request) {
     temperature?: number;
     userName?: string;
   };
+  
   try {
     payload = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const apiKey = process.env.OPENAI_API_KEY;
-  const model = payload.model ?? process.env.OPENAI_MODEL ?? "gpt-4o-mini";
+  // Use the OpenRouter Key from the environment
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  // Default to a high-quality free multimodal model on OpenRouter
+  const model = payload.model ?? "google/gemma-3-27b-it:free";
   const temperature = payload.temperature ?? 0.5;
 
   if (!apiKey) {
     return NextResponse.json(
-      { error: "OPENAI_API_KEY is not set on the server." },
+      { error: "OPENROUTER_API_KEY is not set on the server. Please check your environment variables." },
       { status: 500 },
     );
   }
@@ -55,11 +57,14 @@ export async function POST(req: Request) {
   const finalMessages = [systemPrompt, ...messages.filter(m => m.role !== 'system')];
 
   try {
-    const upstream = await fetch("https://api.openai.com/v1/chat/completions", {
+    // Calling OpenRouter API (OpenAI Compatible)
+    const upstream = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        "Authorization": `Bearer ${apiKey}`,
+        "HTTP-Referer": "https://edunova-lms.vercel.app", // Optional
+        "X-Title": "EduNova AI Assistant",              // Optional
       },
       body: JSON.stringify({
         model,
@@ -68,21 +73,20 @@ export async function POST(req: Request) {
       }),
     });
 
-    const data: any = await upstream.json().catch(() => ({}));
+    const data = await upstream.json().catch(() => ({}));
 
     if (!upstream.ok) {
-      const upstreamError =
-        data?.error?.message ?? `OpenAI request failed (${upstream.status})`;
-      return NextResponse.json({ error: upstreamError }, { status: 500 });
+      const upstreamError = data?.error?.message ?? `OpenRouter request failed (${upstream.status})`;
+      console.error("OpenRouter Error:", upstreamError);
+      return NextResponse.json({ error: upstreamError }, { status: upstream.status });
     }
 
-    const reply =
-      data?.choices?.[0]?.message?.content ?? data?.choices?.[0]?.text ?? "";
-
+    const reply = data?.choices?.[0]?.message?.content ?? "";
     return NextResponse.json({ reply });
   } catch (err) {
+    console.error("Assistant Error:", err);
     return NextResponse.json(
-      { error: (err as Error)?.message ?? "Assistant request failed" },
+      { error: (err as Error)?.message ?? "Neural Synchronization Failure" },
       { status: 500 },
     );
   }

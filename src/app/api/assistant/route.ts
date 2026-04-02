@@ -23,7 +23,11 @@ export async function POST(req: Request) {
   const model = payload.model ?? "google/gemma-3-27b-it:free";
   const temperature = payload.temperature ?? 0.5;
 
+  console.log("Assistant Debug - Model:", model);
+  console.log("Assistant Debug - Key exists:", !!apiKey);
+
   if (!apiKey) {
+    console.error("Assistant Error: OPENROUTER_API_KEY is missing from environment.");
     return NextResponse.json(
       { error: "OPENROUTER_API_KEY is not set on the server. Please check your environment variables." },
       { status: 500 },
@@ -57,14 +61,15 @@ export async function POST(req: Request) {
   const finalMessages = [systemPrompt, ...messages.filter(m => m.role !== 'system')];
 
   try {
+    console.log("Assistant - Sending request to OpenRouter...");
     // Calling OpenRouter API (OpenAI Compatible)
     const upstream = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://edunova-lms.vercel.app", // Optional
-        "X-Title": "EduNova AI Assistant",              // Optional
+        "HTTP-Referer": "https://edunova-lms.vercel.app",
+        "X-Title": "EduNova AI Assistant",
       },
       body: JSON.stringify({
         model,
@@ -76,15 +81,16 @@ export async function POST(req: Request) {
     const data = await upstream.json().catch(() => ({}));
 
     if (!upstream.ok) {
+      console.error("OpenRouter Response Error:", data);
       const upstreamError = data?.error?.message ?? `OpenRouter request failed (${upstream.status})`;
-      console.error("OpenRouter Error:", upstreamError);
       return NextResponse.json({ error: upstreamError }, { status: upstream.status });
     }
 
     const reply = data?.choices?.[0]?.message?.content ?? "";
+    console.log("Assistant - Successfully generated response.");
     return NextResponse.json({ reply });
   } catch (err) {
-    console.error("Assistant Error:", err);
+    console.error("Assistant Runtime Error:", err);
     return NextResponse.json(
       { error: (err as Error)?.message ?? "Neural Synchronization Failure" },
       { status: 500 },

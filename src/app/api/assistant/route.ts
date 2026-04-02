@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import { coursesData } from "@/lib/courses-data";
+
 type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
 
 export async function POST(req: Request) {
@@ -7,6 +9,7 @@ export async function POST(req: Request) {
     messages?: ChatMessage[];
     model?: string;
     temperature?: number;
+    userName?: string;
   };
   try {
     payload = await req.json();
@@ -16,30 +19,40 @@ export async function POST(req: Request) {
 
   const apiKey = process.env.OPENAI_API_KEY;
   const model = payload.model ?? process.env.OPENAI_MODEL ?? "gpt-4o-mini";
-  const temperature = payload.temperature ?? 0.7;
+  const temperature = payload.temperature ?? 0.5;
 
   if (!apiKey) {
     return NextResponse.json(
-      {
-        error:
-          "OPENAI_API_KEY is not set on the server. Set it in your environment variables to enable the assistant.",
-      },
+      { error: "OPENAI_API_KEY is not set on the server." },
       { status: 500 },
     );
   }
 
   const messages: ChatMessage[] = payload.messages ?? [];
+  
+  // Serialize courses for context
+  const courseSummary = coursesData.map(c => 
+    `- ${c.title} (${c.category}, ${c.level}): by ${c.instructor}. Cost: $${c.price.oneMonth}/mo. ${c.shortDescription}`
+  ).join("\n");
+
   const systemPrompt: ChatMessage = {
     role: "system",
-    content:
-      "You are EduNova, a helpful AI learning assistant. Be clear, accurate, and concise. When helpful, provide step-by-step guidance, examples, and recommended next actions for the user.",
+    content: `You are EduNova Intel, a premium AI learning concierge for the EduNova platform. 
+    ${payload.userName ? `Greet the user as ${payload.userName}.` : ""}
+    Be elite, professional, and intelligent. 
+    
+    You know everything about the following courses currently on EduNova:
+    ${courseSummary}
+    
+    GUIDELINES:
+    1. If a user asks about pricing, mention the monthly rate or the value of long-term bundles.
+    2. Recommend specific courses based on their goals (Design vs Development).
+    3. Be concise and use a futuristic, intelligent tone.
+    4. If asked about something not on EduNova, answer as a general AI but always bring it back to how EduNova can help.`,
   };
 
-  // Ensure the system prompt is at the front.
-  const finalMessages =
-    messages.length === 0 || messages[0]?.role !== "system"
-      ? [systemPrompt, ...messages]
-      : messages;
+  // Ensure the system prompt is always priority.
+  const finalMessages = [systemPrompt, ...messages.filter(m => m.role !== 'system')];
 
   try {
     const upstream = await fetch("https://api.openai.com/v1/chat/completions", {

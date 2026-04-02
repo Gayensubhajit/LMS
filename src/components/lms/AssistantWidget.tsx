@@ -1,28 +1,62 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUser } from "@clerk/nextjs";
+import { 
+  Send, 
+  Sparkles, 
+  X, 
+  Minimize2, 
+  GraduationCap, 
+  DollarSign, 
+  Zap 
+} from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
-import { Send, Sparkles, X, Minimize2 } from "lucide-react";
 
 type ChatMessage = { role: "user" | "assistant" | "system"; content: string };
 
+const QUICK_CHIPS = [
+  { 
+    label: "Recommended courses", 
+    icon: Zap, 
+    prompt: "What are your top recommended courses for someone starting in 2026?" 
+  },
+  { 
+    label: "Pricing & Plans", 
+    icon: DollarSign, 
+    prompt: "Tell me about your course pricing and subscription plans." 
+  },
+  { 
+    label: "Browse free content", 
+    icon: GraduationCap, 
+    prompt: "Show me all the free courses available on EduNova." 
+  },
+];
+
 export default function AssistantWidget() {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      role: "assistant",
-      content:
-        "Hi! I’m your EduNova learning assistant. Ask me anything about courses, roadmaps, or next steps in your learning journey.",
-    },
-  ]);
+  const { user, isLoaded: userLoaded } = useUser();
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const endRef = useRef<HTMLDivElement | null>(null);
+
+  // Initialize greeting personally
+  useEffect(() => {
+    if (messages.length === 0 && userLoaded) {
+      const name = user?.firstName ?? "Explorer";
+      setMessages([
+        {
+          role: "assistant",
+          content: `Welcome to EduNova Intel, ${name}. I am your neural learning guide. How can I accelerate your journey today?`,
+        },
+      ]);
+    }
+  }, [userLoaded, user?.firstName, messages.length]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -30,12 +64,12 @@ export default function AssistantWidget() {
 
   const canSend = useMemo(() => input.trim().length > 0 && !loading, [input, loading]);
 
-  const sendMessage = async () => {
-    const text = input.trim();
+  const sendMessage = async (overrideText?: string) => {
+    const text = overrideText ?? input.trim();
     if (!text || loading) return;
 
     setLoading(true);
-    setInput("");
+    if (!overrideText) setInput("");
 
     const userMessage: ChatMessage = { role: "user", content: text };
     setMessages((prev) => [...prev, userMessage]);
@@ -47,6 +81,7 @@ export default function AssistantWidget() {
         body: JSON.stringify({
           model: "gpt-4o-mini",
           temperature: 0.5,
+          userName: user?.firstName,
           messages: [
             ...messages.slice(-8).filter((m) => m.role !== "system"),
             userMessage,
@@ -55,23 +90,11 @@ export default function AssistantWidget() {
       });
 
       const data: { reply?: string; error?: string } = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error ?? `Assistant failed (${res.status})`);
-      }
+      if (!res.ok) throw new Error(data.error ?? "Failed");
 
-      const assistantMessage: ChatMessage = {
-        role: "assistant",
-        content: data.reply ?? "",
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
+      setMessages((prev) => [...prev, { role: "assistant", content: data.reply ?? "" }]);
     } catch (err) {
-      const message =
-        (err as Error)?.message ??
-        "Something went wrong contacting the assistant.";
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: `Error: ${message}` },
-      ]);
+      setMessages((prev) => [...prev, { role: "assistant", content: "I encountered a neural synchronization error. Please try again." }]);
     } finally {
       setLoading(false);
     }
@@ -81,77 +104,68 @@ export default function AssistantWidget() {
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <motion.button
-          whileHover={{ scale: 1.1, boxShadow: "0 0 40px rgba(124,58,237,0.6)" }}
+          whileHover={{ scale: 1.1, boxShadow: "0 0 50px rgba(124,58,237,0.8)" }}
           whileTap={{ scale: 0.9 }}
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: "spring", stiffness: 260, damping: 20 }}
-          className="fixed right-6 bottom-6 z-50 w-14 h-14 rounded-full hidden md:flex items-center justify-center border border-violet-500/30 group"
+          className="fixed right-6 bottom-6 z-50 w-16 h-16 rounded-full hidden md:flex items-center justify-center border-2 border-violet-500/50 group overflow-hidden"
           style={{
-            background: "rgba(124,58,237,0.15)",
-            backdropFilter: "blur(12px)",
-            boxShadow: "0 0 25px rgba(124,58,237,0.4)",
+            background: "linear-gradient(135deg, rgba(124,58,237,0.2), rgba(168,85,247,0.1))",
+            backdropFilter: "blur(20px)",
+            boxShadow: "0 0 30px rgba(124,58,237,0.3)",
           }}
-          aria-label="Open AI assistant"
         >
-          {/* Pulsing glow */}
-          <div className="absolute inset-0 rounded-full animate-pulse bg-violet-500/10" />
-          <Sparkles className="size-6 text-violet-400 group-hover:text-white transition-colors" />
+          <div className="absolute inset-0 bg-violet-600/10 group-hover:bg-violet-600/30 transition-colors" />
+          <Sparkles className="size-7 text-violet-400 group-hover:text-white transition-all duration-300 drop-shadow-[0_0_10px_rgba(124,58,237,0.5)]" />
+          <motion.div 
+            animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.6, 0.3] }} 
+            transition={{ repeat: Infinity, duration: 3 }}
+            className="absolute inset-0 border-4 border-violet-500/20 rounded-full" 
+          />
         </motion.button>
       </SheetTrigger>
 
       <SheetContent 
         side="right" 
-        className="p-0 border-l border-white/10 w-full sm:max-w-md shadow-2xl"
-        style={{ 
-          background: "rgba(8,10,16,0.95)", 
-          backdropFilter: "blur(24px)" 
-        }}
+        className="p-0 border-l border-white/10 w-full sm:max-w-md shadow-2xl flex flex-col focus:outline-none"
+        style={{ background: "#050510", borderLeft: "1px solid rgba(255,255,255,0.05)" }}
       >
-        {/* Header */}
-        <div className="relative overflow-hidden border-b border-white/5 py-5 px-6">
-          {/* Header background glow */}
-          <div className="absolute top-0 right-0 w-32 h-32 rounded-full bg-violet-600/10 blur-3xl pointer-events-none" />
-          
+        <div className="relative overflow-hidden border-b border-white/5 py-6 px-8 bg-black/40">
+          <div className="absolute top-0 right-0 w-48 h-48 rounded-full bg-violet-600/10 blur-[100px] pointer-events-none" />
           <div className="flex items-center gap-4 relative z-10">
-            <div className="w-10 h-10 rounded-xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center shadow-[0_0_15px_rgba(124,58,237,0.3)]">
-              <Sparkles className="size-5 text-violet-400" />
+            <div className="w-12 h-12 rounded-2xl bg-violet-600/20 border border-violet-500/40 flex items-center justify-center shadow-[0_0_20px_rgba(124,58,237,0.4)]">
+              <Sparkles className="size-6 text-violet-400 animate-pulse" />
             </div>
             <div>
-              <h3 className="font-bold text-white text-lg tracking-tight">Pioneer Assistant</h3>
-              <div className="flex items-center gap-1.5 text-xs text-gray-500">
+              <h3 className="font-black text-white text-xl tracking-tight uppercase italic">EduNova <span className="text-violet-500">Intel</span></h3>
+              <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-500">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Adaptive Intelligence
+                Neural Sync Active
               </div>
             </div>
-            <button 
-              onClick={() => setIsOpen(false)}
-              className="ml-auto p-2 text-gray-500 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-            >
-              <Minimize2 size={18} />
+            <button onClick={() => setIsOpen(false)} className="ml-auto p-2 text-gray-500 hover:text-white transition-colors">
+              <Minimize2 size={20} />
             </button>
           </div>
         </div>
 
-        {/* Message area */}
-        <ScrollArea className="h-[calc(100vh-145px)] px-6">
-          <div className="flex flex-col gap-5 py-6">
+        <ScrollArea className="flex-1 px-8">
+          <div className="flex flex-col gap-6 py-8">
             <AnimatePresence initial={false}>
               {messages.map((m, idx) => {
                 const isUser = m.role === "user";
                 return (
                   <motion.div
                     key={`${m.role}-${idx}`}
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    initial={{ opacity: 0, x: isUser ? 20 : -20, scale: 0.9 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
                     className={`flex ${isUser ? "justify-end" : "justify-start"}`}
                   >
-                    <div
-                      className={[
-                        "max-w-[88%] px-4 py-3 text-sm leading-relaxed",
+                    <div className={[
+                        "max-w-[90%] px-5 py-4 text-sm leading-relaxed font-medium",
                         isUser
-                          ? "bg-violet-600/20 border border-violet-500/30 rounded-2xl rounded-tr-none text-white shadow-[0_4px_15px_rgba(124,58,237,0.1)]"
-                          : "bg-white/5 border border-white/10 rounded-2xl rounded-tl-none text-gray-300 backdrop-blur-md",
+                          ? "bg-violet-600 border border-violet-400/30 rounded-[24px] rounded-tr-none text-white shadow-xl shadow-violet-900/20"
+                          : "bg-white/5 border border-white/10 rounded-[24px] rounded-tl-none text-gray-200 backdrop-blur-3xl",
                       ].join(" ")}
                     >
                       {m.content}
@@ -162,62 +176,59 @@ export default function AssistantWidget() {
             </AnimatePresence>
 
             {loading && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex justify-start"
-              >
-                <div className="bg-white/5 border border-white/10 rounded-2xl rounded-tl-none px-4 py-3 text-sm text-gray-400 backdrop-blur-md flex items-center gap-3">
-                  <Spinner className="size-3" />
-                  <span>Synthesizing response...</span>
+              <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex justify-start">
+                <div className="bg-white/5 border border-white/10 rounded-2xl rounded-tl-none px-5 py-4 text-xs text-violet-400 flex items-center gap-3 italic font-bold tracking-tight">
+                  <Spinner className="size-4" />
+                  <span>Synthesizing Knowledge...</span>
                 </div>
               </motion.div>
             )}
-
             <div ref={endRef} />
           </div>
         </ScrollArea>
 
-        {/* Input area */}
-        <div className="absolute bottom-0 left-0 right-0 border-t border-white/5 p-6 bg-transparent">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              void sendMessage();
-            }}
-            className="relative"
-          >
+        <div className="p-8 border-t border-white/5 bg-black/40">
+          {messages.length < 4 && !loading && (
+            <div className="flex flex-col gap-2 mb-6">
+              {QUICK_CHIPS.map((chip, i) => (
+                <button
+                  key={i}
+                  onClick={() => void sendMessage(chip.prompt)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/5 border border-white/10 hover:border-violet-500/50 hover:bg-violet-600/10 text-left text-xs font-bold text-gray-400 hover:text-white transition-all group"
+                >
+                  <chip.icon size={14} className="text-violet-500 group-hover:scale-110 transition-transform" />
+                  {chip.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <form onSubmit={(e) => { e.preventDefault(); void sendMessage(); }} className="relative">
             <Textarea
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  void sendMessage();
-                }
-              }}
-              placeholder="Ask me anything..."
-              className="min-h-[60px] max-h-[160px] w-full bg-white/5 border-white/10 focus:border-violet-500/50 rounded-2xl p-4 text-sm text-white resize-none pr-12 transition-all ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-gray-600"
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void sendMessage(); } }}
+              placeholder="Query the EduNova Neural Engine..."
+              className="min-h-[80px] max-h-[160px] w-full bg-white/5 border-white/10 focus:border-violet-500/50 rounded-3xl p-5 text-sm text-white resize-none pr-14 transition-all focus-visible:ring-0 placeholder:text-gray-700 font-bold"
             />
-
             <button
               type="submit"
               disabled={!canSend}
-              className={`absolute right-3 bottom-3 p-2 rounded-xl transition-all ${
+              className={`absolute right-4 bottom-4 p-3 rounded-2xl transition-all ${
                 canSend 
-                  ? "bg-violet-600 text-white shadow-lg shadow-violet-600/20" 
-                  : "bg-white/5 text-gray-600 cursor-not-allowed"
+                  ? "bg-violet-600 text-white shadow-lg shadow-violet-600/40 hover:scale-105 active:scale-95" 
+                  : "bg-white/5 text-gray-700"
               }`}
             >
               {loading ? <Spinner className="size-4" /> : <Send className="size-4" />}
             </button>
           </form>
-          <p className="text-[10px] text-gray-600 mt-2 text-center font-medium uppercase tracking-widest opacity-50">
-            Powered by EduNova AI Neural Engine
-          </p>
+          <div className="flex items-center justify-center gap-2 mt-4 opacity-30">
+             <Sparkles size={10} className="text-violet-500" />
+             <p className="text-[9px] text-gray-400 font-black uppercase tracking-[0.2em]">Neural Engine V4.0</p>
+          </div>
         </div>
       </SheetContent>
     </Sheet>
   );
 }
-

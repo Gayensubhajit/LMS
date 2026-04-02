@@ -396,18 +396,18 @@ export default function Navbar() {
 
                 <div className="space-y-1">
                   {navLinks.map(l => (
-                    <a key={l.label} href={l.href} className="block py-4 text-2xl font-black text-white border-b border-white/5 flex items-center justify-between group">
-                      {l.label} <ChevronRight size={20} className="text-violet-600 group-hover:translate-x-1 transition-transform" />
+                    <a key={l.label} href={l.href} className="block py-3.5 text-lg font-black text-white border-b border-white/5 flex items-center justify-between group">
+                      {l.label} <ChevronRight size={18} className="text-violet-600 group-hover:translate-x-1 transition-transform" />
                     </a>
                   ))}
                   {isLoaded && user && (
-                    <a href="/my-courses" className="block py-4 text-2xl font-black text-violet-400 border-b border-white/5 flex items-center justify-between group">
-                      My Learning <ChevronRight size={20} className="text-violet-600 group-hover:translate-x-1 transition-transform" />
+                    <a href="/my-courses" className="block py-3.5 text-lg font-black text-violet-400 border-b border-white/5 flex items-center justify-between group">
+                      My Learning <ChevronRight size={18} className="text-violet-600 group-hover:translate-x-1 transition-transform" />
                     </a>
                   )}
                   {isLoaded && user && (userRole === "ADMIN" || userRole === "INSTRUCTOR" || userRole === "SUPER_ADMIN") && (
-                    <a href="/admin" className="block py-4 text-2xl font-black text-amber-500 border-b border-white/5 flex items-center justify-between group">
-                      Admin Dashboard <ChevronRight size={20} className="text-amber-600 group-hover:translate-x-1 transition-transform" />
+                    <a href="/admin" className="block py-3.5 text-lg font-black text-amber-500 border-b border-white/5 flex items-center justify-between group">
+                      Admin Dashboard <ChevronRight size={18} className="text-amber-600 group-hover:translate-x-1 transition-transform" />
                     </a>
                   )}
                 </div>
@@ -426,7 +426,7 @@ export default function Navbar() {
             ) : (
               <div className="space-y-1">
                 <button onClick={() => setMobilePanel("main")} className="flex items-center gap-2 text-violet-400 mb-6 font-bold uppercase tracking-widest text-[10px]"><ArrowLeft size={14} /> Back to Menu</button>
-                <h3 className="text-3xl font-black text-white mb-8">Your Account</h3>
+                <h3 className="text-xl font-black text-white mb-8 uppercase tracking-tight">Your Account</h3>
                 {[
                   { label: "Profile", href: "/profile", icon: User },
                   { label: "My Purchases", href: "/my-courses", icon: ShoppingBag },

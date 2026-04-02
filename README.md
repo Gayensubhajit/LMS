@@ -295,6 +295,6 @@ No tests are included by default in this starter. Add test setup with Jest/Playw
 
 ## 📝 License
 
-MIT (or update as needed for your project context)
+MIT Standard License
 
 ---

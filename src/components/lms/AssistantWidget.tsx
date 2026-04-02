@@ -3,19 +3,8 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
-import { 
-  Send, 
-  Sparkles, 
-  X, 
-  Minimize2, 
-  GraduationCap, 
-  DollarSign, 
-  Zap,
-  Image as ImageIcon,
-  Paperclip
-} from "lucide-react";
+import { Send, Bot, X, Minimize2, GraduationCap, DollarSign, Zap, ImagePlus } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
 import ReactMarkdown from "react-markdown";
@@ -23,26 +12,14 @@ import remarkGfm from "remark-gfm";
 
 type ChatMessage = { 
   role: "user" | "assistant" | "system"; 
-  content: string | any;
+  content: string;
   image?: string;
 };
 
 const QUICK_CHIPS = [
-  { 
-    label: "Recommended courses", 
-    icon: Zap, 
-    prompt: "What are your top recommended courses for someone starting in 2026?" 
-  },
-  { 
-    label: "Pricing & Plans", 
-    icon: DollarSign, 
-    prompt: "Tell me about your course pricing and subscription plans." 
-  },
-  { 
-    label: "Browse free content", 
-    icon: GraduationCap, 
-    prompt: "Show me all the free courses available on EduNova." 
-  },
+  { label: "Top courses for 2026", icon: Zap, prompt: "What are the best courses to take in 2026?" },
+  { label: "Free courses", icon: GraduationCap, prompt: "Show me all the free courses on EduNova." },
+  { label: "Pricing info", icon: DollarSign, prompt: "What are the pricing plans and costs?" },
 ];
 
 export default function AssistantWidget() {
@@ -53,40 +30,39 @@ export default function AssistantWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const endRef = useRef<HTMLDivElement | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Initialize greeting personally
   useEffect(() => {
     if (messages.length === 0 && userLoaded) {
-      const name = user?.firstName ?? "Explorer";
-      setMessages([
-        {
-          role: "assistant",
-          content: `Welcome to EduNova Intel, ${name}. I am your neural learning guide. How can I accelerate your journey today?`,
-        },
-      ]);
+      const name = user?.firstName ?? "there";
+      setMessages([{
+        role: "assistant",
+        content: `Hey ${name}! 👋 I'm **EduNova Intel**, your personal learning guide. Ask me anything about our courses, pricing, or your learning path!`,
+      }]);
     }
   }, [userLoaded, user?.firstName, messages.length]);
 
+  // Auto-scroll to bottom
   useEffect(() => {
-    // Small delay to ensure the content is rendered before scrolling
     const timer = setTimeout(() => {
-      endRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+      }
+    }, 60);
     return () => clearTimeout(timer);
   }, [messages, loading]);
 
-  const canSend = useMemo(() => (input.trim().length > 0 || selectedImage) && !loading, [input, selectedImage, loading]);
+  const canSend = useMemo(() => (input.trim().length > 0 || !!selectedImage) && !loading, [input, selectedImage, loading]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSelectedImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => setSelectedImage(reader.result as string);
+    reader.readAsDataURL(file);
+    // Reset the file input so the same file can be selected again
+    e.target.value = "";
   };
 
   const sendMessage = async (overrideText?: string) => {
@@ -95,25 +71,15 @@ export default function AssistantWidget() {
 
     setLoading(true);
     if (!overrideText) setInput("");
-    
-    const userImage = selectedImage;
+    const capturedImage = selectedImage;
     setSelectedImage(null);
 
-    const userMessage: ChatMessage = { 
-      role: "user", 
-      content: text,
-      image: userImage ?? undefined
-    };
-    
-    setMessages((prev) => [...prev, userMessage]);
+    const userMsg: ChatMessage = { role: "user", content: text, image: capturedImage ?? undefined };
+    setMessages(prev => [...prev, userMsg]);
 
     try {
-      // Build the multimodal payload if an image exists
-      const contentPayload = userImage 
-        ? [
-            { type: "text", text: text || "Analyze this image." },
-            { type: "image_url", image_url: { url: userImage } }
-          ]
+      const contentPayload = capturedImage
+        ? [{ type: "text", text: text || "Please analyze this image." }, { type: "image_url", image_url: { url: capturedImage } }]
         : text;
 
       const res = await fetch("/api/assistant", {
@@ -122,18 +88,17 @@ export default function AssistantWidget() {
         body: JSON.stringify({
           userName: user?.firstName,
           messages: [
-            ...messages.slice(-6).map(m => ({ role: m.role, content: m.content })),
-            { role: "user", content: contentPayload }
+            ...messages.slice(-8).map(m => ({ role: m.role, content: m.content })),
+            { role: "user", content: contentPayload },
           ],
         }),
       });
 
       const data: { reply?: string; error?: string } = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Failed");
-
-      setMessages((prev) => [...prev, { role: "assistant", content: data.reply ?? "" }]);
+      if (!res.ok) throw new Error(data.error ?? `Server error (${res.status})`);
+      setMessages(prev => [...prev, { role: "assistant", content: data.reply ?? "" }]);
     } catch (err) {
-      setMessages((prev) => [...prev, { role: "assistant", content: "I encountered a neural synchronization error. Please check your deployment environment variables." }]);
+      setMessages(prev => [...prev, { role: "assistant", content: `❌ **Error:** ${(err as Error).message}` }]);
     } finally {
       setLoading(false);
     }
@@ -143,175 +108,191 @@ export default function AssistantWidget() {
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="fixed right-6 bottom-6 z-50 w-14 h-14 rounded-2xl flex items-center justify-center border border-white/10 bg-[#0A192F] shadow-2xl group transition-all"
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", duration: 0.6 }}
+          aria-label="Open AI Assistant"
+          className="fixed right-5 bottom-5 z-50 w-14 h-14 rounded-2xl flex items-center justify-center shadow-2xl"
+          style={{ background: "linear-gradient(135deg, #0F766E, #14B8A6)" }}
         >
-          <Sparkles className="size-6 text-white group-hover:scale-110 transition-transform" />
-          <motion.div 
-            animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.2, 0.1] }} 
-            transition={{ repeat: Infinity, duration: 4 }}
-            className="absolute inset-0 bg-white rounded-2xl" 
-          />
+          <Bot className="size-6 text-white" />
         </motion.button>
       </SheetTrigger>
 
-      <SheetContent 
-        side="right" 
-        className="p-0 border-l border-white/5 w-full sm:max-w-md shadow-2xl flex flex-col focus:outline-none bg-[#020617]"
+      <SheetContent
+        side="right"
+        className="p-0 flex flex-col focus:outline-none border-l border-white/5"
+        style={{ 
+          width: "min(100vw, 420px)", 
+          maxWidth: "100vw",
+          background: "#0B1120" 
+        }}
       >
-        {/* Header - Solid Deep Sea */}
-        <div className="border-b border-white/5 py-5 px-6 bg-[#0A192F]">
-          <div className="flex items-center gap-4 relative z-10">
-            <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-              <Sparkles className="size-5 text-white" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="font-bold text-white text-base tracking-tight uppercase">EduNova <span className="opacity-50">Intel</span></h3>
-              <div className="flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-widest text-[#10B981]">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse" />
-                Active Guide
-              </div>
-            </div>
-            <button onClick={() => setIsOpen(false)} className="p-2 text-white/40 hover:text-white transition-colors">
-              <Minimize2 size={18} />
-            </button>
+        {/* ─── Header ─── */}
+        <div className="shrink-0 flex items-center gap-3 px-5 py-4 border-b border-white/5" style={{ background: "#0F1A2E" }}>
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "#0F766E" }}>
+            <Bot size={18} className="text-white" />
           </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-bold text-white tracking-wide">EduNova Intel</p>
+            <div className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
+              <span className="text-[10px] font-semibold text-teal-400 uppercase tracking-widest">Active</span>
+            </div>
+          </div>
+          <button onClick={() => setIsOpen(false)} className="p-1.5 rounded-lg text-white/30 hover:text-white hover:bg-white/5 transition-colors">
+            <Minimize2 size={16} />
+          </button>
         </div>
 
-        {/* Message Container - Fix scroll */}
-        <div className="flex-grow relative h-0"> 
-          <ScrollArea className="h-full px-6">
-            <div className="flex flex-col gap-6 py-6 pb-12">
-              <AnimatePresence initial={false}>
-                {messages.map((m, idx) => {
-                  const isUser = m.role === "user";
-                  return (
-                    <motion.div
-                      key={`${m.role}-${idx}`}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className={`flex ${isUser ? "justify-end" : "justify-start"}`}
-                    >
-                      <div className={`
-                        max-w-[85%] px-5 py-4 text-sm leading-relaxed
-                        ${isUser 
-                          ? "bg-white text-black rounded-3xl rounded-tr-none font-medium" 
-                          : "bg-white/5 border border-white/10 text-white rounded-3xl rounded-tl-none"}
-                      `}>
-                        {m.image && (
-                          <div className="mb-3 rounded-xl overflow-hidden border border-white/10">
-                            <img src={m.image} alt="Upload" className="w-full h-auto object-cover max-h-48" />
-                          </div>
-                        )}
-                        <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/50 prose-pre:border prose-pre:border-white/10">
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {typeof m.content === 'string' ? m.content : m.content[0]?.text ?? ""}
-                          </ReactMarkdown>
-                        </div>
+        {/* ─── Messages ─── */}
+        <div
+          ref={scrollContainerRef}
+          className="flex-1 overflow-y-auto px-5 py-5 space-y-4 overscroll-contain"
+          style={{ minHeight: 0 }}
+        >
+          <AnimatePresence initial={false}>
+            {messages.map((m, idx) => {
+              const isUser = m.role === "user";
+              return (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className={`flex ${isUser ? "justify-end" : "justify-start"} items-end gap-2`}
+                >
+                  {!isUser && (
+                    <div className="w-7 h-7 shrink-0 rounded-xl flex items-center justify-center mb-0.5" style={{ background: "#0F766E" }}>
+                      <Bot size={13} className="text-white" />
+                    </div>
+                  )}
+                  <div
+                    className={`max-w-[78%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                      isUser
+                        ? "text-white rounded-br-none"
+                        : "text-gray-200 rounded-bl-none border border-white/10"
+                    }`}
+                    style={isUser ? { background: "#0F766E" } : { background: "#141E33" }}
+                  >
+                    {m.image && (
+                      <div className="mb-2 rounded-xl overflow-hidden">
+                        <img src={m.image} alt="Attached" className="w-full h-auto max-h-40 object-cover" />
                       </div>
-                    </motion.div>
-                  );
-                })}
-              </AnimatePresence>
-
-              {loading && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
-                  <div className="bg-white/5 border border-white/10 rounded-2xl rounded-tl-none px-5 py-4 text-xs text-white/50 flex items-center gap-3 font-medium">
-                    <Spinner className="size-4" />
-                    <span>Processing Knowledge...</span>
+                    )}
+                    <div className="prose prose-sm prose-invert max-w-none prose-p:my-1 prose-li:my-0.5 prose-headings:my-2 prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/10 prose-code:text-teal-300">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {m.content}
+                      </ReactMarkdown>
+                    </div>
                   </div>
                 </motion.div>
-              )}
-              <div ref={endRef} />
-            </div>
-          </ScrollArea>
+              );
+            })}
+          </AnimatePresence>
+
+          {loading && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-end gap-2"
+            >
+              <div className="w-7 h-7 shrink-0 rounded-xl flex items-center justify-center" style={{ background: "#0F766E" }}>
+                <Bot size={13} className="text-white" />
+              </div>
+              <div className="px-4 py-3 rounded-2xl rounded-bl-none text-xs text-gray-400 flex items-center gap-2 border border-white/10" style={{ background: "#141E33" }}>
+                <Spinner className="size-3.5 text-teal-400" />
+                <span>Thinking...</span>
+              </div>
+            </motion.div>
+          )}
+          <div ref={messagesEndRef} />
         </div>
 
-        {/* Footer - Input Area */}
-        <div className="p-6 border-t border-white/5 bg-[#0A192F]/50">
-          {/* Selected Image Preview */}
-          {selectedImage && (
-            <div className="mb-4 relative w-20 h-20 group">
-              <img src={selectedImage} alt="Preview" className="w-full h-full object-cover rounded-xl border border-white/20 shadow-xl" />
-              <button 
-                onClick={() => setSelectedImage(null)}
-                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                <X size={12} />
-              </button>
-            </div>
-          )}
-
-          {messages.length < 3 && !loading && !selectedImage && (
+        {/* ─── Input Area ─── */}
+        <div className="shrink-0 px-5 py-4 border-t border-white/5" style={{ background: "#0F1A2E" }}>
+          {/* Quick chips — show only when early in conversation */}
+          {messages.length <= 1 && !loading && (
             <div className="flex flex-wrap gap-2 mb-4">
               {QUICK_CHIPS.map((chip, i) => (
                 <button
                   key={i}
                   onClick={() => void sendMessage(chip.prompt)}
-                  className="flex items-center gap-2 px-3 py-2 rounded-xl bg-white/5 border border-white/10 hover:border-white/30 text-[10px] font-bold text-white/60 hover:text-white transition-all"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/10 text-[11px] font-semibold text-white/60 hover:text-white hover:border-teal-500/50 hover:bg-teal-500/10 transition-all"
                 >
-                  <chip.icon size={12} />
+                  <chip.icon size={11} className="text-teal-400" />
                   {chip.label}
                 </button>
               ))}
             </div>
           )}
 
-          <div className="flex flex-col gap-3">
-            <div className="relative flex items-end gap-2">
-              <div className="flex-grow relative">
-                <Textarea
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => { 
-                    if (e.key === "Enter" && !e.shiftKey) { 
-                      e.preventDefault(); 
-                      void sendMessage(); 
-                    } 
-                  }}
-                  placeholder="Ask anything..."
-                  className="min-h-[100px] max-h-[200px] w-full bg-white/5 border-white/10 focus:border-white/30 rounded-3xl p-5 text-sm text-white resize-none transition-all focus-visible:ring-0 placeholder:text-white/20"
-                />
-                
-                <div className="absolute left-4 bottom-4 flex items-center gap-2">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    hidden
-                    ref={fileInputRef}
-                    onChange={handleImageUpload}
-                  />
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="p-2 text-white/40 hover:text-white transition-colors"
-                  >
-                    <ImageIcon size={18} />
-                  </button>
-                  <button
-                    className="p-2 text-white/40 hover:text-white transition-colors"
-                  >
-                    <Paperclip size={18} />
-                  </button>
-                </div>
-              </div>
-
+          {/* Image preview */}
+          {selectedImage && (
+            <div className="mb-3 relative w-16 h-16 group">
+              <img src={selectedImage} alt="Preview" className="w-full h-full object-cover rounded-xl border border-white/20" />
               <button
-                onClick={() => void sendMessage()}
-                disabled={!canSend}
-                className={`p-4 rounded-full transition-all flex items-center justify-center ${
-                  canSend ? "bg-white text-black shadow-xl hover:scale-105 active:scale-95" : "bg-white/5 text-white/10"
-                }`}
+                onClick={() => setSelectedImage(null)}
+                className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
               >
-                {loading ? <Spinner className="size-5" /> : <Send className="size-5" />}
+                <X size={10} />
               </button>
             </div>
-            <p className="text-[9px] text-white/20 text-center uppercase tracking-[0.2em] font-black">
-              Neural Guide 4.0 // No-Cost Intelligence
-            </p>
+          )}
+
+          {/* Message input */}
+          <div className="flex gap-2 items-end">
+            <div className="flex-1 relative">
+              <Textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    void sendMessage();
+                  }
+                }}
+                placeholder="Ask anything..."
+                rows={2}
+                className="w-full text-sm text-white rounded-2xl px-4 py-3 resize-none border-white/10 focus:border-teal-500/50 focus-visible:ring-0 placeholder:text-white/25"
+                style={{ background: "#1A2540" }}
+              />
+              {/* Image attach button inside textarea */}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute right-3 bottom-3 text-white/30 hover:text-teal-400 transition-colors"
+                title="Attach image"
+              >
+                <ImagePlus size={17} />
+              </button>
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                ref={fileInputRef}
+                onChange={handleImageUpload}
+              />
+            </div>
+
+            <button
+              onClick={() => void sendMessage()}
+              disabled={!canSend}
+              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 ${
+                canSend
+                  ? "text-white hover:scale-105 active:scale-95 shadow-lg"
+                  : "text-white/20 cursor-not-allowed"
+              }`}
+              style={canSend ? { background: "#0F766E" } : { background: "#1A2540" }}
+            >
+              {loading ? <Spinner className="size-4" /> : <Send size={16} />}
+            </button>
           </div>
+
+          <p className="text-[9px] text-white/15 text-center mt-2 uppercase tracking-widest">
+            EduNova Intel · Powered by OpenRouter
+          </p>
         </div>
       </SheetContent>
     </Sheet>

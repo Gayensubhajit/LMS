@@ -1,10 +1,36 @@
 import { NextResponse } from "next/server";
-import { coursesData } from "@/lib/courses-data";
 
+type TextContent = { type: "text"; text: string };
+type ImageContent = { type: "image_url"; image_url: { url: string } };
 type ChatMessage = { 
   role: "system" | "user" | "assistant"; 
-  content: string | Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
+  content: string | Array<TextContent | ImageContent>;
 };
+
+// Inline course knowledge to avoid import issues in edge/server context
+const COURSE_KNOWLEDGE = `
+Available Courses on EduNova:
+**Development:**
+- Frontend Fundamentals (Beginner, FREE) by Alex Chen - Covers HTML, CSS, JavaScript from scratch.
+- React & Next.js Mastery 2026 (Intermediate) by Alex Chen - $29/mo. Build production-grade apps.
+- Full-Stack Bootcamp (Advanced) by Marcus Lee - $49/mo. End-to-end web development.
+- TypeScript Masterclass (Intermediate) by Sarah Kim - $29/mo. Type-safe JavaScript.
+- Node.js Advanced (Advanced) by Marcus Lee - $39/mo. Backend/API development.
+
+**Design:**
+- Complete UI/UX Design Bootcamp (Beginner) by Jessica Willis - $29/mo. Portfolio-ready UI design.
+- Mobile App Design with Figma (Intermediate) by Marcus Lee - $29/mo. Mobile interfaces.
+- Brand Design & Strategy (All Levels) by Jessica Willis - $29/mo. Brand identity systems.
+
+**AI/ML:**
+- Generative AI Essentials (Beginner, FREE) by Dr. Sarah Park - LLMs and AI prompt engineering.
+- Machine Learning Fundamentals (Intermediate) by Dr. Sarah Park - $39/mo. Core ML concepts.
+- Deep Learning & Neural Networks (Advanced) by Dr. Sarah Park - $49/mo. Advanced AI engineering.
+
+**Business:**
+- Product Management Accelerator (All Levels) by Jordan Kim - $35/mo. PM skills and frameworks.
+- Entrepreneurship Bootcamp (All Levels) by Alex Chen - $35/mo. Start and scale a business.
+`.trim();
 
 export async function POST(req: Request) {
   let payload: {
@@ -20,45 +46,36 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  // Use the OpenRouter Key from the environment
   const apiKey = process.env.OPENROUTER_API_KEY;
-  // Use google/gemma-3-27b-it:free for multimodal support
   const model = payload.model ?? "google/gemma-3-27b-it:free";
   const temperature = payload.temperature ?? 0.5;
 
   if (!apiKey) {
     return NextResponse.json(
-      { error: "OPENROUTER_API_KEY is not set on the server dashboard (Vercel/Railway)." },
+      { error: "OPENROUTER_API_KEY is not configured in the server environment variables. Please add it to your Vercel/Railway dashboard." },
       { status: 500 },
     );
   }
 
-  const messages: ChatMessage[] = payload.messages ?? [];
-  
-  // Serialize courses for context
-  const courseSummary = coursesData.map(c => 
-    `- ${c.title} (${c.category}, ${c.level}): by ${c.instructor}. Cost: $${c.price.oneMonth}/mo. ${c.shortDescription}`
-  ).join("\n");
+  const userMessages: ChatMessage[] = payload.messages ?? [];
 
   const systemPrompt: ChatMessage = {
     role: "system",
-    content: `You are EduNova Intel, a premium AI learning concierge for the EduNova platform. 
-    ${payload.userName ? `Greet the user as ${payload.userName}.` : ""}
-    Be elite, professional, and intelligent. 
-    
-    You know everything about the following courses currently on EduNova:
-    ${courseSummary}
-    
-    GUIDELINES:
-    1. If a user asks about pricing, mention the monthly rate or the value of long-term bundles.
-    2. Recommend specific courses based on their goals (Design vs Development).
-    3. Be concise and use a futuristic, intelligent tone.
-    4. Format your responses with clear spacing, bullet points, and steps where appropriate.
-    5. If asked about an image, analyze it accurately and explain how it relates to the courses if possible.`,
+    content: `You are EduNova Intel, a smart and professional AI learning assistant for the EduNova online learning platform.${payload.userName ? ` You are speaking with ${payload.userName}.` : ""}
+
+Here is your complete knowledge about courses available on EduNova:
+${COURSE_KNOWLEDGE}
+
+RESPONSE GUIDELINES:
+- Always use clear formatting with numbered steps, bullet points, or headers when listing things.
+- For pricing questions, quote the monthly rate and mention annual savings if relevant.
+- Recommend courses specifically based on the user's stated goals.
+- Use a helpful, professional, and encouraging tone.
+- Keep responses concise but complete.
+- If the user shares an image, analyze it and relate it to learning if possible.`,
   };
 
-  // Ensure the system prompt is always priority.
-  const finalMessages = [systemPrompt, ...messages.filter(m => m.role !== 'system')];
+  const finalMessages = [systemPrompt, ...userMessages.filter(m => m.role !== "system")];
 
   try {
     const upstream = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -73,23 +90,24 @@ export async function POST(req: Request) {
         model,
         messages: finalMessages,
         temperature,
+        max_tokens: 1024,
       }),
     });
 
     const data = await upstream.json().catch(() => ({}));
 
     if (!upstream.ok) {
-      console.error("OpenRouter Response Error:", data);
-      const upstreamError = data?.error?.message ?? `OpenRouter request failed (${upstream.status})`;
-      return NextResponse.json({ error: upstreamError }, { status: upstream.status });
+      console.error("OpenRouter Error:", JSON.stringify(data));
+      const errMsg = (data as { error?: { message?: string } })?.error?.message ?? `OpenRouter error (${upstream.status})`;
+      return NextResponse.json({ error: errMsg }, { status: upstream.status });
     }
 
-    const reply = data?.choices?.[0]?.message?.content ?? "";
+    const reply = (data as { choices?: Array<{ message?: { content?: string } }> })?.choices?.[0]?.message?.content ?? "";
     return NextResponse.json({ reply });
   } catch (err) {
-    console.error("Assistant Runtime Error:", err);
+    console.error("Assistant fetch error:", err);
     return NextResponse.json(
-      { error: (err as Error)?.message ?? "Neural Synchronization Failure" },
+      { error: (err as Error)?.message ?? "Failed to reach OpenRouter" },
       { status: 500 },
     );
   }

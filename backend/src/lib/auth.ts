@@ -32,10 +32,14 @@ export async function getUserFromHeader(req: Request, res: Response) {
 
 /**
  * Ensures user has at least one of the allowed roles.
+ * Super Admin is automatically allowed if Admin is required.
  */
 export async function requireRole(req: Request, res: Response, roles: UserRole[]) {
   const user = await getUserFromHeader(req, res);
   if (!user) return null;
+
+  // SUPER_ADMIN always has full access to any role-protected route
+  if (user.role === UserRole.SUPER_ADMIN) return user;
 
   if (!roles.includes(user.role)) {
     res.status(403).json({

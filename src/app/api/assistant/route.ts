@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { coursesData } from "@/lib/courses-data";
 
-type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
+type ChatMessage = { 
+  role: "system" | "user" | "assistant"; 
+  content: string | Array<{ type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }>;
+};
 
 export async function POST(req: Request) {
   let payload: {
@@ -19,17 +22,13 @@ export async function POST(req: Request) {
 
   // Use the OpenRouter Key from the environment
   const apiKey = process.env.OPENROUTER_API_KEY;
-  // Default to a high-quality free multimodal model on OpenRouter
+  // Use google/gemma-3-27b-it:free for multimodal support
   const model = payload.model ?? "google/gemma-3-27b-it:free";
   const temperature = payload.temperature ?? 0.5;
 
-  console.log("Assistant Debug - Model:", model);
-  console.log("Assistant Debug - Key exists:", !!apiKey);
-
   if (!apiKey) {
-    console.error("Assistant Error: OPENROUTER_API_KEY is missing from environment.");
     return NextResponse.json(
-      { error: "OPENROUTER_API_KEY is not set on the server. Please check your environment variables." },
+      { error: "OPENROUTER_API_KEY is not set on the server dashboard (Vercel/Railway)." },
       { status: 500 },
     );
   }
@@ -54,15 +53,14 @@ export async function POST(req: Request) {
     1. If a user asks about pricing, mention the monthly rate or the value of long-term bundles.
     2. Recommend specific courses based on their goals (Design vs Development).
     3. Be concise and use a futuristic, intelligent tone.
-    4. If asked about something not on EduNova, answer as a general AI but always bring it back to how EduNova can help.`,
+    4. Format your responses with clear spacing, bullet points, and steps where appropriate.
+    5. If asked about an image, analyze it accurately and explain how it relates to the courses if possible.`,
   };
 
   // Ensure the system prompt is always priority.
   const finalMessages = [systemPrompt, ...messages.filter(m => m.role !== 'system')];
 
   try {
-    console.log("Assistant - Sending request to OpenRouter...");
-    // Calling OpenRouter API (OpenAI Compatible)
     const upstream = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -87,7 +85,6 @@ export async function POST(req: Request) {
     }
 
     const reply = data?.choices?.[0]?.message?.content ?? "";
-    console.log("Assistant - Successfully generated response.");
     return NextResponse.json({ reply });
   } catch (err) {
     console.error("Assistant Runtime Error:", err);

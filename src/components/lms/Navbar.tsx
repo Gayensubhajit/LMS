@@ -818,7 +818,7 @@ export default function Navbar() {
 
                       {/* Menu items */}
                       <div className="py-1.5">
-                        {(userRole === "ADMIN" || userRole === "INSTRUCTOR") && (
+                        {(userRole === "ADMIN" || userRole === "INSTRUCTOR" || userRole === "SUPER_ADMIN") && (
                           <a
                             href="/admin"
                             onClick={() => setProfileOpen(false)}

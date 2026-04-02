@@ -9,7 +9,7 @@ import { Loader2 } from "lucide-react";
 interface UserResponse {
   ok: boolean;
   item: {
-    role: "STUDENT" | "INSTRUCTOR" | "ADMIN";
+    role: "STUDENT" | "INSTRUCTOR" | "ADMIN" | "SUPER_ADMIN";
   };
 }
 
@@ -31,7 +31,7 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
           clerkUserId: user?.id,
         });
         
-        if (res.ok && (res.item.role === "ADMIN" || res.item.role === "INSTRUCTOR")) {
+        if (res.ok && (res.item.role === "ADMIN" || res.item.role === "INSTRUCTOR" || res.item.role === "SUPER_ADMIN")) {
           setIsAuthorized(true);
         } else {
           setIsAuthorized(false);

@@ -41,7 +41,7 @@ export default function AdminSidebar() {
   }, [isLoaded, user?.id]);
 
   const filteredLinks = SIDEBAR_LINKS.filter((link) => {
-    if (link.label === "User Mgmt") return userRole === "ADMIN";
+    if (link.label === "User Mgmt") return userRole === "ADMIN" || userRole === "SUPER_ADMIN";
     return true;
   });
 

@@ -217,6 +217,20 @@ adminRouter.patch("/users/:id/role", async (req, res) => {
     return res.status(400).json({ ok: false, error: "Invalid role" });
   }
 
+  // Role hierarchy logic
+  const targetUser = await prisma.user.findUnique({ where: { id } });
+  if (!targetUser) return res.status(404).json({ ok: false, error: "Target user not found" });
+
+  // 1. Only SUPER_ADMIN can create another SUPER_ADMIN
+  if (role === UserRole.SUPER_ADMIN && user.role !== UserRole.SUPER_ADMIN) {
+    return res.status(403).json({ ok: false, error: "Only Super Admins can assign Super Admin role" });
+  }
+
+  // 2. Regular ADMIN cannot modify a SUPER_ADMIN
+  if (targetUser.role === UserRole.SUPER_ADMIN && user.role !== UserRole.SUPER_ADMIN) {
+    return res.status(403).json({ ok: false, error: "Admins cannot modify Super Admins" });
+  }
+
   const updated = await prisma.user.update({
     where: { id },
     data: { role }

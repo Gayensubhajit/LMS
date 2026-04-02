@@ -24,7 +24,13 @@ const SIDEBAR_LINKS = [
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
-export default function AdminSidebar() {
+export default function AdminSidebar({ 
+  isOpen, 
+  setIsOpen 
+}: { 
+  isOpen?: boolean; 
+  setIsOpen?: (open: boolean) => void 
+}) {
   const pathname = usePathname();
   const { user, isLoaded } = useUser();
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -46,7 +52,11 @@ export default function AdminSidebar() {
   });
 
   return (
-    <div className="w-64 h-screen bg-[#080a12] border-r border-white/5 flex flex-col sticky top-0 overflow-hidden">
+    <div className={`
+      fixed lg:sticky top-0 left-0 z-50
+      w-64 h-screen bg-[#080a12] border-r border-white/5 flex flex-col overflow-hidden transition-transform duration-300 ease-in-out
+      ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+    `}>
       {/* Brand */}
       <div className="p-6 border-b border-white/5 bg-gradient-to-br from-violet-600/5 to-transparent">
         <Link href="/" className="flex items-center gap-2 group">
@@ -70,7 +80,12 @@ export default function AdminSidebar() {
           const Icon = link.icon;
 
           return (
-            <Link key={link.href} href={link.href} className="block relative">
+            <Link 
+              key={link.href} 
+              href={link.href} 
+              className="block relative"
+              onClick={() => setIsOpen?.(false)}
+            >
               <div
                 className={`
                   flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 group

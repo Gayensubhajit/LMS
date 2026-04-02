@@ -113,50 +113,55 @@ export default function AdminCoursesPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-6">
           {courses.map((course, idx) => (
             <motion.div
               key={course.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.05 }}
-              className="group p-5 bg-white/5 border border-white/5 hover:border-violet-500/30 rounded-3xl transition-all duration-300 flex flex-col lg:flex-row lg:items-center justify-between gap-6"
+              className="group p-6 bg-white/5 border border-white/5 hover:border-violet-500/30 rounded-[32px] transition-all duration-500 flex flex-col gap-6"
             >
-              <div className="flex items-center gap-5">
-                <div className="w-16 h-16 rounded-2xl bg-[#0a0a1f] border border-white/5 flex items-center justify-center group-hover:scale-105 transition-transform">
-                  <BookOpen className="text-violet-500" size={24} />
-                </div>
-                <div>
-                  <h3 className="text-white font-black group-hover:text-violet-400 transition-colors">{course.title}</h3>
-                  <div className="flex flex-wrap items-center gap-3 mt-1 text-[10px] font-black uppercase tracking-widest">
-                    <span className="text-gray-600">{course.category}</span>
-                    <span className="w-1 h-1 rounded-full bg-gray-800" />
-                    <span className={course.isPublished ? "text-emerald-500" : "text-amber-500"}>
-                      {course.isPublished ? "Published" : "Draft"}
-                    </span>
-                    <span className="w-1 h-1 rounded-full bg-gray-800" />
-                    <span className="text-gray-400">{course._count.sections} Modules</span>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+                <div className="flex items-center gap-5">
+                  <div className="w-16 h-16 rounded-2xl bg-[#0a0a1f] border border-white/5 flex items-center justify-center group-hover:scale-110 transition-transform shadow-2xl">
+                    <BookOpen size={24} className={course.isPublished ? "text-violet-500" : "text-amber-500"} />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-lg font-black text-white group-hover:text-violet-400 transition-colors truncate uppercase tracking-tight">{course.title}</h3>
+                    <div className="flex flex-wrap items-center gap-3 mt-1.5">
+                      <div className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/5 text-[9px] font-black text-gray-500 uppercase tracking-widest">
+                        {course.category}
+                      </div>
+                      <div className={`px-2.5 py-1 rounded-lg border border-white/5 text-[9px] font-black uppercase tracking-widest ${course.isPublished ? "bg-emerald-500/10 text-emerald-500" : "bg-amber-500/10 text-amber-500"}`}>
+                        {course.isPublished ? "Public" : "Draft"}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[9px] font-black text-gray-600 uppercase tracking-widest">
+                        <span className="w-1 h-1 rounded-full bg-gray-700" />
+                        {course._count.sections} Modules
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="flex items-center gap-2">
-                <Link href={`/admin/courses/${course.id}/builder`} className="flex-1 lg:flex-none">
-                  <button className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-white/5 border border-white/10 hover:bg-violet-600/20 hover:border-violet-600/50 hover:text-white text-gray-400 rounded-2xl text-xs font-bold transition-all">
-                    <Edit2 size={14} />
-                    Edit Content
+                <div className="flex items-center gap-2 sm:self-center">
+                  <Link href={`/admin/courses/${course.id}/builder`} className="flex-1 sm:flex-none">
+                    <button className="w-full flex items-center justify-center gap-2 px-6 py-3.5 bg-white/5 border border-white/10 hover:bg-violet-600/20 hover:border-violet-600/50 hover:text-white text-gray-400 rounded-2xl text-xs font-black uppercase tracking-widest transition-all">
+                      <Edit2 size={14} />
+                      Edit
+                    </button>
+                  </Link>
+                  
+                  <Link href={`/courses/${course.slug}`} target="_blank">
+                    <button className="p-3.5 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-500 hover:text-white rounded-2xl transition-all shadow-lg" title="View Public Page">
+                      <Eye size={18} />
+                    </button>
+                  </Link>
+  
+                  <button className="p-3.5 bg-white/5 border border-white/10 hover:bg-red-500/10 hover:border-red-500/30 text-gray-700 hover:text-red-500 rounded-2xl transition-all shadow-lg">
+                    <Trash2 size={18} />
                   </button>
-                </Link>
-                
-                <Link href={`/courses/${course.slug}`} target="_blank">
-                  <button className="p-3 bg-white/5 border border-white/10 hover:bg-white/10 text-gray-500 hover:text-white rounded-2xl transition-all" title="View Public Page">
-                    <Eye size={18} />
-                  </button>
-                </Link>
-
-                <button className="p-3 bg-white/5 border border-white/10 hover:bg-red-500/10 hover:border-red-500/30 text-gray-600 hover:text-red-500 rounded-2xl transition-all">
-                  <Trash2 size={18} />
-                </button>
+                </div>
               </div>
             </motion.div>
           ))}

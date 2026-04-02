@@ -12,7 +12,8 @@ import {
   BarChart3, 
   Settings, 
   PlusCircle,
-  GraduationCap
+  GraduationCap,
+  Globe
 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -123,8 +124,17 @@ export default function AdminSidebar({
       </nav>
 
       {/* Footer info */}
-      <div className="p-4 border-t border-white/5 bg-violet-600/5">
-        <div className="flex items-center gap-3 px-2">
+      <div className="p-4 border-t border-white/5 bg-violet-600/5 space-y-3">
+        <Link 
+          href="/"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-black text-gray-400 hover:text-white hover:bg-white/5 transition-all uppercase tracking-widest group"
+        >
+          <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-emerald-500/20 group-hover:text-emerald-400 transition-colors">
+            <Globe size={14} />
+          </div>
+          View Website
+        </Link>
+        <div className="flex items-center gap-3 px-3">
           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">
             System Live

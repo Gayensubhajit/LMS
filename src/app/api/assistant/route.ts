@@ -47,7 +47,9 @@ export async function POST(req: Request) {
   }
 
   const apiKey = process.env.OPENROUTER_API_KEY;
-  const model = payload.model ?? "google/gemma-3-27b-it:free";
+  // llama-3.3-70b is the most reliable free model on OpenRouter
+  const model = payload.model ?? "meta-llama/llama-3.3-70b-instruct:free";
+
   const temperature = payload.temperature ?? 0.5;
 
   if (!apiKey) {

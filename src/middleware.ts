@@ -13,7 +13,9 @@ const isPublicRoute = createRouteMatcher([
   "/features(.*)",
   "/legal(.*)",
   "/demo(.*)",
+  "/api/assistant(.*)",
 ]);
+
 
 export default clerkMiddleware(async (auth, req) => {
   // 2. If it's NOT a public route, require authentication

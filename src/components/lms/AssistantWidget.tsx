@@ -95,10 +95,22 @@ export default function AssistantWidget() {
       });
 
       const data: { reply?: string; error?: string } = await res.json();
-      if (!res.ok) throw new Error(data.error ?? `Server error (${res.status})`);
+      
+      if (!res.ok) {
+        if (res.status === 429) {
+          throw new Error("Neural Engine Cooling: OpenRouter free tier rate limit hit. Please wait 10-15 minutes or try again later.");
+        }
+        throw new Error(data.error ?? `Server error (${res.status})`);
+      }
+      
       setMessages(prev => [...prev, { role: "assistant", content: data.reply ?? "" }]);
     } catch (err) {
-      setMessages(prev => [...prev, { role: "assistant", content: `❌ **Error:** ${(err as Error).message}` }]);
+      const errorMessage = (err as Error).message;
+      const displayError = errorMessage.includes("429") || errorMessage.includes("rate limit")
+        ? `⚠️ **Cooldown Active:** ${errorMessage}`
+        : `❌ **Error:** ${errorMessage}`;
+        
+      setMessages(prev => [...prev, { role: "assistant", content: displayError }]);
     } finally {
       setLoading(false);
     }

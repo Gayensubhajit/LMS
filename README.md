@@ -110,181 +110,181 @@ No tests are included by default in this starter. Add test setup with Jest/Playw
 
 ```bash
 ├── .npmrc
-├── clerk-nextjs/ (3500 tokens)
+├── clerk-nextjs/
     ├── CLAUDE.md
-    ├── app/ (1200 tokens)
+    ├── app/
     │   ├── favicon.ico
-    │   ├── globals.css (200 tokens)
-    │   ├── layout.tsx (200 tokens)
-    │   └── page.tsx (700 tokens)
-    ├── public/ (800 tokens)
+    │   ├── globals.css
+    │   ├── layout.tsx
+    │   └── page.tsx
+    ├── public/
     │   ├── vercel.svg
     │   ├── window.svg
     │   ├── file.svg
-    │   ├── globe.svg (200 tokens)
-    │   └── next.svg (300 tokens)
+    │   ├── globe.svg
+    │   └── next.svg
     ├── postcss.config.mjs
     ├── next.config.ts
     ├── AGENTS.md
-    ├── eslint.config.mjs (200 tokens)
-    ├── .gitignore (200 tokens)
-    ├── package.json (200 tokens)
-    ├── tsconfig.json (200 tokens)
-    └── README.md (400 tokens)
-├── src/ (27300 tokens)
-    ├── app/ (4400 tokens)
+    ├── eslint.config.mjs
+    ├── .gitignore
+    ├── package.json
+    ├── tsconfig.json
+    └── README.md
+├── src/
+    ├── app/
     │   ├── favicon.ico
     │   ├── global-error.tsx
-    │   ├── legal/ (300 tokens)
-    │   │   ├── privacy/ (100 tokens)
+    │   ├── legal/
+    │   │   ├── privacy/
     │   │   │   └── page.tsx
-    │   │   ├── cookies/ (100 tokens)
+    │   │   ├── cookies/
     │   │   │   └── page.tsx
-    │   │   └── terms/ (100 tokens)
+    │   │   └── terms/
     │   │   │   └── page.tsx
-    │   ├── demo/ (100 tokens)
+    │   ├── demo/
     │   │   └── page.tsx
-    │   ├── admin/ (200 tokens)
-    │   │   └── layout.tsx (200 tokens)
-    │   ├── sign-in/ (200 tokens)
-    │   │   └── page.tsx (200 tokens)
-    │   ├── support/ (300 tokens)
-    │   │   └── page.tsx (300 tokens)
-    │   ├── page.tsx (300 tokens)
-    │   ├── courses/ (500 tokens)
-    │   │   └── [slug]/ (500 tokens)
-    │   │   │   └── page.tsx (500 tokens)
-    │   ├── auth/ (1000 tokens)
-    │   │   ├── sign-up/ (500 tokens)
-    │   │   │   └── [[...sign-up]]/ (500 tokens)
-    │   │   │   │   └── page.tsx (500 tokens)
-    │   │   └── sign-in/ (500 tokens)
-    │   │   │   └── [[...sign-in]]/ (500 tokens)
-    │   │   │       └── page.tsx (500 tokens)
-    │   ├── api/ (600 tokens)
-    │   │   └── assistant/ (600 tokens)
-    │   │   │   └── route.ts (600 tokens)
-    │   └── layout.tsx (700 tokens)
-    ├── lib/ (2300 tokens)
+    │   ├── admin/
+    │   │   └── layout.tsx
+    │   ├── sign-in/
+    │   │   └── page.tsx
+    │   ├── support/
+    │   │   └── page.tsx
+    │   ├── page.tsx
+    │   ├── courses/
+    │   │   └── [slug]/
+    │   │   │   └── page.tsx
+    │   ├── auth/
+    │   │   ├── sign-up/
+    │   │   │   └── [[...sign-up]]/
+    │   │   │   │   └── page.tsx
+    │   │   └── sign-in/
+    │   │   │   └── [[...sign-in]]/
+    │   │   │       └── page.tsx
+    │   ├── api/
+    │   │   └── assistant/
+    │   │   │   └── route.ts
+    │   └── layout.tsx
+    ├── lib/
     │   ├── utils.ts
-    │   ├── history-api.ts (200 tokens)
-    │   ├── settings-api.ts (200 tokens)
-    │   ├── backend-client.ts (300 tokens)
-    │   ├── course-utils.ts (700 tokens)
-    │   └── utils/ (800 tokens)
-    │   │   └── currency.ts (800 tokens)
-    ├── components/ (20200 tokens)
-    │   ├── ui/ (18200 tokens)
+    │   ├── history-api.ts
+    │   ├── settings-api.ts
+    │   ├── backend-client.ts
+    │   ├── course-utils.ts
+    │   └── utils/
+    │   │   └── currency.ts
+    ├── components/
+    │   ├── ui/
     │   │   ├── aspect-ratio.tsx
     │   │   ├── skeleton.tsx
     │   │   ├── spinner.tsx
-    │   │   ├── label.tsx (200 tokens)
-    │   │   ├── textarea.tsx (200 tokens)
-    │   │   ├── separator.tsx (200 tokens)
-    │   │   ├── progress.tsx (200 tokens)
-    │   │   ├── collapsible.tsx (200 tokens)
-    │   │   ├── kbd.tsx (200 tokens)
-    │   │   ├── input.tsx (300 tokens)
-    │   │   ├── sonner.tsx (300 tokens)
-    │   │   ├── switch.tsx (300 tokens)
-    │   │   ├── checkbox.tsx (300 tokens)
-    │   │   ├── avatar.tsx (300 tokens)
-    │   │   ├── radio-group.tsx (400 tokens)
-    │   │   ├── hover-card.tsx (400 tokens)
-    │   │   ├── toggle.tsx (400 tokens)
-    │   │   ├── badge.tsx (400 tokens)
-    │   │   ├── popover.tsx (400 tokens)
-    │   │   ├── scroll-area.tsx (400 tokens)
-    │   │   ├── alert.tsx (400 tokens)
-    │   │   ├── tooltip.tsx (500 tokens)
-    │   │   ├── tabs.tsx (500 tokens)
-    │   │   ├── resizable.tsx (500 tokens)
-    │   │   ├── slider.tsx (500 tokens)
-    │   │   ├── accordion.tsx (500 tokens)
-    │   │   ├── card.tsx (500 tokens)
-    │   │   ├── button.tsx (600 tokens)
-    │   │   ├── button-group.tsx (600 tokens)
-    │   │   ├── input-otp.tsx (600 tokens)
-    │   │   ├── toggle-group.tsx (600 tokens)
-    │   │   ├── empty.tsx (700 tokens)
-    │   │   ├── breadcrumb.tsx (700 tokens)
-    │   │   ├── table.tsx (700 tokens)
-    │   │   ├── pagination.tsx (800 tokens)
-    │   │   ├── form.tsx (1000 tokens)
-    │   │   ├── alert-dialog.tsx (1000 tokens)
-    │   │   ├── dialog.tsx (1000 tokens)
-    │   │   └── sheet.tsx (1100 tokens)
-    │   ├── auth/ (100 tokens)
+    │   │   ├── label.tsx
+    │   │   ├── textarea.tsx
+    │   │   ├── separator.tsx
+    │   │   ├── progress.tsx
+    │   │   ├── collapsible.tsx
+    │   │   ├── kbd.tsx
+    │   │   ├── input.tsx
+    │   │   ├── sonner.tsx
+    │   │   ├── switch.tsx
+    │   │   ├── checkbox.tsx
+    │   │   ├── avatar.tsx
+    │   │   ├── radio-group.tsx
+    │   │   ├── hover-card.tsx
+    │   │   ├── toggle.tsx
+    │   │   ├── badge.tsx
+    │   │   ├── popover.tsx
+    │   │   ├── scroll-area.tsx
+    │   │   ├── alert.tsx
+    │   │   ├── tooltip.tsx
+    │   │   ├── tabs.tsx
+    │   │   ├── resizable.tsx
+    │   │   ├── slider.tsx
+    │   │   ├── accordion.tsx
+    │   │   ├── card.tsx
+    │   │   ├── button.tsx
+    │   │   ├── button-group.tsx
+    │   │   ├── input-otp.tsx
+    │   │   ├── toggle-group.tsx
+    │   │   ├── empty.tsx
+    │   │   ├── breadcrumb.tsx
+    │   │   ├── table.tsx
+    │   │   ├── pagination.tsx
+    │   │   ├── form.tsx
+    │   │   ├── alert-dialog.tsx
+    │   │   ├── dialog.tsx
+    │   │   └── sheet.tsx
+    │   ├── auth/
     │   │   └── ClerkProviderWrapper.tsx
-    │   ├── theme/ (100 tokens)
+    │   ├── theme/
     │   │   └── ThemeProviderWrapper.tsx
-    │   ├── lms/ (1300 tokens)
-    │   │   ├── ThemeToggle.tsx (200 tokens)
-    │   │   ├── SimplePage.tsx (400 tokens)
-    │   │   └── TrustedBySectionPremium.tsx (700 tokens)
-    │   └── admin/ (500 tokens)
-    │   │   └── AdminGuard.tsx (500 tokens)
-    ├── hooks/ (200 tokens)
-    │   └── use-mobile.ts (200 tokens)
-    └── middleware.ts (200 tokens)
+    │   ├── lms/
+    │   │   ├── ThemeToggle.tsx
+    │   │   ├── SimplePage.tsx
+    │   │   └── TrustedBySectionPremium.tsx
+    │   └── admin/
+    │   │   └── AdminGuard.tsx
+    ├── hooks/
+    │   └── use-mobile.ts
+    └── middleware.ts
 ├── postcss.config.mjs
-├── public/ (6800 tokens)
+├── public/
     ├── vercel.svg
     ├── window.svg
     ├── file.svg
-    ├── globe.svg (200 tokens)
-    ├── marquee_images/ (6000 tokens)
-    │   ├── 04.svg (300 tokens)
-    │   ├── 19.svg (400 tokens)
-    │   ├── 05.svg (400 tokens)
-    │   ├── 14.svg (500 tokens)
-    │   ├── 08.svg (500 tokens)
-    │   ├── 10.svg (500 tokens)
-    │   ├── 18.svg (700 tokens)
-    │   ├── 02.svg (800 tokens)
-    │   ├── 09.svg (900 tokens)
-    │   └── 15.svg (1000 tokens)
-    └── next.svg (300 tokens)
-├── .gayen/ (200 tokens)
+    ├── globe.svg
+    ├── marquee_images/
+    │   ├── 04.svg
+    │   ├── 19.svg
+    │   ├── 05.svg
+    │   ├── 14.svg
+    │   ├── 08.svg
+    │   ├── 10.svg
+    │   ├── 18.svg
+    │   ├── 02.svg
+    │   ├── 09.svg
+    │   └── 15.svg
+    └── next.svg
+├── .gayen/
     ├── orchids.json
-    └── files/ (100 tokens)
-    │   └── claude-1774118190093-2d42kd/ (100 tokens)
+    └── files/
+    │   └── claude-1774118190093-2d42kd/
     │       └── 1-image_1774116869349-resized-1774118081363.jpg
-├── backend/ (8700 tokens)
+├── backend/
     ├── .env.example
-    ├── dist/ (2400 tokens)
-    │   ├── lib/ (300 tokens)
+    ├── dist/
+    │   ├── lib/
     │   │   ├── prisma.js
-    │   │   └── auth.js (200 tokens)
-    │   ├── config/ (200 tokens)
-    │   │   └── env.js (200 tokens)
-    │   └── routes/ (1900 tokens)
-    │   │   ├── access.js (900 tokens)
-    │   │   └── clerk-webhook.js (1000 tokens)
+    │   │   └── auth.js
+    │   ├── config/
+    │   │   └── env.js
+    │   └── routes/
+    │   │   ├── access.js
+    │   │   └── clerk-webhook.js
     ├── .gitignore
     ├── tsconfig.json
-    ├── src/ (4700 tokens)
-    │   ├── lib/ (400 tokens)
+    ├── src/
+    │   ├── lib/
     │   │   ├── prisma.ts
-    │   │   └── auth.ts (300 tokens)
-    │   ├── config/ (200 tokens)
-    │   │   └── env.ts (200 tokens)
-    │   └── routes/ (4100 tokens)
-    │   │   ├── settings.ts (500 tokens)
-    │   │   ├── users.ts (500 tokens)
-    │   │   ├── accomplishments.ts (600 tokens)
-    │   │   ├── history.ts (600 tokens)
-    │   │   ├── access.ts (900 tokens)
-    │   │   └── courses.ts (1000 tokens)
-    ├── package.json (300 tokens)
-    └── README.md (1000 tokens)
-├── components.json (200 tokens)
-├── .gitignore (200 tokens)
-├── tsconfig.json (200 tokens)
-├── next.config.ts (200 tokens)
-├── eslint.config.mjs (300 tokens)
-├── README.md (400 tokens)
-└── package.json (800 tokens)
+    │   │   └── auth.ts
+    │   ├── config/
+    │   │   └── env.ts
+    │   └── routes/
+    │   │   ├── settings.ts
+    │   │   ├── users.ts
+    │   │   ├── accomplishments.ts
+    │   │   ├── history.ts
+    │   │   ├── access.ts
+    │   │   └── courses.ts
+    ├── package.json
+    └── README.md
+├── components.json
+├── .gitignore
+├── tsconfig.json
+├── next.config.ts
+├── eslint.config.mjs
+├── README.md
+└── package.json
 ```
 
 ## 🤝 Contributing

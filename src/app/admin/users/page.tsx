@@ -34,7 +34,7 @@ interface UserProfile {
 
 const ROLE_CONFIG = {
   STUDENT: { label: "Student", color: "text-blue-400", bg: "bg-blue-400/10", icon: GraduationCap },
-  INSTRUCTOR: { label: "Instructor", color: "text-violet-400", bg: "bg-violet-400/10", icon: UserCircle },
+  INSTRUCTOR: { label: "Instructor", color: "text-blue-400", bg: "bg-blue-400/10", icon: UserCircle },
   ADMIN: { label: "Admin", color: "text-emerald-400", bg: "bg-emerald-400/10", icon: Shield },
   SUPER_ADMIN: { label: "Super Admin", color: "text-amber-400", bg: "bg-amber-400/10", icon: Sparkles, border: "border-amber-500/50" },
 };
@@ -111,7 +111,7 @@ export default function UserManagementPage() {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-2xl bg-violet-600 flex items-center justify-center shadow-[0_0_20px_rgba(124,58,237,0.4)]">
+            <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.4)]">
               <Users className="text-white size-5" />
             </div>
             <h1 className="text-2xl lg:text-3xl font-black text-white tracking-tight">
@@ -124,13 +124,13 @@ export default function UserManagementPage() {
         </div>
 
         <div className="relative group w-full lg:max-w-sm">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-violet-500 transition-colors" size={18} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-500 transition-colors" size={18} />
           <input
             type="text"
             placeholder="Search by name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/5 border border-white/5 focus:border-violet-500/50 rounded-2xl pl-12 pr-6 py-3 lg:py-3.5 text-sm text-white placeholder-gray-600 transition-all outline-none"
+            className="w-full bg-white/5 border border-white/5 focus:border-blue-500/50 rounded-2xl pl-12 pr-6 py-3 lg:py-3.5 text-sm text-white placeholder-gray-600 transition-all outline-none"
           />
         </div>
       </div>
@@ -138,7 +138,7 @@ export default function UserManagementPage() {
       {/* Main Content Area */}
       {loading ? (
         <div className="py-24 text-center">
-          <Loader2 className="w-8 h-8 text-violet-500 animate-spin mx-auto mb-4" />
+          <Loader2 className="w-8 h-8 text-blue-500 animate-spin mx-auto mb-4" />
           <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Synchronizing Security Layers...</p>
         </div>
       ) : filteredUsers.length === 0 ? (

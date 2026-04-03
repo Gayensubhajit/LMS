@@ -128,7 +128,7 @@ export default function PricingSection() {
 
   return (
     <section
-      className="relative py-28 overflow-hidden bg-[#05050a]"
+      className="relative py-28 overflow-hidden bg-transparent"
       id="pricing"
       ref={ref}
     >
@@ -145,28 +145,28 @@ export default function PricingSection() {
           transition={{ duration: 0.55 }}
           className="text-center mb-12"
         >
-          <p className="text-xs font-black tracking-[0.25em] text-violet-400 uppercase mb-4">
+          <p className="text-xs font-black tracking-[0.25em] text-black dark:text-violet-400 uppercase mb-4">
             Flexible Pricing
           </p>
           <h2
-            className={`font-serif text-4xl md:text-5xl font-black text-white mb-4 leading-tight`}
+            className={`font-serif text-4xl md:text-5xl font-black text-black dark:text-white mb-4 leading-tight`}
           >
             Invest in Your Future
           </h2>
           <p
-            className={`${montserrat.className} text-gray-400 text-base max-w-xl mx-auto mb-10`}
+            className={`${montserrat.className} text-gray-600 dark:text-gray-400 text-base max-w-xl mx-auto mb-10`}
           >
             All plans include a 7-day free trial. No credit card required.
           </p>
 
           {/* Tab toggle — same style as Coursera */}
-          <div className="inline-flex items-center p-1 rounded-full bg-white/5 border border-white/10 gap-1">
+          <div className="inline-flex items-center p-1 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 gap-1">
             <button
               onClick={() => setTab("individuals")}
               className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${
                 tab === "individuals"
-                  ? "bg-violet-600 text-white shadow-lg shadow-violet-600/30"
-                  : "text-gray-400 hover:text-white"
+                  ? "bg-black dark:bg-white text-white dark:text-black shadow-md"
+                  : "text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white"
               }`}
             >
               For Individuals
@@ -175,8 +175,8 @@ export default function PricingSection() {
               onClick={() => setTab("teams")}
               className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
                 tab === "teams"
-                  ? "bg-violet-600 text-white shadow-lg shadow-violet-600/30"
-                  : "text-gray-400 hover:text-white"
+                  ? "bg-black dark:bg-violet-600 text-white shadow-md dark:shadow-violet-600/30"
+                  : "text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white"
               }`}
             >
               <Users size={14} /> For Teams
@@ -202,13 +202,11 @@ export default function PricingSection() {
                 transition={{ delay: i * 0.08 }}
                 className={`relative rounded-2xl flex flex-col overflow-hidden transition-all duration-300 ${
                   plan.highlight
-                    ? "ring-2 ring-violet-500/70 shadow-2xl shadow-violet-500/20"
-                    : "border border-white/[0.07]"
+                    ? "border-2 border-indigo-600 dark:border-violet-500/70 shadow-2xl shadow-indigo-500/10 dark:shadow-violet-500/20 bg-white dark:bg-[#0a0a16]"
+                    : "border border-black/[0.05] dark:border-white/[0.07] bg-white dark:bg-transparent"
                 }`}
                 style={{
-                  background: plan.highlight
-                    ? "linear-gradient(160deg, rgba(124,58,237,0.15) 0%, rgba(10,10,20,0.97) 60%)"
-                    : "rgba(255,255,255,0.025)",
+                  background: "transparent",
                 }}
               >
                 {/* Badge */}
@@ -216,8 +214,8 @@ export default function PricingSection() {
                   <div
                     className={`text-center py-2 text-[11px] font-black uppercase tracking-widest ${
                       plan.highlight
-                        ? "bg-linear-to-r from-violet-600 to-purple-600 text-white"
-                        : "bg-amber-500/10 text-amber-400 border-b border-amber-500/20"
+                        ? "bg-black dark:bg-linear-to-r dark:from-violet-600 dark:to-purple-600 text-white"
+                        : "bg-gray-100 dark:bg-amber-500/10 text-black dark:text-amber-400 border-b border-black/5 dark:border-amber-500/20"
                     }`}
                   >
                     {plan.badge}
@@ -226,11 +224,11 @@ export default function PricingSection() {
 
                 <div className="p-8 flex flex-col flex-1">
                   {/* Name + desc */}
-                  <h3 className="font-serif text-xl font-black text-white mb-2 leading-6">
+                  <h3 className="font-serif text-xl font-black mb-2 leading-6 text-slate-900 dark:text-white">
                     {plan.name}
                   </h3>
                   <p
-                    className={`${montserrat.className} text-sm text-gray-400 leading-relaxed mb-6`}
+                    className={`${montserrat.className} text-sm leading-relaxed mb-6 text-slate-500 dark:text-gray-400`}
                   >
                     {plan.description}
                   </p>
@@ -238,11 +236,11 @@ export default function PricingSection() {
                   {/* Price */}
                   <div className="mb-6">
                     <div className="flex items-baseline gap-2">
-                      <span className="text-4xl font-serif font-black text-white tracking-tight">
+                      <span className="text-4xl font-serif font-black tracking-tight text-slate-900 dark:text-white">
                         {plan.price}
                       </span>
                       <span
-                        className={`${montserrat.className} text-gray-500 text-sm font-medium`}
+                        className={`${montserrat.className} text-slate-500 dark:text-gray-500 text-sm font-medium`}
                       >
                         {plan.period}
                       </span>
@@ -254,8 +252,8 @@ export default function PricingSection() {
                     href={plan.href}
                     className={`${montserrat.className} flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-bold text-sm mb-2 transition-all group ${
                       plan.highlight
-                        ? "bg-linear-to-r from-violet-600 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-600/25"
-                        : "border border-white/10 bg-white/3 text-white hover:bg-white/[0.07] hover:border-white/20"
+                        ? "bg-[#0056d2] text-white hover:bg-[#00419e] shadow-lg shadow-blue-500/20"
+                        : "bg-[#0056d2] text-white hover:bg-[#00419e] shadow-lg shadow-blue-500/10"
                     }`}
                   >
                     {plan.highlight && <Zap size={14} />}
@@ -266,7 +264,7 @@ export default function PricingSection() {
                     />
                   </Link>
                   <p
-                    className={`${montserrat.className} text-center text-[11px] text-gray-600 mb-8`}
+                    className={`${montserrat.className} text-center text-[11px] mb-8 text-slate-400 dark:text-gray-600`}
                   >
                     {plan.note}
                   </p>
@@ -277,21 +275,21 @@ export default function PricingSection() {
                       <div key={f} className="flex items-center gap-3">
                         <div
                           className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
-                            plan.highlight ? "bg-violet-600/20" : "bg-white/5"
+                            plan.highlight ? "bg-black/5 dark:bg-violet-600/20" : "bg-black/5 dark:bg-white/5"
                           }`}
                         >
                           <Check
                             size={10}
                             className={
                               plan.highlight
-                                ? "text-violet-400"
-                                : "text-gray-500"
+                                ? "text-black dark:text-violet-400"
+                                : "text-gray-400 dark:text-gray-500"
                             }
                             strokeWidth={3}
                           />
                         </div>
                         <span
-                          className={`${montserrat.className} text-sm text-gray-300 font-medium`}
+                          className={`${montserrat.className} text-sm font-medium text-slate-600 dark:text-gray-300`}
                         >
                           {f}
                         </span>
@@ -317,7 +315,7 @@ export default function PricingSection() {
           <span>·</span>
           <Link
             href="/pricing"
-            className="text-violet-400 hover:text-violet-300 font-semibold transition-colors"
+            className="text-black dark:text-violet-400 hover:opacity-70 dark:hover:text-violet-300 font-semibold transition-all"
           >
             See full plan details →
           </Link>

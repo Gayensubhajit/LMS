@@ -93,7 +93,7 @@ export default function Footer() {
 
   return (
     <footer
-      className={`${montserrat.className} relative border-t border-violet-500/10 pt-16 pb-8 overflow-hidden`}
+      className={`${montserrat.className} relative border-t border-black/5 dark:border-violet-500/10 pt-16 pb-8 overflow-hidden`}
     >
       {/* Background glow */}
       <div
@@ -108,12 +108,12 @@ export default function Footer() {
         {/* Newsletter bar */}
 
         {!isSignedIn && (
-          <div className="glass-card rounded-2xl p-6 mb-14 flex flex-col sm:flex-row items-center justify-between gap-6 max-w-5xl mx-auto">
+          <div className="glass-card rounded-2xl p-6 mb-14 flex flex-col sm:flex-row items-center justify-between gap-6 max-w-5xl mx-auto border border-black/5 dark:border-white/5">
             <div className="">
-              <h3 className="text-lg font-bold whitespace-nowrap text-white mb-1">
+              <h3 className="text-lg font-bold whitespace-nowrap text-black dark:text-white mb-1">
                 Stay ahead of the curve
               </h3>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 Weekly insights, new courses, and career tips straight to your
                 inbox.
               </p>
@@ -122,11 +122,11 @@ export default function Footer() {
               <input
                 type="email"
                 placeholder="your@email.com"
-                className="flex-1 sm:w-64 bg-white/5 border border-violet-500/20 text-white placeholder-gray-500 text-sm px-4 py-2.5 rounded-xl focus:outline-none focus:border-violet-500/60 transition-colors"
+                className="flex-1 sm:w-64 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-violet-500/20 text-black dark:text-white placeholder-gray-500 text-sm px-4 py-2.5 rounded-xl focus:outline-none focus:border-black/30 dark:focus:border-violet-500/60 transition-colors"
               />
               <Link
                 href="/auth/sign-up"
-                className="flex w-full md:w-auto justify-center items-center gap-1.5 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap hover:shadow-[0_0_20px_rgba(124,58,237,0.4)] transition-shadow"
+                className="flex w-full md:w-auto justify-center items-center gap-1.5 bg-black dark:bg-gradient-to-r dark:from-violet-600 dark:to-purple-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap hover:opacity-90 dark:hover:shadow-[0_0_20px_rgba(124,58,237,0.4)] transition-all"
               >
                 Subscribe <ArrowRight size={14} />
               </Link>
@@ -139,10 +139,10 @@ export default function Footer() {
           {/* Brand column */}
           <div className="col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-600 to-purple-800 flex items-center justify-center shadow-[0_0_15px_rgba(124,58,237,0.4)]">
+              <div className="w-9 h-9 rounded-xl bg-black dark:bg-gradient-to-br dark:from-violet-600 dark:to-purple-800 flex items-center justify-center shadow-md dark:shadow-[0_0_15px_rgba(124,58,237,0.4)]">
                 <BookOpen size={18} className="text-white" />
               </div>
-              <span className="text-xl font-bold gradient-text-purple">
+              <span className="text-xl font-bold text-black dark:gradient-text-purple">
                 EduNova
               </span>
             </div>
@@ -159,7 +159,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={social.label}
-                  className={`w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-500 ${social.color} transition-colors hover:border-violet-500/30`}
+                  className={`w-8 h-8 rounded-lg bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-center text-gray-500 dark:text-gray-500 ${social.color} transition-colors hover:border-black/30 dark:hover:border-violet-500/30`}
                 >
                   <social.icon size={14} />
                 </a>
@@ -170,7 +170,7 @@ export default function Footer() {
           {/* Links */}
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
-              <h4 className="text-xs font-semibold text-gray-300 uppercase tracking-widest mb-4">
+              <h4 className="text-xs font-semibold text-black dark:text-gray-300 uppercase tracking-widest mb-4">
                 {category}
               </h4>
               <ul className="space-y-2.5">
@@ -178,7 +178,7 @@ export default function Footer() {
                   <li key={link}>
                     <Link
                       href={footerRouteMap[link] ?? "/features"}
-                      className="text-sm text-gray-500 hover:text-gray-300 transition-colors"
+                      className="text-sm text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-gray-300 transition-colors"
                     >
                       {link}
                     </Link>
@@ -190,7 +190,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-violet-500/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs md:text-sm">
+        <div className="border-t border-black/5 dark:border-violet-500/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs md:text-sm">
           <div className="text-sm text-gray-600">
             © 2026 EduNova, Inc. All rights reserved.
           </div>

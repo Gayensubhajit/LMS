@@ -10,13 +10,14 @@ export function ThemeProviderWrapper({
 }) {
   return (
     <ThemeProvider
-      attribute="data-theme"
+      attribute="class"
       defaultTheme="dark"
       enableSystem={false}
-      disableTransitionOnChange
+      disableTransitionOnChange={false}
     >
       {children}
     </ThemeProvider>
   );
 }
+
 

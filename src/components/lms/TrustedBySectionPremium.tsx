@@ -39,7 +39,7 @@ export default function TrustedBySectionPremium() {
       <div className="relative z-10 max-w-5xl mx-auto px-6">
         {/* Label */}
         <p
-          className={`${montserrat.className} opacity-90 text-gray-300 tracking-wide mb-16`}
+          className={`${montserrat.className} text-gray-500 dark:text-gray-400 tracking-wide mb-16 text-sm font-medium`}
         >
           Preferred by individuals from 20+ forward thinking companies
         </p>
@@ -47,8 +47,8 @@ export default function TrustedBySectionPremium() {
         {/* Marquee */}
         <div className="relative">
           {/* Edge fades */}
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-24 z-10 bg-gradient-to-r from-background to-transparent" />
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-24 z-10 bg-gradient-to-l from-background to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-24 z-10 bg-linear-to-r from-background to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-24 z-10 bg-linear-to-l from-background to-transparent" />
 
           <div className="overflow-x-clip">
             <motion.div
@@ -64,7 +64,7 @@ export default function TrustedBySectionPremium() {
                   alt={`Marquee_Logo_Image_${idx}`}
                   width={200}
                   height={200}
-                  className="opacity-80 object-cover"
+                  className="opacity-40 dark:opacity-80 object-cover brightness-0 dark:brightness-100 transition-opacity hover:opacity-100"
                 />
               ))}
             </motion.div>

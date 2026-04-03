@@ -21,7 +21,7 @@ export default function CTASection() {
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full"
           style={{
             background:
-              "radial-gradient(circle, rgba(124,58,237,0.2) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(59,130,246,0.2) 0%, transparent 70%)",
             filter: "blur(60px)",
           }}
         />
@@ -36,7 +36,7 @@ export default function CTASection() {
           className="absolute top-1/3 left-1/3 w-80 h-80 rounded-full"
           style={{
             background:
-              "radial-gradient(circle, rgba(232,121,249,0.15) 0%, transparent 70%)",
+              "radial-gradient(circle, rgba(37,99,235,0.15) 0%, transparent 70%)",
             filter: "blur(50px)",
           }}
         />
@@ -51,22 +51,22 @@ export default function CTASection() {
             transition={{ duration: 0.6 }}
           >
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 tag-purple mb-6">
+            <div className="inline-flex items-center gap-2 tag-blue mb-6">
               <Sparkles size={14} className="animate-pulse" />
               Limited Time Offer
             </div>
 
             {/* Headline */}
-            <h2 className="font-serif text-5xl md:text-6xl font-black text-white mb-6 leading-tight">
+            <h2 className="font-serif text-5xl md:text-6xl font-black text-black dark:text-white mb-6 leading-tight">
               Start Learning
               <br />
-              <span className={`${montserrat.className} gradient-text`}>
+              <span className={`${montserrat.className} dark:gradient-text`}>
                 Today
               </span>
             </h2>
 
             <p
-              className={`${montserrat.className} text-xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed`}
+              className={`${montserrat.className} text-xl text-gray-600 dark:text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed`}
             >
               Join 25,000+ learners already transforming their careers. Get 7
               days free — no credit card required.
@@ -81,32 +81,32 @@ export default function CTASection() {
                 whileHover={{
                   scale: 1.05,
                   boxShadow:
-                    "0 0 60px rgba(124,58,237,0.7), 0 0 100px rgba(124,58,237,0.3)",
+                    "0 0 40px rgba(0,0,0,0.1), 0 0 60px rgba(0,0,0,0.05)",
                 }}
                 whileTap={{ scale: 0.97 }}
-                className="group relative flex items-center gap-2 bg-linear-to-r from-violet-600 via-purple-600 to-violet-600 background-size-200 text-white font-bold px-10 py-4 rounded-2xl text-lg overflow-hidden"
+                className="group relative flex items-center gap-2 bg-black dark:bg-linear-to-r dark:from-blue-600 dark:via-indigo-600 dark:to-blue-600 background-size-200 text-white font-bold px-10 py-4 rounded-2xl text-lg overflow-hidden"
                 style={{
                   backgroundSize: "200% 100%",
                   backgroundPosition: "0% 0%",
                   transition: "all 0.3s ease",
-                  boxShadow: "0 0 30px rgba(124,58,237,0.4)",
+                  boxShadow: "0 0 20px rgba(0,0,0,0.1)",
                 }}
               >
-                <span className="realtive z-10 flex items-center text-sm md:text-lg">
-                  <Zap size={20} className="text-yellow-300" />
+                <span className="relative z-10 flex items-center text-sm md:text-lg">
+                  <Zap size={20} className="text-yellow-400" />
                   Start Free Trial Now
                   <ArrowRight
                     size={18}
                     className="group-hover:translate-x-1 transition-transform"
                   />
                 </span>
-                <div className="absolute z-0 inset-0 bg-linear-to-r from-violet-500 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <div className="absolute z-0 inset-0 bg-black/80 dark:bg-linear-to-r dark:from-blue-500 dark:to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               </motion.a>
 
               <motion.a
                 href="/courses"
                 whileHover={{ scale: 1.04 }}
-                className="flex items-center gap-2 border border-violet-500/40 text-violet-300 font-semibold px-8 py-4 rounded-2xl hover:bg-violet-600/10 transition-colors text-sm md:text-lg"
+                className="flex items-center gap-2 border border-black/10 dark:border-blue-500/40 text-black dark:text-blue-600 font-semibold px-8 py-4 rounded-2xl hover:bg-black/5 dark:hover:bg-blue-600/10 transition-colors text-sm md:text-lg"
               >
                 Browse Courses
               </motion.a>
@@ -125,7 +125,7 @@ export default function CTASection() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={inView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.4, delay: 0.4 + i * 0.1 }}
-                  className="flex items-center gap-2 text-sm text-gray-400"
+                  className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400"
                 >
                   <span>{item.icon}</span>
                   <span>{item.text}</span>
@@ -142,7 +142,7 @@ export default function CTASection() {
             >
               <div className="flex -space-x-2">
                 {[
-                  "from-violet-500 to-purple-700",
+                  "from-blue-500 to-indigo-700",
                   "from-pink-500 to-rose-600",
                   "from-blue-500 to-cyan-600",
                   "from-emerald-500 to-teal-600",
@@ -156,8 +156,8 @@ export default function CTASection() {
                   </div>
                 ))}
               </div>
-              <div className="text-sm text-gray-400">
-                <span className="text-white font-semibold">2,400+</span> joined
+              <div className="text-sm text-gray-500 dark:text-gray-400">
+                <span className="text-black dark:text-white font-semibold">2,400+</span> joined
                 this week
               </div>
             </motion.div>

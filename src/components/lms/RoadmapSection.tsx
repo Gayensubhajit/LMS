@@ -29,8 +29,8 @@ const steps = [
     description:
       "Complete a quick skill assessment. Our AI analyzes your background and crafts a personalized roadmap.",
     tags: ["AI Assessment", "Personalization"],
-    color: "from-violet-500 to-purple-700",
-    glow: "rgba(124,58,237,0.5)",
+    color: "from-blue-500 to-indigo-700",
+    glow: "rgba(59,130,246,0.5)",
   },
   {
     number: "02",
@@ -39,8 +39,8 @@ const steps = [
     description:
       "Get a step-by-step curated learning path. Each module builds on the last for deep mastery.",
     tags: ["Structured Learning", "Milestones"],
-    color: "from-pink-500 to-rose-600",
-    glow: "rgba(236,72,153,0.5)",
+    color: "from-blue-600 to-indigo-700",
+    glow: "rgba(59,130,246,0.5)",
   },
   {
     number: "03",
@@ -59,8 +59,8 @@ const steps = [
     description:
       "Create portfolio-worthy projects under mentor guidance. Solve real-world company problems.",
     tags: ["Portfolio", "Mentorship"],
-    color: "from-emerald-500 to-teal-600",
-    glow: "rgba(16,185,129,0.5)",
+    color: "from-blue-600 to-cyan-500",
+    glow: "rgba(59,130,246,0.5)",
   },
   {
     number: "05",
@@ -69,8 +69,8 @@ const steps = [
     description:
       "Collaborate with peers, participate in challenges, and get feedback from global experts.",
     tags: ["Peer Review", "Networking"],
-    color: "from-amber-500 to-orange-600",
-    glow: "rgba(245,158,11,0.5)",
+    color: "from-indigo-600 to-blue-700",
+    glow: "rgba(79,70,229,0.5)",
   },
   {
     number: "06",
@@ -79,8 +79,8 @@ const steps = [
     description:
       "Earn recognized certificates and connect with 500+ hiring partners ready to recruit.",
     tags: ["Certification", "500+ Partners"],
-    color: "from-purple-500 to-indigo-600",
-    glow: "rgba(139,92,246,0.5)",
+    color: "from-blue-600 to-indigo-800",
+    glow: "rgba(37,99,235,0.5)",
   },
 ];
 
@@ -103,12 +103,37 @@ export default function RoadmapSection() {
   return (
     <section
       ref={containerRef}
-      className="relative py-32 overflow-hidden bg-[#080a10]"
+      className="relative py-32 overflow-hidden bg-transparent"
       id="roadmap"
     >
-      {/* Background ambient glows */}
-      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-violet-600/10 blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-blue-600/10 blur-[120px] pointer-events-none" />
+      {/* Background ambient glows & Auroras */}
+      <div className="absolute top-1/4 -left-20 w-96 h-96 bg-blue-600/10 blur-[120px] pointer-events-none aurora-blob" />
+      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-cyan-600/10 blur-[120px] pointer-events-none aurora-blob" style={{ animationDelay: '-8s' }} />
+
+      {/* Stardust Particles - Enhanced Twinkle */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {[...Array(35)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-blue-400/30 rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -60, 0],
+              opacity: [0.1, 0.8, 0.1],
+              scale: [1, 2, 1],
+            }}
+            transition={{
+              duration: 4 + Math.random() * 8,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: Math.random() * 5,
+            }}
+          />
+        ))}
+      </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6">
         {/* Section header */}
@@ -116,7 +141,7 @@ export default function RoadmapSection() {
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={headerInView ? { opacity: 1, scale: 1 } : {}}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-violet-500/20 bg-violet-500/5 text-violet-400 text-xs font-bold uppercase tracking-widest mb-6"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-black/10 dark:border-blue-500/20 bg-black/5 dark:bg-blue-500/5 text-black dark:text-blue-400 text-xs font-bold uppercase tracking-widest mb-6"
           >
             <Sparkles size={12} />
             The Mastery Protocol
@@ -125,12 +150,12 @@ export default function RoadmapSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={headerInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.1 }}
-            className="font-serif text-4xl md:text-6xl font-black text-white mb-6 leading-tight"
+            className="font-black text-4xl md:text-6xl text-black dark:text-white mb-6 leading-tight"
           >
             Your celestial path
             <br />
             <span
-              className={`${montserrat.className} text-transparent bg-clip-text bg-linear-to-r from-violet-400 via-purple-400 to-blue-400`}
+              className={`${montserrat.className} text-transparent bg-clip-text bg-linear-to-r from-blue-600 via-zinc-800 to-indigo-600 dark:from-blue-400 dark:via-white dark:to-indigo-400 animate-pulse-slow`}
             >
               to industry mastery.
             </span>
@@ -139,7 +164,7 @@ export default function RoadmapSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={headerInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.2 }}
-            className={`${montserrat.className} text-gray-500 text-lg max-w-2xl mx-auto leading-relaxed`}
+            className={`${montserrat.className} text-gray-600 dark:text-gray-500 text-lg max-w-2xl mx-auto leading-relaxed`}
           >
             A high-fidelity learning journey designed to transform beginners
             into world-class pioneers through a structured, interactive roadmap.
@@ -161,9 +186,10 @@ export default function RoadmapSection() {
                 y1="0"
                 x2="1"
                 y2="1000"
-                stroke="white"
+                stroke="currentColor"
                 strokeWidth="2"
                 strokeDasharray="10 10"
+                className="text-black/30 dark:text-white/20"
               />
             </svg>
           </div>
@@ -186,7 +212,7 @@ export default function RoadmapSection() {
                 strokeWidth="4"
                 style={{
                   pathLength,
-                  filter: "drop-shadow(0 0 8px rgba(124,58,237,0.5))",
+                  filter: "drop-shadow(0 0 12px rgba(59,130,246,0.8))",
                 }}
               />
               <defs>
@@ -197,9 +223,10 @@ export default function RoadmapSection() {
                   x2="0%"
                   y2="100%"
                 >
-                  <stop offset="0%" stopColor="#7c3aed" />
-                  <stop offset="50%" stopColor="#c01578" />
-                  <stop offset="100%" stopColor="#2563eb" />
+                  <stop offset="0%" stopColor="#3b82f6" />
+                  <stop offset="25%" stopColor="#60a5fa" />
+                  <stop offset="75%" stopColor="#818cf8" />
+                  <stop offset="100%" stopColor="#4f46e5" />
                 </linearGradient>
               </defs>
             </svg>
@@ -253,9 +280,9 @@ function RoadmapStep({
           initial={{ scale: 0.8, opacity: 1 }}
           whileInView={{ scale: 1 }}
           viewport={{ once: true, amount: 0 }}
-          className={`relative w-10 h-10 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl bg-[#0d1117] border-2 transition-all duration-500 flex items-center justify-center shadow-[0_0_30px_rgba(124,58,237,0.2)]`}
+          className={`relative w-10 h-10 lg:w-14 lg:h-14 rounded-xl lg:rounded-2xl bg-white dark:bg-[#0d1117] border-2 transition-all duration-500 flex items-center justify-center shadow-md dark:shadow-[0_0_30px_rgba(59,130,246,0.2)]`}
           style={{
-            borderColor: "rgba(124,58,237,0.4)",
+            borderColor: "rgba(0,0,0,0.1)",
           }}
         >
           {/* Active glow ring - ALWAYS visible at low opacity, brighter when active */}
@@ -265,26 +292,29 @@ function RoadmapStep({
           />
 
           <div
-            className={`relative z-10 w-full h-full rounded-lg lg:rounded-xl bg-[#080a10] flex items-center justify-center overflow-hidden`}
+            className={`relative z-10 w-full h-full rounded-lg lg:rounded-xl bg-white dark:bg-[#080a10] flex items-center justify-center overflow-hidden group`}
           >
+            {/* Shimmer on active node */}
+            <div className="shimmer-effect opacity-30" />
+            
             <step.icon
               size={18}
-              className="text-white relative z-20 lg:hidden shadow-sm"
+              className="text-black dark:text-white relative z-20 lg:hidden shadow-sm"
             />
             <step.icon
               size={22}
-              className="text-white relative z-20 hidden lg:block"
+              className="text-black dark:text-white relative z-20 hidden lg:block"
             />
 
             {/* Dynamic background fill on active */}
             <motion.div
               style={{ scaleY: isActive ? 1 : 0 }}
-              className={`absolute inset-0 bg-linear-to-br ${step.color} origin-bottom transition-transform duration-700`}
+              className={`absolute inset-0 bg-black dark:bg-linear-to-br ${step.color} origin-bottom transition-transform duration-700 opacity-5 dark:opacity-100`}
             />
           </div>
 
           {/* Step Number Tag */}
-          <div className="absolute -top-2 -right-2 lg:-top-3 lg:-right-3 px-1.5 py-0.5 rounded-md bg-white text-black text-[8px] lg:text-[10px] font-black z-30 shadow-lg">
+          <div className="absolute -top-2 -right-2 lg:-top-3 lg:-right-3 px-1.5 py-0.5 rounded-md bg-slate-900 dark:bg-white text-white dark:text-black text-[8px] lg:text-[10px] font-black z-30 shadow-lg">
             {step.number}
           </div>
         </motion.div>
@@ -303,20 +333,23 @@ function RoadmapStep({
             className="group"
           >
             <div
-              className={`relative p-6 lg:p-8 rounded-2xl lg:rounded-3xl border border-white/5 bg-white/2 backdrop-blur-md hover:bg-white/4 transition-all duration-500 ${!isEven ? "lg:flex lg:flex-col lg:items-end" : ""}`}
+              className={`relative p-6 lg:p-8 rounded-2xl lg:rounded-3xl border border-black/10 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur-xl hover:bg-white dark:hover:bg-white/10 transition-all duration-500 overflow-hidden ${!isEven ? "lg:flex lg:flex-col lg:items-end" : ""}`}
             >
+              {/* Shimmer Effect */}
+              <div className="shimmer-effect" />
+              
               {/* Hover highlight line */}
               <div
                 className={`absolute top-0 bottom-0 ${isEven ? "left-0" : "right-0"} w-1 bg-linear-to-b ${step.color} opacity-0 group-hover:opacity-100 transition-opacity rounded-full`}
               />
 
               <h3
-                className={`${montserrat.className} text-lg lg:text-xl font-bold text-white mb-2 lg:mb-3 group-hover:text-violet-400 transition-colors uppercase tracking-tight`}
+                className={`${montserrat.className} text-lg lg:text-xl font-bold text-black dark:text-white mb-2 lg:mb-3 group-hover:text-black dark:group-hover:text-blue-400 transition-colors uppercase tracking-tight`}
               >
                 {step.title}
               </h3>
               <p
-                className={`${montserrat.className} text-xs lg:text-sm text-gray-500 leading-relaxed mb-4 lg:mb-5 max-w-sm`}
+                className={`${montserrat.className} text-xs lg:text-sm text-slate-600 dark:text-gray-400 leading-relaxed mb-4 lg:mb-5 max-w-sm`}
               >
                 {step.description}
               </p>
@@ -326,7 +359,7 @@ function RoadmapStep({
                 {step.tags.map((tag, j) => (
                   <span
                     key={j}
-                    className={`${montserrat.className} px-2 py-0.5 lg:px-3 lg:py-1 rounded-full bg-white/5 border border-white/10 text-[8px] lg:text-[10px] font-bold text-gray-400 uppercase tracking-tighter`}
+                    className={`${montserrat.className} px-2 py-0.5 lg:px-3 lg:py-1 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[8px] lg:text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-tighter`}
                   >
                     {tag}
                   </span>

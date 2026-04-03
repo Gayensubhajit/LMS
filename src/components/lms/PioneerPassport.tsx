@@ -43,9 +43,9 @@ export default function PioneerPassport() {
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center p-4 sm:p-8 bg-[#080a10] border-y border-white/[0.05] w-full">
+    <div className="flex flex-col items-center justify-center p-4 sm:p-8 bg-slate-50 dark:bg-[#080a10] border-y border-black/[0.05] dark:border-white/[0.05] w-full transition-colors duration-700">
       <div className="text-center mb-8 sm:mb-12">
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white uppercase tracking-tighter mb-3 sm:mb-4">
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mb-3 sm:mb-4">
           Your Pioneer{" "}
           <span className="text-transparent bg-clip-text bg-linear-to-r from-violet-400 to-pink-500">
             Legacy

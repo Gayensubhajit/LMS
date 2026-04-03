@@ -188,18 +188,18 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
   return (
     <main className="min-h-screen bg-background text-foreground pt-24 pb-20">
       <div className="max-w-7xl mx-auto px-6">
-        <Link href="/courses" className="inline-flex mb-6 text-violet-300 hover:text-violet-200 text-sm">
+        <Link href="/courses" className="inline-flex mb-6 text-blue-400 hover:text-blue-300 text-sm">
           ← Back to courses
         </Link>
 
         <section className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <article className="lg:col-span-2">
-            <div className="h-72 bg-gradient-to-br from-violet-900/40 to-purple-900/20 flex items-center justify-center text-9xl rounded-3xl mb-8 border border-violet-500/20">
+            <div className="h-72 bg-gradient-to-br from-blue-900/40 to-indigo-900/20 flex items-center justify-center text-9xl rounded-3xl mb-8 border border-blue-500/20">
               {course.emoji}
             </div>
 
             <div className="mb-8">
-              <div className="text-sm text-violet-400 font-medium mb-2">{course.category}</div>
+              <div className="text-sm text-blue-400 font-medium mb-2">{course.category}</div>
               <h1 className="text-4xl md:text-5xl font-black text-white mb-4">{course.title}</h1>
               <p className="text-xl text-gray-400">by {course.instructor}</p>
             </div>
@@ -209,7 +209,7 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
                 <button
                   key={t}
                   onClick={() => setTab(t)}
-                  className={`px-6 py-2.5 rounded-full text-sm font-medium capitalize transition-all ${tab === t ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-lg shadow-violet-500/20" : "bg-white/5 border border-violet-500/20 text-gray-300 hover:bg-white/10"}`}
+                  className={`px-6 py-2.5 rounded-full text-sm font-medium capitalize transition-all ${tab === t ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/20" : "bg-white/5 border border-blue-500/20 text-gray-300 hover:bg-white/10"}`}
                 >
                   {t}
                 </button>
@@ -217,10 +217,10 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
             </div>
 
             {/* Video Preview */}
-            <div className="mb-10 rounded-3xl overflow-hidden border border-violet-500/20 bg-black/30 shadow-2xl">
-              <div className="px-6 py-4 border-b border-violet-500/20 flex items-center justify-between">
+            <div className="mb-10 rounded-3xl overflow-hidden border border-blue-500/20 bg-black/30 shadow-2xl">
+              <div className="px-6 py-4 border-b border-blue-500/20 flex items-center justify-between">
                 <div className="text-sm font-semibold text-white flex items-center gap-2">
-                  <PlayCircle size={18} className="text-violet-300" />
+                  <PlayCircle size={18} className="text-blue-400" />
                   Course Preview
                 </div>
                 <span className="text-xs text-gray-500 uppercase tracking-wider">Free preview lesson</span>
@@ -244,19 +244,19 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
                 <p className="text-lg text-gray-300 leading-relaxed mb-10">{course.longDescription}</p>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
-                  <div className="rounded-2xl bg-white/5 border border-violet-500/15 p-4">
+                  <div className="rounded-2xl bg-white/5 border border-blue-500/15 p-4">
                     <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Rating</div>
                     <div className="text-white font-bold text-lg">{course.rating} / 5</div>
                   </div>
-                  <div className="rounded-2xl bg-white/5 border border-violet-500/15 p-4">
+                  <div className="rounded-2xl bg-white/5 border border-blue-500/15 p-4">
                     <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Duration</div>
                     <div className="text-white font-bold text-lg">{course.duration}</div>
                   </div>
-                  <div className="rounded-2xl bg-white/5 border border-violet-500/15 p-4">
+                  <div className="rounded-2xl bg-white/5 border border-blue-500/15 p-4">
                     <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Lessons</div>
                     <div className="text-white font-bold text-lg">{totalLessons}</div>
                   </div>
-                  <div className="rounded-2xl bg-white/5 border border-violet-500/15 p-4">
+                  <div className="rounded-2xl bg-white/5 border border-blue-500/15 p-4">
                     <div className="text-xs text-gray-500 uppercase tracking-wider mb-1">Students</div>
                     <div className="text-white font-bold text-lg">{course.students}</div>
                   </div>
@@ -266,21 +266,21 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
                   <h2 className="text-2xl font-bold text-white mb-6">What you will learn</h2>
                   <div className="flex flex-wrap gap-3">
                     {course.skills.map((skill) => (
-                      <span key={skill} className="text-sm bg-violet-600/10 border border-violet-500/20 text-violet-300 px-4 py-2 rounded-full">
+                      <span key={skill} className="text-sm bg-blue-600/10 border border-blue-500/20 text-blue-400 px-4 py-2 rounded-full">
                         {skill}
                       </span>
                     ))}
                   </div>
                 </div>
 
-                <div className="mt-12 rounded-3xl border border-violet-500/20 bg-white/5 p-8">
+                <div className="mt-12 rounded-3xl border border-blue-500/20 bg-white/5 p-8">
                   <div className="flex items-start gap-6">
-                    <div className="w-16 h-16 rounded-2xl bg-violet-600/20 border border-violet-500/30 flex items-center justify-center text-violet-300 flex-shrink-0">
+                    <div className="w-16 h-16 rounded-2xl bg-blue-600/20 border border-blue-500/30 flex items-center justify-center text-blue-400 flex-shrink-0">
                       <UserRound size={32} />
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-white mb-1">{course.instructor}</h3>
-                      <p className="text-sm text-violet-300 mb-4">{instructor.role}</p>
+                      <p className="text-sm text-blue-400 mb-4">{instructor.role}</p>
                       <p className="text-gray-400 leading-relaxed mb-4">{instructor.bio}</p>
                       <p className="text-sm text-gray-500">Taught learners: {instructor.learners}</p>
                     </div>
@@ -295,13 +295,13 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
                 {!sectionsLoaded ? (
                   <div className="space-y-4">
                     {[1, 2, 3].map(i => (
-                      <div key={i} className="h-20 rounded-2xl bg-white/5 border border-violet-500/10 animate-pulse" />
+                      <div key={i} className="h-20 rounded-2xl bg-white/5 border border-blue-500/10 animate-pulse" />
                     ))}
                   </div>
                 ) : sections.length > 0 ? (
                   <div className="space-y-4">
                     {sections.map((section, index) => (
-                      <div key={section.id} className="rounded-2xl border border-violet-500/20 bg-white/5 p-6">
+                      <div key={section.id} className="rounded-2xl border border-blue-500/20 bg-white/5 p-6">
                         <button
                           onClick={() => setOpenSectionIndex(openSectionIndex === index ? null : index)}
                           className="w-full flex items-center justify-between text-left"
@@ -314,18 +314,18 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
                           </div>
                           <ChevronDown
                             size={20}
-                            className={`text-violet-300 transition-transform ${openSectionIndex === index ? "rotate-180" : ""}`}
+                            className={`text-blue-400 transition-transform ${openSectionIndex === index ? "rotate-180" : ""}`}
                           />
                         </button>
 
                         {openSectionIndex === index && (
-                          <ul className="mt-6 pt-6 border-t border-violet-500/15 space-y-4">
+                          <ul className="mt-6 pt-6 border-t border-blue-500/15 space-y-4">
                             {section.lessons.map(lesson => (
                               <li key={lesson.id} className="flex items-center gap-4 text-sm">
                                 <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0"
-                                  style={{ background: lesson.isPreview ? "rgba(124,58,237,0.2)" : "rgba(255,255,255,0.05)" }}>
+                                  style={{ background: lesson.isPreview ? "rgba(59,130,246,0.2)" : "rgba(255,255,255,0.05)" }}>
                                   {lesson.isPreview
-                                    ? <Play size={12} className="text-violet-400" fill="currentColor" />
+                                    ? <Play size={12} className="text-blue-500" fill="currentColor" />
                                     : <Lock size={12} className="text-gray-600" />
                                   }
                                 </div>
@@ -360,7 +360,7 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
                           <ul className="mt-6 pt-6 border-t border-violet-500/15 space-y-4">
                             {module.lessons.map(lesson => (
                               <li key={lesson} className="text-sm text-gray-300 flex items-start gap-3">
-                                <span className="text-violet-400 mt-0.5">•</span>
+                                <span className="text-blue-500 mt-0.5">•</span>
                                 <span>{lesson}</span>
                               </li>
                             ))}
@@ -377,7 +377,7 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
             {tab === "reviews" && (
               <div className="space-y-4">
                 {reviews.map(review => (
-                  <div key={review.name} className="rounded-2xl border border-violet-500/20 bg-white/5 p-6">
+                  <div key={review.name} className="rounded-2xl border border-blue-500/20 bg-white/5 p-6">
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-white font-semibold">{review.name}</span>
                       <span className="text-yellow-400 text-sm flex items-center gap-1">
@@ -394,7 +394,7 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
           {/* Sidebar / CTA card */}
           <aside className="lg:col-span-1 space-y-6">
             <div 
-              className="sticky top-28 glass-card rounded-3xl border border-violet-500/20 overflow-hidden shadow-2xl shadow-violet-500/10"
+              className="sticky top-28 glass-card rounded-3xl border border-blue-500/20 overflow-hidden shadow-2xl shadow-blue-500/10"
               style={{ background: "rgba(15,15,30,0.9)" }}
             >
               <div className="p-8">
@@ -417,7 +417,7 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
                   <button
                     onClick={handleEnrollClick}
                     disabled={enrolling || checkingEnrollment}
-                    className="w-full bg-violet-600 text-white font-bold px-6 py-4 rounded-xl hover:bg-violet-700 transition-all duration-200 shadow-lg shadow-violet-600/20 disabled:opacity-50 flex items-center justify-center gap-2 text-base"
+                    className="w-full bg-blue-600 text-white font-bold px-6 py-4 rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center justify-center gap-2 text-base"
                   >
                     {enrolling ? (
                       <>
@@ -440,17 +440,17 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
                   )}
                 </div>
 
-                <div className="mt-8 pt-8 border-t border-violet-500/15 text-sm text-gray-400 space-y-4">
+                <div className="mt-8 pt-8 border-t border-blue-500/15 text-sm text-gray-400 space-y-4">
                   <div className="flex items-center gap-3">
-                    <BookOpen size={18} className="text-violet-400" />
+                    <BookOpen size={18} className="text-blue-500" />
                     <span>{totalLessons} structured lessons</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Play size={18} className="text-violet-400" />
+                    <Play size={18} className="text-blue-500" />
                     <span>{sections.length} sections · {sections.filter(s => s.lessons.some(l => l.isPreview)).length} free previews</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <MessageSquare size={18} className="text-violet-400" />
+                    <MessageSquare size={18} className="text-blue-500" />
                     <span>Community Q&A and mentor support</span>
                   </div>
                 </div>

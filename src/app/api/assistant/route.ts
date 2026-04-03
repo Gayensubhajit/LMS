@@ -89,7 +89,7 @@ ${COURSE_CONTEXT}`;
         "X-OpenRouter-Title": "EduNova AI Assistant",
       },
       body: JSON.stringify({
-        model: "qwen/qwen-2.5-72b-instruct:free",
+        model: "google/gemma-3-12b-it:free",
         messages: userMessages, // No system role used here to avoid 400 errors
         temperature: 0.7,
         max_tokens: 1024,

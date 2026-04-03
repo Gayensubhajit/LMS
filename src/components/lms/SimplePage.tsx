@@ -17,7 +17,7 @@ export default function SimplePage({
     <main className="min-h-screen bg-background text-foreground flex items-center justify-center px-6">
       <section className="max-w-2xl w-full glass-card rounded-3xl p-8 md:p-10 border border-violet-500/20">
         <div className="tag-purple mb-4 inline-flex">EduNova</div>
-        <h1 className="text-3xl md:text-4xl font-black text-white mb-4">{title}</h1>
+        <h1 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white mb-4">{title}</h1>
         <p className="text-gray-400 leading-relaxed mb-8">{description}</p>
         <div className="flex items-center gap-3">
           <Link
@@ -37,4 +37,3 @@ export default function SimplePage({
     </main>
   );
 }
-

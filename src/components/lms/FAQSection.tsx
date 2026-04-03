@@ -45,7 +45,7 @@ export default function FAQSection() {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(124,58,237,0.05) 0%, transparent 70%)",
+            "radial-gradient(ellipse 60% 50% at 50% 50%, rgba(59,130,246,0.05) 0%, transparent 70%)",
         }}
       />
 
@@ -57,17 +57,17 @@ export default function FAQSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-14"
         >
-          <div className="inline-flex items-center gap-2 tag-purple mb-4">
+          <div className="inline-flex items-center gap-2 tag-blue mb-4">
             Platform Exclusive
           </div>
-          <h2 className="font-serif text-4xl md:text-6xl font-black text-white mb-4">
+          <h2 className="font-serif text-4xl md:text-6xl font-black text-black dark:text-white mb-4">
             Frequently Asked
             <br />
-            <span className={`${montserrat.className} gradient-text`}>
+            <span className={`${montserrat.className} dark:gradient-text`}>
               Questions
             </span>
           </h2>
-          <p className={`${montserrat.className} text-gray-400`}>
+          <p className={`${montserrat.className} text-gray-600 dark:text-gray-400`}>
             Everything you need to know before you begin your learning journey.
           </p>
         </motion.div>
@@ -84,10 +84,10 @@ export default function FAQSection() {
               style={{
                 borderColor:
                   openIndex === i
-                    ? "rgba(124,58,237,0.5)"
-                    : "rgba(124,58,237,0.2)",
+                    ? "rgba(0,0,0,0.1)"
+                    : "rgba(0,0,0,0.05)",
                 boxShadow:
-                  openIndex === i ? "0 0 25px rgba(124,58,237,0.15)" : "none",
+                  openIndex === i ? "0 0 25px rgba(0,0,0,0.05)" : "none",
                 transition: "all 0.3s ease",
               }}
             >
@@ -98,8 +98,8 @@ export default function FAQSection() {
                 <span
                   className={`text-base font-semibold transition-colors duration-200 ${
                     openIndex === i
-                      ? "text-white"
-                      : "text-gray-300 group-hover:text-white"
+                      ? "text-black dark:text-white"
+                      : "text-gray-600 dark:text-gray-300 group-hover:text-black dark:group-hover:text-white"
                   }`}
                 >
                   {faq.q}
@@ -107,8 +107,8 @@ export default function FAQSection() {
                 <div
                   className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
                     openIndex === i
-                      ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white"
-                      : "bg-white/5 text-gray-400 group-hover:bg-violet-600/20 group-hover:text-violet-400"
+                      ? "bg-black dark:bg-linear-to-r dark:from-blue-600 dark:to-indigo-600 text-white"
+                      : "bg-black/5 dark:bg-white/5 text-gray-500 dark:text-gray-400 group-hover:bg-black/10 dark:group-hover:bg-blue-600/20 group-hover:text-black dark:group-hover:text-blue-400"
                   }`}
                 >
                   {openIndex === i ? <Minus size={16} /> : <Plus size={16} />}
@@ -123,7 +123,7 @@ export default function FAQSection() {
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                   >
-                    <div className="px-6 pb-6 text-gray-400 text-sm leading-relaxed border-t border-violet-500/10 pt-4">
+                    <div className="px-6 pb-6 text-gray-600 dark:text-gray-400 text-sm leading-relaxed border-t border-black/5 dark:border-blue-500/10 pt-4">
                       {faq.a}
                     </div>
                   </motion.div>
@@ -141,22 +141,22 @@ export default function FAQSection() {
           className={`${montserrat.className} text-center mt-12 glass-card rounded-2xl p-8`}
         >
           <div className="text-2xl mb-2">🤔</div>
-          <h3 className="text-lg font-bold text-white mb-2">
+          <h3 className="text-lg font-bold text-black dark:text-white mb-2">
             Still have questions?
           </h3>
-          <p className="text-gray-400 text-sm mb-4">
+          <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
             Our team is here to help 24/7.
           </p>
           <div className="flex items-center justify-center gap-3">
             <a
               href="/support?tab=chat"
-              className="bg-linear-to-r from-violet-600 to-purple-600 text-white px-4 py-3 md:px-6 md:py-3 rounded-xl hover:shadow-[0_0_25px_rgba(124,58,237,0.5)] transition-all duration-200 ease-in-out text-xs md:text-lg lg:text-xl font-semibold"
+              className="bg-black dark:bg-linear-to-r dark:from-blue-600 dark:to-indigo-600 text-white px-4 py-3 md:px-6 md:py-3 rounded-xl hover:opacity-90 dark:hover:shadow-[0_0_25px_rgba(59,130,246,0.5)] transition-all duration-200 ease-in-out text-xs md:text-lg font-semibold"
             >
               Chat with Us
             </a>
             <a
               href="/support?tab=email"
-              className="border border-violet-500/30 font-semibold text-violet-300 text-xs md:text-lg lg:text-xl px-4 py-3 md:px-6 md:py-3 rounded-xl hover:bg-violet-600/10 transition-all duration-200 ease-in-out"
+              className="border border-black/10 dark:border-blue-500/30 font-semibold text-black dark:text-blue-600 text-xs md:text-lg px-4 py-3 md:px-6 md:py-3 rounded-xl hover:bg-black/5 dark:hover:bg-blue-600/10 transition-all duration-200 ease-in-out"
             >
               Email Support
             </a>

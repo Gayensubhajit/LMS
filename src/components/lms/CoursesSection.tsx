@@ -22,19 +22,19 @@ const categories = [
 ];
 
 const gradientMap: Record<string, string> = {
-  Design: "from-violet-900/50 to-purple-900/30",
+  Design: "from-blue-900/50 to-indigo-900/30",
   Development: "from-blue-900/50 to-cyan-900/30",
   "AI/ML": "from-emerald-900/50 to-teal-900/30",
-  Business: "from-indigo-900/50 to-purple-900/30",
-  Marketing: "from-pink-900/50 to-rose-900/30",
+  Business: "from-indigo-900/50 to-blue-900/30",
+  Marketing: "from-blue-900/50 to-indigo-900/30",
 };
 
 const accentMap: Record<string, string> = {
-  Design: "rgba(124,58,237,0.5)",
+  Design: "rgba(59,130,246,0.5)",
   Development: "rgba(59,130,246,0.5)",
   "AI/ML": "rgba(16,185,129,0.5)",
-  Business: "rgba(99,102,241,0.5)",
-  Marketing: "rgba(236,72,153,0.5)",
+  Business: "rgba(79,70,229,0.5)",
+  Marketing: "rgba(59,130,246,0.5)",
 };
 
 const badgeMap: Record<string, { label: string; color: string }> = {
@@ -52,7 +52,7 @@ const badgeMap: Record<string, { label: string; color: string }> = {
   },
   "mobile-app-design-with-figma": {
     label: "Popular",
-    color: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+    color: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   },
   "full-stack-development-accelerator": {
     label: "Bestseller",
@@ -131,7 +131,7 @@ export default function CoursesSection() {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse 70% 40% at 50% 50%, rgba(124,58,237,0.05) 0%, transparent 70%)",
+            "radial-gradient(ellipse 70% 40% at 50% 50%, rgba(59,130,246,0.05) 0%, transparent 70%)",
         }}
       />
 
@@ -146,18 +146,18 @@ export default function CoursesSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 tag-purple mb-4">
+          <div className="inline-flex items-center gap-2 tag-blue mb-4">
             Top Rated Courses
           </div>
-          <h2 className="font-serif text-4xl md:text-6xl font-black text-white mb-4">
+          <h2 className="font-serif text-4xl md:text-6xl font-black text-black dark:text-white mb-4">
             Level Up with Our
             <br />
-            <span className={`${montserrat.className} gradient-text`}>
+            <span className={`${montserrat.className} dark:gradient-text`}>
               Most Popular Courses
             </span>
           </h2>
           <p
-            className={`${montserrat.className} text-gray-400 text-lg max-w-xl mx-auto`}
+            className={`${montserrat.className} text-gray-600 dark:text-gray-400 text-lg max-w-xl mx-auto`}
           >
             Hand-picked courses taught by industry experts. Updated regularly to
             stay ahead of the curve.
@@ -177,8 +177,8 @@ export default function CoursesSection() {
               onClick={() => setActiveCategory(cat)}
               className={`${montserrat.className} px-5 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                 activeCategory === cat
-                  ? "bg-linear-to-r from-violet-600 to-purple-600 text-white shadow-[0_0_20px_rgba(124,58,237,0.4)]"
-                  : "glass-card text-gray-400 hover:text-white hover:border-violet-500/40"
+                  ? "bg-black dark:bg-linear-to-r dark:from-blue-600 dark:to-indigo-600 text-white shadow-md dark:shadow-[0_0_20px_rgba(59,130,246,0.4)]"
+                  : "glass-card text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white hover:border-black/20 dark:hover:border-blue-500/40"
               }`}
             >
               {cat}
@@ -191,13 +191,13 @@ export default function CoursesSection() {
           className={`${montserrat.className} grid grid-cols-1 md:grid-cols-2 gap-8`}
         >
           {filtered.map((course, i) => {
-            const accent = accentMap[course.category] ?? "rgba(124,58,237,0.5)";
+            const accent = accentMap[course.category] ?? "rgba(59,130,246,0.5)";
             const gradient =
               gradientMap[course.category] ??
-              "from-violet-900/50 to-purple-900/30";
+              "from-blue-900/50 to-indigo-900/30";
             const badge = badgeMap[course.slug] ?? {
               label: "Featured",
-              color: "bg-violet-500/20 text-violet-400 border-violet-500/30",
+              color: "bg-blue-500/20 text-blue-400 border-blue-500/30",
             };
             return (
               <motion.div
@@ -215,7 +215,7 @@ export default function CoursesSection() {
                   boxShadow:
                     hoveredCard === i ? `0 20px 60px ${accent}` : "none",
                   borderColor:
-                    hoveredCard === i ? accent : "rgba(124,58,237,0.2)",
+                    hoveredCard === i ? accent : "rgba(59,130,246,0.2)",
                 }}
               >
                 {/* Thumbnail */}
@@ -259,7 +259,7 @@ export default function CoursesSection() {
                 {/* Card content */}
                 <div className="p-5">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs text-violet-400 font-medium">
+                    <span className="text-xs text-blue-500 font-medium">
                       {course.category}
                     </span>
                     <span className="text-gray-600">•</span>
@@ -278,22 +278,22 @@ export default function CoursesSection() {
                     </div>
                   </div>
 
-                  <h3 className="text-base font-bold text-white mb-2 line-clamp-2 leading-snug">
+                  <h3 className="text-base font-bold text-black dark:text-white mb-2 line-clamp-2 leading-snug">
                     {course.title}
                   </h3>
-                  <p className="text-xs text-gray-400 mb-2">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
                     by {course.instructor}
                   </p>
 
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex flex-wrap gap-1.5">
                       {course.skills.slice(0, 3).map((skill: string, j: number) => (
-                        <span key={j} className="text-[10px] bg-white/5 text-gray-400 px-2 py-0.5 rounded-md">
+                        <span key={j} className="text-[10px] bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-400 px-2 py-0.5 rounded-md">
                           {skill}
                         </span>
                       ))}
                     </div>
-                    <div className="text-sm font-bold text-violet-400">
+                    <div className="text-sm font-bold text-black dark:text-blue-400">
                       {course.isFree ? "Free" : `${formatLocalPrice(course.price.oneMonth)}/mo`}
                     </div>
                   </div>
@@ -317,28 +317,28 @@ export default function CoursesSection() {
                     <div className="flex items-center gap-2 mt-auto pt-2">
                       <Link
                         href={`/courses/${course.slug}`}
-                        className="flex-1 flex items-center justify-center gap-1.5 h-10 border border-violet-500/30 text-violet-300 text-[11px] font-bold rounded-xl hover:bg-violet-500/10 transition-all"
+                        className="flex-1 flex items-center justify-center gap-1.5 h-10 border border-black/10 dark:border-blue-500/30 text-black dark:text-blue-600 text-[11px] font-bold rounded-xl hover:bg-black/5 dark:hover:bg-blue-500/10 transition-all font-sans"
                       >
                         Details
                       </Link>
                       {enrolledSlugs.has(course.slug) ? (
                         <Link
                           href={`/learn/${course.slug}`}
-                          className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-violet-600 hover:bg-violet-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-lg shadow-violet-500/20"
+                          className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-black dark:bg-violet-600 hover:bg-zinc-800 dark:hover:bg-violet-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-md dark:shadow-violet-500/20 font-sans"
                         >
                           Go to Course
                         </Link>
                       ) : course.isFree ? (
                         <Link
                           href={`/learn/${course.slug}`}
-                          className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/20"
+                          className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-black dark:bg-emerald-600 hover:bg-zinc-800 dark:hover:bg-emerald-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-md dark:shadow-emerald-500/20 font-sans"
                         >
                           Enroll Free
                         </Link>
                       ) : (
                         <Link
                           href={`/checkout?slug=${course.slug}&plan=1month`}
-                          className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-[11px] font-bold rounded-xl hover:opacity-90 transition-all shadow-lg shadow-violet-500/20"
+                          className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-black dark:bg-linear-to-r dark:from-blue-600 dark:to-indigo-600 text-white text-[11px] font-bold rounded-xl hover:opacity-90 transition-all shadow-md dark:shadow-blue-500/20 font-sans"
                         >
                           Enroll <ArrowRight size={12} />
                         </Link>
@@ -360,7 +360,7 @@ export default function CoursesSection() {
           <motion.a
             href="/courses"
             whileHover={{ scale: 1.04 }}
-            className="inline-flex items-center gap-2 border border-violet-500/40 text-violet-300 px-8 py-3.5 rounded-2xl text-sm font-semibold hover:bg-violet-600/10 transition-colors"
+            className="inline-flex items-center gap-2 border border-black/10 dark:border-blue-500/40 text-black dark:text-blue-600 px-8 py-3.5 rounded-2xl text-sm font-semibold hover:bg-black/5 dark:hover:bg-blue-600/10 transition-colors"
           >
             Browse All 100+ Courses <ArrowRight size={16} />
           </motion.a>

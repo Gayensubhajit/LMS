@@ -98,12 +98,12 @@ export default function TestimonialsSection() {
           className="text-center mb-16"
         >
           <div className="inline-flex items-center gap-2 tag-purple mb-4">Community Stories</div>
-          <h2 className="font-serif text-4xl md:text-6xl font-black text-white mb-4">
+          <h2 className="font-serif text-4xl md:text-6xl font-black text-slate-900 dark:text-white mb-4">
             Success Stories from Our
             <br />
             <span className={`${montserrat.className} gradient-text`}>Growing Community</span>
           </h2>
-          <p className={`${montserrat.className} text-gray-400 text-lg max-w-xl mx-auto`}>
+          <p className={`${montserrat.className} text-slate-600 dark:text-gray-400 text-lg max-w-xl mx-auto`}>
             Join thousands of learners who have transformed their careers with EduNova.
           </p>
 
@@ -112,8 +112,8 @@ export default function TestimonialsSection() {
             {[...Array(5)].map((_, i) => (
               <Star key={i} size={20} fill="#facc15" className="text-yellow-400" />
             ))}
-            <span className="text-white font-bold ml-2">4.9/5</span>
-            <span className="text-gray-400 text-sm ml-1">from 25,000+ reviews</span>
+            <span className="text-slate-900 dark:text-white font-bold ml-2">4.9/5</span>
+            <span className="text-slate-500 dark:text-gray-400 text-sm ml-1">from 25,000+ reviews</span>
           </div>
         </motion.div>
 
@@ -140,7 +140,7 @@ export default function TestimonialsSection() {
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.4 }}
               >
-                <p className={`text-xl text-gray-200 leading-relaxed mb-8 italic`}>
+                <p className={`text-xl text-slate-800 dark:text-gray-200 leading-relaxed mb-8 italic`}>
                   &ldquo;{testimonials[current].text}&rdquo;
                 </p>
 
@@ -150,8 +150,8 @@ export default function TestimonialsSection() {
                       {testimonials[current].initials}
                     </div>
                     <div>
-                      <div className="text-white font-bold">{testimonials[current].name}</div>
-                      <div className="text-sm text-gray-400">{testimonials[current].role}</div>
+                      <div className="text-slate-900 dark:text-white font-bold">{testimonials[current].name}</div>
+                      <div className="text-sm text-slate-500 dark:text-gray-400">{testimonials[current].role}</div>
                     </div>
                   </div>
                   <div className={`hidden sm:inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-xl ${testimonials[current].outcomeBg}`}>
@@ -214,8 +214,8 @@ export default function TestimonialsSection() {
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${t.color} flex items-center justify-center text-white font-bold text-sm mb-3`}>
                 {t.initials}
               </div>
-              <div className="text-sm font-bold text-white leading-tight">{t.name}</div>
-              <div className="text-xs text-gray-400 mt-0.5 leading-tight">{t.role}</div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{t.name}</div>
+              <div className="text-xs text-slate-500 dark:text-gray-400 mt-0.5 leading-tight">{t.role}</div>
               <div className="flex gap-0.5 mt-2">
                 {[...Array(5)].map((_, j) => (
                   <Star key={j} size={9} fill="#facc15" className="text-yellow-400" />

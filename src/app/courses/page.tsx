@@ -42,8 +42,8 @@ type Category = (typeof categories)[number];
 
 const categoryColors: Record<string, { text: string; bg: string }> = {
   Development: { text: "#60a5fa", bg: "rgba(59,130,246,0.12)" },
-  Design: { text: "#f472b6", bg: "rgba(236,72,153,0.12)" },
-  "AI/ML": { text: "#a78bfa", bg: "rgba(139,92,246,0.12)" },
+  Design: { text: "#38bdf8", bg: "rgba(56,189,248,0.12)" },
+  "AI/ML": { text: "#818cf8", bg: "rgba(129,140,248,0.12)" },
   Business: { text: "#fbbf24", bg: "rgba(245,158,11,0.12)" },
   Marketing: { text: "#34d399", bg: "rgba(16,185,129,0.12)" },
 };
@@ -163,7 +163,7 @@ function CoursesContent() {
           <div className="px-6 hidden md:flex items-center justify-end">
             <Link
               href="/"
-              className="text-sm text-violet-300 hover:text-white transition-colors border border-violet-500/30 px-6 py-2.5 rounded-full"
+              className="text-sm text-blue-400 hover:text-white transition-colors border border-blue-500/30 px-6 py-2.5 rounded-full"
             >
               ← Back to Home
             </Link>
@@ -171,15 +171,15 @@ function CoursesContent() {
           <header className="mb-12">
             <div className="flex flex-col md:flex-row md:items-end justify-center gap-6 mb-8">
               <div className="flex flex-col items-center justify-center">
-                <div className="tag-purple inline-flex mb-3">
+                <div className="tag-blue inline-flex mb-3">
                   EDU-NOVA Academy
                 </div>
                 <div className="flex items-center justify-center">
-                  <h1 className="text-center text-4xl md:text-6xl font-black text-white mb-4">
+                  <h1 className="text-center text-4xl md:text-6xl font-black text-slate-900 dark:text-white mb-4">
                     {isSearchMode ? "Search Results" : "Explore Our Catalog"}
                   </h1>
                 </div>
-                <p className="text-gray-400 max-w-xl text-lg">
+                <p className="text-slate-600 dark:text-gray-400 max-w-xl text-lg">
                   {backendLoaded
                     ? `Showing ${filtered.length} courses powered by our live learning database.`
                     : "Loading verified expert-led courses..."}
@@ -188,15 +188,15 @@ function CoursesContent() {
             </div>
 
             <div className="flex justify-center w-full px-3">
-              <div className="w-full max-w-4xl flex flex-col md:flex-row bg-white/5 rounded-xl border border-violet-500/20 backdrop-blur-xl overflow-hidden">
+              <div className="w-full max-w-4xl flex flex-col md:flex-row bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-blue-500/20 backdrop-blur-xl overflow-hidden">
                 {/* Search */}
                 <div className="relative flex-1 min-w-0 flex items-center">
-                  <Search className="absolute left-3 text-gray-500" size={16} />
+                  <Search className="absolute left-3 text-slate-400 dark:text-gray-500" size={16} />
                   <input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Search courses..."
-                    className="w-full min-w-0 bg-transparent text-white pl-9 pr-3 py-2.5 outline-none placeholder-gray-500 text-sm font-medium"
+                    className="w-full min-w-0 bg-transparent text-slate-900 dark:text-white pl-9 pr-3 py-2.5 outline-none placeholder-slate-400 dark:placeholder-gray-500 text-sm font-medium"
                   />
                 </div>
 
@@ -204,20 +204,20 @@ function CoursesContent() {
                 <div className="hidden md:block w-px bg-white/10" />
 
                 {/* Sort */}
-                <div className="flex items-center gap-2 px-3 py-2 border-t md:border-t-0 md:border-l border-white/10 min-w-0">
-                  <TrendingUp size={14} className="text-violet-400 shrink-0" />
+                <div className="flex items-center gap-2 px-3 py-2 border-t md:border-t-0 md:border-l border-slate-200 dark:border-white/10 min-w-0">
+                  <TrendingUp size={14} className="text-blue-500 dark:text-blue-400 shrink-0" />
 
                   {/* Hide label on very small screens */}
-                  <span className="hidden sm:block text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">
+                  <span className="hidden sm:block text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest whitespace-nowrap">
                     Sort
                   </span>
 
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as any)}
-                    className="flex-1 min-w-0 bg-[#0a0a1a] border border-violet-500/20 text-gray-300 text-xs font-semibold px-3 py-2 rounded-lg outline-none cursor-pointer hover:border-violet-500/40 transition-all appearance-none pr-7"
+                    className="flex-1 min-w-0 bg-white dark:bg-[#0a0a1a] border border-slate-200 dark:border-blue-500/20 text-slate-700 dark:text-gray-300 text-xs font-semibold px-3 py-2 rounded-lg outline-none cursor-pointer hover:border-blue-500/40 transition-all appearance-none pr-7"
                     style={{
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%237c3aed'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`,
+                      backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%233b82f6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E")`,
                       backgroundRepeat: "no-repeat",
                       backgroundPosition: "right 8px center",
                       backgroundSize: "12px",
@@ -241,8 +241,8 @@ function CoursesContent() {
                     onClick={() => setCategory(cat)}
                     className={`whitespace-nowrap px-6 py-2.5 rounded-2xl text-[11px] font-bold uppercase tracking-wider transition-all border ${
                       category === cat
-                        ? "bg-violet-600 border-violet-600 text-white shadow-lg shadow-violet-500/20"
-                        : "bg-white/5 border-white/10 text-gray-400 hover:text-white"
+                        ? "bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-500/20"
+                        : "bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
                     {cat}
@@ -256,8 +256,8 @@ function CoursesContent() {
             {/* Sidebar Filters */}
             <aside className="hidden lg:block space-y-8 sticky top-28 self-start">
               <div>
-                <h3 className="text-white font-bold mb-4 flex items-center gap-2">
-                  <SlidersHorizontal size={16} className="text-violet-400" />{" "}
+                <h3 className="text-slate-900 dark:text-white font-black mb-4 flex items-center gap-2 uppercase tracking-tight text-sm">
+                  <SlidersHorizontal size={16} className="text-blue-500 dark:text-blue-400" />{" "}
                   Categories
                 </h3>
                 <div className="flex flex-col gap-2">
@@ -265,7 +265,7 @@ function CoursesContent() {
                     <button
                       key={cat}
                       onClick={() => setCategory(cat)}
-                      className={`text-left px-4 py-2.5 rounded-xl text-sm transition-all ${category === cat ? "bg-violet-600/20 text-violet-300 border border-violet-500/30" : "text-gray-500 hover:text-gray-300 hover:bg-white/5"}`}
+                      className={`text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${category === cat ? "bg-blue-600/10 text-blue-600 dark:text-blue-400 border border-blue-500/30 font-bold" : "text-slate-500 dark:text-gray-500 hover:text-slate-900 dark:hover:text-gray-300 hover:bg-slate-50 dark:hover:bg-white/5"}`}
                     >
                       {cat}
                     </button>
@@ -273,10 +273,10 @@ function CoursesContent() {
                 </div>
               </div>
 
-              <div className="p-6 rounded-3xl bg-gradient-to-br from-violet-600/10 to-purple-600/5 border border-violet-500/10">
-                <Sparkles className="text-violet-400 mb-3" size={20} />
-                <h4 className="text-white font-bold mb-1">Elite Learning</h4>
-                <p className="text-xs text-gray-500 leading-relaxed">
+              <div className="p-6 rounded-3xl bg-linear-to-br from-blue-600/10 to-indigo-600/5 border border-blue-500/10">
+                <Sparkles className="text-blue-600 dark:text-blue-400 mb-3" size={20} />
+                <h4 className="text-slate-900 dark:text-white font-bold mb-1">Elite Learning</h4>
+                <p className="text-xs text-slate-500 dark:text-gray-500 leading-relaxed">
                   Join 45,000+ students leveling up their careers with EduNova.
                 </p>
               </div>
@@ -285,23 +285,23 @@ function CoursesContent() {
             {/* Course Grid */}
             <div className="lg:col-span-3">
               {filtered.length === 0 ? (
-                <div className="text-center py-20 rounded-3xl border border-dashed border-violet-500/20 bg-white/5">
+                <div className="text-center py-20 rounded-3xl border border-dashed border-blue-500/20 bg-white/5">
                   <p className="text-gray-500">
                     No courses matching your search. Try another keyword!
                   </p>
                   <button
                     onClick={() => setQuery("")}
-                    className="mt-4 text-violet-400 underline underline-offset-4"
+                    className="mt-4 text-blue-400 underline underline-offset-4"
                   >
                     Clear all filters
                   </button>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {filtered.map((course, i) => {
                     const col = categoryColors[course.category] ?? {
-                      text: "#a78bfa",
-                      bg: "rgba(139,92,246,0.12)",
+                      text: "#60a5fa",
+                      bg: "rgba(59,130,246,0.12)",
                     };
                     return (
                       <motion.article
@@ -309,7 +309,7 @@ function CoursesContent() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.05 }}
-                        className="group relative flex flex-col bg-white/5 rounded-3xl border border-violet-500/10 overflow-hidden hover:border-violet-500/40 transition-all shadow-xl hover:shadow-violet-500/10"
+                        className="group relative flex flex-col bg-white dark:bg-white/5 rounded-3xl border border-slate-200 dark:border-blue-500/10 overflow-hidden hover:border-blue-500/40 transition-all shadow-xl hover:shadow-blue-500/10"
                       >
                         <div className="relative h-56 overflow-hidden">
                           {course.img ? (
@@ -350,10 +350,10 @@ function CoursesContent() {
                             </span>
                           </div>
 
-                          <h3 className="text-xl font-bold text-white mb-2 leading-tight group-hover:text-violet-300 transition-colors">
+                          <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
                             {course.title}
                           </h3>
-                          <p className="text-sm text-gray-500 mb-6 line-clamp-2">
+                          <p className="text-sm text-slate-500 dark:text-gray-500 mb-6 line-clamp-2">
                             by {course.instructor} • {course.shortDescription}
                           </p>
 
@@ -362,9 +362,9 @@ function CoursesContent() {
                               <p className="text-xs text-gray-600 uppercase font-bold tracking-wider mb-1">
                                 Pricing
                               </p>
-                              <p className="text-xl font-black text-white">
+                              <p className="text-xl font-black text-slate-900 dark:text-white">
                                 {course.isFree ? (
-                                  <span className="text-emerald-400">Free</span>
+                                  <span className="text-emerald-500 dark:text-emerald-400">Free</span>
                                 ) : (
                                   formatLocalPrice(course.price.oneMonth)
                                 )}
@@ -379,14 +379,14 @@ function CoursesContent() {
                             <div className="flex items-center gap-2">
                               <Link
                                 href={`/courses/${course.slug}`}
-                                className="px-4 py-2 rounded-xl text-[10px] font-bold text-violet-300 border border-violet-500/20 hover:bg-violet-500/10 transition-all"
+                                className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-500 border border-slate-200 hover:bg-slate-50 dark:text-violet-400 dark:border-blue-500/20 dark:hover:bg-blue-500/10 transition-all"
                               >
                                 Details
                               </Link>
                               {enrolledSlugs.has(course.slug) ? (
                                 <Link
                                   href={`/learn/${course.slug}`}
-                                  className="px-4 py-2 rounded-xl text-[10px] font-bold bg-violet-600 text-white hover:bg-violet-500 transition-all"
+                                  className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-[#0056d2] text-white shadow-lg shadow-blue-500/20 hover:bg-[#00419e] transition-all"
                                 >
                                   Go to course
                                 </Link>
@@ -397,7 +397,7 @@ function CoursesContent() {
                                       ? `/learn/${course.slug}`
                                       : `/checkout?slug=${course.slug}&plan=1month`
                                   }
-                                  className="px-4 py-2 rounded-xl text-[10px] font-bold bg-violet-600/20 text-violet-300 border border-violet-500/30 hover:bg-violet-600 hover:text-white transition-all flex items-center gap-1.5"
+                                  className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-[#0056d2] text-white shadow-lg shadow-blue-500/20 hover:bg-[#00419e] transition-all flex items-center gap-1.5"
                                 >
                                   Enroll <ArrowRight size={10} />
                                 </Link>

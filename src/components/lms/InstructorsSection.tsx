@@ -99,15 +99,15 @@ export default function InstructorsSection() {
           <div className="inline-flex items-center gap-2 tag-purple mb-4">
             World-Class Mentors
           </div>
-          <h2 className="font-serif text-4xl md:text-6xl font-black text-white mb-4">
+          <h2 className="font-serif text-4xl md:text-6xl font-black text-black dark:text-white mb-4">
             Learn from Industry Leaders
             <br />
-            <span className={`${montserrat.className} gradient-text`}>
+            <span className={`${montserrat.className} dark:gradient-text`}>
               &amp; Top Creators
             </span>
           </h2>
           <p
-            className={`${montserrat.className} text-gray-400 text-lg max-w-xl mx-auto`}
+            className={`${montserrat.className} text-gray-600 dark:text-gray-400 text-lg max-w-xl mx-auto`}
           >
             Our instructors aren&apos;t just teachers — they&apos;re
             practitioners actively working at the world&apos;s best companies.
@@ -179,10 +179,10 @@ export default function InstructorsSection() {
 
               {/* Content */}
               <div className="p-5">
-                <h3 className="text-base font-bold text-white">{inst.name}</h3>
-                <p className="text-xs text-violet-400 mb-3">{inst.role}</p>
+                <h3 className="text-base font-bold text-black dark:text-white">{inst.name}</h3>
+                <p className="text-xs text-gray-600 dark:text-violet-400 mb-3">{inst.role}</p>
 
-                <p className="text-xs text-gray-400 mb-3 leading-relaxed">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 leading-relaxed">
                   {inst.bio}
                 </p>
 
@@ -191,7 +191,7 @@ export default function InstructorsSection() {
                   {inst.expertise.map((tag, j) => (
                     <span
                       key={j}
-                      className="text-xs bg-violet-600/15 border border-violet-500/20 text-violet-300 px-2 py-0.5 rounded-md"
+                      className="text-xs bg-black/5 dark:bg-violet-600/15 border border-black/10 dark:border-violet-500/20 text-black dark:text-violet-300 px-2 py-0.5 rounded-md"
                     >
                       {tag}
                     </span>
@@ -199,14 +199,14 @@ export default function InstructorsSection() {
                 </div>
 
                 {/* Stats */}
-                <div className="flex items-center gap-4 text-xs text-gray-400 mb-4 pb-4 border-b border-white/5">
+                <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-4 pb-4 border-b border-black/5 dark:border-white/5">
                   <span className="flex items-center gap-1">
                     <Star
                       size={10}
                       fill="#facc15"
                       className="text-yellow-400"
                     />
-                    <span className="font-semibold text-white">
+                    <span className="font-semibold text-black dark:text-white">
                       {inst.rating}
                     </span>
                   </span>
@@ -242,7 +242,7 @@ export default function InstructorsSection() {
                   </div>
                   <a
                     href={`/instructors?profile=${encodeURIComponent(inst.name)}`}
-                    className="flex items-center gap-1 text-xs text-violet-400 hover:text-violet-300 font-medium"
+                    className="flex items-center gap-1 text-xs text-black dark:text-violet-400 hover:opacity-70 dark:hover:text-violet-300 font-medium transition-opacity"
                   >
                     View Profile <ArrowRight size={11} />
                   </a>
@@ -260,7 +260,7 @@ export default function InstructorsSection() {
         >
           <a
             href="/instructors"
-            className="inline-flex items-center gap-2 border border-violet-500/30 text-violet-300 px-8 py-3.5 rounded-2xl text-sm font-semibold hover:bg-violet-600/10 transition-colors"
+            className="inline-flex items-center gap-2 border border-black/10 dark:border-violet-500/30 text-black dark:text-violet-300 px-8 py-3.5 rounded-2xl text-sm font-semibold hover:bg-black/5 dark:hover:bg-violet-600/10 transition-colors"
           >
             Meet All 50+ Instructors <ArrowRight size={16} />
           </a>

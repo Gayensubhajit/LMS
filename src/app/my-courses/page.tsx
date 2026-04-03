@@ -283,11 +283,7 @@ export default function MyCoursesPage() {
                   </p>
                   <Link
                     href="/courses"
-                    className="inline-flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-bold text-white transition-all hover:translate-y-[-2px]"
-                    style={{
-                      background: "linear-gradient(135deg,#7c3aed,#a855f7)",
-                      boxShadow: "0 10px 20px -10px rgba(124,58,237,0.5)",
-                    }}
+                    className="inline-flex items-center gap-2 px-8 py-3 rounded-xl text-sm font-bold text-white transition-all hover:translate-y-[-2px] bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/30"
                   >
                     Explore Courses <ArrowRight size={14} />
                   </Link>

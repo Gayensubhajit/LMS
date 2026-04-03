@@ -47,8 +47,8 @@ export default function CommunityLeaderboard() {
                 <Trophy size={20} className="text-amber-400" />
               </div>
               <div>
-                <h2 className="text-2xl font-black text-white tracking-tight">Pioneer Rankings</h2>
-                <p className="text-xs text-gray-500 font-medium uppercase tracking-widest">Global Hall of Fame</p>
+                <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Pioneer Rankings</h2>
+                <p className="text-xs text-slate-500 dark:text-gray-500 font-medium uppercase tracking-widest">Global Hall of Fame</p>
               </div>
             </div>
 
@@ -59,36 +59,36 @@ export default function CommunityLeaderboard() {
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="group relative p-4 rounded-2xl border border-white/[0.05] bg-white/[0.02] hover:bg-white/[0.05] transition-all flex items-center gap-4"
+                   transition={{ delay: i * 0.1 }}
+                  className="group relative p-4 rounded-2xl border border-slate-200 dark:border-white/[0.05] bg-white dark:bg-white/[0.02] hover:bg-slate-50 dark:hover:bg-white/[0.05] shadow-sm dark:shadow-none transition-all flex items-center gap-4"
                 >
                   {/* Rank Number */}
-                  <div className="text-lg font-black text-gray-700 group-hover:text-violet-400/50 transition-colors w-6">
+                  <div className="text-lg font-black text-slate-300 dark:text-gray-700 group-hover:text-blue-600/50 dark:group-hover:text-violet-400/50 transition-colors w-6">
                     {i + 1}
                   </div>
                   
                   {/* Avatar Case */}
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${pioneer.color} p-[1px]`}>
-                    <div className="w-full h-full rounded-xl bg-[#080a10] flex items-center justify-center font-bold text-white text-sm">
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${pioneer.color} p-[1px] shadow-sm`}>
+                    <div className="w-full h-full rounded-xl bg-white dark:bg-[#080a10] flex items-center justify-center font-bold text-slate-900 dark:text-white text-sm">
                       {pioneer.avatar}
                     </div>
                   </div>
 
                   {/* Info */}
                   <div className="flex-1">
-                    <h4 className="text-white font-bold text-sm tracking-tight">{pioneer.name}</h4>
-                    <span className="text-[10px] text-violet-400 font-black uppercase tracking-tighter bg-violet-500/10 px-2 py-0.5 rounded border border-violet-500/20">
+                    <h4 className="text-slate-900 dark:text-white font-bold text-sm tracking-tight">{pioneer.name}</h4>
+                    <span className="text-[10px] text-blue-600 dark:text-violet-400 font-black uppercase tracking-tighter bg-blue-600/10 dark:bg-violet-500/10 px-2 py-0.5 rounded border border-blue-500/20 dark:border-violet-500/20">
                       {pioneer.badge}
                     </span>
                   </div>
 
                   {/* Stats */}
                   <div className="text-right">
-                    <div className="flex items-center gap-1.5 justify-end text-white font-bold text-xs">
-                      <Zap size={10} className="text-amber-400" />
+                    <div className="flex items-center gap-1.5 justify-end text-slate-900 dark:text-white font-bold text-xs">
+                      <Zap size={10} className="text-amber-500 dark:text-amber-400" />
                       LVL {pioneer.level}
                     </div>
-                    <div className="text-[10px] text-gray-500 font-medium">
+                    <div className="text-[10px] text-slate-500 dark:text-gray-500 font-medium">
                       {pioneer.xp.toLocaleString()} XP
                     </div>
                   </div>
@@ -108,8 +108,8 @@ export default function CommunityLeaderboard() {
                   <TrendingUp size={20} className="text-emerald-400" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-black text-white tracking-tight">Live Activity</h2>
-                  <p className="text-xs text-gray-500 font-medium uppercase tracking-widest">Real-time pulse</p>
+                  <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Live Activity</h2>
+                  <p className="text-xs text-slate-500 dark:text-gray-500 font-medium uppercase tracking-widest">Real-time pulse</p>
                 </div>
               </div>
               <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
@@ -118,10 +118,10 @@ export default function CommunityLeaderboard() {
               </div>
             </div>
 
-            <div className="relative h-[400px] overflow-hidden glass-card rounded-3xl p-6 border-emerald-500/10">
+            <div className="relative h-[400px] overflow-hidden bg-white dark:bg-transparent dark:glass-card rounded-3xl p-6 border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none">
               {/* Fade masks */}
-              <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-[#080a10] to-transparent z-10" />
-              <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-[#080a10] to-transparent z-10" />
+              <div className="absolute top-0 left-0 right-0 h-16 bg-gradient-to-b from-white dark:from-[#080a10] to-transparent z-10" />
+              <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white dark:from-[#080a10] to-transparent z-10" />
               
               <div className="space-y-6 pt-10">
                 <AnimatePresence mode="popLayout">
@@ -135,12 +135,12 @@ export default function CommunityLeaderboard() {
                       className="flex items-start gap-4 border-l-2 border-white/5 pl-4 py-1"
                     >
                       <div className="flex-1">
-                        <p className="text-sm text-gray-300 leading-snug">
-                          <span className="text-white font-bold">{act.user}</span>{" "}
-                          <span className="text-gray-500">{act.action}</span>{" "}
-                          <span className="text-violet-400 font-semibold">{act.target}</span>
+                        <p className="text-sm text-slate-600 dark:text-gray-300 leading-snug">
+                          <span className="text-slate-900 dark:text-white font-bold">{act.user}</span>{" "}
+                          <span className="text-slate-500 dark:text-gray-500">{act.action}</span>{" "}
+                          <span className="text-blue-600 dark:text-violet-400 font-semibold">{act.target}</span>
                         </p>
-                        <span className="text-[10px] text-gray-600 font-medium">{act.time}</span>
+                        <span className="text-[10px] text-slate-400 dark:text-gray-600 font-medium">{act.time}</span>
                       </div>
                     </motion.div>
                   ))}
@@ -148,9 +148,9 @@ export default function CommunityLeaderboard() {
               </div>
             </div>
             
-            <div className="mt-8 text-center p-6 border border-white/5 rounded-2xl bg-white/[0.01]">
-               <Users className="size-5 text-violet-400 mx-auto mb-3" />
-               <p className="text-xs text-gray-500">Join <span className="text-white font-bold">1,240</span> other pioneers learning right now.</p>
+            <div className="mt-8 text-center p-6 border border-slate-200 dark:border-white/5 rounded-2xl bg-white dark:bg-white/[0.01] shadow-sm dark:shadow-none">
+               <Users className="size-5 text-blue-500 dark:text-violet-400 mx-auto mb-3" />
+               <p className="text-xs text-slate-500 dark:text-gray-500">Join <span className="text-slate-900 dark:text-white font-bold">1,240</span> other pioneers learning right now.</p>
             </div>
           </div>
 

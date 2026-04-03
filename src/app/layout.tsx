@@ -72,8 +72,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ClerkProviderWrapper>
-          <ThemeProviderWrapper>
+        <ThemeProviderWrapper>
+          <ClerkProviderWrapper>
             <ErrorReporter />
             <Script
               src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/scripts//route-messenger.js"
@@ -88,8 +88,8 @@ export default function RootLayout({
             {children}
             <AssistantWidget />
             <VisualEditsMessenger />
-          </ThemeProviderWrapper>
-        </ClerkProviderWrapper>
+          </ClerkProviderWrapper>
+        </ThemeProviderWrapper>
       </body>
     </html>
   );

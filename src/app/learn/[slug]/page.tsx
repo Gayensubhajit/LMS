@@ -278,11 +278,7 @@ export default function LearnCoursePage() {
   if (!isSignedIn) {
     return (
       <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#080a10] text-foreground flex items-center justify-center pt-20">
-        <SignIn
-          appearance={{
-            theme: dark,
-          }}
-        />
+        <SignIn />
       </div>
     );
   }

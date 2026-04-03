@@ -17,11 +17,7 @@ export default function SupportPage() {
   if (!isSignedIn) {
     return (
       <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#080a10] text-slate-900 dark:text-white flex items-center justify-center pt-20 transition-colors duration-700">
-        <SignIn
-          appearance={{
-            theme: undefined, // Let clerk handle based on its state or conditionally pass dark
-          }}
-        />
+        <SignIn />
       </div>
     );
   }

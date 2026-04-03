@@ -283,7 +283,7 @@ function FeatureCard({
       transition={{ duration: 0.5, delay: i * 0.07 }}
       onMouseMove={handleMouseMove}
       onClick={onClick}
-      className={`${montserrat.className} group relative rounded-3xl p-8 border border-white/8 bg-white/2 backdrop-blur-xl overflow-hidden ${onClick ? "cursor-pointer" : "cursor-default"} transition-colors hover:border-white/15`}
+      className={`${montserrat.className} group relative rounded-3xl p-8 border border-slate-200 dark:border-white/8 bg-white dark:bg-white/5 backdrop-blur-xl overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none ${onClick ? "cursor-pointer" : "cursor-default"} transition-colors duration-700 hover:border-slate-300 dark:hover:border-white/15`}
     >
       {/* Interactive spotlight effect */}
       <motion.div
@@ -332,10 +332,10 @@ function FeatureCard({
       </motion.div>
 
       {/* Content */}
-      <h3 className="text-xl font-bold text-white mb-3 relative z-10 tracking-tight group-hover:text-violet-400 transition-colors">
+      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 relative z-10 tracking-tight group-hover:text-blue-600 dark:group-hover:text-violet-400 transition-colors">
         {card.title}
       </h3>
-      <p className="text-sm text-gray-400 leading-relaxed mb-6 relative z-10 opacity-70 group-hover:opacity-100 transition-opacity">
+      <p className="text-sm text-slate-500 dark:text-gray-400 leading-relaxed mb-6 relative z-10 opacity-80 dark:opacity-70 group-hover:opacity-100 transition-opacity">
         {card.desc}
       </p>
 
@@ -401,13 +401,13 @@ function FeatureSection({
             >
               {section.tag}
             </span>
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-4 leading-tight font-serif">
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 leading-tight font-serif">
               {section.title}
             </h2>
-            <p className="text-lg text-gray-400 font-medium mb-4">
+            <p className="text-lg text-slate-600 dark:text-gray-400 font-medium mb-4">
               {section.subtitle}
             </p>
-            <p className="text-gray-500 text-base leading-relaxed mb-10">
+            <p className="text-slate-500 dark:text-gray-500 text-base leading-relaxed mb-10">
               {section.description}
             </p>
             <a
@@ -432,11 +432,7 @@ function FeatureSection({
                 initial={{ opacity: 0, y: 20 }}
                 animate={inView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: 0.15 + fi * 0.08 }}
-                className={`${montserrat.className} group relative rounded-2xl p-5 border ${section.border}`}
-                style={{
-                  background: "rgba(255,255,255,0.03)",
-                  backdropFilter: "blur(12px)",
-                }}
+                className={`${montserrat.className} group relative rounded-2xl p-5 border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 backdrop-blur-xl shadow-lg shadow-slate-200/50 dark:shadow-none transition-colors duration-700`}
                 whileHover={{
                   y: -4,
                   boxShadow: `0 16px 40px ${section.accentGlow}`,
@@ -447,10 +443,10 @@ function FeatureSection({
                 >
                   <feat.icon size={18} className="text-white" />
                 </div>
-                <h4 className="text-sm font-bold text-white mb-1">
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-1">
                   {feat.title}
                 </h4>
-                <p className="text-xs text-gray-500 leading-relaxed">
+                <p className="text-xs text-slate-500 dark:text-gray-500 leading-relaxed">
                   {feat.desc}
                 </p>
               </motion.div>
@@ -470,7 +466,7 @@ export default function FeaturesPage() {
   const [isVaultOpen, setIsVaultOpen] = useState(false);
 
   return (
-    <main className="min-h-screen bg-[#080a10] selection:bg-violet-500/30">
+    <main className="min-h-screen bg-[#f6f8ff] dark:bg-[#080a10] selection:bg-blue-500/30 dark:selection:bg-violet-500/30 transition-colors duration-700">
       <Navbar />
       {/* Hero */}
       <section
@@ -513,11 +509,10 @@ export default function FeaturesPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5 }}
-            className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full border border-violet-500/30"
-            style={{ background: "rgba(124,58,237,0.1)" }}
+            className="inline-flex items-center gap-2 mb-8 px-4 py-2 rounded-full border border-blue-500/30 dark:border-violet-500/30 bg-blue-600/10 dark:bg-violet-500/10 transition-colors"
           >
-            <Sparkles size={14} className="text-violet-400" />
-            <span className="text-sm text-violet-300 font-semibold tracking-wide">
+            <Sparkles size={14} className="text-blue-600 dark:text-violet-400" />
+            <span className="text-sm text-blue-600 dark:text-violet-300 font-bold tracking-wide">
               Next-Generation Learning Platform
             </span>
           </motion.div>
@@ -527,17 +522,11 @@ export default function FeaturesPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="font-serif text-5xl md:text-7xl font-black text-white leading-tight mb-6"
+            className="font-serif text-5xl md:text-7xl font-black text-slate-900 dark:text-white leading-tight mb-6 transition-colors"
           >
             Ready to{" "}
             <span
-              className={`${montserrat.className} inline-block`}
-              style={{
-                background:
-                  "linear-gradient(135deg, #a78bfa, #c084fc, #f472b6)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}
+              className={`${montserrat.className} inline-block bg-gradient-to-br from-blue-700 to-indigo-500 dark:from-violet-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent`}
             >
               transcend
             </span>
@@ -566,16 +555,9 @@ export default function FeaturesPage() {
           >
             <motion.a
               href="/courses"
-              whileHover={{
-                scale: 1.05,
-                boxShadow: "0 0 50px rgba(167,139,250,0.5)",
-              }}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
-              className="px-8 py-4 rounded-2xl font-bold text-white text-base"
-              style={{
-                background: "linear-gradient(135deg,#7c3aed,#a855f7)",
-                boxShadow: "0 0 30px rgba(124,58,237,0.35)",
-              }}
+              className="px-8 py-4 rounded-2xl font-bold text-white text-base shadow-[0_0_30px_rgba(37,99,235,0.35)] dark:shadow-[0_0_30px_rgba(124,58,237,0.35)] bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-600 dark:to-purple-500 hover:shadow-[0_0_50px_rgba(37,99,235,0.5)] dark:hover:shadow-[0_0_50px_rgba(167,139,250,0.5)] transition-shadow"
             >
               Start Exploration
             </motion.a>
@@ -584,8 +566,7 @@ export default function FeaturesPage() {
               href="/instructors"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
-              className="px-8 py-4 rounded-2xl font-bold text-gray-300 text-base border border-white/10 hover:border-violet-500/50 transition-colors"
-              style={{ background: "rgba(255,255,255,0.05)" }}
+              className="px-8 py-4 rounded-2xl font-bold text-slate-700 dark:text-gray-300 text-base border border-slate-200 dark:border-white/10 hover:border-blue-500/50 dark:hover:border-violet-500/50 hover:bg-white dark:hover:bg-transparent bg-slate-50/50 dark:bg-white/5 transition-colors"
             >
               Schedule Demo
             </motion.a>
@@ -614,8 +595,7 @@ export default function FeaturesPage() {
       {/* Stats bar */}
       <section
         ref={statsRef}
-        className="relative py-16 border-y border-white/5"
-        style={{ background: "rgba(124,58,237,0.04)" }}
+        className="relative py-16 border-y border-slate-200 dark:border-white/5 bg-white/50 dark:bg-violet-500/5 transition-colors duration-700"
       >
         <div className="max-w-5xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -628,16 +608,11 @@ export default function FeaturesPage() {
                 className="text-center"
               >
                 <div
-                  className="text-4xl font-black mb-1"
-                  style={{
-                    background: "linear-gradient(135deg,#a78bfa,#c084fc)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                  }}
+                  className="text-4xl font-black mb-1 bg-gradient-to-br from-blue-700 to-indigo-500 dark:from-purple-400 dark:to-purple-600 bg-clip-text text-transparent"
                 >
                   {stat.value}
                 </div>
-                <div className="text-sm text-gray-500 font-medium">
+                <div className="text-sm text-slate-500 dark:text-gray-500 font-bold tracking-widest uppercase">
                   {stat.label}
                 </div>
               </motion.div>
@@ -650,15 +625,15 @@ export default function FeaturesPage() {
       <section className="relative py-24 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-14">
-            <span className="text-xs font-bold uppercase tracking-widest text-violet-400 mb-3 block">
+            <span className="text-xs font-black uppercase tracking-widest text-blue-600 dark:text-violet-400 mb-3 block">
               Everything You Need
             </span>
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-4 font-serif">
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 font-serif">
               The building blocks
               <br />
               of your success.
             </h2>
-            <p className={`${montserrat.className} text-gray-500 max-w-xl mx-auto`}>
+            <p className={`${montserrat.className} text-slate-500 dark:text-gray-500 max-w-xl mx-auto`}>
               From AI tutoring to live classes, every tool you need to go from
               beginner to expert.
             </p>
@@ -699,33 +674,22 @@ export default function FeaturesPage() {
         />
         <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
           <div
-            className="rounded-3xl p-12 md:p-16 border border-violet-500/20"
-            style={{
-              background: "rgba(124,58,237,0.07)",
-              backdropFilter: "blur(20px)",
-            }}
+            className="rounded-[3rem] p-12 md:p-16 border border-slate-200 dark:border-violet-500/20 bg-white/80 dark:bg-violet-500/10 backdrop-blur-2xl shadow-2xl shadow-slate-200/50 dark:shadow-none transition-colors duration-700"
           >
-            <Sparkles className="w-10 h-10 text-violet-400 mx-auto mb-6" />
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-4 font-serif">
+            <Sparkles className="w-10 h-10 text-blue-600 dark:text-violet-400 mx-auto mb-6" />
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 font-serif transition-colors">
               Begin your journey today
             </h2>
-            <p className={`${montserrat.className} text-gray-400 text-lg mb-10 max-w-xl mx-auto`}>
+            <p className={`${montserrat.className} text-slate-500 dark:text-gray-400 text-lg mb-10 max-w-xl mx-auto transition-colors`}>
               Join a community of 50,000+ pioneers shaping the future of
               education with EduNova's celestial toolset.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <motion.a
                 href="/auth/sign-up"
-                whileHover={{
-                  scale: 1.05,
-                  boxShadow: "0 0 50px rgba(124,58,237,0.5)",
-                }}
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.97 }}
-                className="px-10 py-4 rounded-2xl font-bold text-white text-base"
-                style={{
-                  background: "linear-gradient(135deg,#7c3aed,#a855f7)",
-                  boxShadow: "0 0 25px rgba(124,58,237,0.3)",
-                }}
+                className="px-10 py-4 rounded-2xl font-black text-[10px] sm:text-xs uppercase tracking-widest text-white shadow-[0_0_30px_rgba(37,99,235,0.4)] dark:shadow-[0_0_30px_rgba(124,58,237,0.4)] bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-600 dark:to-purple-500 transition-all"
               >
                 Start Free Trial
               </motion.a>
@@ -733,9 +697,8 @@ export default function FeaturesPage() {
                 href="/courses"
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
-                className="px-10 py-4 rounded-2xl font-bold text-gray-300 text-base border border-white/10 hover:border-violet-500/50 transition-colors"
-                style={{ background: "rgba(255,255,255,0.05)" }}
-              >
+                className="px-10 py-4 rounded-2xl font-black text-[10px] sm:text-xs uppercase tracking-widest text-slate-700 dark:text-gray-300 border border-slate-200 dark:border-white/10 hover:border-blue-500/50 dark:hover:border-violet-500/50 hover:bg-white dark:hover:bg-transparent bg-slate-50/50 dark:bg-white/5 transition-colors"
+               >
                 Browse Courses
               </motion.a>
             </div>

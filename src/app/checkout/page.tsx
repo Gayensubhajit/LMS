@@ -191,8 +191,8 @@ function CheckoutContent() {
 
   if (!isLoaded || loading)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#050510]">
-        <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-[#f6f8ff] dark:bg-[#050510] transition-colors duration-700">
+        <Loader2 className="w-10 h-10 text-blue-600 dark:text-blue-500 animate-spin" />
       </div>
     );
 
@@ -201,15 +201,15 @@ function CheckoutContent() {
   const finalPrice = getPrice();
 
   return (
-    <div className="min-h-screen bg-[#050510] relative overflow-hidden">
+    <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#050510] relative overflow-hidden transition-colors duration-700">
       {/* Abstract Background Glows */}
-      <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-blue-900/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-indigo-900/10 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
+      <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-blue-600/5 dark:bg-blue-900/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-indigo-600/5 dark:bg-indigo-900/10 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
 
       <div className="max-w-6xl mx-auto px-6 py-12 lg:py-24 relative z-10">
         <Link
           href={`/courses/${course.slug}`}
-          className="inline-flex items-center gap-2 text-gray-500 hover:text-white transition-colors group mb-12"
+          className="inline-flex items-center gap-2 text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white transition-colors group mb-12"
         >
           <ChevronLeft
             size={16}
@@ -224,29 +224,29 @@ function CheckoutContent() {
           {/* Order Summary (Left) */}
           <div className="lg:col-span-7 space-y-12">
             <div className="space-y-4">
-              <h1 className="text-4xl lg:text-5xl font-black text-white tracking-tight">
-                Complete your <span className="text-blue-500">Enrollment</span>
+              <h1 className="text-4xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tight uppercase">
+                Complete your <span className="text-blue-600 dark:text-blue-500">Enrollment</span>
               </h1>
-              <p className="text-gray-400 font-bold uppercase tracking-widest text-[11px] leading-relaxed max-w-lg">
+              <p className="text-slate-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[11px] leading-relaxed max-w-lg">
                 Join 10,000+ students mastering {course.category} with
                 EduNova&apos;s premium learning paths.
               </p>
             </div>
 
-            <div className="p-8 lg:p-10 rounded-[48px] bg-white/3 border border-white/10 backdrop-blur-md relative overflow-hidden group">
+            <div className="p-8 lg:p-10 rounded-[48px] bg-white dark:bg-white/3 border border-slate-200 dark:border-white/10 backdrop-blur-md relative overflow-hidden group shadow-xl shadow-slate-200/50 dark:shadow-none">
               {/* Course Image Preview */}
               <div className="flex flex-col sm:flex-row items-center gap-8">
-                <div className="w-32 h-32 rounded-3xl bg-blue-600/20 flex items-center justify-center shrink-0 border border-blue-500/20">
+                <div className="w-32 h-32 rounded-3xl bg-blue-600/10 dark:bg-blue-600/20 flex items-center justify-center shrink-0 border border-blue-500/10 dark:border-blue-500/20">
                   <span className="text-5xl">{course.emoji}</span>
                 </div>
                 <div className="space-y-2 text-center sm:text-left">
-                  <span className="text-[10px] font-black bg-blue-600/10 text-blue-400 px-3 py-1 rounded-full uppercase tracking-widest border border-blue-500/20">
+                  <span className="text-[10px] font-black bg-blue-600/10 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full uppercase tracking-widest border border-blue-500/20">
                     {course.category}
                   </span>
-                  <h2 className="text-2xl font-black text-white">
+                  <h2 className="text-2xl font-black text-slate-900 dark:text-white">
                     {course.title}
                   </h2>
-                  <p className="text-gray-500 font-bold text-sm">
+                  <p className="text-slate-400 dark:text-gray-500 font-bold text-sm">
                     Instructor: {course.instructor}
                   </p>
                 </div>
@@ -256,23 +256,23 @@ function CheckoutContent() {
 
               <div className="space-y-6">
                 <div className="flex justify-between items-center text-sm font-bold">
-                  <span className="text-gray-400">
+                  <span className="text-slate-500 dark:text-gray-400">
                     {getDurationLabel()} Plan
                   </span>
-                  <span className="text-white">
+                  <span className="text-slate-900 dark:text-white">
                     {formatLocalPrice(finalPrice)}
                   </span>
                 </div>
                 <div className="flex justify-between items-center text-sm font-bold">
-                  <span className="text-gray-400">Processing Fee</span>
-                  <span className="text-emerald-500">₹0.00 (Waived)</span>
+                  <span className="text-slate-500 dark:text-gray-400">Processing Fee</span>
+                  <span className="text-emerald-600 dark:text-emerald-500">₹0.00 (Waived)</span>
                 </div>
-                <div className="h-px bg-white/10 mt-8" />
+                <div className="h-px bg-slate-100 dark:bg-white/10 mt-8" />
                 <div className="flex justify-between items-end">
-                  <span className="text-xs font-black text-white uppercase tracking-widest">
+                  <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">
                     Total Amount
                   </span>
-                  <span className="text-3xl font-black text-blue-500 tracking-tight">
+                  <span className="text-3xl font-black text-blue-600 dark:text-blue-500 tracking-tight">
                     {formatLocalPrice(finalPrice)}
                   </span>
                 </div>
@@ -296,16 +296,16 @@ function CheckoutContent() {
           </div>
 
           <div className="lg:col-span-12 xl:col-span-5 space-y-8">
-            <div className="p-8 lg:p-10 rounded-[40px] bg-[#0a0a20] border border-white/10 relative shadow-[0_40px_100px_rgba(0,0,0,0.6)]">
+            <div className="p-8 lg:p-10 rounded-[40px] bg-white dark:bg-[#0a0a20] border border-slate-200 dark:border-white/10 relative shadow-2xl shadow-slate-200/50 dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)]">
               <div className="space-y-6 mb-10">
                 <div className="flex items-center gap-3">
-                  <Lock className="text-blue-500" size={20} />
-                  <h3 className="text-sm font-black text-white uppercase tracking-widest">
+                  <Lock className="text-blue-600 dark:text-blue-500" size={20} />
+                  <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest">
                     Secure Checkout
                   </h3>
                 </div>
-                <p className="text-xs font-bold text-gray-500 leading-relaxed italic">
-                  Powered by <span className="text-gray-300">Razorpay</span>.
+                <p className="text-xs font-bold text-slate-400 dark:text-gray-500 leading-relaxed italic">
+                  Powered by <span className="text-slate-600 dark:text-gray-300">Razorpay</span>.
                   Your payment is protected by industry-standard encryption.
                 </p>
               </div>
@@ -314,21 +314,21 @@ function CheckoutContent() {
                 <button
                   onClick={handleRazorpayPayment}
                   disabled={processing}
-                  className="w-full bg-[#0056D2] hover:bg-[#0041a3] disabled:bg-blue-900/50 disabled:text-gray-500 text-white font-bold py-4 rounded-2xl tracking-[0.1em] uppercase text-[12px] transition-all shadow-[0_15px_40px_rgba(0,86,210,0.25)] hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3"
+                  className="w-full bg-[#0056D2] hover:bg-[#0041a3] disabled:bg-blue-200 dark:disabled:bg-blue-900/50 disabled:text-slate-400 dark:disabled:text-gray-500 text-white font-black py-4 rounded-2xl tracking-[0.1em] uppercase text-[12px] transition-all shadow-xl shadow-blue-500/20 dark:shadow-[0_15px_40px_rgba(0,86,210,0.25)] hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-3"
                 >
                   {processing ? (
                     <Loader2 className="animate-spin" size={18} />
                   ) : (
                     <CreditCard size={18} />
                   )}
-                  {processing ? "Processing Order..." : "Continue to Payment"}
+                  {processing ? "Processing Order..." : "Pay Now"}
                 </button>
-                <div className="flex items-center justify-center gap-6 pt-4 opacity-40">
-                  <span className="text-[10px] font-black text-white">UPI</span>
-                  <span className="text-[10px] font-black text-white">
+                <div className="flex items-center justify-center gap-6 pt-4 opacity-70 dark:opacity-40 grayscale group-hover:grayscale-0 transition-all">
+                  <span className="text-[10px] font-black text-slate-400 dark:text-white">UPI</span>
+                  <span className="text-[10px] font-black text-slate-400 dark:text-white">
                     CARDS
                   </span>
-                  <span className="text-[10px] font-black text-white">
+                  <span className="text-[10px] font-black text-slate-400 dark:text-white">
                     NETBANKING
                   </span>
                 </div>

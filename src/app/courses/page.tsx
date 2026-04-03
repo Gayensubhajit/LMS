@@ -40,12 +40,12 @@ const categories = [
 ] as const;
 type Category = (typeof categories)[number];
 
-const categoryColors: Record<string, { text: string; bg: string }> = {
-  Development: { text: "#60a5fa", bg: "rgba(59,130,246,0.12)" },
-  Design: { text: "#38bdf8", bg: "rgba(56,189,248,0.12)" },
-  "AI/ML": { text: "#818cf8", bg: "rgba(129,140,248,0.12)" },
-  Business: { text: "#fbbf24", bg: "rgba(245,158,11,0.12)" },
-  Marketing: { text: "#34d399", bg: "rgba(16,185,129,0.12)" },
+const categoryColors: Record<string, { text: string; bg: string; lightText: string; lightBg: string }> = {
+  Development: { text: "#60a5fa", bg: "rgba(59,130,246,0.12)", lightText: "#1d4ed8", lightBg: "rgba(29,78,216,0.08)" },
+  Design: { text: "#38bdf8", bg: "rgba(56,189,248,0.12)", lightText: "#0369a1", lightBg: "rgba(3,105,161,0.08)" },
+  "AI/ML": { text: "#818cf8", bg: "rgba(129,140,248,0.12)", lightText: "#4338ca", lightBg: "rgba(67,56,202,0.08)" },
+  Business: { text: "#fbbf24", bg: "rgba(245,158,11,0.12)", lightText: "#b45309", lightBg: "rgba(180,83,9,0.08)" },
+  Marketing: { text: "#34d399", bg: "rgba(16,185,129,0.12)", lightText: "#047857", lightBg: "rgba(4,120,87,0.08)" },
 };
 
 function getRelatedChips(q: string): string[] {
@@ -156,14 +156,14 @@ function CoursesContent() {
     <>
       <Navbar />
       <main
-        className={`${montserrat.className} mb-16 min-h-screen bg-background text-foreground pt-20 px-6`}
+        className={`${montserrat.className} mb-16 min-h-screen bg-[#f6f8ff] dark:bg-background text-foreground pt-20 px-6`}
       >
         <div className="max-w-7xl mx-auto py-10">
           {/* Header & Search */}
           <div className="px-6 hidden md:flex items-center justify-end">
             <Link
               href="/"
-              className="text-sm text-blue-400 hover:text-white transition-colors border border-blue-500/30 px-6 py-2.5 rounded-full"
+              className="text-sm text-slate-600 hover:text-[#0056d2] transition-colors border border-slate-200 hover:border-[#0056d2]/30 px-6 py-2.5 rounded-full bg-white shadow-sm dark:text-blue-400 dark:hover:text-white dark:border-blue-500/30 dark:bg-transparent dark:shadow-none"
             >
               ← Back to Home
             </Link>
@@ -188,7 +188,7 @@ function CoursesContent() {
             </div>
 
             <div className="flex justify-center w-full px-3">
-              <div className="w-full max-w-4xl flex flex-col md:flex-row bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-blue-500/20 backdrop-blur-xl overflow-hidden">
+              <div className="w-full max-w-4xl flex flex-col md:flex-row bg-white dark:bg-white/5 rounded-xl border border-slate-200 dark:border-blue-500/20 shadow-md dark:shadow-none backdrop-blur-xl overflow-hidden">
                 {/* Search */}
                 <div className="relative flex-1 min-w-0 flex items-center">
                   <Search className="absolute left-3 text-slate-400 dark:text-gray-500" size={16} />
@@ -285,17 +285,17 @@ function CoursesContent() {
             {/* Course Grid */}
             <div className="lg:col-span-3">
               {filtered.length === 0 ? (
-                <div className="text-center py-20 rounded-3xl border border-dashed border-blue-500/20 bg-white/5">
-                  <p className="text-gray-500">
-                    No courses matching your search. Try another keyword!
-                  </p>
-                  <button
-                    onClick={() => setQuery("")}
-                    className="mt-4 text-blue-400 underline underline-offset-4"
-                  >
-                    Clear all filters
-                  </button>
-                </div>
+                <div className="text-center py-20 rounded-3xl border border-dashed border-slate-200 dark:border-blue-500/20 bg-white dark:bg-white/5 shadow-sm">
+                <p className="text-slate-500 dark:text-gray-500">
+                  No courses matching your search. Try another keyword!
+                </p>
+                <button
+                  onClick={() => setQuery("")}
+                  className="mt-4 text-[#0056d2] dark:text-blue-400 underline underline-offset-4"
+                >
+                  Clear all filters
+                </button>
+              </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {filtered.map((course, i) => {
@@ -309,7 +309,7 @@ function CoursesContent() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.05 }}
-                        className="group relative flex flex-col bg-white dark:bg-white/5 rounded-3xl border border-slate-200 dark:border-blue-500/10 overflow-hidden hover:border-blue-500/40 transition-all shadow-xl hover:shadow-blue-500/10"
+                        className="group relative flex flex-col bg-white dark:bg-white/5 rounded-3xl border border-slate-200 dark:border-blue-500/10 overflow-hidden hover:border-[#0056d2]/30 dark:hover:border-blue-500/40 transition-all shadow-sm hover:shadow-xl hover:shadow-blue-500/10 hover:-translate-y-1"
                       >
                         <div className="relative h-56 overflow-hidden">
                           {course.img ? (
@@ -319,11 +319,11 @@ function CoursesContent() {
                               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                             />
                           ) : (
-                            <div className="w-full h-full flex items-center justify-center text-8xl bg-indigo-900/20">
+                            <div className="w-full h-full flex items-center justify-center text-8xl bg-slate-100 dark:bg-indigo-900/20">
                               {course.emoji}
                             </div>
                           )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-white/90 dark:from-slate-900/90 via-transparent to-transparent" />
                           <div className="absolute top-4 left-4">
                             <span className="bg-black/60 backdrop-blur-md text-[10px] text-white px-3 py-1 rounded-full border border-white/10 uppercase tracking-widest font-bold">
                               {course.level}
@@ -338,14 +338,18 @@ function CoursesContent() {
 
                         <div className="p-6 flex-1 flex flex-col">
                           <div className="flex items-center gap-3 mb-3">
+                            {/* Category label — uses CSS variable set per-element for theme-aware color */}
                             <span
-                              className="text-[10px] font-bold uppercase tracking-widest"
-                              style={{ color: col.text }}
+                              className="text-[10px] font-black uppercase tracking-widest"
+                              style={{
+                                color: col.lightText,
+                              }}
                             >
-                              {course.category}
+                              <span className="dark:hidden">{course.category}</span>
+                              <span className="hidden dark:inline" style={{ color: col.text }}>{course.category}</span>
                             </span>
-                            <span className="text-gray-600 text-xs">•</span>
-                            <span className="text-gray-400 text-xs flex items-center gap-1">
+                            <span className="text-slate-300 dark:text-gray-600 text-xs">•</span>
+                            <span className="text-slate-400 dark:text-gray-400 text-xs flex items-center gap-1">
                               <BookOpen size={12} /> {course.lessons} Lessons
                             </span>
                           </div>
@@ -357,14 +361,14 @@ function CoursesContent() {
                             by {course.instructor} • {course.shortDescription}
                           </p>
 
-                          <div className="mt-auto pt-6 border-t border-white/5 flex items-center justify-between gap-4">
+                          <div className="mt-auto pt-6 border-t border-slate-100 dark:border-white/5 flex items-center justify-between gap-4">
                             <div>
-                              <p className="text-xs text-gray-600 uppercase font-bold tracking-wider mb-1">
+                              <p className="text-xs text-slate-400 dark:text-gray-600 uppercase font-bold tracking-wider mb-1">
                                 Pricing
                               </p>
                               <p className="text-xl font-black text-slate-900 dark:text-white">
                                 {course.isFree ? (
-                                  <span className="text-emerald-500 dark:text-emerald-400">Free</span>
+                                  <span className="text-emerald-600 dark:text-emerald-400">Free</span>
                                 ) : (
                                   formatLocalPrice(course.price.oneMonth)
                                 )}

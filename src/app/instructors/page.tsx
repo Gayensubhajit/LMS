@@ -146,7 +146,7 @@ export default function InstructorsPage() {
   }, [query]);
 
   return (
-    <div className="min-h-screen mx-auto">
+    <div className="min-h-screen mx-auto bg-[#f6f8ff] dark:bg-transparent">
       <Navbar />
       <main
         className={`${montserrat.className} min-h-screen text-foreground pt-24 pb-20 overflow-x-hidden`}
@@ -154,31 +154,19 @@ export default function InstructorsPage() {
         <div className="max-w-5xl mx-auto px-6">
           {/* ── Hero ── */}
           <div className="text-center mb-14">
-            <div
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold mb-5"
-              style={{
-                background: "rgba(124,58,237,0.15)",
-                border: "1px solid rgba(124,58,237,0.35)",
-                color: "#c084fc",
-              }}
-            >
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-5 bg-blue-600/10 text-blue-600 border border-blue-600/20 dark:bg-violet-500/15 dark:text-violet-400 dark:border-violet-500/35 transition-colors">
               <Star size={11} className="fill-current" /> World-Class
               Instructors
             </div>
-            <h1 className="font-serif text-4xl md:text-6xl font-black text-white leading-tight mb-4">
+            <h1 className="font-serif text-4xl md:text-6xl font-black text-slate-900 dark:text-white leading-tight mb-4">
               Learn From{" "}
               <span
-                style={{
-                  background: "linear-gradient(135deg,#c084fc,#7c3aed)",
-                  WebkitBackgroundClip: "text",
-                  WebkitTextFillColor: "transparent",
-                }}
-                className={`${montserrat.className} inline-block`}
+                className={`${montserrat.className} inline-block bg-gradient-to-br from-blue-700 to-indigo-600 dark:from-purple-400 dark:to-purple-600 bg-clip-text text-transparent`}
               >
                 The Best
               </span>
             </h1>
-            <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+            <p className="text-slate-500 dark:text-gray-400 text-lg max-w-2xl mx-auto">
               Our instructors come from Google, Figma, DeepMind, Stripe, and
               more — bringing real-world experience directly to your screen.
             </p>
@@ -196,41 +184,24 @@ export default function InstructorsPage() {
             ].map(({ value, label }) => (
               <div
                 key={label}
-                className="rounded-2xl p-5 text-center"
-                style={{
-                  background: "rgba(15,15,30,0.8)",
-                  border: "1px solid rgba(124,58,237,0.2)",
-                }}
+                className="lumen-stat-card rounded-3xl p-6 text-center bg-white dark:bg-[#0f0f1e]/80 border border-slate-200 dark:border-violet-500/20 shadow-xl shadow-slate-200/50 dark:shadow-none transition-colors duration-700"
               >
-                <p
-                  className="text-3xl font-black mb-1"
-                  style={{
-                    background: "linear-gradient(135deg,#c084fc,#7c3aed)",
-                    WebkitBackgroundClip: "text",
-                    WebkitTextFillColor: "transparent",
-                  }}
-                >
+                <p className="text-3xl font-black mb-1 bg-gradient-to-br from-blue-700 to-indigo-600 dark:from-purple-400 dark:to-purple-600 bg-clip-text text-transparent">
                   {value}
                 </p>
-                <p className="text-gray-500 text-xs">{label}</p>
+                <p className="text-slate-500 dark:text-gray-500 text-[10px] font-black uppercase tracking-widest">{label}</p>
               </div>
             ))}
           </div>
 
           {/* ── Search ── */}
-          <div
-            className="flex items-center rounded-xl mb-10 overflow-hidden"
-            style={{
-              background: "rgba(124,58,237,0.08)",
-              border: "1px solid rgba(168,85,247,0.35)",
-            }}
-          >
+          <div className="flex items-center rounded-2xl mb-12 overflow-hidden lumen-search-bar bg-white dark:bg-violet-500/5 border border-slate-200 dark:border-violet-500/35 transition-colors shadow-sm">
             <Search size={15} className="ml-4 text-violet-400 flex-shrink-0" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search by name, title, or category…"
-              className="flex-1 bg-transparent text-sm text-white placeholder-gray-600 px-3 py-3 outline-none"
+              className="flex-1 bg-transparent text-sm font-bold text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 px-4 py-4 outline-none"
             />
           </div>
 
@@ -263,11 +234,7 @@ export default function InstructorsPage() {
                     y: -6,
                     boxShadow: "0 20px 50px rgba(124,58,237,0.2)",
                   }}
-                  className="rounded-2xl overflow-hidden flex flex-col"
-                  style={{
-                    background: "rgba(15,15,30,0.85)",
-                    border: "1px solid rgba(124,58,237,0.18)",
-                  }}
+                  className="lumen-instructor-card rounded-[2rem] overflow-hidden flex flex-col bg-white dark:bg-[#0f0f1e]/85 border border-slate-200 dark:border-violet-500/20 shadow-xl shadow-slate-200/50 dark:shadow-none transition-colors duration-700"
                 >
                   {/* Header gradient band */}
                   <div
@@ -288,10 +255,9 @@ export default function InstructorsPage() {
                   {/* Avatar — overlapping the band */}
                   <div className="px-5 -mt-8 mb-4 flex items-end justify-between">
                     <div
-                      className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-black text-white shadow-lg flex-shrink-0"
+                      className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-black text-white shadow-lg flex-shrink-0 border-4 border-white dark:border-[#08080f]"
                       style={{
                         background: `linear-gradient(135deg, ${g1}, ${g2})`,
-                        border: "3px solid rgba(8,8,15,1)",
                       }}
                     >
                       {inst.meta.avatar}
@@ -301,7 +267,7 @@ export default function InstructorsPage() {
                         size={13}
                         className="text-yellow-400 fill-yellow-400"
                       />
-                      <span className="text-white text-sm font-bold">
+                      <span className="text-slate-900 dark:text-white text-sm font-bold">
                         {avgRating}
                       </span>
                     </div>
@@ -309,7 +275,7 @@ export default function InstructorsPage() {
 
                   {/* Body */}
                   <div className="px-5 pb-5 flex flex-col flex-1">
-                    <h2 className="text-base font-black text-white mb-0.5">
+                    <h2 className="text-base font-black text-slate-900 dark:text-white mb-0.5">
                       {inst.name}
                     </h2>
                     <p
@@ -318,7 +284,7 @@ export default function InstructorsPage() {
                     >
                       {inst.meta.title}
                     </p>
-                    <p className="text-xs text-gray-500 leading-relaxed mb-4 flex-1">
+                    <p className="text-xs text-slate-500 dark:text-gray-500 leading-relaxed mb-4 flex-1">
                       {inst.meta.bio}
                     </p>
 
@@ -340,7 +306,7 @@ export default function InstructorsPage() {
                     </div>
 
                     {/* Stats row */}
-                    <div className="flex items-center gap-4 text-xs text-gray-600 mb-5">
+                    <div className="flex items-center gap-4 text-xs text-slate-400 dark:text-gray-600 mb-5">
                       <span className="flex items-center gap-1">
                         < BookOpen size={11} /> {inst.courses.length} course
                         {inst.courses.length !== 1 ? "s" : ""}
@@ -368,12 +334,12 @@ export default function InstructorsPage() {
 
           {filtered.length === 0 && (
             <div className="text-center py-20">
-              <p className="text-gray-500">
+              <p className="text-slate-500 dark:text-gray-500 font-bold uppercase tracking-tight">
                 No instructors match &ldquo;{query}&rdquo;
               </p>
               <button
                 onClick={() => setQuery("")}
-                className="mt-4 text-violet-400 text-sm hover:text-violet-300 transition-colors"
+                className="mt-4 text-blue-600 dark:text-violet-400 font-black text-xs uppercase tracking-widest hover:text-blue-500 dark:hover:text-violet-300 transition-colors"
               >
                 Clear search
               </button>
@@ -381,28 +347,17 @@ export default function InstructorsPage() {
           )}
 
           {/* ── CTA banner ── */}
-          <div
-            className="mt-16 rounded-3xl p-10 text-center"
-            style={{
-              background: "rgba(124,58,237,0.08)",
-              border: "1px solid rgba(124,58,237,0.25)",
-              boxShadow: "0 0 80px rgba(124,58,237,0.1)",
-            }}
-          >
-            <h3 className="text-3xl font-black text-white mb-3">
+          <div className="lumen-cta-banner mt-24 rounded-[3rem] p-12 text-center bg-slate-50 dark:bg-violet-500/5 border border-slate-200 dark:border-violet-500/25 shadow-xl shadow-slate-200/50 dark:shadow-[0_0_80px_rgba(124,58,237,0.1)] transition-colors duration-700">
+            <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-3">
               Become an Instructor
             </h3>
-            <p className="text-gray-400 text-sm max-w-lg mx-auto mb-7">
+            <p className="text-slate-500 dark:text-gray-400 text-sm max-w-lg mx-auto mb-7">
               Share your expertise with 25K+ learners. We handle the platform —
               you focus on teaching.
             </p>
             <Link
               href="/auth/sign-up"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl text-white font-bold text-sm transition-all hover:opacity-90"
-              style={{
-                background: "linear-gradient(135deg,#7c3aed,#a855f7)",
-                boxShadow: "0 0 30px rgba(124,58,237,0.4)",
-              }}
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-white font-black text-[10px] uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(37,99,235,0.4)] dark:shadow-[0_0_30px_rgba(124,58,237,0.4)] bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-600 dark:to-purple-500"
             >
               Apply to Teach <ArrowRight size={15} />
             </Link>

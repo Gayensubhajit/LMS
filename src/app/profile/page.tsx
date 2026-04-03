@@ -67,7 +67,7 @@ export default function ProfilePage() {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-[#0a0a16] flex items-center justify-center">
+      <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#0a0a16] flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
       </div>
     );
@@ -75,7 +75,7 @@ export default function ProfilePage() {
 
   if (!isSignedIn) {
     return (
-      <div className="min-h-screen bg-[#080a10] text-white flex items-center justify-center pt-20">
+      <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#080a10] text-foreground flex items-center justify-center pt-20">
         <SignIn
           appearance={{
             theme: dark,
@@ -86,7 +86,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="relative min-h-screen bg-[#080a10] overflow-x-hidden pt-20 font-sans selection:bg-violet-500/30">
+    <main className="relative min-h-screen bg-[#f6f8ff] dark:bg-[#080a10] overflow-x-hidden pt-20 font-sans selection:bg-violet-500/30">
       <Navbar />
 
       {/* Dynamic Starfield & Nebula Background */}
@@ -112,16 +112,16 @@ export default function ProfilePage() {
             <motion.div
               variants={itemVariants}
               whileHover={{ y: -5 }}
-              className="bg-slate-900/40 border border-white/5 backdrop-blur-md rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 text-center relative group overflow-hidden"
+              className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/5 backdrop-blur-md rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 text-center relative group overflow-hidden shadow-sm dark:shadow-none"
             >
               <div className="absolute -inset-1 bg-gradient-to-tr from-violet-600/10 to-sky-400/10 opacity-0 group-hover:opacity-100 transition-opacity blur-xl" />
               <div className="relative z-10">
                 <div className="flex justify-between items-start mb-6">
-                  <span className="text-[10px] sm:text-[11px] font-black text-white/40 uppercase tracking-[0.2em]">
+                  <span className="text-[10px] sm:text-[11px] font-black text-slate-400 dark:text-white/40 uppercase tracking-[0.2em]">
                     Personal Details
                   </span>
                   <button
-                    className="p-2 rounded-xl bg-white/5 text-gray-400 hover:text-white transition-all hover:bg-white/10"
+                    className="p-2 rounded-xl bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-400 hover:text-slate-700 dark:hover:text-white transition-all hover:bg-slate-200 dark:hover:bg-white/10"
                     aria-label="Edit details"
                   >
                     <Pencil size={14} />
@@ -130,8 +130,8 @@ export default function ProfilePage() {
 
                 <div className="relative inline-block mb-6 group/avatar">
                   <div className="absolute inset-0 bg-linear-to-tr from-violet-600 to-sky-400 rounded-full blur-md opacity-20 group-hover/avatar:opacity-60 transition-opacity animate-pulse" />
-                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full border-2 border-violet-500/30 flex items-center justify-center bg-slate-950 overflow-hidden shadow-2xl group-hover/avatar:border-violet-400 transition-colors">
-                    <span className="text-4xl sm:text-5xl font-black text-white italic tracking-tighter drop-shadow-2xl">
+                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full border-2 border-violet-500/30 flex items-center justify-center bg-slate-50 dark:bg-slate-950 overflow-hidden shadow-2xl group-hover/avatar:border-violet-400 transition-colors">
+                    <span className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white italic tracking-tighter drop-shadow-2xl">
                       {user?.fullName?.charAt(0) ?? ""}
                     </span>
                   </div>
@@ -143,7 +143,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <h1 className="text-lg sm:text-2xl font-black text-white tracking-tight mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-linear-to-r group-hover:from-white group-hover:to-violet-300 transition-all">
+                <h1 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight mb-2 group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-linear-to-r group-hover:from-slate-900 group-hover:to-violet-600 dark:group-hover:from-white dark:group-hover:to-violet-300 transition-all">
                   {user?.fullName}
                 </h1>
                 <p className="text-[10px] sm:text-[11px] text-violet-400/60 mb-6 sm:mb-8 uppercase tracking-[0.2em] font-black">
@@ -151,10 +151,10 @@ export default function ProfilePage() {
                 </p>
 
                 <div className="space-y-3">
-                  <button className="w-full py-3 sm:py-3.5 rounded-xl sm:rounded-2xl border border-violet-500/30 text-violet-400 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-violet-500/10 transition-all shadow-lg hover:shadow-violet-500/10">
+                  <button className="w-full py-3 sm:py-3.5 rounded-xl sm:rounded-2xl border border-violet-500/30 text-violet-600 dark:text-violet-400 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-violet-500/10 transition-all shadow-lg hover:shadow-violet-500/10">
                     <Share2 size={16} /> Share profile
                   </button>
-                  <button className="w-full text-[10px] sm:text-[11px] font-black text-gray-500 hover:text-white transition-colors uppercase tracking-widest">
+                  <button className="w-full text-[10px] sm:text-[11px] font-black text-slate-400 dark:text-gray-500 hover:text-slate-800 dark:hover:text-white transition-colors uppercase tracking-widest">
                     Update visibility
                   </button>
                 </div>
@@ -165,37 +165,37 @@ export default function ProfilePage() {
             <motion.div
               variants={itemVariants}
               whileHover={{ y: -5 }}
-              className="bg-slate-900/40 border border-white/5 backdrop-blur-md rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden"
+              className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/5 backdrop-blur-md rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden shadow-sm dark:shadow-none"
             >
               <div className="absolute -inset-1 bg-gradient-to-tr from-sky-400/10 to-violet-600/10 opacity-0 group-hover:opacity-100 transition-opacity blur-xl" />
               <div className="relative z-10">
                 <div className="flex justify-between items-start mb-6">
-                  <h3 className="text-[10px] sm:text-xs font-black text-white uppercase tracking-[0.2em]">
+                  <h3 className="text-[10px] sm:text-xs font-black text-slate-700 dark:text-white uppercase tracking-[0.2em]">
                     Work preferences
                   </h3>
-                  <button className="p-2 rounded-xl bg-white/5 text-gray-400 hover:text-white transition-all hover:bg-white/10">
+                  <button className="p-2 rounded-xl bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-400 hover:text-slate-700 dark:hover:text-white transition-all hover:bg-slate-200 dark:hover:bg-white/10">
                     <Pencil size={14} />
                   </button>
                 </div>
 
                 <div className="space-y-4">
-                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-1">
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest block mb-1">
                     Desired roles
                   </span>
                   <div className="space-y-2">
                     {desiredRoles.map((role, i) => (
                       <div
                         key={i}
-                        className="flex items-center gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-white/5 border border-white/5 hover:border-violet-500/30 transition-all cursor-default group/role shadow-inner"
+                        className="flex items-center gap-4 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 hover:border-violet-500/30 transition-all cursor-default group/role shadow-inner"
                       >
-                        <div className="p-2 rounded-lg sm:p-2.5 sm:rounded-xl bg-violet-400/5 text-violet-400 group-hover/role:bg-violet-400/20 group-hover/role:scale-110 transition-all">
+                        <div className="p-2 rounded-lg sm:p-2.5 sm:rounded-xl bg-violet-400/5 text-violet-600 dark:text-violet-400 group-hover/role:bg-violet-400/20 group-hover/role:scale-110 transition-all">
                           <role.icon className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-xs font-black text-gray-200 group-hover/role:text-white transition-colors uppercase tracking-tight">
+                          <span className="text-xs font-black text-slate-700 dark:text-gray-200 group-hover/role:text-violet-700 dark:group-hover/role:text-white transition-colors uppercase tracking-tight">
                             {role.label}
                           </span>
-                          <span className="text-[9px] text-gray-500 uppercase tracking-tighter mt-0.5">
+                          <span className="text-[9px] text-slate-400 dark:text-gray-500 uppercase tracking-tighter mt-0.5">
                             {role.tech}
                           </span>
                         </div>
@@ -210,17 +210,17 @@ export default function ProfilePage() {
             <motion.div
               variants={itemVariants}
               whileHover={{ y: -5 }}
-              className="bg-slate-900/40 border border-white/5 backdrop-blur-md rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden"
+              className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/5 backdrop-blur-md rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden shadow-sm dark:shadow-none"
             >
               <div className="relative z-10">
-                <h3 className="text-[10px] sm:text-xs font-black text-white uppercase tracking-[0.2em] mb-4">
+                <h3 className="text-[10px] sm:text-xs font-black text-slate-700 dark:text-white uppercase tracking-[0.2em] mb-4">
                   Additional info
                 </h3>
-                <p className="text-[11px] sm:text-xs text-gray-500 mb-6 leading-relaxed font-medium">
+                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-gray-500 mb-6 leading-relaxed font-medium">
                   Add links to your portfolio, GitHub, or LinkedIn to help
                   recruiters find you.
                 </p>
-                <button className="w-full py-3.5 sm:py-4 rounded-xl sm:rounded-2xl bg-white/5 border border-white/10 text-white font-black text-[10px] sm:text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-white/10 transition-all hover:border-violet-500/20 shadow-xl">
+                <button className="w-full py-3.5 sm:py-4 rounded-xl sm:rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-white font-black text-[10px] sm:text-xs uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-slate-200 dark:hover:bg-white/10 transition-all hover:border-violet-500/20 shadow-xl">
                   <Plus size={16} /> Add Info
                 </button>
               </div>
@@ -235,20 +235,20 @@ export default function ProfilePage() {
               className="relative overflow-hidden rounded-[2.5rem] sm:rounded-[3rem] p-px shadow-2xl group w-full"
             >
               <div className="absolute inset-0 bg-gradient-to-br from-violet-600/30 via-transparent to-sky-400/30 group-hover:opacity-100 opacity-60 transition-opacity duration-700" />
-              <div className="relative bg-slate-950/90 backdrop-blur-3xl rounded-[2.45rem] sm:rounded-[2.95rem] p-6 sm:p-8 lg:p-12 border border-white/5 overflow-hidden">
+              <div className="relative bg-white/80 dark:bg-slate-950/90 backdrop-blur-3xl rounded-[2.45rem] sm:rounded-[2.95rem] p-6 sm:p-8 lg:p-12 border border-slate-200 dark:border-white/5 overflow-hidden">
                 <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-violet-600/5 blur-[100px] rounded-full pointer-events-none" />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
                   <div className="relative z-10 text-center md:text-left">
-                    <span className="text-[9px] sm:text-[10px] font-black text-violet-400 uppercase tracking-[0.4em] mb-4 block animate-pulse">
+                    <span className="text-[9px] sm:text-[10px] font-black text-blue-600 dark:text-violet-400 uppercase tracking-[0.4em] mb-4 block animate-pulse">
                       Certified Intelligence Asset
                     </span>
-                    <h2 className="text-2xl sm:text-3xl lg:text-5xl font-black text-white tracking-tighter mb-4 lg:mb-6 leading-[0.85] uppercase">
+                    <h2 className="text-2xl sm:text-3xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-4 lg:mb-6 leading-[0.85] uppercase">
                       Pioneer <br />{" "}
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-pink-400 to-sky-400">
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-violet-600 dark:from-violet-400 dark:via-pink-400 dark:to-sky-400">
                         Identity
                       </span>
                     </h2>
-                    <p className="text-gray-500 text-[11px] sm:text-sm mb-6 lg:mb-8 leading-relaxed max-w-sm mx-auto md:mx-0 font-medium">
+                    <p className="text-slate-500 dark:text-gray-500 text-[11px] sm:text-sm mb-6 lg:mb-8 leading-relaxed max-w-sm mx-auto md:mx-0 font-medium">
                       Synchronizing your multi-dimensional progress across the
                       EduNova network.
                     </p>
@@ -271,11 +271,11 @@ export default function ProfilePage() {
             {/* Experience Section */}
             <div className="space-y-6">
               <div className="flex items-center gap-3 px-4 sm:px-6">
-                <h3 className="text-sm sm:text-base font-black text-white uppercase tracking-[0.3em]">
+                <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white uppercase tracking-[0.3em]">
                   Experience
                 </h3>
                 <div className="h-px flex-1 bg-gradient-to-r from-violet-500/20 to-transparent" />
-                <Info size={14} className="text-gray-700" />
+                <Info size={14} className="text-slate-400" />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
@@ -286,22 +286,22 @@ export default function ProfilePage() {
                     y: -5,
                     boxShadow: "0 20px 30px -10px rgba(124, 58, 237, 0.1)",
                   }}
-                  className="bg-slate-900/40 border border-white/5 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden"
+                  className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/5 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden shadow-sm dark:shadow-none"
                 >
                   <div className="absolute top-0 right-0 w-32 h-32 bg-violet-600/5 blur-[50px] rounded-full group-hover:bg-violet-600/10 transition-colors" />
                   <div className="flex justify-between items-start mb-6">
-                    <h4 className="text-[10px] font-black text-white uppercase tracking-widest px-3 py-1.5 rounded-full bg-white/5 border border-white/5">
+                    <h4 className="text-[10px] font-black text-slate-700 dark:text-white uppercase tracking-widest px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5">
                       Projects
                     </h4>
-                    <div className="p-2 rounded-xl bg-violet-400/10 text-violet-400">
+                    <div className="p-2 rounded-xl bg-violet-400/10 text-violet-600 dark:text-violet-400">
                       <BarChart3 size={18} />
                     </div>
                   </div>
-                  <p className="text-[12px] sm:text-sm text-gray-400 mb-8 leading-relaxed font-medium">
+                  <p className="text-[12px] sm:text-sm text-slate-500 dark:text-gray-400 mb-8 leading-relaxed font-medium">
                     Showcase your high-impact work. Demonstrate mastery through
                     job-relevant projects.
                   </p>
-                  <button className="text-[10px] sm:text-xs font-black text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-1 group/btn uppercase tracking-widest">
+                  <button className="text-[10px] sm:text-xs font-black text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors flex items-center gap-1 group/btn uppercase tracking-widest">
                     Browse Projects{" "}
                     <ChevronRight
                       size={14}
@@ -317,22 +317,22 @@ export default function ProfilePage() {
                     y: -5,
                     boxShadow: "0 20px 30px -10px rgba(56, 189, 248, 0.1)",
                   }}
-                  className="bg-slate-900/40 border border-white/5 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden"
+                  className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/5 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden shadow-sm dark:shadow-none"
                 >
                   <div className="absolute top-0 right-0 w-32 h-32 bg-sky-400/5 blur-[50px] rounded-full group-hover:bg-sky-400/10 transition-colors" />
                   <div className="flex justify-between items-start mb-6">
-                    <h4 className="text-[10px] font-black text-white uppercase tracking-widest px-3 py-1.5 rounded-full bg-white/5 border border-white/5">
+                    <h4 className="text-[10px] font-black text-slate-700 dark:text-white uppercase tracking-widest px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5">
                       Work history
                     </h4>
-                    <div className="p-2 rounded-xl bg-sky-400/10 text-sky-400">
+                    <div className="p-2 rounded-xl bg-sky-400/10 text-sky-600 dark:text-sky-400">
                       <Briefcase size={18} />
                     </div>
                   </div>
-                  <p className="text-[12px] sm:text-sm text-gray-400 mb-8 leading-relaxed font-medium">
-                    Consolidate your профессиональный journey. Add internships,
+                  <p className="text-[12px] sm:text-sm text-slate-500 dark:text-gray-400 mb-8 leading-relaxed font-medium">
+                    Consolidate your professional journey. Add internships,
                     volunteer roles, or industry experience.
                   </p>
-                  <button className="w-full py-3.5 sm:py-4 rounded-xl sm:rounded-2xl bg-white/5 border border-white/10 text-white font-black text-[10px] sm:text-xs flex items-center justify-center gap-2 hover:bg-white/10 transition-all uppercase tracking-widest shadow-lg">
+                  <button className="w-full py-3.5 sm:py-4 rounded-xl sm:rounded-2xl bg-slate-100/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-black text-[10px] sm:text-xs flex items-center justify-center gap-2 hover:bg-slate-200/50 dark:hover:bg-white/10 transition-all uppercase tracking-widest shadow-sm dark:shadow-lg">
                     <Plus size={16} /> Add experience
                   </button>
                 </motion.div>
@@ -344,38 +344,38 @@ export default function ProfilePage() {
               variants={itemVariants}
               whileInView={{ scale: 1, opacity: 1 }}
               viewport={{ once: true }}
-              className="bg-slate-950 p-8 sm:p-10 md:p-16 rounded-[2.5rem] sm:rounded-[3.5rem] border border-white/5 relative overflow-hidden group shadow-2xl"
+              className="bg-white dark:bg-slate-950 p-8 sm:p-10 md:p-16 rounded-[2.5rem] sm:rounded-[3.5rem] border border-slate-200 dark:border-white/5 relative overflow-hidden group shadow-sm dark:shadow-2xl"
             >
               <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-600/5 blur-[120px] rounded-full pointer-events-none group-hover:bg-violet-600/10 transition-all duration-1000" />
               <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
                 <div className="text-center md:text-left">
-                  <span className="text-[9px] sm:text-[10px] font-black text-violet-400 uppercase tracking-[0.5em] mb-4 block">
+                  <span className="text-[9px] sm:text-[10px] font-black text-blue-600 dark:text-violet-400 uppercase tracking-[0.5em] mb-4 block">
                     Intelligence Profile
                   </span>
-                  <h3 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tighter mb-4 sm:mb-6 leading-none">
+                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mb-4 sm:mb-6 leading-none">
                     Learning{" "}
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-sky-400">
                       DNA
                     </span>
                   </h3>
-                  <p className="text-gray-400 text-xs sm:text-sm leading-relaxed mb-6 lg:mb-8 font-medium">
+                  <p className="text-slate-500 dark:text-gray-400 text-xs sm:text-sm leading-relaxed mb-6 lg:mb-8 font-medium">
                     Theoretical mastery meets practical execution in a unified
                     visualization.
                   </p>
                   <div className="flex flex-row justify-center md:justify-start gap-4">
-                    <div className="p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] bg-white/[0.03] border border-white/5 group-hover:border-violet-500/20 transition-all shadow-inner flex flex-col items-center sm:items-start">
+                    <div className="p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 group-hover:border-violet-500/20 transition-all shadow-inner flex flex-col items-center sm:items-start">
                       <span className="text-[8px] sm:text-[10px] font-black text-gray-500 uppercase block mb-1">
                         Rank
                       </span>
-                      <span className="text-[11px] sm:text-sm font-black text-white italic tracking-tighter uppercase whitespace-nowrap">
+                      <span className="text-[11px] sm:text-sm font-black text-slate-900 dark:text-white italic tracking-tighter uppercase whitespace-nowrap">
                         Voyager
                       </span>
                     </div>
-                    <div className="p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] bg-white/[0.03] border border-white/5 group-hover:border-sky-500/20 transition-all shadow-inner flex flex-col items-center sm:items-start">
+                    <div className="p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 group-hover:border-sky-500/20 transition-all shadow-inner flex flex-col items-center sm:items-start">
                       <span className="text-[8px] sm:text-[10px] font-black text-gray-500 uppercase block mb-1">
                         99th Percentile
                       </span>
-                      <span className="text-lg sm:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-sky-400">
+                      <span className="text-lg sm:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-400 dark:to-sky-400">
                         148.2
                       </span>
                     </div>
@@ -417,7 +417,7 @@ export default function ProfilePage() {
                         cy="50"
                         r={r / 2}
                         fill="none"
-                        stroke="rgba(255,255,255,0.06)"
+                        stroke="rgba(100,116,139,0.2)"
                         strokeWidth="0.5"
                         strokeDasharray="1 2"
                       />
@@ -429,7 +429,7 @@ export default function ProfilePage() {
                         y1="50"
                         x2={50 + 50 * Math.cos((angle * Math.PI) / 180)}
                         y2={50 + 50 * Math.sin((angle * Math.PI) / 180)}
-                        stroke="rgba(255,255,255,0.06)"
+                        stroke="rgba(100,116,139,0.2)"
                         strokeWidth="0.5"
                       />
                     ))}
@@ -450,13 +450,13 @@ export default function ProfilePage() {
                     <circle cx="85" cy="75" r="2.5" fill="#ec4899" />
                     <circle cx="15" cy="75" r="2.5" fill="#38bdf8" />
                   </svg>
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-6 sm:-translate-y-10 text-[9px] sm:text-[11px] font-black text-violet-400 uppercase tracking-[0.3em]">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-6 sm:-translate-y-10 text-[9px] sm:text-[11px] font-black text-blue-600 dark:text-violet-400 uppercase tracking-[0.3em]">
                     Theoretical
                   </div>
                   <div className="absolute bottom-2 right-0 translate-x-10 text-[9px] sm:text-[11px] font-black text-pink-400 uppercase tracking-[0.3em]">
                     Execution
                   </div>
-                  <div className="absolute bottom-2 left-0 -translate-x-10 text-[9px] sm:text-[11px] font-black text-sky-400 uppercase tracking-[0.3em]">
+                  <div className="absolute bottom-2 left-0 -translate-x-10 text-[9px] sm:text-[11px] font-black text-indigo-500 dark:text-sky-400 uppercase tracking-[0.3em]">
                     Interface
                   </div>
                 </div>
@@ -466,11 +466,11 @@ export default function ProfilePage() {
             {/* Education Section */}
             <div className="space-y-6 pb-12 lg:pb-0">
               <div className="flex items-center gap-3 px-4 sm:px-6">
-                <h3 className="text-sm sm:text-base font-black text-white uppercase tracking-[0.3em]">
+                <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white uppercase tracking-[0.3em]">
                   Education
                 </h3>
                 <div className="h-px flex-1 bg-gradient-to-r from-sky-500/20 to-transparent" />
-                <Info size={14} className="text-gray-700" />
+                <Info size={14} className="text-slate-400" />
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
@@ -481,20 +481,20 @@ export default function ProfilePage() {
                     y: -5,
                     boxShadow: "0 20px 30px -10px rgba(124, 58, 237, 0.1)",
                   }}
-                  className="bg-slate-900/40 border border-white/5 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden"
+                  className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/5 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden shadow-sm dark:shadow-none"
                 >
                   <div className="flex justify-between items-start mb-6">
-                    <h4 className="text-[10px] font-black text-white uppercase tracking-widest px-3 py-1.5 rounded-full bg-white/5 border border-white/5">
+                    <h4 className="text-[10px] font-black text-slate-700 dark:text-white uppercase tracking-widest px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5">
                       Credentials
                     </h4>
-                    <button className="py-1.5 px-3 sm:px-5 rounded-lg sm:rounded-xl bg-violet-600/20 text-violet-400 text-[9px] sm:text-[10px] font-black uppercase tracking-widest hover:bg-violet-600/40 transition-all border border-violet-500/10 active:scale-95">
+                    <button className="py-1.5 px-3 sm:px-5 rounded-lg sm:rounded-xl bg-blue-600/10 dark:bg-violet-600/20 text-blue-600 dark:text-violet-400 text-[9px] sm:text-[10px] font-black uppercase tracking-widest hover:bg-blue-600/20 dark:hover:bg-violet-600/40 transition-all border border-blue-500/10 dark:border-violet-500/10 active:scale-95">
                       Add New
                     </button>
                   </div>
-                  <p className="text-[12px] sm:text-sm text-gray-400 mb-8 leading-relaxed font-medium">
+                  <p className="text-[12px] sm:text-sm text-slate-500 dark:text-gray-400 mb-8 leading-relaxed font-medium">
                     Verified training from companies like Google & Meta.
                   </p>
-                  <button className="text-[10px] sm:text-xs font-black text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-2 group/btn uppercase tracking-[0.2em]">
+                  <button className="text-[10px] sm:text-xs font-black text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors flex items-center gap-2 group/btn uppercase tracking-[0.2em]">
                     Browse Certs{" "}
                     <ChevronRight
                       size={14}
@@ -510,24 +510,24 @@ export default function ProfilePage() {
                     y: -5,
                     boxShadow: "0 20px 30px -10px rgba(167, 139, 250, 0.1)",
                   }}
-                  className="bg-slate-900/40 border border-white/5 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden"
+                  className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/5 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden shadow-sm dark:shadow-none"
                 >
                   <div className="flex justify-between items-start mb-6">
-                    <h4 className="text-[10px] font-black text-white uppercase tracking-widest px-3 py-1.5 rounded-full bg-white/5 border border-white/5">
+                    <h4 className="text-[10px] font-black text-slate-700 dark:text-white uppercase tracking-widest px-3 py-1.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/5">
                       Degrees
                     </h4>
-                    <button className="p-2 rounded-xl bg-white/5 text-gray-400 hover:text-white transition-all hover:bg-white/10">
+                    <button className="p-2 rounded-xl bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-gray-400 hover:text-slate-700 dark:hover:text-white transition-all hover:bg-slate-200 dark:hover:bg-white/10">
                       <Pencil size={14} />
                     </button>
                   </div>
 
-                  <div className="flex items-center gap-4 sm:gap-5 bg-white/[0.03] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-white/5 group-hover:border-violet-500/40 transition-all shadow-inner relative overflow-hidden">
+                  <div className="flex items-center gap-4 sm:gap-5 bg-slate-50 dark:bg-white/[0.03] rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-slate-200 dark:border-white/5 group-hover:border-violet-500/40 transition-all shadow-inner relative overflow-hidden">
                     <div className="absolute -inset-px bg-gradient-to-r from-violet-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div className="relative z-10 w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                       <GraduationCap className="text-violet-400 w-6 h-6 sm:w-7 sm:h-7" />
                     </div>
                     <div className="relative z-10">
-                      <h5 className="text-[12px] sm:text-sm lg:text-base font-black text-white uppercase tracking-tight">
+                      <h5 className="text-[12px] sm:text-sm lg:text-base font-black text-slate-900 dark:text-white uppercase tracking-tight">
                         Bachelor's degree
                       </h5>
                       <p className="text-[9px] sm:text-[10px] text-violet-400/70 font-black uppercase tracking-[0.2em] mt-1">

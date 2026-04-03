@@ -584,3 +584,67 @@ html {
 :root:not(.dark) .aurora-blob {
   opacity: 0.5;
 }
+
+/* ====================================================
+   LUMEN COURSES PAGE — LIGHT MODE CATEGORY LABELS
+   Category labels use darker colors in light mode (via inline style)
+   and switch to lighter pastels in dark mode via CSS variable.
+   Dark theme is NOT modified here.
+   ==================================================== */
+.dark .lumen-cat-label {
+  color: var(--cat-color-dark) !important;
+}
+
+/* ====================================================
+   LUMEN INSTRUCTORS PAGE — LIGHT MODE OVERRIDES
+   These override inline dark-mode styles for light mode.
+   The .dark selector rules are NOT touched here.
+   ==================================================== */
+:root:not(.dark) .lumen-stat-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important;
+}
+:root:not(.dark) .lumen-search-bar {
+  background: #f0f4ff !important;
+  border: 1px solid #c7d2fe !important;
+}
+:root:not(.dark) .lumen-instructor-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05) !important;
+}
+:root:not(.dark) .lumen-instructor-card > div:first-child {
+  /* avatar border fix in light mode */
+}
+:root:not(.dark) .lumen-cta-banner {
+  background: #eef2ff !important;
+  border: 1px solid #c7d2fe !important;
+  box-shadow: none !important;
+}
+
+/* ====================================================
+   LUMEN COURSE DETAIL PAGE — SIDEBAR CARD LIGHT MODE
+   ==================================================== */
+:root:not(.dark) .lumen-course-sidebar {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 24px rgba(0, 86, 210, 0.08) !important;
+}
+
+/* ====================================================
+   LUMEN MY-COURSES PAGE — LIGHT MODE OVERRIDES
+   ==================================================== */
+:root:not(.dark) .lumen-course-card {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05) !important;
+}
+:root:not(.dark) .lumen-sidebar-widget {
+  background: #f8faff !important;
+  border: 1px solid #e2e8f0 !important;
+}
+:root:not(.dark) .lumen-upgrade-widget {
+  background: #eef2ff !important;
+  border: 1px solid #c7d2fe !important;
+}

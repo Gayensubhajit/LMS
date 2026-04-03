@@ -184,17 +184,20 @@ function PlanCard({
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: i * 0.07 }}
-      className={`relative rounded-2xl flex flex-col overflow-hidden transition-all duration-300 ${
+      className={`relative rounded-3xl flex flex-col overflow-hidden transition-all duration-300 ${
         hasHighlight
-          ? "ring-2 ring-violet-500/60 shadow-2xl shadow-violet-500/20"
-          : "border border-white/[0.08]"
+          ? "ring-2 ring-blue-500/60 dark:ring-violet-500/60 shadow-2xl shadow-blue-500/10 dark:shadow-violet-500/20"
+          : "border border-slate-200 dark:border-white/[0.08] shadow-sm dark:shadow-none bg-white/50 dark:bg-white/[0.025]"
       }`}
-      style={{
-        background: hasHighlight
-          ? "linear-gradient(160deg, rgba(124,58,237,0.18) 0%, rgba(8,8,18,0.97) 60%)"
-          : "rgba(255,255,255,0.025)",
-      }}
+      style={hasHighlight ? {
+        background: "linear-gradient(160deg, rgba(37,99,235,0.08) 0%, rgba(255,255,255,1) 100%)",
+      } : {}}
     >
+      {/* Dark mode override for highlight background */}
+      {hasHighlight && (
+        <div className="absolute inset-0 bg-linear-to-br from-blue-600/10 to-white dark:from-violet-600/20 dark:to-slate-950 pointer-events-none" />
+      )}
+
       {hasBadge && (
         <div
           className={`text-center py-2 text-[11px] font-black uppercase tracking-widest ${
@@ -207,18 +210,18 @@ function PlanCard({
         </div>
       )}
 
-      <div className="p-8 flex flex-col flex-1">
-        <h3 className="text-xl font-black text-white mb-2">{plan.name}</h3>
-        <p className="text-sm text-gray-400 leading-relaxed mb-6">
+      <div className="p-8 flex flex-col flex-1 relative z-10">
+        <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">{plan.name}</h3>
+        <p className="text-sm text-slate-500 dark:text-gray-400 leading-relaxed mb-6">
           {plan.description}
         </p>
 
         <div className="mb-6">
           <div className="flex items-baseline gap-1.5">
-            <span className="text-4xl font-black text-white tracking-tight">
+            <span className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">
               {plan.price}
             </span>
-            <span className="text-gray-500 text-sm font-medium">
+            <span className="text-slate-500 dark:text-gray-500 text-sm font-medium">
               {plan.period}
             </span>
           </div>
@@ -228,8 +231,8 @@ function PlanCard({
           href={plan.href}
           className={`flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-bold text-sm mb-2 transition-all group ${
             hasHighlight
-              ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white hover:shadow-lg hover:shadow-violet-600/25"
-              : "border border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.07]"
+              ? "bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-600 dark:to-purple-600 text-white hover:shadow-lg hover:shadow-blue-600/25 dark:hover:shadow-violet-600/25"
+              : "border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-white/[0.07]"
           }`}
         >
           {hasHighlight && <Zap size={14} />}
@@ -239,25 +242,25 @@ function PlanCard({
             className="opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all"
           />
         </Link>
-        <p className="text-center text-[11px] text-gray-600 mb-8">
+        <p className="text-center text-[11px] text-slate-400 dark:text-gray-600 mb-8">
           {plan.note}
         </p>
 
-        <div className="border-t border-white/[0.05] pt-6 space-y-3 flex-1">
+        <div className="border-t border-slate-100 dark:border-white/[0.05] pt-6 space-y-3 flex-1">
           {plan.features.map((f) => (
             <div key={f} className="flex items-center gap-3">
               <div
                 className={`w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center ${
-                  hasHighlight ? "bg-violet-600/25" : "bg-white/5"
+                  hasHighlight ? "bg-blue-500/10 dark:bg-violet-600/25" : "bg-slate-100 dark:bg-white/5"
                 }`}
               >
                 <Check
                   size={10}
-                  className={hasHighlight ? "text-violet-400" : "text-gray-500"}
+                  className={hasHighlight ? "text-blue-600 dark:text-violet-400" : "text-slate-400 dark:text-gray-500"}
                   strokeWidth={3}
                 />
               </div>
-              <span className="text-sm text-gray-300">{f}</span>
+              <span className="text-sm text-slate-600 dark:text-gray-300">{f}</span>
             </div>
           ))}
         </div>
@@ -269,17 +272,17 @@ function PlanCard({
 function FAQItem({ q, a }: { q: string; a: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <div className="border-b border-white/[0.05] last:border-0">
+    <div className="border-b border-slate-100 dark:border-white/[0.05] last:border-0">
       <button
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between py-5 text-left group"
       >
-        <span className="text-base font-bold text-white group-hover:text-violet-400 transition-colors pr-4">
+        <span className="text-base font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-violet-400 transition-colors pr-4">
           {q}
         </span>
         <ChevronDown
           size={18}
-          className={`text-gray-500 shrink-0 transition-transform duration-300 ${open ? "rotate-180 text-violet-400" : ""}`}
+          className={`text-slate-400 dark:text-gray-500 shrink-0 transition-transform duration-300 ${open ? "rotate-180 text-blue-600 dark:text-violet-400" : ""}`}
         />
       </button>
       <AnimatePresence>
@@ -290,7 +293,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <p className="text-gray-400 text-sm pb-6 leading-relaxed max-w-3xl">
+            <p className="text-slate-500 dark:text-gray-400 text-sm pb-6 leading-relaxed max-w-3xl font-medium">
               {a}
             </p>
           </motion.div>
@@ -307,9 +310,9 @@ export default function PricingPage() {
   const plans = tab === "individuals" ? INDIVIDUAL_PLANS : TEAM_PLANS;
 
   return (
-    <div className="min-h-screen mx-auto">
+    <div className="min-h-screen mx-auto bg-[#f6f8ff] dark:bg-[#050510] transition-colors duration-700">
       <Navbar />
-      <div className="min-h-screen max-w-5xl mx-auto bg-[#05050a] text-white selection:bg-violet-500/30">
+      <div className="min-h-screen max-w-5xl mx-auto text-slate-900 dark:text-white selection:bg-blue-500/30 selection:dark:bg-violet-500/30">
         {/* Ambient */}
         <div className="fixed inset-0 pointer-events-none -z-0">
           <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-violet-600/5 rounded-full blur-[140px]" />
@@ -332,13 +335,13 @@ export default function PricingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.08 }}
-              className="font-serif text-5xl md:text-6xl font-black mb-5 leading-[1.1] tracking-tight"
+              className="text-4xl md:text-5xl lg:text-7xl font-black text-slate-900 dark:text-white mb-5 leading-[1.1] tracking-tight uppercase"
             >
               Flexible Plans for <br />
               <span
-                className={`${montserrat.className} bg-linear-to-r from-violet-400 to-purple-500 bg-clip-text text-transparent`}
+                className={`${montserrat.className} bg-linear-to-r from-blue-600 to-indigo-600 dark:from-violet-400 dark:to-purple-500 bg-clip-text text-transparent`}
               >
-                Every Career Level
+                Every Level
               </span>
             </motion.h1>
 
@@ -346,7 +349,7 @@ export default function PricingPage() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.14 }}
-              className="text-gray-400 text-lg max-w-xl mx-auto"
+              className="text-slate-500 dark:text-gray-400 text-base sm:text-lg max-w-xl mx-auto font-medium"
             >
               All plans include a 7-day free trial. No hidden fees, cancel any
               time.
@@ -355,13 +358,13 @@ export default function PricingPage() {
 
           {/* ── Tab Toggle ── */}
           <div className="flex justify-center mb-10">
-            <div className="inline-flex items-center p-1 rounded-full bg-white/5 border border-white/10 gap-1">
+            <div className="inline-flex items-center p-1 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 gap-1 shadow-sm">
               <button
                 onClick={() => setTab("individuals")}
                 className={`px-7 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${
                   tab === "individuals"
-                    ? "bg-violet-600 text-white shadow-lg shadow-violet-600/30"
-                    : "text-gray-400 hover:text-white"
+                    ? "bg-blue-600 dark:bg-violet-600 text-white shadow-lg shadow-blue-600/30 dark:shadow-violet-600/30"
+                    : "text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 For Individuals
@@ -370,8 +373,8 @@ export default function PricingPage() {
                 onClick={() => setTab("teams")}
                 className={`px-7 py-2.5 rounded-full text-sm font-bold flex items-center gap-2 transition-all duration-300 ${
                   tab === "teams"
-                    ? "bg-violet-600 text-white shadow-lg shadow-violet-600/30"
-                    : "text-gray-400 hover:text-white"
+                    ? "bg-blue-600 dark:bg-violet-600 text-white shadow-lg shadow-blue-600/30 dark:shadow-violet-600/30"
+                    : "text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
                 }`}
               >
                 <Users size={14} /> For Teams
@@ -398,40 +401,40 @@ export default function PricingPage() {
           {/* ── Comparison Table ── */}
           <div className="mb-24">
             <div className="text-center mb-12">
-              <p className="text-xs font-black tracking-[0.2em] uppercase text-gray-500 mb-3">
+              <p className="text-xs font-black tracking-[0.2em] uppercase text-slate-400 dark:text-gray-500 mb-3">
                 Compare Plans
               </p>
-              <h2 className="text-3xl font-black text-white">
-                What's included in each plan
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                Plan Comparison
               </h2>
             </div>
 
-            <div className="rounded-2xl border border-white/7 bg-white/2 overflow-hidden">
+            <div className="rounded-3xl border border-slate-200 dark:border-white/7 bg-white dark:bg-white/2 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none">
               <div className="w-full overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-white/6">
-                      <th className="py-5 px-6 text-left text-xs font-black text-gray-500 uppercase tracking-widest">
+                    <tr className="border-b border-slate-100 dark:border-white/6">
+                      <th className="py-5 px-6 text-left text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">
                         Feature
                       </th>
-                      <th className="py-5 px-4 text-center text-xs font-black text-gray-400 uppercase tracking-widest">
+                      <th className="py-5 px-4 text-center text-[10px] font-black text-slate-500 dark:text-gray-400 uppercase tracking-widest">
                         Single
                       </th>
-                      <th className="py-5 px-4 text-center text-xs font-black text-violet-400 uppercase tracking-widest">
+                      <th className="py-5 px-4 text-center text-[10px] font-black text-blue-600 dark:text-violet-400 uppercase tracking-widest">
                         Plus
                       </th>
-                      <th className="py-5 px-4 text-center text-xs font-black text-blue-400 uppercase tracking-widest">
+                      <th className="py-5 px-4 text-center text-[10px] font-black text-indigo-600 dark:text-blue-400 uppercase tracking-widest">
                         Enterprise
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/4">
+                  <tbody className="divide-y divide-slate-50 dark:divide-white/4">
                     {COMPARISON.map((row) => (
                       <tr
                         key={row.feature}
                         className="hover:bg-white/2 transition-colors"
                       >
-                        <td className="py-4 px-6 text-sm text-gray-300 font-medium">
+                        <td className="py-4 px-6 text-sm text-slate-600 dark:text-gray-300 font-bold">
                           {row.feature}
                         </td>
                         {[row.free, row.plus, row.ent].map((val, idx) => (
@@ -441,14 +444,14 @@ export default function PricingPage() {
                                 size={16}
                                 className={
                                   idx === 1
-                                    ? "text-violet-400 mx-auto"
+                                    ? "text-blue-600 dark:text-violet-400 mx-auto"
                                     : idx === 2
-                                      ? "text-blue-400 mx-auto"
-                                      : "text-gray-500 mx-auto"
+                                      ? "text-indigo-600 dark:text-blue-400 mx-auto"
+                                      : "text-slate-400 dark:text-gray-500 mx-auto"
                                 }
                               />
                             ) : (
-                              <div className="w-4 h-px bg-white/10 mx-auto" />
+                              <div className="w-4 h-px bg-slate-200 dark:bg-white/10 mx-auto" />
                             )}
                           </td>
                         ))}
@@ -463,24 +466,22 @@ export default function PricingPage() {
           {/* ── FAQ ── */}
           <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-16 mb-24">
             <div>
-              <div className="flex items-center gap-2 text-violet-400 mb-4">
+              <div className="flex items-center gap-2 text-blue-600 dark:text-violet-400 mb-4">
                 <HelpCircle size={18} />
                 <span className="text-xs font-black uppercase tracking-widest">
                   Support
                 </span>
               </div>
-              <h2 className="text-3xl font-black text-white mb-4 leading-tight">
-                Frequently
-                <br />
-                Asked Questions
+              <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-4 leading-tight uppercase">
+                Questions?
               </h2>
-              <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+              <p className="text-slate-500 dark:text-gray-500 text-sm mb-6 leading-relaxed font-medium">
                 Can't find what you're looking for? Contact our student support
                 team.
               </p>
               <Link
                 href="/support"
-                className="inline-flex items-center gap-2 text-sm font-bold text-violet-400 hover:text-violet-300 group"
+                className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 dark:text-violet-400 hover:text-blue-700 dark:hover:text-violet-300 group"
               >
                 Contact Support{" "}
                 <ArrowRight
@@ -489,7 +490,7 @@ export default function PricingPage() {
                 />
               </Link>
             </div>
-            <div className="bg-white/[0.02] border border-white/[0.06] rounded-2xl p-8">
+            <div className="bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06] rounded-[2.5rem] p-8 shadow-xl shadow-slate-200/40 dark:shadow-none">
               {FAQS.map((faq) => (
                 <FAQItem key={faq.q} {...faq} />
               ))}
@@ -497,30 +498,30 @@ export default function PricingPage() {
           </div>
 
           {/* ── CTA Banner ── */}
-          <div className="relative rounded-3xl overflow-hidden p-12 lg:p-20 text-center border border-white/[0.06] bg-gradient-to-br from-[#0c0c1a] via-[#0a0a14] to-[#060610]">
-            <div className="absolute top-0 right-0 w-72 h-72 bg-violet-600/8 rounded-full blur-[100px]" />
-            <div className="absolute bottom-0 left-0 w-72 h-72 bg-blue-600/8 rounded-full blur-[100px]" />
+          <div className="relative rounded-[3rem] overflow-hidden p-12 lg:p-20 text-center border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-gradient-to-br dark:from-[#0c0c1a] dark:via-[#0a0a14] dark:to-[#060610] shadow-2xl shadow-slate-200/50 dark:shadow-none">
+            <div className="absolute top-0 right-0 w-72 h-72 bg-blue-600/5 dark:bg-violet-600/8 rounded-full blur-[100px]" />
+            <div className="absolute bottom-0 left-0 w-72 h-72 bg-indigo-600/5 dark:bg-blue-600/8 rounded-full blur-[100px]" />
             <div className="relative z-10">
-              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-800 flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-violet-600/30">
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 dark:from-violet-600 dark:to-purple-800 flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-blue-600/30 dark:shadow-violet-600/30">
                 <Star className="text-white" size={24} />
               </div>
-              <h2 className="text-4xl md:text-5xl font-black mb-5">
-                Invest in Your Future Today
+              <h2 className="text-3xl md:text-5xl font-black mb-5 text-slate-900 dark:text-white uppercase tracking-tight">
+                Unlock Your Potential
               </h2>
-              <p className="text-gray-400 text-base max-w-xl mx-auto mb-10 leading-relaxed">
+              <p className="text-slate-500 dark:text-gray-400 text-sm sm:text-base max-w-xl mx-auto mb-10 leading-relaxed font-medium">
                 Join thousands of professionals accelerating their careers with
                 EduNova's specialized learning tracks.
               </p>
               <div className="flex justify-center gap-4 flex-wrap">
                 <Link
                   href="/auth/sign-up"
-                  className="px-8 py-4 rounded-2xl bg-gradient-to-r from-violet-600 to-purple-600 text-white font-bold text-sm shadow-xl shadow-violet-600/20 hover:shadow-violet-600/40 transition-all active:scale-95"
+                  className="px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-600 dark:to-purple-600 text-white font-bold text-sm shadow-xl shadow-blue-600/20 dark:shadow-violet-600/20 hover:shadow-blue-600/40 dark:hover:shadow-violet-600/40 transition-all active:scale-95"
                 >
-                  Start Your 14-Day Free Trial
+                  Start 14-Day Free Trial
                 </Link>
                 <Link
                   href="/courses"
-                  className="px-8 py-4 rounded-2xl bg-white/5 text-white font-bold text-sm hover:bg-white/10 border border-white/10 transition-all"
+                  className="px-8 py-4 rounded-2xl bg-slate-100 dark:bg-white/5 text-slate-900 dark:text-white font-bold text-sm hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 transition-all"
                 >
                   Browse Catalog
                 </Link>

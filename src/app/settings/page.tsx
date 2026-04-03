@@ -82,10 +82,10 @@ export default function SettingsPage() {
 
   if (!isSignedIn) {
     return (
-      <div className="min-h-screen bg-[#080a10] text-white flex items-center justify-center pt-20">
+      <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#080a10] text-slate-900 dark:text-white flex items-center justify-center pt-20">
         <SignIn
           appearance={{
-            theme: dark,
+            theme: undefined, // Let Clerk handle theme or use a conditional
           }}
         />
       </div>
@@ -94,21 +94,21 @@ export default function SettingsPage() {
 
   if (!isLoaded || loading) {
     return (
-      <div className="min-h-screen bg-[#0a0a16] flex items-center justify-center">
+      <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#0a0a16] flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#080812] text-white font-sans selection:bg-violet-500/30">
+    <main className="min-h-screen bg-[#f6f8ff] dark:bg-[#080812] text-slate-900 dark:text-white font-sans selection:bg-violet-500/30">
       <Navbar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20">
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
           {/* Sidebar Navigation */}
           <aside className="w-full lg:w-72 shrink-0">
-            <div className="bg-white/5 border border-white/10 rounded-3xl p-3 backdrop-blur-xl sticky top-32">
+            <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-3xl p-3 backdrop-blur-xl sticky top-32 shadow-sm dark:shadow-none">
               <div className="p-4 mb-2">
                 <h2 className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">
                   Settings Hub
@@ -124,8 +124,8 @@ export default function SettingsPage() {
                       onClick={() => setActiveTab(item.id)}
                       className={`w-full flex items-center justify-between px-4 py-3.5 rounded-2xl transition-all duration-300 group ${
                         isActive
-                          ? "bg-violet-500/20 border border-violet-500/30 text-white"
-                          : "text-gray-400 hover:text-white hover:bg-white/5 border border-transparent"
+                          ? "bg-blue-600/10 dark:bg-violet-500/20 border border-blue-500/20 dark:border-violet-500/30 text-blue-700 dark:text-white"
+                          : "text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5 border border-transparent"
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -133,8 +133,8 @@ export default function SettingsPage() {
                           size={18}
                           className={
                             isActive
-                              ? "text-violet-400"
-                              : "text-gray-500 group-hover:text-gray-400"
+                              ? "text-blue-600 dark:text-violet-400"
+                              : "text-slate-400 dark:text-gray-500 group-hover:text-slate-600 dark:group-hover:text-gray-400"
                           }
                         />
                         <span className="text-sm font-bold tracking-tight">
@@ -144,7 +144,7 @@ export default function SettingsPage() {
                       {isActive && (
                         <motion.div
                           layoutId="activeDot"
-                          className="w-1.5 h-1.5 rounded-full bg-violet-400 shadow-[0_0_8px_rgba(167,139,250,0.8)]"
+                          className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-violet-400 shadow-[0_0_8px_rgba(37,99,235,0.8)] dark:shadow-[0_0_8px_rgba(167,139,250,0.8)]"
                         />
                       )}
                     </button>
@@ -152,7 +152,7 @@ export default function SettingsPage() {
                 })}
               </nav>
 
-              <div className="mt-8 pt-4 border-t border-white/5 space-y-1 px-1">
+              <div className="mt-8 pt-4 border-t border-slate-100 dark:border-white/5 space-y-1 px-1">
                 <button
                   onClick={() => signOut({ redirectUrl: "/" })}
                   className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl text-red-400 hover:bg-red-500/10 transition-all font-bold text-sm"
@@ -176,14 +176,14 @@ export default function SettingsPage() {
                   className="space-y-8"
                 >
                   <div className="flex justify-between items-end mb-2">
-                    <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase italic text-white/90">
-                      Account <span className="text-violet-500">Settings</span>
+                    <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase italic text-slate-900 dark:text-white/90">
+                      Account <span className="text-blue-600 dark:text-violet-500">Settings</span>
                     </h1>
                     {success && (
                       <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        className="flex items-center gap-2 text-emerald-400 text-xs font-bold bg-emerald-500/10 px-4 py-2 rounded-full border border-emerald-500/20"
+                        className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-xs font-bold bg-emerald-500/5 dark:bg-emerald-500/10 px-4 py-2 rounded-full border border-emerald-500/10 dark:border-emerald-500/20"
                       >
                         <CheckCircle2 size={14} />
                         {success}
@@ -192,7 +192,7 @@ export default function SettingsPage() {
                   </div>
 
                   {/* Profile Card */}
-                  <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 md:p-12 backdrop-blur-3xl relative overflow-hidden group">
+                  <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-8 md:p-12 backdrop-blur-3xl relative overflow-hidden group shadow-sm dark:shadow-none">
                     <div className="absolute inset-0 bg-gradient-to-br from-violet-600/5 via-transparent to-transparent pointer-events-none" />
 
                     <div className="relative z-10 flex flex-col md:flex-row gap-10 items-start">
@@ -206,7 +206,7 @@ export default function SettingsPage() {
                           />
                           <div className="absolute inset-0 rounded-full border-2 border-transparent group-hover:border-violet-500/50 transition-colors duration-500" />
                         </div>
-                        <button className="text-[10px] font-black uppercase tracking-widest text-violet-400 hover:text-white transition-colors">
+                        <button className="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-violet-400 hover:text-blue-800 dark:hover:text-white transition-colors">
                           Change Photo
                         </button>
                       </div>
@@ -223,7 +223,7 @@ export default function SettingsPage() {
                             onChange={(e) =>
                               handleUpdate({ fullName: e.target.value })
                             }
-                            className="w-full bg-slate-900/50 border border-white/10 rounded-2xl px-5 py-3.5 text-sm font-bold focus:outline-none focus:border-violet-500/50 focus:ring-4 focus:ring-violet-500/5 transition-all"
+                            className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-3.5 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:border-blue-500/50 dark:focus:border-violet-500/50 focus:ring-4 focus:ring-blue-500/5 dark:focus:ring-violet-500/5 transition-all shadow-inner"
                           />
                         </div>
                         <div className="space-y-2">
@@ -237,12 +237,12 @@ export default function SettingsPage() {
                                 user?.primaryEmailAddress?.emailAddress || ""
                               }
                               readOnly
-                              className="w-full bg-slate-900/20 border border-white/5 rounded-2xl px-5 py-3.5 text-sm font-bold text-gray-500 cursor-not-allowed italic"
+                              className="w-full bg-slate-100/50 dark:bg-slate-900/20 border border-slate-200/50 dark:border-white/5 rounded-2xl px-5 py-3.5 text-sm font-bold text-slate-400 dark:text-gray-500 cursor-not-allowed italic shadow-inner"
                             />
                             <div className="absolute right-4 top-1/2 -translate-y-1/2">
                               <Shield
                                 size={14}
-                                className="text-emerald-500/40"
+                                className="text-emerald-500/60 dark:text-emerald-500/40"
                               />
                             </div>
                           </div>
@@ -257,7 +257,7 @@ export default function SettingsPage() {
                               onChange={(e) =>
                                 handleUpdate({ timezone: e.target.value })
                               }
-                              className="w-full bg-slate-900/50 border border-white/10 rounded-2xl px-10 py-3.5 text-sm font-bold focus:outline-none focus:border-violet-500/50 transition-all appearance-none"
+                              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-2xl px-10 py-3.5 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:border-blue-500/50 dark:focus:border-violet-500/50 transition-all appearance-none shadow-inner"
                             >
                               <option value="UTC">
                                 UTC (Universal Coordinated Time)
@@ -288,7 +288,7 @@ export default function SettingsPage() {
                               onChange={(e) =>
                                 handleUpdate({ language: e.target.value })
                               }
-                              className="w-full bg-slate-900/50 border border-white/10 rounded-2xl px-10 py-3.5 text-sm font-bold focus:outline-none focus:border-violet-500/5 transition-all appearance-none"
+                              className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-2xl px-10 py-3.5 text-sm font-bold text-slate-900 dark:text-white focus:outline-none focus:border-violet-500/5 transition-all appearance-none shadow-inner"
                             >
                               <option value="English">English</option>
                               <option value="Spanish">Español</option>
@@ -305,10 +305,10 @@ export default function SettingsPage() {
                     </div>
 
                     {/* Name Verification Sync */}
-                    <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="mt-12 pt-8 border-t border-slate-100 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
                       <div className="flex items-center gap-4">
                         <div
-                          className={`p-2.5 rounded-xl border ${settings?.isNameVerified ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" : "bg-amber-500/10 border-amber-500/30 text-amber-400"}`}
+                          className={`p-2.5 rounded-xl border ${settings?.isNameVerified ? "bg-emerald-500/5 dark:bg-emerald-500/10 border-emerald-500/20 dark:border-emerald-500/30 text-emerald-600 dark:text-emerald-400" : "bg-amber-500/5 dark:bg-amber-500/10 border-amber-500/20 dark:border-amber-500/30 text-amber-600 dark:text-amber-400"}`}
                         >
                           {settings?.isNameVerified ? (
                             <CheckCircle2 size={20} />
@@ -317,10 +317,10 @@ export default function SettingsPage() {
                           )}
                         </div>
                         <div className="space-y-1">
-                          <p className="text-sm font-black uppercase tracking-tight">
+                          <p className="text-sm font-black uppercase tracking-tight text-slate-900 dark:text-white">
                             Verified Name for Certificates
                           </p>
-                          <p className="text-xs text-gray-500 font-medium">
+                          <p className="text-xs text-slate-500 dark:text-gray-500 font-medium">
                             {settings?.isNameVerified
                               ? `Verified as: ${settings.verifiedName}`
                               : "Not yet verified. Certificates will use your account name."}
@@ -331,7 +331,7 @@ export default function SettingsPage() {
                         onClick={() =>
                           (window.location.href = "/accomplishments")
                         }
-                        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all active:scale-95"
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-700 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-all active:scale-95 shadow-sm"
                       >
                         Verify Identity <ChevronRight size={14} />
                       </button>
@@ -340,12 +340,12 @@ export default function SettingsPage() {
 
                   {/* Dangerous Area */}
                   <div className="pt-8">
-                    <div className="bg-red-500/5 border border-red-500/20 rounded-[2.5rem] p-8 md:p-12 backdrop-blur-sm flex flex-col md:flex-row justify-between items-center gap-8">
+                    <div className="bg-red-50 dark:bg-red-500/5 border border-red-100 dark:border-red-500/20 rounded-[2.5rem] p-8 md:p-12 backdrop-blur-sm flex flex-col md:flex-row justify-between items-center gap-8 shadow-sm dark:shadow-none">
                       <div className="space-y-2 text-center md:text-left">
-                        <h3 className="text-xl font-black uppercase tracking-tight text-red-100">
+                        <h3 className="text-xl font-black uppercase tracking-tight text-red-900 dark:text-red-100">
                           Deactivate Interstellar Core
                         </h3>
-                        <p className="text-sm text-red-500/60 max-w-md font-medium">
+                        <p className="text-sm text-red-600/70 dark:text-red-500/60 max-w-md font-medium">
                           Permanently delete your EduNova profile and all
                           acquisition logs. This action is irreversible.
                         </p>
@@ -367,11 +367,11 @@ export default function SettingsPage() {
                   exit={{ opacity: 0, x: -10 }}
                   className="space-y-8"
                 >
-                  <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase italic text-white/90">
-                    Security <span className="text-violet-500">Vault</span>
+                  <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase italic text-slate-900 dark:text-white/90">
+                    Security <span className="text-blue-600 dark:text-violet-500">Vault</span>
                   </h1>
 
-                  <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-10 backdrop-blur-xl">
+                  <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-10 backdrop-blur-xl shadow-sm dark:shadow-none">
                     <div className="flex items-center justify-between">
                       <div className="space-y-2">
                         <h3 className="text-lg font-black uppercase tracking-tight">
@@ -388,7 +388,7 @@ export default function SettingsPage() {
                             twoFactorEnabled: !settings?.twoFactorEnabled,
                           })
                         }
-                        className={`relative w-16 h-8 rounded-full transition-colors duration-500 p-1 ${settings?.twoFactorEnabled ? "bg-violet-600" : "bg-white/10"}`}
+                        className={`relative w-16 h-8 rounded-full transition-colors duration-500 p-1 ${settings?.twoFactorEnabled ? "bg-blue-600 dark:bg-violet-600" : "bg-slate-200 dark:bg-white/10"}`}
                       >
                         <motion.div
                           animate={{ x: settings?.twoFactorEnabled ? 32 : 0 }}
@@ -399,7 +399,7 @@ export default function SettingsPage() {
                   </div>
 
                   {/* External Accounts Placeholder */}
-                  <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-10 backdrop-blur-xl space-y-8">
+                  <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-10 backdrop-blur-xl space-y-8 shadow-sm dark:shadow-none">
                     <h3 className="text-lg font-black uppercase tracking-tight">
                       Connected Nodes
                     </h3>
@@ -407,7 +407,7 @@ export default function SettingsPage() {
                       {["Google", "Apple", "GitHub"].map((node) => (
                         <div
                           key={node}
-                          className="flex items-center justify-between py-4 border-b border-white/5 last:border-0"
+                          className="flex items-center justify-between py-4 border-b border-slate-100 dark:border-white/5 last:border-0"
                         >
                           <div className="flex items-center gap-4">
                             <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
@@ -417,7 +417,7 @@ export default function SettingsPage() {
                               {node}
                             </span>
                           </div>
-                          <button className="text-[10px] font-black uppercase tracking-widest text-violet-400">
+                          <button className="text-[10px] font-black uppercase tracking-widest text-violet-600 dark:text-violet-400 hover:text-violet-800 transition-colors">
                             Connect
                           </button>
                         </div>
@@ -434,11 +434,11 @@ export default function SettingsPage() {
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-8"
                 >
-                  <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase italic text-white/90">
-                    Signal <span className="text-violet-500">Filters</span>
+                  <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase italic text-slate-900 dark:text-white/90">
+                    Signal <span className="text-blue-600 dark:text-violet-500">Filters</span>
                   </h1>
 
-                  <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-10 backdrop-blur-xl">
+                  <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-10 backdrop-blur-xl shadow-sm dark:shadow-none">
                     <div className="flex items-center justify-between">
                       <div className="space-y-2">
                         <h3 className="text-lg font-black uppercase tracking-tight">
@@ -456,7 +456,7 @@ export default function SettingsPage() {
                               !settings?.newsletterSubscribed,
                           })
                         }
-                        className={`relative w-16 h-8 rounded-full transition-colors duration-500 p-1 ${settings?.newsletterSubscribed ? "bg-violet-600" : "bg-white/10"}`}
+                        className={`relative w-16 h-8 rounded-full transition-colors duration-500 p-1 ${settings?.newsletterSubscribed ? "bg-blue-600 dark:bg-violet-600" : "bg-slate-200 dark:bg-white/10"}`}
                       >
                         <motion.div
                           animate={{
@@ -477,23 +477,23 @@ export default function SettingsPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   className="space-y-8"
                 >
-                  <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase italic text-white/90">
-                    Acquisition <span className="text-violet-500">Logs</span>
+                  <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase italic text-slate-900 dark:text-white/90">
+                    Acquisition <span className="text-blue-600 dark:text-violet-500">Logs</span>
                   </h1>
 
-                  <div className="bg-slate-900/50 border border-white/5 border-dashed rounded-[3rem] p-20 text-center space-y-6">
+                  <div className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/5 border-dashed rounded-[3rem] p-20 text-center space-y-6 shadow-sm dark:shadow-none">
                     <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-4 border border-white/5 shadow-inner">
                       <CreditCard size={32} className="text-gray-600" />
                     </div>
-                    <h3 className="text-xl font-black uppercase tracking-tight text-white/60">
+                    <h3 className="text-xl font-black uppercase tracking-tight text-slate-400 dark:text-white/60">
                       No Active Subscriptions
                     </h3>
-                    <p className="text-sm text-gray-600 font-medium max-w-xs mx-auto">
+                    <p className="text-sm text-slate-500 dark:text-gray-600 font-medium max-w-xs mx-auto">
                       You haven't initiated any interstellar mastery plans yet.
                     </p>
                     <button
                       onClick={() => (window.location.href = "/pricing")}
-                      className="px-8 py-4 rounded-2xl bg-violet-600/20 border border-violet-500/30 text-violet-400 font-black text-[10px] uppercase tracking-widest hover:bg-violet-500/30 transition-all"
+                      className="px-8 py-4 rounded-2xl bg-blue-600/10 dark:bg-violet-600/20 border border-blue-500/20 dark:border-violet-500/30 text-blue-600 dark:text-violet-400 font-black text-[10px] uppercase tracking-widest hover:bg-blue-600/20 dark:hover:bg-violet-500/30 transition-all shadow-sm"
                     >
                       Browse Stellar Plans
                     </button>

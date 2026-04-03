@@ -165,7 +165,7 @@ export default function MyCoursesPage() {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-[#0a0a16] flex items-center justify-center">
+      <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#0a0a16] flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
       </div>
     );
@@ -173,28 +173,26 @@ export default function MyCoursesPage() {
 
   if (!isSignedIn) {
     return (
-      <div className="min-h-screen bg-[#080a10] text-white flex items-center justify-center pt-20">
+      <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#080a10] text-foreground flex items-center justify-center pt-20">
         <SignIn
-          appearance={{
-            theme: dark,
-          }}
+          appearance={{ theme: dark }}
         />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#08080f] text-[#f0f0ff]">
+    <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#08080f] text-slate-900 dark:text-[#f0f0ff]">
       <Navbar />
       <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-24 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
           {/* ── LEFT SIDEBAR ── */}
           {/* ── MOBILE: GREETING ── */}
           <div className="lg:hidden mb-2">
-            <h1 className="text-2xl font-black text-white">
+            <h1 className="text-2xl font-black text-slate-900 dark:text-white">
               {greeting}, {displayName}
             </h1>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-slate-500 dark:text-gray-400">
               {enrollments.length === 0
                 ? "Start your learning journey"
                 : `${enrollments.length} course${enrollments.length !== 1 ? "s" : ""} enrolled`}
@@ -204,7 +202,7 @@ export default function MyCoursesPage() {
           {/* ── RIGHT: COURSES (SHOW FIRST ON MOBILE) ── */}
           <section className="order-1 lg:order-2">
             {/* Tabs */}
-            <div className="flex gap-1 mb-6 border-b border-white/5 overflow-x-auto no-scrollbar">
+            <div className="flex gap-1 mb-6 border-b border-slate-200 dark:border-white/5 overflow-x-auto no-scrollbar">
               {(["in-progress", "completed"] as TabType[]).map((tab) => (
                 <button
                   key={tab}
@@ -230,7 +228,7 @@ export default function MyCoursesPage() {
                   {[1, 2, 3].map((i) => (
                     <div
                       key={i}
-                      className="h-40 rounded-2xl animate-pulse bg-white/[0.02] border border-white/5"
+                      className="h-40 rounded-2xl animate-pulse bg-slate-200 dark:bg-white/[0.02] border border-slate-300 dark:border-white/5"
                     />
                   ))}
                 </motion.div>
@@ -267,18 +265,18 @@ export default function MyCoursesPage() {
                   key="empty"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="rounded-2xl p-16 text-center bg-white/[0.02] border border-dashed border-white/10"
+                  className="rounded-2xl p-16 text-center bg-white dark:bg-white/[0.02] border border-dashed border-slate-300 dark:border-white/10 shadow-sm dark:shadow-none"
                 >
                   <GraduationCap
                     size={48}
                     className="mx-auto mb-6 text-gray-600"
                   />
-                  <h2 className="text-xl font-bold mb-2 text-white">
+                  <h2 className="text-xl font-bold mb-2 text-slate-900 dark:text-white">
                     {activeTab === "completed"
                       ? "No completed courses"
                       : "No courses in progress"}
                   </h2>
-                  <p className="text-sm mb-8 text-gray-500 max-w-sm mx-auto">
+                  <p className="text-sm mb-8 text-slate-500 dark:text-gray-500 max-w-sm mx-auto">
                     {activeTab === "completed"
                       ? "Complete all lessons in a course to see it here and earn your certificate."
                       : "Discover your next challenge and start learning today."}
@@ -316,15 +314,11 @@ export default function MyCoursesPage() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: idx * 0.05 }}
-                        className="rounded-2xl overflow-hidden group transition-all duration-300 hover:border-violet-500/30"
-                        style={{
-                          background: "rgba(255,255,255,0.02)",
-                          border: "1px solid rgba(255,255,255,0.06)",
-                        }}
+                        className="lumen-course-card rounded-2xl overflow-hidden group transition-all duration-300 bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/[0.06] hover:border-blue-500/30 dark:hover:border-violet-500/30 shadow-sm dark:shadow-none"
                       >
                         <div className="flex flex-col sm:flex-row">
                           {/* Thumbnail */}
-                          <div className="sm:w-56 h-40 sm:h-auto flex items-center justify-center text-6xl shrink-0 bg-white/[0.02] border-r border-white/5">
+                          <div className="sm:w-56 h-40 sm:h-auto flex items-center justify-center text-6xl shrink-0 bg-slate-100 dark:bg-white/[0.02] border-r border-slate-200 dark:border-white/5">
                             <span className="transition-transform duration-500 group-hover:scale-110">
                               {meta?.emoji ?? "📚"}
                             </span>
@@ -333,18 +327,18 @@ export default function MyCoursesPage() {
                           {/* Main content */}
                           <div className="flex-1 p-6 sm:p-8">
                             {/* Provider */}
-                            <p className="text-[10px] uppercase tracking-widest font-black mb-2 text-violet-400">
+                            <p className="text-[10px] uppercase tracking-widest font-black mb-2 text-violet-600 dark:text-violet-400">
                               EduNova Learning
                             </p>
 
                             {/* Title */}
-                            <h3 className="text-xl font-bold leading-snug mb-2 text-white group-hover:text-violet-200 transition-colors">
+                            <h3 className="text-xl font-bold leading-snug mb-2 text-slate-900 dark:text-white group-hover:text-blue-700 dark:group-hover:text-violet-200 transition-colors">
                               {enrollment.course.title}
                             </h3>
 
                             {/* Meta row */}
-                            <div className="text-xs mb-4 flex items-center gap-2 flex-wrap text-gray-500">
-                              <span className="bg-white/5 px-2 py-0.5 rounded uppercase font-bold text-[10px] border border-white/5">
+                            <div className="text-xs mb-4 flex items-center gap-2 flex-wrap text-slate-400 dark:text-gray-500">
+                              <span className="bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded uppercase font-bold text-[10px] border border-slate-200 dark:border-white/5">
                                 {enrollment.course.category}
                               </span>
                               <span>•</span>
@@ -358,7 +352,7 @@ export default function MyCoursesPage() {
                               {isComplete && (
                                 <>
                                   <span>•</span>
-                                  <span className="text-emerald-400 flex items-center gap-1 font-bold">
+                                  <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-bold">
                                     <CheckCircle size={12} /> Completed
                                   </span>
                                 </>
@@ -366,24 +360,19 @@ export default function MyCoursesPage() {
                             </div>
 
                             {/* Progress bar */}
-                            <div className="h-1.5 rounded-full overflow-hidden mb-6 bg-white/5 border border-white/5">
-                              <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: `${pct}%` }}
-                                transition={{
-                                  duration: 0.8,
-                                  delay: 0.2 + idx * 0.05,
-                                }}
-                                className="h-full rounded-full"
-                                style={{
-                                  background: isComplete
-                                    ? "linear-gradient(90deg,#1fad56,#44d67c)"
-                                    : "linear-gradient(90deg,#7c3aed,#a855f7)",
-                                }}
-                              />
+                            <div className="h-1.5 rounded-full overflow-hidden mb-6 bg-slate-200 dark:bg-white/5 border border-slate-200/50 dark:border-white/5">
+                                <motion.div
+                                 initial={{ width: 0 }}
+                                 animate={{ width: `${pct}%` }}
+                                 transition={{
+                                   duration: 0.8,
+                                   delay: 0.2 + idx * 0.05,
+                                 }}
+                                 className={`h-full rounded-full ${isComplete ? "bg-gradient-to-r from-emerald-500 to-emerald-400" : "bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-500 dark:to-pink-500"}`}
+                               />
                             </div>
 
-                            <div className="flex items-center justify-between flex-wrap gap-4 pt-4 border-t border-white/5">
+                            <div className="flex items-center justify-between flex-wrap gap-4 pt-4 border-t border-slate-100 dark:border-white/5">
                               {!isComplete ? (
                                 <>
                                   <div className="flex items-start gap-3 flex-1 min-w-0">
@@ -394,11 +383,11 @@ export default function MyCoursesPage() {
                                       />
                                     </div>
                                     <div className="min-w-0">
-                                      <p className="text-xs font-bold text-white truncate">
+                                      <p className="text-xs font-bold text-slate-800 dark:text-white truncate">
                                         {nextLesson?.title ||
                                           "Continue Learning"}
                                       </p>
-                                      <p className="text-[10px] text-gray-500">
+                                      <p className="text-[10px] text-slate-400 dark:text-gray-500">
                                         {nextLesson?.sectionTitle ||
                                           "Pick up where you left off"}
                                       </p>
@@ -407,35 +396,31 @@ export default function MyCoursesPage() {
                                   <div className="flex items-center gap-3 shrink-0">
                                     <Link
                                       href={`/learn/${enrollment.course.slug}`}
-                                      className="flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-bold text-white transition-all shadow-lg shadow-violet-500/20 hover:shadow-violet-500/40 hover:translate-y-[-1px]"
-                                      style={{
-                                        background:
-                                          "linear-gradient(135deg,#7c3aed,#a855f7)",
-                                      }}
+                                      className="flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-bold text-white transition-all shadow-lg shadow-blue-500/20 dark:shadow-violet-500/20 hover:shadow-blue-500/40 dark:hover:shadow-violet-500/40 hover:translate-y-[-1px] bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-500 dark:to-pink-500"
                                     >
                                       <Play size={12} fill="currentColor" />
                                       Resume
                                     </Link>
-                                    <button className="p-2 rounded-lg hover:bg-white/5 transition-colors text-gray-500 hover:text-white">
+                                    <button className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white">
                                       <MoreHorizontal size={18} />
                                     </button>
                                   </div>
                                 </>
                               ) : (
                                 <>
-                                  <div className="flex items-center gap-2 text-xs text-emerald-400 font-bold">
+                                  <div className="flex items-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-bold">
                                     <CheckCircle size={16} />
                                     <span>Course Certification Ready</span>
                                   </div>
                                   <div className="flex items-center gap-3 shrink-0">
                                     <Link
                                       href={`/learn/${enrollment.course.slug}`}
-                                      className="flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-bold border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/10 transition-all"
+                                      className="flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-bold border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition-all"
                                     >
                                       <FileText size={14} />
                                       Review Course
                                     </Link>
-                                    <button className="p-2 rounded-lg hover:bg-white/5 transition-colors text-gray-500 hover:text-white">
+                                    <button className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white">
                                       <MoreHorizontal size={18} />
                                     </button>
                                   </div>
@@ -457,8 +442,7 @@ export default function MyCoursesPage() {
             {/* Desktop greeting (Hidden on mobile) */}
             <div className="hidden lg:block mb-6">
               <div
-                className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center text-xl font-black text-white mb-3"
-                style={{ background: "linear-gradient(135deg,#7c3aed,#a855f7)" }}
+                className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center text-xl font-black text-white mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-500 dark:to-pink-500 shadow-md dark:shadow-none"
               >
                 {avatarUrl ? (
                   <img src={avatarUrl} alt={initials} className="w-full h-full object-cover" />
@@ -466,22 +450,21 @@ export default function MyCoursesPage() {
                   initials
                 )}
               </div>
-              <h1 className="text-xl font-bold text-white">
+              <h1 className="text-xl font-bold text-slate-900 dark:text-white">
                 {greeting}, {displayName}
               </h1>
-              <p className="text-sm mt-0.5 text-gray-400">
+              <p className="text-sm mt-0.5 text-slate-500 dark:text-gray-400">
                 {enrollments.length === 0 ? "Start your learning journey" : `${enrollments.length} course${enrollments.length !== 1 ? "s" : ""} enrolled`}
               </p>
             </div>
 
             {/* Today's goals */}
             <div
-              className="rounded-lg p-4 mb-4"
-              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}
+              className="lumen-sidebar-widget rounded-lg p-4 mb-4 bg-slate-50 dark:bg-[rgba(255,255,255,0.03)] border border-slate-200 dark:border-[rgba(255,255,255,0.08)]"
             >
               <div className="flex items-center gap-2 mb-3">
-                <Star size={14} className="text-yellow-400" fill="#facc15" />
-                <h3 className="text-sm font-bold text-white">Today&apos;s goals</h3>
+                <Star size={14} className="text-yellow-500" fill="#eab308" />
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Today&apos;s goals</h3>
               </div>
               <ul className="space-y-2.5">
                 {[
@@ -490,8 +473,8 @@ export default function MyCoursesPage() {
                   { label: "Continue your weekly streak", href: "/my-courses" },
                 ].map((goal, i) => (
                   <li key={i}>
-                    <Link href={goal.href} className="flex items-start gap-2.5 text-sm group hover:text-violet-300 transition-colors text-gray-400">
-                      <div className="w-4 h-4 rounded-full border mt-0.5 shrink-0 flex items-center justify-center border-gray-600 group-hover:border-violet-500 transition-colors">
+                    <Link href={goal.href} className="flex items-start gap-2.5 text-sm group hover:text-blue-600 dark:hover:text-violet-300 transition-colors text-slate-500 dark:text-gray-400">
+                      <div className="w-4 h-4 rounded-full border mt-0.5 shrink-0 flex items-center justify-center border-slate-300 dark:border-gray-600 group-hover:border-violet-500 transition-colors">
                         <div className="w-1.5 h-1.5 rounded-full bg-violet-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
                       {goal.label}
@@ -503,24 +486,22 @@ export default function MyCoursesPage() {
 
             {/* Learning plan */}
             <div
-              className="rounded-lg p-4 mb-4"
-              style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)" }}
+              className="lumen-sidebar-widget rounded-lg p-4 mb-4 bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08]"
             >
-              <h3 className="text-sm font-bold mb-1 text-white">Learning plan</h3>
+              <h3 className="text-sm font-bold mb-1 text-slate-900 dark:text-white">Learning plan</h3>
               <div className="flex items-center justify-between mb-3">
-                <button onClick={prevMonth} className="p-0.5 rounded hover:bg-white/10 transition-colors text-gray-400"><ChevronLeft size={14} /></button>
-                <span className="text-xs font-semibold text-gray-300">{calMonthLabel}</span>
-                <button onClick={nextMonth} className="p-0.5 rounded hover:bg-white/10 transition-colors text-gray-400"><ChevronRight size={14} /></button>
+                <button onClick={prevMonth} className="p-0.5 rounded hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-400 dark:text-gray-400"><ChevronLeft size={14} /></button>
+                <span className="text-xs font-semibold text-slate-700 dark:text-gray-300">{calMonthLabel}</span>
+                <button onClick={nextMonth} className="p-0.5 rounded hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-400 dark:text-gray-400"><ChevronRight size={14} /></button>
               </div>
               <div className="grid grid-cols-7 mb-1">
-                {CAL_HEADERS.map(h => <div key={h} className="text-center text-[10px] font-bold py-0.5 text-gray-500">{h}</div>)}
+                {CAL_HEADERS.map(h => <div key={h} className="text-center text-[10px] font-bold py-0.5 text-slate-400 dark:text-gray-500">{h}</div>)}
               </div>
               <div className="grid grid-cols-7 gap-y-0.5">
                 {calCells.map((day, i) => {
                   const isToday = day === todayDate && calMonth === todayMonth && calYear === todayYear;
                   return (
-                    <div key={i} className="flex items-center justify-center h-7 text-[11px] font-medium rounded-full mx-0.5"
-                      style={isToday ? { background: "#7c3aed", color: "#fff", fontWeight: 700 } : { color: day ? "#d1d5db" : "transparent" }}
+                    <div key={i} className={`flex items-center justify-center h-7 text-[11px] font-medium rounded-full mx-0.5 ${isToday ? "bg-blue-600 dark:bg-violet-600 text-white font-bold" : day ? "text-slate-600 dark:text-slate-400" : "text-transparent"}`}
                     >
                       {day ?? ""}
                     </div>
@@ -531,15 +512,15 @@ export default function MyCoursesPage() {
 
             {/* Upgrade */}
             <div
-              className="rounded-lg p-5 mt-2"
+              className="lumen-sidebar-widget lumen-upgrade-widget rounded-lg p-5 mt-2"
               style={{ background: "rgba(124,58,237,0.05)", border: "1px solid rgba(124,58,237,0.15)" }}
             >
               <div className="w-10 h-10 rounded-xl bg-violet-600/20 flex items-center justify-center mb-4">
-                <GraduationCap size={20} className="text-violet-400" />
+                <GraduationCap size={20} className="text-violet-500 dark:text-violet-400" />
               </div>
-              <h3 className="text-sm font-bold mb-1 text-white">Upgrade to Plus</h3>
-              <p className="text-xs mb-4 text-gray-400 leading-relaxed">Get unlimited access to 7,000+ courses and certifications.</p>
-              <Link href="/pricing" className="text-xs font-bold text-violet-400 hover:text-violet-300 transition-colors flex items-center gap-1">
+              <h3 className="text-sm font-bold mb-1 text-slate-900 dark:text-white">Upgrade to Plus</h3>
+              <p className="text-xs mb-4 text-slate-500 dark:text-gray-400 leading-relaxed">Get unlimited access to 7,000+ courses and certifications.</p>
+              <Link href="/pricing" className="text-xs font-bold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors flex items-center gap-1">
                 View Plans <ArrowRight size={12} />
               </Link>
             </div>

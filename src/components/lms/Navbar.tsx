@@ -348,6 +348,7 @@ export default function Navbar() {
           <div className="hidden lg:flex items-center gap-6 shrink-0">
             {isLoaded && !user && (
               <>
+                <ThemeToggle />
                 <a href="/auth/sign-in" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">Sign in</a>
                 <a href="/auth/sign-up" className="px-5 py-2 bg-black dark:bg-white text-white dark:text-black text-sm font-bold rounded-full hover:opacity-85 transition-opacity">Get started</a>
               </>

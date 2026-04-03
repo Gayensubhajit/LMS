@@ -28,6 +28,7 @@ const instructors = [
     courses: 8,
     expertise: ["UI/UX", "Figma", "Design Systems"],
     bio: "10+ years designing award-winning products at Apple and startups.",
+    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500&auto=format&fit=crop&q=60",
   },
   {
     id: 2,
@@ -42,6 +43,7 @@ const instructors = [
     courses: 12,
     expertise: ["React", "Node.js", "AWS"],
     bio: "Built features used by 3 billion people at Meta. Full-stack expert.",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=60",
   },
   {
     id: 3,
@@ -56,6 +58,7 @@ const instructors = [
     courses: 6,
     expertise: ["ML/AI", "Python", "LLMs"],
     bio: "PhD in AI from MIT. 5 published research papers. Former DeepMind researcher.",
+    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=500&auto=format&fit=crop&q=60",
   },
   {
     id: 4,
@@ -70,6 +73,7 @@ const instructors = [
     courses: 5,
     expertise: ["Mobile Design", "Branding", "Motion"],
     bio: "Helped redesign Airbnb's mobile app. Speaker at Design+.",
+    image: "https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?w=500&auto=format&fit=crop&q=60",
   },
 ];
 
@@ -134,45 +138,27 @@ export default function InstructorsSection() {
                   hovered === i ? "0 20px 50px rgba(124,58,237,0.25)" : "none",
               }}
             >
-              {/* Avatar area */}
+              {/* Full Image Area */}
               <div
-                className={`relative h-36 bg-linear-to-br ${inst.bgColor} flex items-center justify-center overflow-hidden`}
+                className={`relative h-48 overflow-hidden`}
               >
-                {/* Animated rings */}
-                <motion.div
-                  animate={
-                    hovered === i
-                      ? { scale: [1, 1.5, 1], opacity: [0.3, 0.1, 0.3] }
-                      : {}
-                  }
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="absolute w-24 h-24 rounded-full"
-                />
-                <motion.div
-                  animate={
-                    hovered === i
-                      ? { scale: [1, 2, 1], opacity: [0.2, 0.05, 0.2] }
-                      : {}
-                  }
-                  transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
-                  className="absolute w-24 h-24 rounded-full border border-violet-500/10"
-                />
-
-                {/* Avatar */}
-                <motion.div
-                  animate={hovered === i ? { scale: 1.05 } : { scale: 1 }}
-                  transition={{ duration: 0.3 }}
-                  className={`w-20 h-20 rounded-full bg-linear-to-br ${inst.color} flex items-center justify-center text-white text-2xl font-black shadow-xl relative z-10`}
-                  style={{
-                    boxShadow:
-                      hovered === i ? "0 10px 40px rgba(124,58,237,0.5)" : "",
-                  }}
-                >
-                  {inst.initials}
-                </motion.div>
+                {inst.image ? (
+                  <img 
+                    src={inst.image} 
+                    alt={inst.name} 
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                  />
+                ) : (
+                  <div className={`w-full h-full bg-linear-to-br ${inst.color} flex items-center justify-center text-white text-4xl font-black`}>
+                    {inst.initials}
+                  </div>
+                )}
+                
+                {/* Gradient Overlay for better contrast with the badge */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
 
                 {/* Company badge */}
-                <div className="absolute top-3 right-3 bg-black/40 backdrop-blur-sm text-xs text-gray-300 px-2 py-0.5 rounded-lg border border-white/10">
+                <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-md text-xs text-white font-medium px-2.5 py-1 rounded-lg border border-white/20 shadow-lg">
                   {inst.company}
                 </div>
               </div>

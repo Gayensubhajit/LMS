@@ -14,79 +14,91 @@ const montserrat = Montserrat({ subsets: ["latin"] });
 // ── Build instructor profiles from course data ──────────────────────────────
 const INSTRUCTOR_META: Record<
   string,
-  { title: string; bio: string; avatar: string; gradient: [string, string] }
+  { title: string; bio: string; avatar: string; gradient: [string, string]; image?: string }
 > = {
   "Jessica Willis": {
     title: "Lead Product Designer",
     bio: "10+ years designing products at Figma and Airbnb. Specialises in end-to-end UX systems.",
     avatar: "JW",
     gradient: ["#f472b6", "#ec4899"],
+    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500&auto=format&fit=crop&q=60",
   },
   "Alex Chen": {
     title: "Senior Software Engineer",
     bio: "Ex-Vercel engineer. Built production systems used by 2M+ developers. Open-source contributor.",
     avatar: "AC",
     gradient: ["#60a5fa", "#3b82f6"],
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=60",
   },
   "Dr. Sarah Park": {
     title: "AI Research Scientist",
     bio: "PhD in ML from Stanford. Worked at DeepMind and Google Brain on generative models.",
     avatar: "SP",
     gradient: ["#a78bfa", "#8b5cf6"],
+    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=500&auto=format&fit=crop&q=60",
   },
   "Marcus Lee": {
     title: "Mobile & UI Designer",
     bio: "Design lead at Meta's mobile design team. Created iOS apps with 5M+ downloads.",
     avatar: "ML",
     gradient: ["#f97316", "#fb923c"],
+    image: "https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?w=500&auto=format&fit=crop&q=60",
   },
   "Ryan Torres": {
     title: "Principal Full-Stack Engineer",
     bio: "Architected backend systems at Stripe and Shopify processing $1B+ annually.",
     avatar: "RT",
     gradient: ["#34d399", "#10b981"],
+    image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=500&auto=format&fit=crop&q=60",
   },
   "Emily Watson": {
     title: "Senior Product Manager",
     bio: "Former PM at Notion and Linear. Expert in product-led growth and PLG strategies.",
     avatar: "EW",
     gradient: ["#fbbf24", "#f59e0b"],
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60",
   },
   "Nina Kaur": {
     title: "Motion Designer",
     bio: "Award-winning motion designer. Former Disney Creative Labs. Framer MVP.",
     avatar: "NK",
     gradient: ["#e879f9", "#d946ef"],
+    image: "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=500&auto=format&fit=crop&q=60",
   },
   "Arjun Patel": {
     title: "Data Scientist",
     bio: "Data science lead at McKinsey. Built ML models for Fortune 500 companies.",
     avatar: "AP",
     gradient: ["#22d3ee", "#06b6d4"],
+    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=60",
   },
   "Leah Kim": {
     title: "Growth Marketing Director",
     bio: "Scaled Duolingo and Calm's user base through data-driven growth loops.",
     avatar: "LK",
     gradient: ["#4ade80", "#22c55e"],
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&auto=format&fit=crop&q=60",
   },
   "Diego Martins": {
     title: "Frontend Architect",
     bio: "Staff engineer at Atlassian. Expert in scalable frontend systems and performance.",
     avatar: "DM",
     gradient: ["#818cf8", "#6366f1"],
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=60",
   },
   "Olivia Harper": {
     title: "UX Research Lead",
     bio: "Research lead at IBM Design. Champion of inclusive research practices.",
     avatar: "OH",
     gradient: ["#fb7185", "#f43f5e"],
+    image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=500&auto=format&fit=crop&q=60",
   },
   "Kevin Roy": {
     title: "No-Code & Automation Expert",
     bio: "Built 200+ automation systems. Advisor to AI-native startups.",
     avatar: "KR",
     gradient: ["#38bdf8", "#0ea5e9"],
+    image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=60",
   },
 };
 
@@ -236,45 +248,37 @@ export default function InstructorsPage() {
                   }}
                   className="lumen-instructor-card rounded-[2rem] overflow-hidden flex flex-col bg-white dark:bg-[#0f0f1e]/85 border border-slate-200 dark:border-violet-500/20 shadow-xl shadow-slate-200/50 dark:shadow-none transition-colors duration-700"
                 >
-                  {/* Header gradient band */}
-                  <div
-                    className="h-20 relative flex-shrink-0"
-                    style={{
-                      background: `linear-gradient(135deg, ${g1}30, ${g2}15)`,
-                    }}
-                  >
-                    {/* floating glow orb */}
-                    <div
-                      className="absolute inset-0"
-                      style={{
-                        background: `radial-gradient(ellipse at 30% 50%, ${g1}20, transparent 70%)`,
-                      }}
-                    />
-                  </div>
-
-                  {/* Avatar — overlapping the band */}
-                  <div className="px-5 -mt-8 mb-4 flex items-end justify-between">
-                    <div
-                      className="w-16 h-16 rounded-2xl flex items-center justify-center text-xl font-black text-white shadow-lg flex-shrink-0 border-4 border-white dark:border-[#08080f]"
-                      style={{
-                        background: `linear-gradient(135deg, ${g1}, ${g2})`,
-                      }}
-                    >
-                      {inst.meta.avatar}
-                    </div>
-                    <div className="flex items-center gap-1 mb-2">
-                      <Star
-                        size={13}
-                        className="text-yellow-400 fill-yellow-400"
+                  {/* Full image header replacing the band & overlapping avatar */}
+                  <div className="relative h-48 flex-shrink-0 w-full overflow-hidden">
+                    {inst.meta.image ? (
+                      <img 
+                        src={inst.meta.image} 
+                        alt={inst.name} 
+                        className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                       />
-                      <span className="text-slate-900 dark:text-white text-sm font-bold">
-                        {avgRating}
-                      </span>
+                    ) : (
+                      <div
+                        className="w-full h-full flex items-center justify-center text-4xl font-black text-white"
+                        style={{ background: `linear-gradient(135deg, ${g1}, ${g2})` }}
+                      >
+                        {inst.meta.avatar}
+                      </div>
+                    )}
+                    
+                    {/* Gradient Overlay for contrast with rating/stats */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-80" />
+
+                    {/* Stats overlayed on image */}
+                    <div className="absolute bottom-3 right-4 flex flex-col items-end gap-1">
+                      <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10">
+                        <Star size={13} className="text-yellow-400 fill-yellow-400" />
+                        <span className="text-white text-xs font-bold leading-none">{avgRating}</span>
+                      </div>
                     </div>
                   </div>
 
                   {/* Body */}
-                  <div className="px-5 pb-5 flex flex-col flex-1">
+                  <div className="px-5 pt-5 pb-5 flex flex-col flex-1">
                     <h2 className="text-base font-black text-slate-900 dark:text-white mb-0.5">
                       {inst.name}
                     </h2>

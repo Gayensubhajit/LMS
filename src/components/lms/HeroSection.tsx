@@ -338,7 +338,7 @@ export default function HeroSection() {
             <span className="mb-6 inline-block font-serif text-[36px] md:text-7xl lg:text-7xl">
               Step Into the Future of
             </span>
-            <div className="h-[6.4em] overflow-hidden flex items-center justify-center">
+            <div className="md:h-[6.4em] overflow-hidden flex items-center justify-center">
               <AnimatePresence mode="wait">
                 <motion.span
                   key={activeWord}

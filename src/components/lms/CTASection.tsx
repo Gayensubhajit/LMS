@@ -77,7 +77,7 @@ export default function CTASection() {
               className={`${montserrat.className} flex flex-col sm:flex-row items-center justify-center gap-4`}
             >
               <motion.a
-                href="/auth/sign-up"
+                href="/auth/sign-up?plan=plus"
                 whileHover={{
                   scale: 1.05,
                   boxShadow:

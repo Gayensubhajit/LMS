@@ -27,6 +27,45 @@ declare global {
   }
 }
 
+const SUBSCRIPTION_PLANS: Record<string, { title: string, description: string, price: number, period: string, category: string, badge: string, emoji: string }> = {
+  "plus": {
+    title: "EduNova Plus",
+    description: "Unlimited access to 7,000+ courses, AI paths, and dedicated mentorship.",
+    price: 2499,
+    period: "Monthly",
+    category: "Individual Plan",
+    badge: "14-Day Free Trial",
+    emoji: "🚀"
+  },
+  "annual": {
+    title: "Plus Annual",
+    description: "Save big on a full year of accelerated learning and premium features.",
+    price: 19999,
+    period: "Annually",
+    category: "Individual Plan",
+    badge: "Save 33%",
+    emoji: "🌟"
+  },
+  "teams": {
+    title: "Teams Starter",
+    description: "Simple team learning for growing companies. Up to 25 seats.",
+    price: 1999,
+    period: "Per Seat / Month",
+    category: "Business Plan",
+    badge: "For Startups",
+    emoji: "👥"
+  },
+  "teams-pro": {
+    title: "Teams Pro",
+    description: "Volume pricing with dedicated account management and advanced analytics.",
+    price: 1499,
+    period: "Per Seat / Month",
+    category: "Enterprise Plan",
+    badge: "Dedicated Support",
+    emoji: "🏢"
+  }
+};
+
 function CheckoutContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -39,15 +78,22 @@ function CheckoutContent() {
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
   const [course, setCourse] = useState<any>(null);
+  const [subscription, setSubscription] = useState<any>(null);
 
   useEffect(() => {
-    if (!slug) {
+    if (slug) {
+      const found = coursesData.find((c) => c.slug === slug);
+      if (found) {
+        setCourse(found);
+      } else {
+        router.push("/courses");
+        return;
+      }
+    } else if (plan && SUBSCRIPTION_PLANS[plan]) {
+      setSubscription(SUBSCRIPTION_PLANS[plan]);
+    } else {
       router.push("/courses");
       return;
-    }
-    const found = coursesData.find((c) => c.slug === slug);
-    if (found) {
-      setCourse(found);
     }
     setLoading(false);
 
@@ -56,34 +102,54 @@ function CheckoutContent() {
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
     document.body.appendChild(script);
-  }, [slug, router]);
+  }, [slug, plan, router]);
 
   const getPrice = () => {
-    if (!course) return 0;
-    if (plan === "1month") return course.price.oneMonth;
-    if (plan === "3month") return course.price.threeMonth;
-    if (plan === "6month") return course.price.sixMonth;
-    return course.price.oneMonth;
+    if (course) {
+      if (plan === "1month") return course.price.oneMonth;
+      if (plan === "3month") return course.price.threeMonth;
+      if (plan === "6month") return course.price.sixMonth;
+      return course.price.oneMonth;
+    }
+    if (subscription) {
+      return subscription.price;
+    }
+    return 0;
   };
 
   const getDurationLabel = () => {
-    if (plan === "1month") return "1 Month Access";
-    if (plan === "3month") return "3 Months Access";
-    if (plan === "6month") return "6 Months Access";
-    return "Course Access";
+    if (course) {
+      if (plan === "1month") return "1 Month Access";
+      if (plan === "3month") return "3 Months Access";
+      if (plan === "6month") return "6 Months Access";
+      return "Course Access";
+    }
+    if (subscription) {
+      return subscription.period;
+    }
+    return "Access";
   };
 
   const handleRazorpayPayment = async () => {
-    if (!userId || !course) {
-      console.error("Payment failed: User ID or Course not loaded", {
-        userId,
-        course,
-      });
-      toast.error("User or Course information is missing. Please refresh.");
+    if (!userId || (!course && !subscription)) {
+      console.error("Payment failed: Missing state");
+      toast.error("Information is missing. Please refresh.");
       return;
     }
 
     setProcessing(true);
+
+    if (subscription) {
+      // MOCK SUBSCRIPTION CHECKOUT - As backend doesn't support Sub Plan enrollments yet
+      console.log("💳 Initializing mocked subscription payment:", subscription.title);
+      setTimeout(() => {
+        toast.success(`Successfully subscribed to ${subscription.title}!`);
+        router.push("/dashboard");
+      }, 2000);
+      return;
+    }
+
+    // ORIGINAL COURSE CHECKOUT LOGIC
     console.log("💳 Initializing payment for:", course.title, "Plan:", plan);
 
     try {
@@ -130,7 +196,6 @@ function CheckoutContent() {
 
       // 3. Trigger Razorpay Modal
       if (!window.Razorpay) {
-        console.error("Razorpay SDK not found on window object.");
         throw new Error(
           "Razorpay SDK failed to load. Please check your internet connection.",
         );
@@ -146,12 +211,8 @@ function CheckoutContent() {
         image: "https://cdn-icons-png.flaticon.com/512/3413/3413535.png",
         order_id: orderId,
         handler: function (response: any) {
-          console.log(
-            "✅ Payment authorized by Razorpay:",
-            response.razorpay_payment_id,
-          );
+          console.log("✅ Payment authorized by Razorpay:", response.razorpay_payment_id);
           toast.success("Payment successful! Redirecting...");
-          // Give small delay for backend webhook to process
           setTimeout(() => {
             router.push(`/checkout/success?slug=${course.slug}`);
           }, 1500);
@@ -196,7 +257,7 @@ function CheckoutContent() {
       </div>
     );
 
-  if (!course) return null;
+  if (!course && !subscription) return null;
 
   const finalPrice = getPrice();
 
@@ -208,7 +269,7 @@ function CheckoutContent() {
 
       <div className="max-w-6xl mx-auto px-6 py-12 lg:py-24 relative z-10">
         <Link
-          href={`/courses/${course.slug}`}
+          href={course ? `/courses/${course.slug}` : "/pricing"}
           className="inline-flex items-center gap-2 text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white transition-colors group mb-12"
         >
           <ChevronLeft
@@ -228,7 +289,7 @@ function CheckoutContent() {
                 Complete your <span className="text-blue-600 dark:text-blue-500">Enrollment</span>
               </h1>
               <p className="text-slate-500 dark:text-gray-400 font-bold uppercase tracking-widest text-[11px] leading-relaxed max-w-lg">
-                Join 10,000+ students mastering {course.category} with
+                Join 10,000+ students mastering {course ? course.category : subscription.category} with
                 EduNova&apos;s premium learning paths.
               </p>
             </div>
@@ -237,17 +298,17 @@ function CheckoutContent() {
               {/* Course Image Preview */}
               <div className="flex flex-col sm:flex-row items-center gap-8">
                 <div className="w-32 h-32 rounded-3xl bg-blue-600/10 dark:bg-blue-600/20 flex items-center justify-center shrink-0 border border-blue-500/10 dark:border-blue-500/20">
-                  <span className="text-5xl">{course.emoji}</span>
+                  <span className="text-5xl">{course ? course.emoji : subscription.emoji}</span>
                 </div>
                 <div className="space-y-2 text-center sm:text-left">
                   <span className="text-[10px] font-black bg-blue-600/10 text-blue-600 dark:text-blue-400 px-3 py-1 rounded-full uppercase tracking-widest border border-blue-500/20">
-                    {course.category}
+                    {course ? course.category : subscription.category}
                   </span>
                   <h2 className="text-2xl font-black text-slate-900 dark:text-white">
-                    {course.title}
+                    {course ? course.title : subscription.title}
                   </h2>
                   <p className="text-slate-400 dark:text-gray-500 font-bold text-sm">
-                    Instructor: {course.instructor}
+                    {course ? `Instructor: ${course.instructor}` : subscription.description}
                   </p>
                 </div>
               </div>

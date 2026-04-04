@@ -1,8 +1,15 @@
 import Link from "next/link";
 import { SignIn } from "@clerk/nextjs";
 
-export default function SignInPage() {
+export default function SignInPage({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const publishableKey = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+  const plan = typeof searchParams.plan === "string" ? searchParams.plan : null;
+  const redirectUrl = plan ? `/checkout?plan=${plan}` : "/";
+  const signUpUrl = plan ? `/auth/sign-up?plan=${plan}` : "/auth/sign-up";
 
   if (!publishableKey) {
     return (
@@ -16,7 +23,7 @@ export default function SignInPage() {
             enable Clerk auth.
           </p>
           <Link
-            href="/auth/sign-up"
+            href={signUpUrl}
             className="inline-flex items-center justify-center bg-linear-to-r from-violet-600 to-purple-600 text-white px-5 py-2.5 rounded-xl font-semibold"
           >
             Go to Sign Up
@@ -31,8 +38,9 @@ export default function SignInPage() {
       <SignIn
         path="/auth/sign-in"
         routing="path"
-        signUpUrl="/auth/sign-up"
-        fallbackRedirectUrl="/"
+        signUpUrl={signUpUrl}
+        fallbackRedirectUrl={redirectUrl}
+        forceRedirectUrl={plan ? redirectUrl : undefined}
         appearance={{
           elements: {
             rootBox: "w-full max-w-md",

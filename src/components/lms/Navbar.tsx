@@ -448,7 +448,7 @@ export default function Navbar() {
               <>
                 <ThemeToggle />
                 <a href="/auth/sign-in" className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors">Sign in</a>
-                <a href="/auth/sign-up" className="px-5 py-2 bg-black dark:bg-white text-white dark:text-black text-sm font-bold rounded-full hover:opacity-85 transition-opacity">Get started</a>
+                <a href="/auth/sign-up?plan=plus" className="px-5 py-2 bg-black dark:bg-white text-white dark:text-black text-sm font-bold rounded-full hover:opacity-85 transition-opacity">Get started</a>
               </>
             )}
             {isLoaded && user && (
@@ -563,7 +563,7 @@ export default function Navbar() {
                 ) : (
                   <div className="space-y-4 pt-10">
                     <a href="/auth/sign-in" className="block w-full py-4 bg-violet-600 text-white rounded-2xl font-black uppercase tracking-widest text-center">Sign In</a>
-                    <a href="/auth/sign-up" className="block w-full py-4 border border-slate-300 dark:border-white/10 text-slate-900 dark:text-white rounded-2xl font-black uppercase tracking-widest text-center">Create Free Account</a>
+                    <a href="/auth/sign-up?plan=plus" className="block w-full py-4 border border-slate-300 dark:border-white/10 text-slate-900 dark:text-white rounded-2xl font-black uppercase tracking-widest text-center">Create Free Account</a>
                   </div>
                 )}
                 

@@ -456,7 +456,7 @@ export default function HeroSection() {
             className="flex flex-wrap justify-center items-center gap-4"
           >
             <a
-              href="/courses"
+              href="/auth/sign-up?plan=plus"
               className="group flex items-center gap-3 bg-black dark:bg-white text-white dark:text-black px-8 py-4 rounded-full text-base font-bold hover:scale-105 active:scale-95 transition-all shadow-[0_20px_40px_rgba(0,0,0,0.15)]"
             >
               <span>Start Learning Free</span>

@@ -65,18 +65,18 @@ export default function ProfilePage() {
     },
   };
 
-  if (!isLoaded) {
-    return (
-      <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#0a0a16] flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
-      </div>
-    );
-  }
-
   if (!isSignedIn) {
     return (
       <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#080a10] text-foreground flex items-center justify-center pt-20">
         <SignIn />
+      </div>
+    );
+  }
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#0a0a16] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
       </div>
     );
   }
@@ -127,9 +127,17 @@ export default function ProfilePage() {
                 <div className="relative inline-block mb-6 group/avatar">
                   <div className="absolute inset-0 bg-linear-to-tr from-violet-600 to-sky-400 rounded-full blur-md opacity-20 group-hover/avatar:opacity-60 transition-opacity animate-pulse" />
                   <div className="relative w-24 h-24 sm:w-32 sm:h-32 rounded-full border-2 border-violet-500/30 flex items-center justify-center bg-slate-50 dark:bg-slate-950 overflow-hidden shadow-2xl group-hover/avatar:border-violet-400 transition-colors">
-                    <span className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white italic tracking-tighter drop-shadow-2xl">
-                      {user?.fullName?.charAt(0) ?? ""}
-                    </span>
+                    {user?.imageUrl ? (
+                      <img
+                        src={user.imageUrl}
+                        alt={user.fullName || "User"}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white italic tracking-tighter drop-shadow-2xl">
+                        {user?.fullName?.charAt(0) ?? ""}
+                      </span>
+                    )}
                   </div>
                   <div className="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 w-8 h-8 sm:w-10 sm:h-10 bg-violet-600 rounded-full flex items-center justify-center border-2 sm:border-4 border-slate-950 shadow-lg text-white">
                     <Zap
@@ -163,7 +171,7 @@ export default function ProfilePage() {
               whileHover={{ y: -5 }}
               className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/5 backdrop-blur-md rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-8 group relative overflow-hidden shadow-sm dark:shadow-none"
             >
-              <div className="absolute -inset-1 bg-gradient-to-tr from-sky-400/10 to-violet-600/10 opacity-0 group-hover:opacity-100 transition-opacity blur-xl" />
+              <div className="absolute -inset-1 bg-linear-to-tr from-sky-400/10 to-violet-600/10 opacity-0 group-hover:opacity-100 transition-opacity blur-xl" />
               <div className="relative z-10">
                 <div className="flex justify-between items-start mb-6">
                   <h3 className="text-[10px] sm:text-xs font-black text-slate-700 dark:text-white uppercase tracking-[0.2em]">
@@ -230,7 +238,7 @@ export default function ProfilePage() {
               variants={itemVariants}
               className="relative overflow-hidden rounded-[2.5rem] sm:rounded-[3rem] p-px shadow-2xl group w-full"
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-violet-600/30 via-transparent to-sky-400/30 group-hover:opacity-100 opacity-60 transition-opacity duration-700" />
+              <div className="absolute inset-0 bg-linear-to-br from-violet-600/30 via-transparent to-sky-400/30 group-hover:opacity-100 opacity-60 transition-opacity duration-700" />
               <div className="relative bg-white/80 dark:bg-slate-950/90 backdrop-blur-3xl rounded-[2.45rem] sm:rounded-[2.95rem] p-6 sm:p-8 lg:p-12 border border-slate-200 dark:border-white/5 overflow-hidden">
                 <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-violet-600/5 blur-[100px] rounded-full pointer-events-none" />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 items-center">
@@ -240,7 +248,7 @@ export default function ProfilePage() {
                     </span>
                     <h2 className="text-2xl sm:text-3xl lg:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-4 lg:mb-6 leading-[0.85] uppercase">
                       Pioneer <br />{" "}
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-500 to-violet-600 dark:from-violet-400 dark:via-pink-400 dark:to-sky-400">
+                      <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 via-indigo-500 to-violet-600 dark:from-violet-400 dark:via-pink-400 dark:to-sky-400">
                         Identity
                       </span>
                     </h2>

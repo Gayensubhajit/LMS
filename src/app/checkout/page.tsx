@@ -34,7 +34,7 @@ const SUBSCRIPTION_PLANS: Record<string, { title: string, description: string, p
     price: 2099,
     period: "Monthly",
     category: "Individual Plan",
-    badge: "7-Day Free Trial",
+    badge: "14-Day Free Trial",
     emoji: "🚀"
   },
   "annual": {
@@ -43,7 +43,7 @@ const SUBSCRIPTION_PLANS: Record<string, { title: string, description: string, p
     price: 19999,
     period: "Annually",
     category: "Individual Plan",
-    badge: "Save 33%",
+    badge: "14-Day Free Trial",
     emoji: "🌟"
   },
   "teams": {
@@ -326,15 +326,15 @@ function CheckoutContent() {
                   <p className="text-xs font-bold text-slate-800 dark:text-white mb-2">No commitment. Cancel anytime.</p>
                   <div className="flex justify-between items-center text-sm font-bold">
                     <span className="text-slate-900 dark:text-white">
-                      {subscription ? "Monthly subscription" : `${getDurationLabel()} Plan`}
+                      {subscription ? `${plan === "annual" ? "Annual" : "Monthly"} subscription` : `${getDurationLabel()} Plan`}
                     </span>
                     <span className="text-slate-900 dark:text-white">
-                      {isTrialPlan ? "7-Day Free Trial" : formatPriceForDisplay(finalPrice)}
+                      {isTrialPlan ? "14-Day Free Trial" : formatPriceForDisplay(finalPrice)}
                     </span>
                   </div>
                   {isTrialPlan && (
                     <div className="flex justify-end">
-                      <span className="text-[11px] text-slate-500 font-medium">then ₹{subscription.price.toLocaleString("en-IN")}/mo</span>
+                      <span className="text-[11px] text-slate-500 font-medium">then ₹{subscription.price.toLocaleString("en-IN")}/{plan === "annual" ? "year" : "mo"}</span>
                     </div>
                   )}
                 </div>
@@ -386,7 +386,7 @@ function CheckoutContent() {
           </div>
 
           <div className="lg:col-span-12 xl:col-span-5 space-y-8">
-            <div className="p-8 lg:p-10 rounded-[40px] bg-white dark:bg-[#0a0a20] border border-slate-200 dark:border-white/10 relative shadow-2xl shadow-slate-200/50 dark:shadow-[0_40px_100px_rgba(0,0,0,0.6)]">
+            <div className="p-8 lg:p-10 rounded-[40px] bg-white dark:bg-[#0a0a20] border border-slate-200 dark:border-white/10 relative shadow-2xl shadow-slate-200/50 dark:shadow-[0_0_100px_rgba(59,130,246,0.25),0_0_200px_rgba(59,130,246,0.1)] transition-all duration-1000">
               <div className="space-y-6 mb-10">
                 <div className="flex items-center gap-3">
                   <Lock className="text-blue-600 dark:text-blue-500" size={20} />
@@ -430,17 +430,17 @@ function CheckoutContent() {
                     size={18}
                     className="text-gray-600 shrink-0 mt-1"
                   />
-                  <p className="text-[10px] font-bold text-gray-600 leading-relaxed uppercase tracking-wider">
-                    By clicking pay, you agree to EduNova&apos;s Terms of
-                    Service and refund policy.
+                  <p className="text-[10px] font-black text-gray-700 leading-relaxed uppercase tracking-wider">
+                    BY CLICKING PAY, YOU AGREE TO EDUNOVA&apos;S TERMS OF
+                    SERVICE AND REFUND POLICY.
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="text-center">
-              <p className="text-[10px] font-black text-gray-700 uppercase tracking-[0.3em]">
-                EduNova Security Level V.2.0
+              <p className="text-[10px] font-black text-gray-800 dark:text-gray-400 uppercase tracking-[0.6em] font-serif">
+                EDUNOVA SECURITY LEVEL V.2.0
               </p>
             </div>
           </div>

@@ -335,7 +335,7 @@ export default function HeroSection() {
             className="font-black tracking-tight mb-8 leading-[1.4] md:leading-loose"
             style={{ color: "var(--foreground)" }}
           >
-            <span className="mb-6 inline-block font-serif text-[36px] md:text-7xl lg:text-7xl">
+            <span className="md:mb-6 inline-block font-serif text-[36px] md:text-7xl lg:text-7xl">
               Step Into the Future of
             </span>
             <div className="md:h-[6.4em] overflow-hidden flex items-center justify-center">

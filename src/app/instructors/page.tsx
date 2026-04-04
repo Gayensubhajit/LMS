@@ -212,12 +212,12 @@ export default function InstructorsPage() {
             ].map(({ value, label }) => (
               <div
                 key={label}
-                className="lumen-stat-card rounded-2xl p-6 flex flex-col items-center justify-center bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 transition-colors duration-700"
+                className="lumen-stat-card rounded-2xl py-4 px-6 flex flex-col items-center justify-center bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 transition-colors duration-700"
               >
-                <p className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
+                <p className="text-2xl font-bold text-slate-900 dark:text-white mb-1">
                   {value}
                 </p>
-                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
                   {label}
                 </p>
               </div>

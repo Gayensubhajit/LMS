@@ -16,7 +16,7 @@ import {
 import Link from "next/link";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { backendRequest } from "@/lib/backend-client";
-import { formatLocalPrice } from "@/lib/utils/currency";
+import { formatLocalPrice, formatINR, formatDisplayPrice } from "@/lib/utils/currency";
 import { toast } from "sonner";
 import { coursesData } from "@/lib/courses-data";
 
@@ -31,10 +31,10 @@ const SUBSCRIPTION_PLANS: Record<string, { title: string, description: string, p
   "plus": {
     title: "EduNova Plus",
     description: "Unlimited access to 7,000+ courses, AI paths, and dedicated mentorship.",
-    price: 2499,
+    price: 2099,
     period: "Monthly",
     category: "Individual Plan",
-    badge: "14-Day Free Trial",
+    badge: "7-Day Free Trial",
     emoji: "🚀"
   },
   "annual": {
@@ -132,11 +132,15 @@ function CheckoutContent() {
       return course.price.oneMonth;
     }
     if (subscription) {
-      // If it's a trial, the display price for "Today" is ₹1
       if (isTrialPlan) return 1;
       return subscription.price;
     }
     return 0;
+  };
+
+  const formatPriceForDisplay = (price: number) => {
+    if (subscription) return formatINR(price);
+    return formatLocalPrice(price);
   };
 
   const getDurationLabel = () => {
@@ -154,23 +158,20 @@ function CheckoutContent() {
 
   const handleRazorpayPayment = async () => {
     if (!userId || (!course && !subscription)) {
-      console.error("Payment failed: Missing state");
+      console.error("Payment failed: Missing state", { userId, course, subscription });
       toast.error("Information is missing. Please refresh.");
       return;
     }
 
     setProcessing(true);
 
-    // DETERMINING THE TARGET (Course or Plus Membership)
     const targetSlug = course ? course.slug : "plus-membership";
     const targetTitle = course ? course.title : subscription.title;
-    const targetPlan = plan || "1month";
+    const targetPlan = plan || (subscription ? plan : "1month") || "plus";
 
-    console.log(`💳 Initializing enrollment for: ${targetTitle} (Target: ${targetSlug}, Plan: ${targetPlan})`);
+    console.log(`💳 Initializing enrollment for: ${targetTitle} (Target: ${targetSlug}, Plan: ${targetPlan}, isTrial: ${isTrialPlan})`);
 
     try {
-      // 1. Create/Check Enrollment
-      console.log("Step 1: Creating/Checking Enrollment...");
       const enrollRes = await backendRequest<{
         ok: boolean;
         item: { id: string, status: string };
@@ -181,24 +182,15 @@ function CheckoutContent() {
       });
 
       if (!enrollRes.ok) {
-        throw new Error(
-          "Failed to initialize enrollment records on the server.",
-        );
+        throw new Error("Failed to initialize enrollment records on the server.");
       }
 
-      // 2. ONE-CLICK BYPASS FOR MEMBERS
-      // If status is already ACTIVE (meaning membership was detected by backend), we skip payment!
       if (enrollRes.item.status === "ACTIVE" && targetSlug !== "plus-membership") {
-        console.log("✅ Membership detected. Bypassing payment for one-click enrollment.");
         toast.success(`Welcome back! You have instant access to ${targetTitle} via your Plus Membership.`);
-        setTimeout(() => {
-          router.push(`/checkout/success?slug=${course.slug}`);
-        }, 1500);
+        setTimeout(() => router.push(`/checkout/success?slug=${course.slug}`), 1500);
         return;
       }
 
-      // 3. Create Razorpay Order (for non-members or new membership purchase)
-      console.log("Step 2: Creating Razorpay Order via Backend...");
       const orderRes = await backendRequest<{
         ok: boolean;
         item: {
@@ -212,26 +204,16 @@ function CheckoutContent() {
         body: { 
           enrollmentId: enrollRes.item.id, 
           provider: "razorpay",
-          isTrial: isTrialPlan 
+          isTrial: !!isTrialPlan 
         },
         clerkUserId: userId,
       });
 
-      if (!orderRes.ok) {
-        throw new Error("The payment server rejected the order creation.");
-      }
+      if (!orderRes.ok) throw new Error("The payment server rejected the order creation.");
 
       const { orderId, amount, keyId, currency } = orderRes.item;
-      console.log("Order generated successfully:", orderId, "Amount:", amount);
+      if (!window.Razorpay) throw new Error("Razorpay SDK failed to load.");
 
-      // 4. Trigger Razorpay Modal
-      if (!window.Razorpay) {
-        throw new Error(
-          "Razorpay SDK failed to load. Please check your internet connection.",
-        );
-      }
-
-      console.log("Step 3: Opening Razorpay Checkout Modal...");
       const options = {
         key: keyId,
         amount: amount,
@@ -243,24 +225,16 @@ function CheckoutContent() {
         image: "https://cdn-icons-png.flaticon.com/512/3413/3413535.png",
         order_id: orderId,
         handler: function (response: any) {
-          console.log("✅ Payment authorized by Razorpay:", response.razorpay_payment_id);
           toast.success("Payment successful! Redirecting...");
-          setTimeout(() => {
-            router.push(course ? `/checkout/success?slug=${course.slug}` : "/dashboard");
-          }, 1500);
+          setTimeout(() => router.push(course ? `/checkout/success?slug=${course.slug}` : "/dashboard"), 1500);
         },
         prefill: {
           name: user?.fullName || "",
           email: user?.primaryEmailAddress?.emailAddress || "",
         },
-        theme: {
-          color: "#0056D2",
-        },
+        theme: { color: "#0056D2" },
         modal: {
-          ondismiss: function () {
-            console.warn("Payment modal dismissed by user.");
-            setProcessing(false);
-          },
+          ondismiss: () => setProcessing(false),
           escape: true,
           backdropclose: false,
         },
@@ -270,10 +244,7 @@ function CheckoutContent() {
       rzp1.open();
     } catch (err: any) {
       console.error("❌ Checkout Error:", err);
-      toast.error(
-        err.message ||
-          "Something went wrong during checkout. Check console for details.",
-      );
+      toast.error(err.message || "Something went wrong during checkout.");
       setProcessing(false);
     }
   };
@@ -351,42 +322,48 @@ function CheckoutContent() {
               <div className="h-px bg-white/5 my-10" />
 
               <div className="space-y-6">
-                <div className="flex justify-between items-center text-sm font-bold">
-                  <span className="text-slate-500 dark:text-gray-400">
-                    {getDurationLabel()} Plan
-                  </span>
-                  <span className="text-slate-900 dark:text-white">
-                    {isTrialPlan ? "14-Day Free Trial" : formatLocalPrice(finalPrice)}
-                  </span>
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-slate-800 dark:text-white mb-2">No commitment. Cancel anytime.</p>
+                  <div className="flex justify-between items-center text-sm font-bold">
+                    <span className="text-slate-900 dark:text-white">
+                      {subscription ? "Monthly subscription" : `${getDurationLabel()} Plan`}
+                    </span>
+                    <span className="text-slate-900 dark:text-white">
+                      {isTrialPlan ? "7-Day Free Trial" : formatPriceForDisplay(finalPrice)}
+                    </span>
+                  </div>
+                  {isTrialPlan && (
+                    <div className="flex justify-end">
+                      <span className="text-[11px] text-slate-500 font-medium">then ₹{subscription.price.toLocaleString("en-IN")}/mo</span>
+                    </div>
+                  )}
                 </div>
                 
                 {isTrialPlan && (
-                  <div className="flex justify-between items-center text-sm font-bold">
-                    <span className="text-slate-500 dark:text-gray-400">Temporary Charge</span>
-                    <span className="text-slate-900 dark:text-white">₹1</span>
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-center text-sm font-bold">
+                      <span className="text-slate-900 dark:text-white font-medium">Temporary charge</span>
+                      <span className="text-slate-900 dark:text-white font-black">₹1</span>
+                    </div>
+                    <p className="text-[10px] text-slate-500 font-medium">Authorization hold will be refunded within 48 hours</p>
                   </div>
                 )}
 
-                <div className="flex justify-between items-center text-sm font-bold">
-                  <span className="text-slate-500 dark:text-gray-400">Processing Fee</span>
-                  <span className="text-emerald-600 dark:text-emerald-500">₹0.00 (Waived)</span>
-                </div>
+                {!isTrialPlan && (
+                  <div className="flex justify-between items-center text-sm font-bold">
+                    <span className="text-slate-500 dark:text-gray-400">Processing Fee</span>
+                    <span className="text-emerald-600 dark:text-emerald-500">₹0.00 (Waived)</span>
+                  </div>
+                )}
 
                 <div className="h-px bg-slate-100 dark:bg-white/10 mt-8" />
                 
-                <div className="flex justify-between items-end">
-                  <div className="space-y-1">
-                    <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest block">
-                      Today&apos;s Total
-                    </span>
-                    {isTrialPlan && (
-                      <span className="text-[9px] font-bold text-slate-400 uppercase">
-                        Then ₹{subscription.price.toLocaleString("en-IN")}/mo starting {dateString}
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-3xl font-black text-blue-600 dark:text-blue-500 tracking-tight">
-                    {isTrialPlan ? "₹1" : formatLocalPrice(finalPrice)}
+                <div className="flex justify-between items-center">
+                  <span className="text-sm font-black text-slate-900 dark:text-white">
+                    Today&apos;s Total:
+                  </span>
+                  <span className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                    {isTrialPlan ? "₹1" : formatPriceForDisplay(finalPrice)}
                   </span>
                 </div>
               </div>
@@ -434,7 +411,7 @@ function CheckoutContent() {
                   ) : (
                     <CreditCard size={18} />
                   )}
-                  {processing ? "Processing Order..." : "Pay Now"}
+                  {processing ? "Processing Order..." : isTrialPlan ? "Authorize & Start Trial" : "Pay Now"}
                 </button>
                 <div className="flex items-center justify-center gap-6 pt-4 opacity-70 dark:opacity-40 grayscale group-hover:grayscale-0 transition-all">
                   <span className="text-[10px] font-black text-slate-400 dark:text-white">UPI</span>

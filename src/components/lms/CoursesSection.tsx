@@ -123,7 +123,7 @@ export default function CoursesSection() {
     activeCategory === "All"
       ? courses
       : courses.filter((c) => c.category === activeCategory)
-  ).slice(0, 4);
+  ).filter(c => !c.isHidden).slice(0, 4);
 
   return (
     <section className="relative py-28 overflow-hidden bg-white dark:bg-[#030712]" id="courses">

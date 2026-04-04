@@ -134,6 +134,7 @@ function CoursesContent() {
     const q = debouncedQuery.toLowerCase();
     return courses
       .filter((c) => {
+        if (c.isHidden) return false;
         const matchesFree = category === "Free" ? c.isFree : true;
         const matchesCat =
           category === "All" || category === "Free" || c.category === category;

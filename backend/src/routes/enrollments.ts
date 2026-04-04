@@ -19,23 +19,26 @@ function addMonths(date: Date, months: number) {
 
 function planToEnumAndMonths(plan: string | undefined, isFree: boolean) {
   if (isFree) {
-    return { planEnum: PlanDuration.ONE_MONTH, months: 12 }; // Free courses get 1 year for now
+    return { planEnum: PlanDuration.ONE_MONTH, months: 12 };
   }
+  if (plan === "plus" || plan === "teams" || plan === "teams-pro") return { planEnum: PlanDuration.ONE_MONTH, months: 1 };
   if (plan === "3month") return { planEnum: PlanDuration.THREE_MONTH, months: 3 };
-  if (plan === "6month") return { planEnum: PlanDuration.SIX_MONTH, months: 6 };
-  if (plan === "annual") return { planEnum: PlanDuration.SIX_MONTH, months: 12 }; // Annual as 12 mo
+  if (plan === "6month" || plan === "annual") return { planEnum: PlanDuration.SIX_MONTH, months: (plan === "annual" ? 12 : 6) };
   return { planEnum: PlanDuration.ONE_MONTH, months: 1 };
 }
 
-function getAmountForPlan(plan: string | undefined, isFree: boolean, prices: {
-  oneMonthPrice: number;
-  threeMonthPrice: number;
-  sixMonthPrice: number;
-}) {
+function getAmountForPlan(plan: string | undefined, isFree: boolean, prices: any) {
   if (isFree) return 0;
+  
+  // Specific Subscription Tier logic (converted to USD for backend calculation)
+  // These USD values will be multiplied by 94 in payments.ts to get the exact INR
+  if (plan === "plus") return 22.33;       // ₹2,099 / 94
+  if (plan === "annual") return 212.75;    // ₹19,999 / 94
+  if (plan === "teams") return 21.27;      // ₹1,999 / 94
+  if (plan === "teams-pro") return 15.95;  // ₹1,499 / 94
+
   if (plan === "3month") return prices.threeMonthPrice;
   if (plan === "6month") return prices.sixMonthPrice;
-  if (plan === "annual") return prices.sixMonthPrice * 2; // Rough annual mult
   return prices.oneMonthPrice;
 }
 
@@ -67,9 +70,9 @@ enrollmentsRouter.post("/", async (req, res) => {
         longDescription: "Unlimited access to all courses, roadmaps, and certifications.",
         category: "Development",
         instructorName: "EduNova Team",
-        oneMonthPrice: 29, // Default USD (will be converted/handled)
-        threeMonthPrice: 79,
-        sixMonthPrice: 139,
+        oneMonthPrice: 22.33, 
+        threeMonthPrice: 63.8,
+        sixMonthPrice: 106.37,
         isPublished: true
       }
     });

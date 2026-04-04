@@ -361,45 +361,43 @@ export default function Navbar() {
                           </div>
                         </div>
 
-                        {/* Recently Viewed / Handpicked */}
+                        {/* Recently Viewed */}
                         <div>
-                          <div className="flex items-center justify-between mb-5 px-1 font-black uppercase tracking-[0.2em] opacity-60">
-                             <h3 className="text-[11px] text-slate-900 dark:text-white">Recently viewed</h3>
+                          <div className="flex items-center justify-between mb-4 px-1 font-black uppercase tracking-[0.2em] opacity-40">
+                             <h3 className="text-[10px] text-slate-900 dark:text-white">Recently viewed</h3>
                              <button className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline">View All</button>
                           </div>
                           
-                          {/* Horizontal Scroll Container */}
-                          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide -mx-1 px-1">
-                            {coursesData.slice(0, 6).map((c) => (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pb-2">
+                            {coursesData.slice(0, 4).map((c) => (
                               <button 
                                 key={c.slug}
                                 onClick={() => handleResultClick(c.title)}
-                                className="flex flex-col text-left group shrink-0 w-72"
+                                className="flex items-center gap-4 p-2.5 rounded-2xl bg-slate-50/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-blue-500/30 hover:bg-white dark:hover:bg-white/10 transition-all text-left group overflow-hidden"
                               >
-                                <div className="aspect-video w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 mb-4 relative">
+                                <div className="w-20 h-14 rounded-xl overflow-hidden bg-slate-100 dark:bg-white/5 shrink-0 relative">
                                   {c.img ? (
                                     <img src={c.img} alt={c.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                   ) : (
-                                    <div className="absolute inset-0 flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-500">{c.emoji}</div>
+                                    <div className="absolute inset-0 flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-500">{c.emoji}</div>
                                   )}
-                                  <div className="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/10 transition-colors" />
                                 </div>
-                                <div className="flex items-center gap-2 mb-2 px-1">
-                                   <div className="w-5 h-5 rounded flex items-center justify-center bg-blue-600 text-[10px] text-white font-bold shrink-0">N</div>
-                                   <span className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest truncate">EduNova · {c.category}</span>
+                                <div className="flex-1 min-w-0 pr-2">
+                                  <div className="flex items-center gap-1.5 mb-1">
+                                     <div className="w-4 h-4 rounded-sm flex items-center justify-center bg-blue-600 text-[8px] text-white font-bold shrink-0">N</div>
+                                     <span className="text-[9px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest truncate">EduNova · {c.category}</span>
+                                  </div>
+                                  <h4 className="text-[13px] font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 leading-tight mb-1">{c.title}</h4>
+                                  <p className="text-[9px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest truncate">{c.level} · Professional Certificate</p>
                                 </div>
-                                <h4 className="text-[15px] font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-tight mb-4 px-1">{c.title}</h4>
-                                <div className="mt-auto px-1">
-                                  <p className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest leading-relaxed">
-                                    {c.level} · Professional Certificate
-                                  </p>
-                                </div>
+                                <ChevronRight size={14} className="text-slate-300 dark:text-gray-700 mr-1 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1" />
                               </button>
                             ))}
                           </div>
                         </div>
                       </div>
                     ) : (
+
 
                       <div className="space-y-6">
                          <div className="flex items-center justify-between px-1">

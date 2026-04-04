@@ -15,10 +15,13 @@ import {
   Fingerprint,
 } from "lucide-react";
 import { useUser } from "@clerk/nextjs";
+import { useTheme } from "next-themes";
 
 export default function PioneerPassport() {
   const { user } = useUser();
   const [isFlipped, setIsFlipped] = useState(false);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   const handleFlip = () => setIsFlipped(!isFlipped);
 
@@ -71,7 +74,7 @@ export default function PioneerPassport() {
             <div className="absolute inset-0 bg-linear-to-br from-blue-600/10 dark:from-violet-600/20 via-transparent to-indigo-600/10 dark:to-sky-600/20 opacity-50 dark:opacity-50" />
 
             {/* Passport Header */}
-            <div className="relative p-6 border-b border-slate-100 dark:border-white/5 flex items-center justify-between flex-col md:flex-row gap-3 md:gap-0">
+            <div className="relative p-6 border-b border-slate-100 dark:border-white/5 flex items-center justify-between flex-col gap-3">
               <div className="flex items-center gap-2">
                 <Shield
                   className="text-blue-600 dark:text-violet-400"
@@ -195,7 +198,7 @@ export default function PioneerPassport() {
                     </div>
                     <div className="h-1 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
                       <motion.div
-                        className={`h-full bg-gradient-to-r from-white/20 to-${skill.color.split("-")[1]}-500`}
+                        className={`h-full bg-linear-to-r from-white/20 to-${skill.color.split("-")[1]}-500`}
                         initial={{ width: 0 }}
                         animate={{ width: isFlipped ? `${skill.level}%` : 0 }}
                         transition={{ duration: 1, delay: i * 0.1 + 0.5 }}
@@ -213,10 +216,13 @@ export default function PioneerPassport() {
                   {badges.map((badge, i) => (
                     <div key={i} className="group/badge relative">
                       <div
-                        className={`w-12 h-12 rounded-xl bg-gradient-to-br ${badge.color} p-[1px] transform rotate-12 group-hover/badge:rotate-0 transition-transform duration-300 shadow-md dark:shadow-none`}
+                        className={`w-12 h-12 rounded-xl bg-linear-to-br ${badge.color} p-[1px] transform rotate-12 group-hover/badge:rotate-0 transition-transform duration-300 shadow-md dark:shadow-none`}
                       >
                         <div className="w-full h-full rounded-xl bg-white dark:bg-slate-950 flex items-center justify-center">
-                          <badge.icon size={20} className="text-white" />
+                          <badge.icon
+                            size={20}
+                            className="text-slate-700/70 dark:text-white/70"
+                          />
                         </div>
                       </div>
                     </div>
@@ -230,7 +236,7 @@ export default function PioneerPassport() {
                     {[1, 2, 3, 4, 5, 6, 7].map((j) => (
                       <div
                         key={j}
-                        className="w-1.5 h-1.5 rounded-full bg-white/10"
+                        className="w-1.5 h-1.5 rounded-full bg-slate-500/25 dark:bg-white/20"
                       />
                     ))}
                   </div>

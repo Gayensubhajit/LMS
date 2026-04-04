@@ -171,7 +171,7 @@ export default function AccomplishmentsPage() {
           </div>
         </motion.div>
         {/* Certificates Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div className="flex flex-row items-center md:justify-between gap-4 mb-8">
           <h3 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3 uppercase tracking-tight">
             <Award className="w-6 h-6 text-blue-500 dark:text-amber-400 shrink-0" />
             Credentials

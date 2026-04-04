@@ -182,14 +182,14 @@ export default function InstructorsPage() {
         <div className="max-w-5xl mx-auto px-6">
           {/* ── Hero ── */}
           <div className="text-center mb-14">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest mb-5 bg-blue-600/10 text-blue-600 border border-blue-600/20 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20 transition-colors">
-              <Star size={11} className="fill-current" /> World-Class
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold tracking-wide mb-5 bg-blue-600/10 text-blue-600 border border-blue-600/20 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20 transition-colors">
+              <Star size={14} className="fill-current" /> World-Class
               Instructors
             </div>
-            <h1 className="font-serif text-4xl md:text-6xl font-black text-slate-900 dark:text-white leading-tight mb-4">
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight mb-4">
               Learn From{" "}
               <span
-                className={`${montserrat.className} inline-block bg-gradient-to-br from-blue-700 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 bg-clip-text text-transparent`}
+                className="inline-block text-blue-600 dark:text-blue-400"
               >
                 The Best
               </span>
@@ -212,12 +212,12 @@ export default function InstructorsPage() {
             ].map(({ value, label }) => (
               <div
                 key={label}
-                className="lumen-stat-card rounded-3xl p-6 text-center bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none transition-colors duration-700"
+                className="lumen-stat-card rounded-2xl p-6 flex flex-col items-center justify-center bg-white dark:bg-[#111827] border border-slate-200 dark:border-slate-800 transition-colors duration-700"
               >
-                <p className="text-3xl font-black mb-1 bg-linear-to-br from-blue-700 to-indigo-600 dark:from-blue-400 dark:to-indigo-500 bg-clip-text text-transparent">
+                <p className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
                   {value}
                 </p>
-                <p className="text-slate-500 dark:text-gray-500 text-[10px] font-black uppercase tracking-widest">
+                <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                   {label}
                 </p>
               </div>
@@ -368,7 +368,7 @@ export default function InstructorsPage() {
               </p>
               <button
                 onClick={() => setQuery("")}
-                className="mt-4 text-blue-600 dark:text-blue-400 font-black text-xs uppercase tracking-widest hover:text-blue-500 dark:hover:text-blue-300 transition-colors"
+                className="mt-4 text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
               >
                 Clear search
               </button>
@@ -376,8 +376,8 @@ export default function InstructorsPage() {
           )}
 
           {/* ── CTA banner ── */}
-          <div className="lumen-cta-banner mt-24 rounded-[3rem] p-12 text-center bg-slate-50 dark:bg-[#111827] border border-slate-200 dark:border-slate-800 shadow-xl shadow-slate-200/50 dark:shadow-none transition-colors duration-700">
-            <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-3">
+          <div className="lumen-cta-banner mt-24 rounded-3xl p-12 text-center bg-slate-50 dark:bg-[#111827] border border-slate-200 dark:border-slate-800 transition-colors duration-700">
+            <h3 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-3">
               Become an Instructor
             </h3>
             <p className="text-slate-500 dark:text-gray-400 text-sm max-w-lg mx-auto mb-7">
@@ -386,7 +386,7 @@ export default function InstructorsPage() {
             </p>
             <Link
               href="/auth/sign-up"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl text-white font-black text-[10px] uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-[0_0_30px_rgba(37,99,235,0.4)] bg-gradient-to-r from-blue-600 to-indigo-600"
+              className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl text-white text-sm font-semibold transition-all hover:opacity-90 active:scale-95 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500"
             >
               Apply to Teach <ArrowRight size={15} />
             </Link>

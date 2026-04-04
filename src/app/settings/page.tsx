@@ -173,7 +173,10 @@ export default function SettingsPage() {
                 >
                   <div className="flex justify-between items-end mb-2">
                     <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase italic text-slate-900 dark:text-white/90">
-                      Account <span className="text-blue-600 dark:text-violet-500">Settings</span>
+                      Account{" "}
+                      <span className="text-blue-600 dark:text-violet-500">
+                        Settings
+                      </span>
                     </h1>
                     {success && (
                       <motion.div
@@ -189,9 +192,9 @@ export default function SettingsPage() {
 
                   {/* Profile Card */}
                   <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-8 md:p-12 backdrop-blur-3xl relative overflow-hidden group shadow-sm dark:shadow-none">
-                    <div className="absolute inset-0 bg-gradient-to-br from-violet-600/5 via-transparent to-transparent pointer-events-none" />
+                    <div className="absolute inset-0 bg-linear-to-br from-violet-600/5 via-transparent to-transparent pointer-events-none" />
 
-                    <div className="relative z-10 flex flex-col md:flex-row gap-10 items-start">
+                    <div className="relative z-10 flex flex-col md:flex-row gap-10 items-center md:items-start">
                       {/* Avatar Section */}
                       <div className="flex flex-col items-center gap-4">
                         <div className="w-32 h-32 rounded-full border-4 border-violet-500/20 p-1 relative">
@@ -364,7 +367,10 @@ export default function SettingsPage() {
                   className="space-y-8"
                 >
                   <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase italic text-slate-900 dark:text-white/90">
-                    Security <span className="text-blue-600 dark:text-violet-500">Vault</span>
+                    Security{" "}
+                    <span className="text-blue-600 dark:text-violet-500">
+                      Vault
+                    </span>
                   </h1>
 
                   <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-10 backdrop-blur-xl shadow-sm dark:shadow-none">
@@ -431,7 +437,10 @@ export default function SettingsPage() {
                   className="space-y-8"
                 >
                   <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase italic text-slate-900 dark:text-white/90">
-                    Signal <span className="text-blue-600 dark:text-violet-500">Filters</span>
+                    Signal{" "}
+                    <span className="text-blue-600 dark:text-violet-500">
+                      Filters
+                    </span>
                   </h1>
 
                   <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-[2.5rem] p-10 backdrop-blur-xl shadow-sm dark:shadow-none">
@@ -474,7 +483,10 @@ export default function SettingsPage() {
                   className="space-y-8"
                 >
                   <h1 className="text-3xl md:text-4xl font-black tracking-tighter uppercase italic text-slate-900 dark:text-white/90">
-                    Acquisition <span className="text-blue-600 dark:text-violet-500">Logs</span>
+                    Acquisition{" "}
+                    <span className="text-blue-600 dark:text-violet-500">
+                      Logs
+                    </span>
                   </h1>
 
                   <div className="bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-white/5 border-dashed rounded-[3rem] p-20 text-center space-y-6 shadow-sm dark:shadow-none">

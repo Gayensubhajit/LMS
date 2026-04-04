@@ -346,7 +346,7 @@ export default function HeroSection() {
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -60, opacity: 0 }}
                   transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
-                  className={`${syne.className} block text-4xl md:text-6xl -mt-5 md:mt-0 text-transparent bg-clip-text  ${
+                  className={`${syne.className} block text-4xl md:text-7xl -mt-5 md:mt-0 text-transparent bg-clip-text  ${
                     isDark
                       ? "bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500"
                       : "bg-linear-to-r from-cyan-700 via-blue-500 to-indigo-600"

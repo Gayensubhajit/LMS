@@ -7,14 +7,18 @@ import { Montserrat } from "next/font/google";
 const montserrat = Montserrat({ subsets: ["latin"] });
 
 const trustedLogos = [
-  { href: "/marquee_images/colored/ibm.svg" },
-  { href: "/marquee_images/colored/logitech.svg" },
-  { href: "/marquee_images/colored/netflix.svg" },
-  { href: "/marquee_images/colored/spotify.svg" },
-  { href: "/marquee_images/colored/tmobile.svg" },
-  { href: "/marquee_images/colored/tibco.svg" },
-  { href: "/marquee_images/colored/booking.svg" },
-  { href: "/marquee_images/colored/fortinet.svg" },
+  { href: "/marquee_images/colored/docker-ar21.svg" },
+  { href: "/marquee_images/colored/dropbox-ar21.svg" },
+  { href: "/marquee_images/colored/ebay-ar21.svg" },
+  { href: "/marquee_images/colored/gitlab-ar21.svg" },
+  { href: "/marquee_images/colored/google-ar21.svg" },
+  { href: "/marquee_images/colored/ibm-ar21.svg" },
+  { href: "/marquee_images/colored/microsoft-ar21.svg" },
+  { href: "/marquee_images/colored/netflix-ar21.svg" },
+  { href: "/marquee_images/colored/paypal-ar21.svg" },
+  { href: "/marquee_images/colored/salesforce-ar21.svg" },
+  { href: "/marquee_images/colored/spotify-ar21.svg" },
+  { href: "/marquee_images/colored/stripe-ar21.svg" },
 ];
 
 export default function TrustedBySectionPremium() {
@@ -38,19 +42,18 @@ export default function TrustedBySectionPremium() {
 
           <div className="overflow-x-clip">
             <motion.div
-              className="flex items-center gap-16 whitespace-nowrap shrink-0"
+              className="flex items-center gap-14 whitespace-nowrap shrink-0"
               style={{ width: "max-content" }}
               animate={{ x: ["0%", "-100%"] }}
-              transition={{ repeat: Infinity, duration: 300, ease: "linear" }}
+              transition={{ repeat: Infinity, duration: 150, ease: "linear" }}
             >
               {marqueeItems.map((items, idx) => (
-                <Image
+                <img
                   key={idx}
                   src={items.href}
                   alt={`Marquee_Logo_Image_${idx}`}
-                  width={200}
-                  height={200}
-                  className="object-contain transition-all hover:scale-105"
+                  style={{ width: 150, height: 60 }}
+                  className="object-contain opacity-70 hover:opacity-100 transition-opacity"
                 />
               ))}
             </motion.div>

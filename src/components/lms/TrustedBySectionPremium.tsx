@@ -64,7 +64,7 @@ export default function TrustedBySectionPremium() {
                   alt={`Marquee_Logo_Image_${idx}`}
                   width={200}
                   height={200}
-                  className="object-contain transition-all hover:scale-105"
+                  className="opacity-40 dark:opacity-80 object-contain brightness-0 dark:brightness-100 transition-opacity hover:opacity-100"
                 />
               ))}
             </motion.div>

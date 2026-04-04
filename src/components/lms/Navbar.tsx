@@ -363,18 +363,20 @@ export default function Navbar() {
 
                         {/* Recently Viewed / Handpicked */}
                         <div>
-                          <div className="flex items-center justify-between mb-5 px-1">
-                             <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest opacity-60">Recently viewed</h3>
-                             <button className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest hover:underline">View All</button>
+                          <div className="flex items-center justify-between mb-5 px-1 font-black uppercase tracking-[0.2em] opacity-60">
+                             <h3 className="text-[11px] text-slate-900 dark:text-white">Recently viewed</h3>
+                             <button className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline">View All</button>
                           </div>
-                          <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-                            {coursesData.slice(0, 4).map((c) => (
+                          
+                          {/* Horizontal Scroll Container */}
+                          <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide -mx-1 px-1">
+                            {coursesData.slice(0, 6).map((c) => (
                               <button 
                                 key={c.slug}
                                 onClick={() => handleResultClick(c.title)}
-                                className="flex flex-col text-left group"
+                                className="flex flex-col text-left group shrink-0 w-72"
                               >
-                                <div className="aspect-video rounded-2xl overflow-hidden bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 mb-3 relative">
+                                <div className="aspect-video w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 mb-4 relative">
                                   {c.img ? (
                                     <img src={c.img} alt={c.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                                   ) : (
@@ -382,18 +384,23 @@ export default function Navbar() {
                                   )}
                                   <div className="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/10 transition-colors" />
                                 </div>
-                                <div className="flex items-center gap-2 mb-2">
-                                   <div className="w-5 h-5 rounded flex items-center justify-center bg-blue-600 text-[10px] text-white font-bold">N</div>
+                                <div className="flex items-center gap-2 mb-2 px-1">
+                                   <div className="w-5 h-5 rounded flex items-center justify-center bg-blue-600 text-[10px] text-white font-bold shrink-0">N</div>
                                    <span className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest truncate">EduNova · {c.category}</span>
                                 </div>
-                                <h4 className="text-sm font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug mb-3">{c.title}</h4>
-                                <p className="mt-auto text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest">{c.level} · Professional Certificate</p>
+                                <h4 className="text-[15px] font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-tight mb-4 px-1">{c.title}</h4>
+                                <div className="mt-auto px-1">
+                                  <p className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest leading-relaxed">
+                                    {c.level} · Professional Certificate
+                                  </p>
+                                </div>
                               </button>
                             ))}
                           </div>
                         </div>
                       </div>
                     ) : (
+
                       <div className="space-y-6">
                          <div className="flex items-center justify-between px-1">
                             <h3 className="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">Search Results ({results.length})</h3>

@@ -417,6 +417,25 @@ export const coursesData: Course[] = [
     skills: ["Strategy", "Roadmapping", "Agile", "Stakeholder Mgmt"],
     price: { oneMonth: 39, threeMonth: 99, sixMonth: 179 },
   },
+  // ── VIRTUAL COURSES (FOR SUBSCRIPTIONS) ───────────────────────────────────
+  {
+    slug: "plus-membership",
+    title: "EduNova Plus Membership",
+    category: "Development",
+    instructor: "EduNova Team",
+    duration: "Unlimited",
+    lessons: 7000,
+    students: "50K+",
+    rating: 5.0,
+    level: "All Levels",
+    emoji: "🚀",
+    img: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800&auto=format&fit=crop",
+    previewVideoUrl: "",
+    shortDescription: "Unlimited access to 7,000+ courses, AI paths, and dedicated mentorship.",
+    longDescription: "Your all-access pass to the entire EduNova catalog. Learn anything, anytime, with our most premium features enabled.",
+    skills: ["All Skills", "Career Paths", "Certifications"],
+    price: { oneMonth: 29, threeMonth: 79, sixMonth: 139 },
+  },
 ];
 
 export function getCourseBySlug(slug: string) {

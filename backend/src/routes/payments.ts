@@ -14,7 +14,8 @@ export const paymentsRouter = Router();
 const createOrderSchema = z.object({
   enrollmentId: z.string().min(1),
   provider: z.enum(["razorpay", "stripe"]),
-  currency: z.string().default("INR")
+  currency: z.string().default("INR"),
+  isTrial: z.boolean().optional()
 });
 
 function getRazorpayClient() {
@@ -42,7 +43,7 @@ paymentsRouter.post("/create-order", async (req, res) => {
     });
   }
 
-  const { enrollmentId, provider, currency } = parsed.data;
+  const { enrollmentId, provider, currency, isTrial } = parsed.data;
 
   const enrollment = await prisma.enrollment.findFirst({
     where: {
@@ -72,6 +73,11 @@ paymentsRouter.post("/create-order", async (req, res) => {
       // Automatic conversion for INR-only provider
       amountInMinor = Math.round(enrollment.amountPaid * USD_TO_INR_RATE * 100);
 
+      // SPECIAL CASE: Free Trial Authorization
+      if (isTrial) {
+        amountInMinor = 100; // Charge exactly ₹1 for trial validation
+      }
+
       const razorpay = getRazorpayClient();
       if (!razorpay) {
         return res.status(500).json({
@@ -90,6 +96,8 @@ paymentsRouter.post("/create-order", async (req, res) => {
         }
       });
 
+      const actualAmountToSave = isTrial ? 1 : enrollment.amountPaid;
+
       await prisma.paymentOrder.upsert({
         where: { enrollmentId: enrollment.id },
         create: {
@@ -97,7 +105,7 @@ paymentsRouter.post("/create-order", async (req, res) => {
           provider: "razorpay",
           providerOrderId: order.id,
           status: PaymentStatus.CREATED,
-          amount: enrollment.amountPaid,
+          amount: actualAmountToSave,
           currency,
           metadata: order as unknown as object
         },
@@ -105,7 +113,7 @@ paymentsRouter.post("/create-order", async (req, res) => {
           provider: "razorpay",
           providerOrderId: order.id,
           status: PaymentStatus.CREATED,
-          amount: enrollment.amountPaid,
+          amount: actualAmountToSave,
           currency,
           metadata: order as unknown as object
         }

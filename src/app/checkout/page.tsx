@@ -80,6 +80,8 @@ function CheckoutContent() {
   const [course, setCourse] = useState<any>(null);
   const [subscription, setSubscription] = useState<any>(null);
 
+  const [isMember, setIsMember] = useState(false);
+
   useEffect(() => {
     if (slug) {
       const found = coursesData.find((c) => c.slug === slug);
@@ -95,6 +97,22 @@ function CheckoutContent() {
       router.push("/courses");
       return;
     }
+
+    // CHECK FOR ACTIVE MEMBERSHIP
+    const checkMembership = async () => {
+      try {
+        const res = await backendRequest<{ ok: boolean, enrolled: boolean }>("/enrollments/check/plus-membership", {
+          clerkUserId: userId!,
+        });
+        if (res.ok && res.enrolled) {
+          setIsMember(true);
+        }
+      } catch (err) {
+        console.error("Failed to check membership:", err);
+      }
+    };
+    if (userId) checkMembership();
+
     setLoading(false);
 
     // Load Razorpay Script
@@ -102,7 +120,9 @@ function CheckoutContent() {
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
     script.async = true;
     document.body.appendChild(script);
-  }, [slug, plan, router]);
+  }, [slug, plan, router, userId]);
+
+  const isTrialPlan = subscription && (plan === "plus" || plan === "annual");
 
   const getPrice = () => {
     if (course) {
@@ -112,6 +132,8 @@ function CheckoutContent() {
       return course.price.oneMonth;
     }
     if (subscription) {
+      // If it's a trial, the display price for "Today" is ₹1
+      if (isTrialPlan) return 1;
       return subscription.price;
     }
     return 0;
@@ -139,28 +161,22 @@ function CheckoutContent() {
 
     setProcessing(true);
 
-    if (subscription) {
-      // MOCK SUBSCRIPTION CHECKOUT - As backend doesn't support Sub Plan enrollments yet
-      console.log("💳 Initializing mocked subscription payment:", subscription.title);
-      setTimeout(() => {
-        toast.success(`Successfully subscribed to ${subscription.title}!`);
-        router.push("/dashboard");
-      }, 2000);
-      return;
-    }
+    // DETERMINING THE TARGET (Course or Plus Membership)
+    const targetSlug = course ? course.slug : "plus-membership";
+    const targetTitle = course ? course.title : subscription.title;
+    const targetPlan = plan || "1month";
 
-    // ORIGINAL COURSE CHECKOUT LOGIC
-    console.log("💳 Initializing payment for:", course.title, "Plan:", plan);
+    console.log(`💳 Initializing enrollment for: ${targetTitle} (Target: ${targetSlug}, Plan: ${targetPlan})`);
 
     try {
-      // 1. Create/Check Enrollment (it will be PENDING)
+      // 1. Create/Check Enrollment
       console.log("Step 1: Creating/Checking Enrollment...");
       const enrollRes = await backendRequest<{
         ok: boolean;
-        item: { id: string };
+        item: { id: string, status: string };
       }>("/enrollments", {
         method: "POST",
-        body: { courseSlug: course.slug, plan },
+        body: { courseSlug: targetSlug, plan: targetPlan },
         clerkUserId: userId,
       });
 
@@ -169,9 +185,19 @@ function CheckoutContent() {
           "Failed to initialize enrollment records on the server.",
         );
       }
-      console.log("Enrollment initialized:", enrollRes.item.id);
 
-      // 2. Create Razorpay Order
+      // 2. ONE-CLICK BYPASS FOR MEMBERS
+      // If status is already ACTIVE (meaning membership was detected by backend), we skip payment!
+      if (enrollRes.item.status === "ACTIVE" && targetSlug !== "plus-membership") {
+        console.log("✅ Membership detected. Bypassing payment for one-click enrollment.");
+        toast.success(`Welcome back! You have instant access to ${targetTitle} via your Plus Membership.`);
+        setTimeout(() => {
+          router.push(`/checkout/success?slug=${course.slug}`);
+        }, 1500);
+        return;
+      }
+
+      // 3. Create Razorpay Order (for non-members or new membership purchase)
       console.log("Step 2: Creating Razorpay Order via Backend...");
       const orderRes = await backendRequest<{
         ok: boolean;
@@ -183,7 +209,11 @@ function CheckoutContent() {
         };
       }>("/payments/create-order", {
         method: "POST",
-        body: { enrollmentId: enrollRes.item.id, provider: "razorpay" },
+        body: { 
+          enrollmentId: enrollRes.item.id, 
+          provider: "razorpay",
+          isTrial: isTrialPlan 
+        },
         clerkUserId: userId,
       });
 
@@ -192,9 +222,9 @@ function CheckoutContent() {
       }
 
       const { orderId, amount, keyId, currency } = orderRes.item;
-      console.log("Order generated successfully:", orderId);
+      console.log("Order generated successfully:", orderId, "Amount:", amount);
 
-      // 3. Trigger Razorpay Modal
+      // 4. Trigger Razorpay Modal
       if (!window.Razorpay) {
         throw new Error(
           "Razorpay SDK failed to load. Please check your internet connection.",
@@ -207,14 +237,16 @@ function CheckoutContent() {
         amount: amount,
         currency: currency,
         name: "EduNova LMS",
-        description: `Enrollment for ${course.title} (${getDurationLabel()})`,
+        description: isTrialPlan 
+          ? `Authorization for ${subscription.title} (Trial)`
+          : `Payment for ${targetTitle} (${getDurationLabel()})`,
         image: "https://cdn-icons-png.flaticon.com/512/3413/3413535.png",
         order_id: orderId,
         handler: function (response: any) {
           console.log("✅ Payment authorized by Razorpay:", response.razorpay_payment_id);
           toast.success("Payment successful! Redirecting...");
           setTimeout(() => {
-            router.push(`/checkout/success?slug=${course.slug}`);
+            router.push(course ? `/checkout/success?slug=${course.slug}` : "/dashboard");
           }, 1500);
         },
         prefill: {
@@ -260,6 +292,9 @@ function CheckoutContent() {
   if (!course && !subscription) return null;
 
   const finalPrice = getPrice();
+  const futureChargeDate = new Date();
+  futureChargeDate.setDate(futureChargeDate.getDate() + 14);
+  const dateString = futureChargeDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
   return (
     <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#030712] relative overflow-hidden transition-colors duration-700">
@@ -321,20 +356,37 @@ function CheckoutContent() {
                     {getDurationLabel()} Plan
                   </span>
                   <span className="text-slate-900 dark:text-white">
-                    {formatLocalPrice(finalPrice)}
+                    {isTrialPlan ? "14-Day Free Trial" : formatLocalPrice(finalPrice)}
                   </span>
                 </div>
+                
+                {isTrialPlan && (
+                  <div className="flex justify-between items-center text-sm font-bold">
+                    <span className="text-slate-500 dark:text-gray-400">Temporary Charge</span>
+                    <span className="text-slate-900 dark:text-white">₹1</span>
+                  </div>
+                )}
+
                 <div className="flex justify-between items-center text-sm font-bold">
                   <span className="text-slate-500 dark:text-gray-400">Processing Fee</span>
                   <span className="text-emerald-600 dark:text-emerald-500">₹0.00 (Waived)</span>
                 </div>
+
                 <div className="h-px bg-slate-100 dark:bg-white/10 mt-8" />
+                
                 <div className="flex justify-between items-end">
-                  <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest">
-                    Total Amount
-                  </span>
+                  <div className="space-y-1">
+                    <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-widest block">
+                      Today&apos;s Total
+                    </span>
+                    {isTrialPlan && (
+                      <span className="text-[9px] font-bold text-slate-400 uppercase">
+                        Then ₹{subscription.price.toLocaleString("en-IN")}/mo starting {dateString}
+                      </span>
+                    )}
+                  </div>
                   <span className="text-3xl font-black text-blue-600 dark:text-blue-500 tracking-tight">
-                    {formatLocalPrice(finalPrice)}
+                    {isTrialPlan ? "₹1" : formatLocalPrice(finalPrice)}
                   </span>
                 </div>
               </div>

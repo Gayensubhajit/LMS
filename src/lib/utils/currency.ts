@@ -113,3 +113,23 @@ export function getMonthlyPrice(usdPrice: number, months: number): string {
   const monthlyLocal = convertToLocalCurrency(monthlyUsd);
   return formatPrice(monthlyLocal);
 }
+
+/**
+ * Force formatting as Indian Rupees (₹)
+ */
+export function formatINR(amount: number): string {
+  return `₹${amount.toLocaleString('en-IN')}`;
+}
+
+/**
+ * Smart formatter: if it's already a high number (like 2499 INR), 
+ * don't convert it as USD if we detect India.
+ */
+export function formatDisplayPrice(amount: number, isUSD: boolean = true): string {
+  if (!isUSD) {
+    const currency = getUserCurrency();
+    if (currency.code === 'INR') return formatINR(amount);
+    return formatPrice(amount);
+  }
+  return formatLocalPrice(amount);
+}

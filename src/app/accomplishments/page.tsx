@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -18,11 +17,9 @@ import {
   Zap,
 } from "lucide-react";
 import Navbar from "@/components/lms/Navbar";
-
 import { SignIn, useUser } from "@clerk/nextjs";
 import { backendRequest } from "@/lib/backend-client";
 import { dark } from "@clerk/ui/themes";
-
 interface Certificate {
   id: string;
   certificateId: string;
@@ -34,12 +31,10 @@ interface Certificate {
     category: string;
   };
 }
-
 interface Profile {
   isNameVerified: boolean;
   verifiedName: string;
 }
-
 export default function AccomplishmentsPage() {
   const { user, isLoaded, isSignedIn } = useUser();
   const [certificates, setCertificates] = useState<any[]>([]);
@@ -47,13 +42,11 @@ export default function AccomplishmentsPage() {
   const [loading, setLoading] = useState(true);
   const [isChangingName, setIsChangingName] = useState(false);
   const [newName, setNewName] = useState("");
-
   useEffect(() => {
     if (!isLoaded || !user?.id) {
       if (isLoaded && !user) setLoading(false);
       return;
     }
-
     async function fetchData() {
       try {
         const data = await backendRequest<{
@@ -63,7 +56,6 @@ export default function AccomplishmentsPage() {
         }>("/accomplishments", {
           clerkUserId: user?.id,
         });
-
         if (data.ok) {
           setCertificates(data.certificates);
           setProfile(data.profile);
@@ -74,13 +66,10 @@ export default function AccomplishmentsPage() {
         setLoading(false);
       }
     }
-
     fetchData();
   }, [isLoaded, user?.id]);
-
   const handleNameChange = async () => {
     if (!newName.trim() || !user?.id) return;
-
     try {
       const data = await backendRequest<{ ok: boolean; user: Profile }>(
         "/accomplishments/verify-name",
@@ -90,7 +79,6 @@ export default function AccomplishmentsPage() {
           body: { name: newName },
         },
       );
-
       if (data.ok) {
         setProfile(data.user);
         setIsChangingName(false);
@@ -100,14 +88,6 @@ export default function AccomplishmentsPage() {
       console.error("Failed to update name:", err);
     }
   };
-
-  if (!isLoaded || loading) {
-    return (
-      <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#020617] flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
-      </div>
-    );
-  }
   if (!isSignedIn) {
     return (
       <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#080a10] text-foreground flex items-center justify-center pt-20">
@@ -115,18 +95,23 @@ export default function AccomplishmentsPage() {
       </div>
     );
   }
-
+  if (!isLoaded || loading) {
+    return (
+      <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#020617] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
+      </div>
+    );
+  }
   return (
-    <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#020617] text-slate-900 dark:text-slate-200 selection:bg-violet-500/30">
+    <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#020617] text-slate-900 dark:text-slate-200 selection:bg-violet-500/30 overflow-x-hidden">
       <Navbar />
-
-      <main className="max-w-7xl mx-auto px-6 pt-32 pb-24">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-32 pb-24">
         {/* Header Section */}
         <div className="mb-12">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-blue-900 to-indigo-900 dark:from-white dark:via-slate-200 dark:to-slate-400 mb-4 uppercase tracking-tighter italic"
+            className="text-3xl md:text-6xl font-black bg-clip-text text-transparent bg-linear-to-r from-slate-900 via-blue-900 to-indigo-900 dark:from-white dark:via-slate-200 dark:to-slate-400 mb-4 uppercase tracking-tighter italic break-words w-full"
           >
             Accomplishments
           </motion.h1>
@@ -134,40 +119,40 @@ export default function AccomplishmentsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-slate-500 dark:text-slate-400 text-lg max-w-2xl font-medium"
+            className="text-slate-500 dark:text-slate-400 md:text-lg max-w-2xl font-medium whitespace-break-spaces"
           >
             Track your milestones, view earned credentials, and share your path
             to mastery with the world.
           </motion.p>
         </div>
-
         {/* Name Verification Card */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2 }}
-          className="relative group mb-16"
+          className="relative group mb-16 rounded-[2rem] overflow-hidden"
         >
           <div className="absolute -inset-1 bg-linear-to-r from-blue-500/20 to-indigo-500/20 dark:from-violet-500/10 dark:to-fuchsia-500/10 rounded-[2rem] blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
           <div className="relative bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl shadow-slate-200/50 dark:shadow-none transition-colors duration-700">
-            <div className="flex items-start gap-6">
+            <div className="flex flex-col sm:flex-row items-start gap-6 min-w-0">
               <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-blue-500/10 to-indigo-500/10 dark:from-violet-500/20 dark:to-fuchsia-500/20 flex items-center justify-center border border-blue-500/10 dark:border-white/10 shrink-0">
                 <ShieldCheck className="w-8 h-8 text-blue-600 dark:text-violet-400" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <h2 className="text-xl font-black text-slate-900 dark:text-white mb-2 uppercase tracking-tight">
                   Identity Verification
                 </h2>
-                <div className="flex items-center gap-2 text-slate-500 dark:text-slate-300 mb-3 font-medium">
+                {/* FIX: flex-wrap + break-all to prevent long names overflowing */}
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-slate-500 dark:text-slate-300 mb-3 font-medium">
                   <span>Your name,</span>
-                  <span className="font-black text-blue-600 dark:text-violet-400">
+                  <span className="font-black text-blue-600 dark:text-violet-400 break-all">
                     {profile?.verifiedName || user?.fullName || "Not Verified"}
                   </span>
                   <span>
                     is {profile?.isNameVerified ? "verified" : "not verified"}.
                   </span>
                   {profile?.isNameVerified && (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                   )}
                 </div>
                 <p className="text-sm text-slate-400 dark:text-slate-500 max-w-lg font-medium">
@@ -176,7 +161,6 @@ export default function AccomplishmentsPage() {
                 </p>
               </div>
             </div>
-
             <button
               onClick={() => setIsChangingName(true)}
               className="px-6 py-3 bg-slate-50 hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl font-black text-[10px] uppercase tracking-widest text-slate-700 dark:text-white transition-all flex items-center gap-2 group/btn shrink-0 shadow-sm"
@@ -186,11 +170,10 @@ export default function AccomplishmentsPage() {
             </button>
           </div>
         </motion.div>
-
         {/* Certificates Section */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <h3 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3 uppercase tracking-tight">
-            <Award className="w-6 h-6 text-blue-500 dark:text-amber-400" />
+            <Award className="w-6 h-6 text-blue-500 dark:text-amber-400 shrink-0" />
             Credentials
             <span className="text-sm font-black text-slate-500 ml-2 bg-slate-100 dark:bg-slate-800/50 px-3 py-1 rounded-full border border-slate-200 dark:border-white/5">
               {certificates.length}
@@ -205,7 +188,6 @@ export default function AccomplishmentsPage() {
             </button>
           </div>
         </div>
-
         {certificates.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -238,9 +220,9 @@ export default function AccomplishmentsPage() {
                 className="group relative"
               >
                 <div className="absolute -inset-1 bg-linear-to-br from-blue-500/10 to-indigo-500/10 rounded-[2rem] blur opacity-0 group-hover:opacity-100 transition duration-500" />
-                <div className="relative bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-6 flex gap-6 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none transition-colors duration-700">
+                <div className="relative bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-6 flex flex-col sm:flex-row gap-6 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none transition-colors duration-700">
                   {/* Certificate Preview/Thumbnail */}
-                  <div className="w-48 h-32 rounded-2xl bg-linear-to-br from-slate-50 to-white dark:from-indigo-900 dark:to-slate-900 overflow-hidden relative border border-slate-200 dark:border-white/5 shrink-0 shadow-inner">
+                  <div className="w-full sm:w-48 h-40 sm:h-32 rounded-2xl bg-linear-to-br from-slate-50 to-white dark:from-indigo-900 dark:to-slate-900 overflow-hidden relative border border-slate-200 dark:border-white/5 shrink-0 shadow-inner">
                     <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
                       <div className="text-[10px] text-blue-600 dark:text-violet-400 font-extrabold uppercase tracking-[0.2em] mb-1">
                         EduNova
@@ -254,29 +236,27 @@ export default function AccomplishmentsPage() {
                     <div className="absolute -top-10 -right-10 w-20 h-20 bg-blue-500/10 dark:bg-violet-500/10 rounded-full blur-2xl" />
                     <div className="absolute -bottom-10 -left-10 w-20 h-20 bg-indigo-500/10 dark:bg-fuchsia-500/10 rounded-full blur-2xl" />
                   </div>
-
                   {/* Content */}
-                  <div className="flex-1 flex flex-col justify-between">
+                  <div className="flex-1 flex flex-col justify-between min-w-0">
                     <div>
                       <div className="flex items-center gap-2 mb-2">
-                        <Star className="w-4 h-4 text-blue-600 dark:text-amber-500 fill-current" />
+                        <Star className="w-4 h-4 text-blue-600 dark:text-amber-500 fill-current shrink-0" />
                         <span className="text-[9px] font-black text-blue-600 dark:text-amber-500/80 uppercase tracking-[0.15em] leading-none bg-blue-500/5 dark:bg-amber-500/10 px-2.5 py-1 rounded-full border border-blue-500/10 dark:border-amber-500/20 h-6 flex items-center justify-center italic">
                           Standard
                         </span>
                       </div>
-                      <h4 className="text-xl font-black text-slate-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-violet-400 transition-colors line-clamp-2 leading-tight uppercase tracking-tight">
+                      <h4 className="text-xl font-black text-slate-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-violet-400 transition-colors line-clamp-2 leading-tight uppercase tracking-tight break-words">
                         {cert.course.title}
                       </h4>
-                      <p className="text-sm text-slate-400 dark:text-gray-500 font-bold italic">
+                      <p className="text-sm text-slate-400 dark:text-gray-500 font-bold italic truncate">
                         {cert.course.instructorName} • EduNova
                       </p>
                     </div>
-
                     <div className="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-white/5">
                       <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                         {new Date(cert.issuedAt).toLocaleDateString()}
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 shrink-0">
                         <button className="p-2 hover:bg-slate-50 dark:hover:bg-white/5 rounded-lg text-slate-300 hover:text-blue-600 dark:hover:text-white transition-all">
                           <Share2 className="w-4 h-4" />
                         </button>
@@ -291,7 +271,6 @@ export default function AccomplishmentsPage() {
             ))}
           </div>
         )}
-
         {/* Support Section */}
         <div className="mt-24 pt-12 border-t border-slate-200 dark:border-white/5 flex flex-col items-center text-center">
           <p className="text-slate-400 dark:text-slate-500 mb-6 text-[10px] font-black uppercase tracking-widest">
@@ -303,7 +282,6 @@ export default function AccomplishmentsPage() {
           </button>
         </div>
       </main>
-
       <AnimatePresence>
         {isChangingName && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
@@ -318,16 +296,15 @@ export default function AccomplishmentsPage() {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[3rem] p-10 shadow-2xl shadow-blue-500/10 dark:shadow-violet-500/10 transition-colors duration-700"
+              className="relative w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[3rem] p-6 sm:p-10 shadow-2xl shadow-blue-500/10 dark:shadow-violet-500/10 transition-colors duration-700"
             >
               <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-2 uppercase tracking-tighter italic">
                 Request Change
               </h3>
               <p className="text-slate-500 dark:text-slate-400 text-sm mb-8 font-medium">
-                Enter your full legal name as it should appear on your
-                official certificates.
+                Enter your full legal name as it should appear on your official
+                certificates.
               </p>
-
               <div className="mb-8">
                 <label className="block text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 ml-1">
                   New Verified Name
@@ -340,7 +317,6 @@ export default function AccomplishmentsPage() {
                   className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 py-4 text-slate-900 dark:text-white font-bold focus:outline-none focus:border-blue-500 dark:focus:border-violet-500 transition-all placeholder:text-slate-300 dark:placeholder:text-slate-600 shadow-inner"
                 />
               </div>
-
               <div className="flex gap-4">
                 <button
                   onClick={() => setIsChangingName(false)}

@@ -189,9 +189,14 @@ function PlanCard({
           ? "ring-2 ring-blue-500/60 dark:ring-violet-500/60 shadow-2xl shadow-blue-500/10 dark:shadow-violet-500/20"
           : "border border-slate-200 dark:border-white/[0.08] shadow-sm dark:shadow-none bg-white/50 dark:bg-white/[0.025]"
       }`}
-      style={hasHighlight ? {
-        background: "linear-gradient(160deg, rgba(37,99,235,0.08) 0%, rgba(255,255,255,1) 100%)",
-      } : {}}
+      style={
+        hasHighlight
+          ? {
+              background:
+                "linear-gradient(160deg, rgba(37,99,235,0.08) 0%, rgba(255,255,255,1) 100%)",
+            }
+          : {}
+      }
     >
       {/* Dark mode override for highlight background */}
       {hasHighlight && (
@@ -211,7 +216,9 @@ function PlanCard({
       )}
 
       <div className="p-8 flex flex-col flex-1 relative z-10">
-        <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">{plan.name}</h3>
+        <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">
+          {plan.name}
+        </h3>
         <p className="text-sm text-slate-500 dark:text-gray-400 leading-relaxed mb-6">
           {plan.description}
         </p>
@@ -251,16 +258,24 @@ function PlanCard({
             <div key={f} className="flex items-center gap-3">
               <div
                 className={`w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center ${
-                  hasHighlight ? "bg-blue-500/10 dark:bg-violet-600/25" : "bg-slate-100 dark:bg-white/5"
+                  hasHighlight
+                    ? "bg-blue-500/10 dark:bg-violet-600/25"
+                    : "bg-slate-100 dark:bg-white/5"
                 }`}
               >
                 <Check
                   size={10}
-                  className={hasHighlight ? "text-blue-600 dark:text-violet-400" : "text-slate-400 dark:text-gray-500"}
+                  className={
+                    hasHighlight
+                      ? "text-blue-600 dark:text-violet-400"
+                      : "text-slate-400 dark:text-gray-500"
+                  }
                   strokeWidth={3}
                 />
               </div>
-              <span className="text-sm text-slate-600 dark:text-gray-300">{f}</span>
+              <span className="text-sm text-slate-600 dark:text-gray-300">
+                {f}
+              </span>
             </div>
           ))}
         </div>
@@ -410,7 +425,7 @@ export default function PricingPage() {
             </div>
 
             <div className="rounded-3xl border border-slate-200 dark:border-white/7 bg-white dark:bg-white/2 overflow-hidden shadow-xl shadow-slate-200/50 dark:shadow-none">
-              <div className="w-full overflow-x-auto">
+              <div className="w-full overflow-x-auto pricing-page-comparison-table-scrollbar">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-slate-100 dark:border-white/6">

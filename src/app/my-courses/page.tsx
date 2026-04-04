@@ -20,7 +20,10 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { dark } from "@clerk/ui/themes";
+
+import { Montserrat } from "next/font/google";
+
+const montserrat = Montserrat({ subsets: ["latin"] });
 
 type DashboardCourseItem = {
   enrollmentId: string;
@@ -163,18 +166,18 @@ export default function MyCoursesPage() {
     user?.emailAddresses[0]?.emailAddress[0]?.toUpperCase() ||
     "?";
 
-  if (!isLoaded) {
-    return (
-      <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#0a0a16] flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
-      </div>
-    );
-  }
-
   if (!isSignedIn) {
     return (
       <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#080a10] text-foreground flex items-center justify-center pt-20">
         <SignIn />
+      </div>
+    );
+  }
+
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#0a0a16] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
       </div>
     );
   }
@@ -186,11 +189,11 @@ export default function MyCoursesPage() {
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
           {/* ── LEFT SIDEBAR ── */}
           {/* ── MOBILE: GREETING ── */}
-          <div className="lg:hidden mb-2">
-            <h1 className="text-2xl font-black text-slate-900 dark:text-white">
-              {greeting}, {displayName}
+          <div className={`${montserrat.className} lg:hidden mb-2`}>
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+              {greeting}, <span className="text-4xl font-black">{displayName}</span>
             </h1>
-            <p className="text-sm text-slate-500 dark:text-gray-400">
+            <p className="text-sm text-slate-500 dark:text-gray-400 mt-2">
               {enrollments.length === 0
                 ? "Start your learning journey"
                 : `${enrollments.length} course${enrollments.length !== 1 ? "s" : ""} enrolled`}
@@ -205,7 +208,7 @@ export default function MyCoursesPage() {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className="px-5 py-3 text-sm font-semibold relative transition-colors"
+                  className={`${montserrat.className} px-5 py-3 text-sm font-semibold relative transition-colors`}
                   style={{ color: activeTab === tab ? "#a78bfa" : "#6b7280" }}
                 >
                   {tab === "in-progress" ? "In Progress" : "Completed"}
@@ -226,7 +229,7 @@ export default function MyCoursesPage() {
                   {[1, 2, 3].map((i) => (
                     <div
                       key={i}
-                      className="h-40 rounded-2xl animate-pulse bg-slate-200 dark:bg-white/[0.02] border border-slate-300 dark:border-white/5"
+                      className="h-40 rounded-2xl animate-pulse bg-slate-200 dark:bg-white/2 border border-slate-300 dark:border-white/5"
                     />
                   ))}
                 </motion.div>
@@ -355,15 +358,15 @@ export default function MyCoursesPage() {
 
                             {/* Progress bar */}
                             <div className="h-1.5 rounded-full overflow-hidden mb-6 bg-slate-200 dark:bg-white/5 border border-slate-200/50 dark:border-white/5">
-                                <motion.div
-                                 initial={{ width: 0 }}
-                                 animate={{ width: `${pct}%` }}
-                                 transition={{
-                                   duration: 0.8,
-                                   delay: 0.2 + idx * 0.05,
-                                 }}
-                                 className={`h-full rounded-full ${isComplete ? "bg-gradient-to-r from-emerald-500 to-emerald-400" : "bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-500 dark:to-pink-500"}`}
-                               />
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${pct}%` }}
+                                transition={{
+                                  duration: 0.8,
+                                  delay: 0.2 + idx * 0.05,
+                                }}
+                                className={`h-full rounded-full ${isComplete ? "bg-gradient-to-r from-emerald-500 to-emerald-400" : "bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-500 dark:to-pink-500"}`}
+                              />
                             </div>
 
                             <div className="flex items-center justify-between flex-wrap gap-4 pt-4 border-t border-slate-100 dark:border-white/5">
@@ -434,40 +437,53 @@ export default function MyCoursesPage() {
           {/* ── SIDEBAR (SHOW BELOW COURSES ON MOBILE) ── */}
           <aside className="order-2 lg:order-1">
             {/* Desktop greeting (Hidden on mobile) */}
-            <div className="hidden lg:block mb-6">
-              <div
-                className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center text-xl font-black text-white mb-3 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-500 dark:to-pink-500 shadow-md dark:shadow-none"
-              >
+            <div className={`${montserrat.className} hidden lg:block mb-6`}>
+              <div className="w-14 h-14 rounded-full overflow-hidden flex items-center justify-center text-xl font-black text-white mb-3 bg-linear-to-r from-blue-600 to-indigo-600 dark:from-violet-500 dark:to-pink-500 shadow-md dark:shadow-none">
                 {avatarUrl ? (
-                  <img src={avatarUrl} alt={initials} className="w-full h-full object-cover" />
+                  <img
+                    src={avatarUrl}
+                    alt={initials}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   initials
                 )}
               </div>
               <h1 className="text-xl font-bold text-slate-900 dark:text-white">
-                {greeting}, {displayName}
+                {greeting},{" "}
+                <span className="text-4xl font-black">{displayName}</span>
               </h1>
               <p className="text-sm mt-0.5 text-slate-500 dark:text-gray-400">
-                {enrollments.length === 0 ? "Start your learning journey" : `${enrollments.length} course${enrollments.length !== 1 ? "s" : ""} enrolled`}
+                {enrollments.length === 0
+                  ? "Start your learning journey"
+                  : `${enrollments.length} course${enrollments.length !== 1 ? "s" : ""} enrolled`}
               </p>
             </div>
 
             {/* Today's goals */}
-            <div
-              className="lumen-sidebar-widget rounded-lg p-4 mb-4 bg-slate-50 dark:bg-[rgba(255,255,255,0.03)] border border-slate-200 dark:border-[rgba(255,255,255,0.08)]"
-            >
+            <div className="lumen-sidebar-widget rounded-lg p-4 mb-4 bg-slate-50 dark:bg-[rgba(255,255,255,0.03)] border border-slate-200 dark:border-[rgba(255,255,255,0.08)]">
               <div className="flex items-center gap-2 mb-3">
                 <Star size={14} className="text-yellow-500" fill="#eab308" />
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Today&apos;s goals</h3>
+                <h3
+                  className={`${montserrat.className} text-sm font-bold text-slate-900 dark:text-white`}
+                >
+                  Today&apos;s goals
+                </h3>
               </div>
               <ul className="space-y-2.5">
                 {[
-                  { label: "Complete any 3 learning items • 0/3", href: "/courses" },
+                  {
+                    label: "Complete any 3 learning items • 0/3",
+                    href: "/courses",
+                  },
                   { label: "Complete a reading", href: "/courses?q=reading" },
                   { label: "Continue your weekly streak", href: "/my-courses" },
                 ].map((goal, i) => (
                   <li key={i}>
-                    <Link href={goal.href} className="flex items-start gap-2.5 text-sm group hover:text-blue-600 dark:hover:text-violet-300 transition-colors text-slate-500 dark:text-gray-400">
+                    <Link
+                      href={goal.href}
+                      className="flex items-start gap-2.5 text-sm group hover:text-blue-600 dark:hover:text-violet-300 transition-colors text-slate-500 dark:text-gray-400"
+                    >
                       <div className="w-4 h-4 rounded-full border mt-0.5 shrink-0 flex items-center justify-center border-slate-300 dark:border-gray-600 group-hover:border-violet-500 transition-colors">
                         <div className="w-1.5 h-1.5 rounded-full bg-violet-500 opacity-0 group-hover:opacity-100 transition-opacity" />
                       </div>
@@ -480,22 +496,48 @@ export default function MyCoursesPage() {
 
             {/* Learning plan */}
             <div
-              className="lumen-sidebar-widget rounded-lg p-4 mb-4 bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08]"
+              className={`${montserrat.className} lumen-sidebar-widget rounded-lg p-4 mb-4 bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/[0.08]`}
             >
-              <h3 className="text-sm font-bold mb-1 text-slate-900 dark:text-white">Learning plan</h3>
+              <h3 className="text-sm font-bold mb-1 text-slate-900 dark:text-white">
+                Learning plan
+              </h3>
               <div className="flex items-center justify-between mb-3">
-                <button onClick={prevMonth} className="p-0.5 rounded hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-400 dark:text-gray-400"><ChevronLeft size={14} /></button>
-                <span className="text-xs font-semibold text-slate-700 dark:text-gray-300">{calMonthLabel}</span>
-                <button onClick={nextMonth} className="p-0.5 rounded hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-400 dark:text-gray-400"><ChevronRight size={14} /></button>
+                <button
+                  onClick={prevMonth}
+                  className="p-0.5 rounded hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-400 dark:text-gray-400"
+                >
+                  <ChevronLeft size={14} />
+                </button>
+                <span className="text-xs font-semibold text-slate-700 dark:text-gray-300">
+                  {calMonthLabel}
+                </span>
+                <button
+                  onClick={nextMonth}
+                  className="p-0.5 rounded hover:bg-slate-100 dark:hover:bg-white/10 transition-colors text-slate-400 dark:text-gray-400"
+                >
+                  <ChevronRight size={14} />
+                </button>
               </div>
               <div className="grid grid-cols-7 mb-1">
-                {CAL_HEADERS.map(h => <div key={h} className="text-center text-[10px] font-bold py-0.5 text-slate-400 dark:text-gray-500">{h}</div>)}
+                {CAL_HEADERS.map((h) => (
+                  <div
+                    key={h}
+                    className="text-center text-[10px] font-bold py-0.5 text-slate-400 dark:text-gray-500"
+                  >
+                    {h}
+                  </div>
+                ))}
               </div>
               <div className="grid grid-cols-7 gap-y-0.5">
                 {calCells.map((day, i) => {
-                  const isToday = day === todayDate && calMonth === todayMonth && calYear === todayYear;
+                  const isToday =
+                    day === todayDate &&
+                    calMonth === todayMonth &&
+                    calYear === todayYear;
                   return (
-                    <div key={i} className={`flex items-center justify-center h-7 text-[11px] font-medium rounded-full mx-0.5 ${isToday ? "bg-blue-600 dark:bg-violet-600 text-white font-bold" : day ? "text-slate-600 dark:text-slate-400" : "text-transparent"}`}
+                    <div
+                      key={i}
+                      className={`flex items-center justify-center h-7 text-[11px] font-medium rounded-full mx-2 md:mx-1 ${isToday ? "bg-blue-600 dark:bg-violet-600 text-white font-bold" : day ? "text-slate-600 dark:text-slate-400" : "text-transparent"}`}
                     >
                       {day ?? ""}
                     </div>
@@ -506,15 +548,28 @@ export default function MyCoursesPage() {
 
             {/* Upgrade */}
             <div
-              className="lumen-sidebar-widget lumen-upgrade-widget rounded-lg p-5 mt-2"
-              style={{ background: "rgba(124,58,237,0.05)", border: "1px solid rgba(124,58,237,0.15)" }}
+              className={`${montserrat.className} lumen-sidebar-widget lumen-upgrade-widget rounded-lg p-5 mt-2`}
+              style={{
+                background: "rgba(124,58,237,0.05)",
+                border: "1px solid rgba(124,58,237,0.15)",
+              }}
             >
               <div className="w-10 h-10 rounded-xl bg-violet-600/20 flex items-center justify-center mb-4">
-                <GraduationCap size={20} className="text-violet-500 dark:text-violet-400" />
+                <GraduationCap
+                  size={20}
+                  className="text-violet-500 dark:text-violet-400"
+                />
               </div>
-              <h3 className="text-sm font-bold mb-1 text-slate-900 dark:text-white">Upgrade to Plus</h3>
-              <p className="text-xs mb-4 text-slate-500 dark:text-gray-400 leading-relaxed">Get unlimited access to 7,000+ courses and certifications.</p>
-              <Link href="/pricing" className="text-xs font-bold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors flex items-center gap-1">
+              <h3 className="text-sm font-bold mb-1 text-slate-900 dark:text-white">
+                Upgrade to Plus
+              </h3>
+              <p className="text-xs mb-4 text-slate-500 dark:text-gray-400 leading-relaxed">
+                Get unlimited access to 7,000+ courses and certifications.
+              </p>
+              <Link
+                href="/pricing"
+                className="text-xs font-bold text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 transition-colors flex items-center gap-1"
+              >
                 View Plans <ArrowRight size={12} />
               </Link>
             </div>

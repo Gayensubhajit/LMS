@@ -10,7 +10,7 @@ Welcome to the LMS project — a modern online learning platform implementation 
   - Frontend: Next.js 14+, TypeScript, Tailwind CSS, React Server Components
   - Backend: Node, TypeScript, Prisma ORM, REST-like routes
   - Auth: Clerk (users, roles, sessions)
-  - Payments: Stripe checkout/success flows
+  - Payments: Razorpay checkout/success flows
 - Included team features: admin UI, reporting, community leaderboard, AI assistant integration
 
 ## 🔧 Features included

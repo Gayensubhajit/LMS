@@ -55,7 +55,14 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "EduNova — AI-Powered Learning",
     description: "Master high-income skills with AI-guided roadmaps.",
-    images: ["/og-image.png"],
+    images: ["/og-image.png?v=1"],
+  },
+  icons: {
+    icon: [
+      { url: "/icon.png?v=1", type: "image/png" },
+      { url: "/favicon.ico?v=1" },
+    ],
+    apple: "/apple-icon.png?v=1",
   },
 };
 

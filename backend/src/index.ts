@@ -16,6 +16,7 @@ import { historyRouter } from "./routes/history.js";
 import { accomplishmentsRouter } from "./routes/accomplishments.js";
 import settingsRouter from "./routes/settings.js";
 import { adminRouter } from "./routes/admin.js";
+import { reviewsRouter } from "./routes/reviews.js";
 import { CourseLevel } from "@prisma/client";
 import { execSync } from "child_process";
 import { prisma } from "./lib/prisma.js";
@@ -197,6 +198,7 @@ app.use("/history", historyRouter);
 app.use("/accomplishments", accomplishmentsRouter);
 app.use("/settings", settingsRouter);
 app.use("/admin", adminRouter);
+app.use("/reviews", reviewsRouter);
 
 autoSeed().then(() => {
   app.listen(env.PORT, () => {

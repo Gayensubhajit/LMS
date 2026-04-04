@@ -285,10 +285,10 @@ export default function Navbar() {
           </div>
 
           <div className="flex-1 hidden lg:flex justify-center">
-            <div ref={wrapperRef} className="w-full relative max-w-90">
+            <div ref={wrapperRef} className="w-full relative max-w-2xl">
               <form onSubmit={handleSubmit}>
                 <div
-                   className="flex items-center rounded-full transition-all duration-300 overflow-hidden bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-blue-500/30"
+                   className={`flex items-center rounded-full transition-all duration-300 overflow-hidden bg-white dark:bg-[#0c0c1e] border-2 shadow-sm ${searchFocused ? "border-blue-600 dark:border-blue-500 ring-4 ring-blue-500/10" : "border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20"}`}
                 >
                   <input
                     ref={inputRef}
@@ -296,54 +296,107 @@ export default function Navbar() {
                     value={query}
                     onChange={(e) => { setQuery(e.target.value); setHighlightedIndex(-1); }}
                     onFocus={() => setSearchFocused(true)}
-                    onBlur={() => setSearchFocused(false)}
                     onKeyDown={handleKeyDown}
-                    placeholder="Search courses..."
-                    className="flex-1 bg-transparent text-[13px] text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-400 px-5 py-2.5 outline-none"
+                    placeholder="What do you want to learn?"
+                    className="flex-1 bg-transparent text-sm font-medium text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-gray-500 px-6 py-3 outline-none"
                   />
-                  <button type="submit" className="mr-1.5 w-8 h-8 rounded-full bg-slate-900 dark:bg-white flex items-center justify-center shrink-0 hover:opacity-80 transition-opacity">
-                    <Search size={14} className="text-white dark:text-slate-900" />
+                  <button type="submit" className="mr-1.5 w-10 h-10 rounded-full bg-blue-600 dark:bg-blue-600 flex items-center justify-center shrink-0 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20">
+                    <Search size={18} className="text-white" />
                   </button>
                 </div>
               </form>
               <AnimatePresence>
                 {showDropdown && (
-                  <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute top-full left-0 right-0 mt-2 rounded-2xl z-50 bg-white dark:bg-[#0a0a16] border border-black/10 dark:border-white/10 backdrop-blur-3xl p-4 shadow-2xl">
-                    {isPopularMode ? (
-                      <ul>
-                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400 dark:text-gray-500 mb-3 ml-2">Trending Topics</p>
-                        {popularSearches.map((p) => (
-                          <li key={p.term}>
-                            <button onClick={() => handlePopularClick(p.term)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-left group">
-                              <span className="text-lg">{p.emoji}</span>
-                              <div className="flex-1">
-                                <p className="text-slate-900 dark:text-white text-sm font-semibold">{p.term}</p>
-                                <p className="text-slate-500 dark:text-gray-500 text-xs">{p.category}</p>
-                              </div>
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.98 }} 
+                    animate={{ opacity: 1, y: 0, scale: 1 }} 
+                    exit={{ opacity: 0, y: 10, scale: 0.98 }} 
+                    className="absolute top-full left-0 right-0 mt-4 rounded-[32px] z-[100] bg-white dark:bg-[#0c0c1e] border border-slate-200 dark:border-white/10 backdrop-blur-3xl p-8 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] dark:shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)]"
+                  >
+                    {!query.trim() ? (
+                      <div className="space-y-10">
+                        <div>
+                          <h3 className="text-sm font-black text-slate-900 dark:text-white mb-5 uppercase tracking-widest px-1 opacity-60">Trending on EduNova</h3>
+                          <div className="flex flex-wrap gap-2.5">
+                            {mobileTrendingChips.map((tag) => (
+                              <button 
+                                key={tag} 
+                                onClick={() => handlePopularClick(tag)}
+                                className="px-5 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-slate-700 dark:text-gray-300 hover:border-blue-500/50 hover:bg-blue-500/5 hover:text-blue-600 dark:hover:text-blue-400 transition-all active:scale-95"
+                              >
+                                {tag}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <div className="flex items-center justify-between mb-5 px-1">
+                             <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest opacity-60">Handpicked for you</h3>
+                             <button className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest hover:underline">View All</button>
+                          </div>
+                          <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
+                            {coursesData.slice(0, 4).map((c, i) => (
+                              <button 
+                                key={c.slug}
+                                onClick={() => handleResultClick(c.title)}
+                                className="flex flex-col text-left group"
+                              >
+                                <div className="aspect-video rounded-2xl overflow-hidden bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 mb-3 relative">
+                                  {/* Dummy thumbnail */}
+                                  <div className="absolute inset-0 flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-500">{c.emoji}</div>
+                                  <div className="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/10 transition-colors" />
+                                </div>
+                                <div className="flex items-center gap-2 mb-2">
+                                   <div className="w-5 h-5 rounded flex items-center justify-center bg-blue-600 text-[10px] text-white font-bold">N</div>
+                                   <span className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest truncate">EduNova · {c.category}</span>
+                                </div>
+                                <h4 className="text-sm font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug mb-3">{c.title}</h4>
+                                <p className="mt-auto text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest">{c.level} · {c.duration}</p>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
                     ) : (
-                      <ul className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-                        {results.map((course) => (
-                          <li key={course.slug}>
-                            <button onClick={() => handleResultClick(course.title)} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-left group">
-                              <span className="text-xl">{course.emoji}</span>
-                              <div className="flex-1">
-                                <p className="text-slate-900 dark:text-white text-sm font-semibold truncate">{course.title}</p>
-                                <p className="text-slate-500 dark:text-gray-500 text-xs">{course.level} · by {course.instructor}</p>
+                      <div className="space-y-6">
+                         <div className="flex items-center justify-between px-1">
+                            <h3 className="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">Search Results ({results.length})</h3>
+                         </div>
+                         {results.length > 0 ? (
+                           <ul className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+                             {results.map((course) => (
+                               <li key={course.slug}>
+                                 <button onClick={() => handleResultClick(course.title)} className="w-full flex items-center gap-4 p-3 rounded-[20px] bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-blue-500/50 hover:bg-white dark:hover:bg-blue-500/10 transition-all text-left group shadow-sm hover:shadow-xl hover:shadow-blue-500/10">
+                                   <div className="w-14 h-14 rounded-2xl bg-white dark:bg-white/5 flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform">
+                                     {course.emoji}
+                                   </div>
+                                   <div className="flex-1 min-w-0">
+                                     <p className="text-slate-900 dark:text-white text-sm font-black truncate mb-1">{course.title}</p>
+                                     <p className="text-slate-500 dark:text-gray-500 text-xs font-medium">{course.level} · by {course.instructor}</p>
+                                   </div>
+                                   <ChevronRight size={16} className="text-slate-300 dark:text-gray-700 group-hover:text-blue-600 dark:group-hover:text-blue-400 group-hover:translate-x-1 transition-all" />
+                                 </button>
+                               </li>
+                             ))}
+                           </ul>
+                         ) : (
+                           <div className="py-12 flex flex-col items-center justify-center text-center">
+                              <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-white/5 flex items-center justify-center mb-4">
+                                 <Search size={24} className="text-slate-300 dark:text-gray-700" />
                               </div>
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
+                              <p className="text-sm font-bold text-slate-500 dark:text-gray-500">No results found for "{query}"</p>
+                              <p className="text-xs text-slate-400 dark:text-gray-600 mt-1">Try searching for broader terms like "React" or "Design"</p>
+                           </div>
+                         )}
+                      </div>
                     )}
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
           </div>
+
 
           <div className="hidden lg:flex items-center gap-6 shrink-0">
             {isLoaded && !user && (

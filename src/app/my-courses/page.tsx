@@ -19,6 +19,15 @@ import {
   ArrowRight,
   ChevronLeft,
   ChevronRight,
+  Share2,
+  X,
+  Mail,
+  MessageCircle,
+  Facebook,
+  Twitter,
+  Copy,
+  AlertTriangle,
+  Loader2,
 } from "lucide-react";
 
 import { Montserrat } from "next/font/google";
@@ -89,6 +98,14 @@ export default function MyCoursesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("in-progress");
+  
+  // Modal States
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const [modalType, setModalType] = useState<"share" | "rate" | "unenroll" | null>(null);
+  const [selectedEnrollment, setSelectedEnrollment] = useState<DashboardCourseItem | null>(null);
+  const [modalLoading, setModalLoading] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
 
   const now = new Date();
   const todayDate = now.getDate();
@@ -398,9 +415,57 @@ export default function MyCoursesPage() {
                                       <Play size={12} fill="currentColor" />
                                       Resume
                                     </Link>
-                                    <button className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white">
-                                      <MoreHorizontal size={18} />
-                                    </button>
+                                    <div className="relative">
+                                      <button 
+                                        onClick={() => setActiveMenuId(activeMenuId === enrollment.enrollmentId ? null : enrollment.enrollmentId)}
+                                        className={`p-2 rounded-lg transition-colors ${activeMenuId === enrollment.enrollmentId ? "bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white" : "text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5"}`}
+                                      >
+                                        <MoreHorizontal size={18} />
+                                      </button>
+                                      
+                                      <AnimatePresence>
+                                        {activeMenuId === enrollment.enrollmentId && (
+                                          <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            className="absolute bottom-full right-0 mb-2 w-48 py-2 bg-white dark:bg-[#0c0c1a] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden"
+                                          >
+                                            <button 
+                                              onClick={() => {
+                                                setSelectedEnrollment(enrollment);
+                                                setModalType("share");
+                                                setActiveMenuId(null);
+                                              }}
+                                              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-blue-600 dark:hover:text-white transition-all text-left"
+                                            >
+                                              <Share2 size={14} /> Share Course
+                                            </button>
+                                            <button 
+                                              onClick={() => {
+                                                setSelectedEnrollment(enrollment);
+                                                setModalType("rate");
+                                                setActiveMenuId(null);
+                                              }}
+                                              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-amber-500 dark:hover:text-white transition-all text-left"
+                                            >
+                                              <Star size={14} /> Rate & Review
+                                            </button>
+                                            <div className="h-px bg-slate-100 dark:bg-white/5 my-1" />
+                                            <button 
+                                              onClick={() => {
+                                                setSelectedEnrollment(enrollment);
+                                                setModalType("unenroll");
+                                                setActiveMenuId(null);
+                                              }}
+                                              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all text-left"
+                                            >
+                                              <AlertTriangle size={14} /> Un-enroll
+                                            </button>
+                                          </motion.div>
+                                        )}
+                                      </AnimatePresence>
+                                    </div>
                                   </div>
                                 </>
                               ) : (
@@ -417,9 +482,57 @@ export default function MyCoursesPage() {
                                       <FileText size={14} />
                                       Review Course
                                     </Link>
-                                    <button className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-white/5 transition-colors text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white">
-                                      <MoreHorizontal size={18} />
-                                    </button>
+                                    <div className="relative">
+                                      <button 
+                                        onClick={() => setActiveMenuId(activeMenuId === enrollment.enrollmentId ? null : enrollment.enrollmentId)}
+                                        className={`p-2 rounded-lg transition-colors ${activeMenuId === enrollment.enrollmentId ? "bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white" : "text-slate-400 dark:text-gray-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5"}`}
+                                      >
+                                        <MoreHorizontal size={18} />
+                                      </button>
+                                      
+                                      <AnimatePresence>
+                                        {activeMenuId === enrollment.enrollmentId && (
+                                          <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            className="absolute bottom-full right-0 mb-2 w-48 py-2 bg-white dark:bg-[#0c0c1a] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl z-50 overflow-hidden"
+                                          >
+                                            <button 
+                                              onClick={() => {
+                                                setSelectedEnrollment(enrollment);
+                                                setModalType("share");
+                                                setActiveMenuId(null);
+                                              }}
+                                              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-blue-600 dark:hover:text-white transition-all text-left"
+                                            >
+                                              <Share2 size={14} /> Share Course
+                                            </button>
+                                            <button 
+                                              onClick={() => {
+                                                setSelectedEnrollment(enrollment);
+                                                setModalType("rate");
+                                                setActiveMenuId(null);
+                                              }}
+                                              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-slate-600 dark:text-gray-400 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-amber-500 dark:hover:text-white transition-all text-left"
+                                            >
+                                              <Star size={14} /> Rate & Review
+                                            </button>
+                                            <div className="h-px bg-slate-100 dark:bg-white/5 my-1" />
+                                            <button 
+                                              onClick={() => {
+                                                setSelectedEnrollment(enrollment);
+                                                setModalType("unenroll");
+                                                setActiveMenuId(null);
+                                              }}
+                                              className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-bold text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all text-left"
+                                            >
+                                              <AlertTriangle size={14} /> Un-enroll
+                                            </button>
+                                          </motion.div>
+                                        )}
+                                      </AnimatePresence>
+                                    </div>
                                   </div>
                                 </>
                               )}
@@ -576,6 +689,192 @@ export default function MyCoursesPage() {
           </aside>
         </div>
       </div>
+
+      {/* ── MODALS ── */}
+      <AnimatePresence>
+        {modalType && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => { if (!modalLoading) setModalType(null); }}
+              className="absolute inset-0 bg-slate-900/40 dark:bg-black/60 backdrop-blur-sm"
+            />
+            
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-lg bg-white dark:bg-[#0c0c1e] border border-slate-200 dark:border-white/10 rounded-[32px] shadow-2xl overflow-hidden"
+            >
+              {/* Close Button */}
+              <button 
+                onClick={() => setModalType(null)}
+                className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-white/5 text-slate-400 dark:text-gray-500 transition-colors"
+              >
+                <X size={20} />
+              </button>
+
+              {/* Modal Content */}
+              <div className="p-8 sm:p-10">
+                {modalType === "share" && (
+                  <div className="space-y-8">
+                    <div>
+                      <h2 className="text-3xl font-black text-slate-800 dark:text-white mb-2">Share</h2>
+                      <p className="text-sm text-slate-500 dark:text-gray-500 font-medium">Show your friends what they can learn on EduNova.</p>
+                    </div>
+
+                    <div className="flex justify-between items-center px-2">
+                       {[
+                         { icon: <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" className="w-6 h-6" />, label: "LinkedIn" },
+                         { icon: <Mail className="text-blue-500" />, label: "Email" },
+                         { icon: <MessageCircle className="text-emerald-500" />, label: "WhatsApp" },
+                         { icon: <Facebook className="text-blue-600" />, label: "Facebook" },
+                         { icon: <Twitter className="text-sky-500" />, label: "X" }
+                       ].map((s, i) => (
+                         <div key={i} className="flex flex-col items-center gap-3">
+                           <div className="w-12 h-12 rounded-full bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
+                             {s.icon}
+                           </div>
+                           <span className="text-[10px] font-black text-slate-400 dark:text-gray-600 uppercase tracking-widest">{s.label}</span>
+                         </div>
+                       ))}
+                    </div>
+
+                    <div className="relative">
+                      <input 
+                        readOnly
+                        value={`https://edunova.org/courses/${selectedEnrollment?.course.slug}`}
+                        className="w-full bg-slate-50 dark:bg-black/20 border-2 border-slate-100 dark:border-white/5 rounded-2xl p-4 pr-20 text-sm font-bold text-slate-700 dark:text-gray-300 outline-none"
+                      />
+                      <button 
+                        onClick={() => {
+                          const url = `https://edunova.org/courses/${selectedEnrollment?.course.slug}`;
+                          navigator.clipboard.writeText(url);
+                        }}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-blue-600 uppercase tracking-widest hover:text-blue-700 transition-colors"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {modalType === "rate" && (
+                  <div className="space-y-8">
+                    <div>
+                      <h2 className="text-3xl font-black text-slate-800 dark:text-white mb-2">{selectedEnrollment?.course.title}</h2>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-black text-slate-800 dark:text-white mb-4">Your review</h3>
+                      <div className="flex items-center gap-4">
+                        <div className="flex gap-1.5">
+                          {[1, 2, 3, 4, 5].map((s) => (
+                            <button 
+                              key={s}
+                              onMouseEnter={() => setRating(s)}
+                              onClick={() => setRating(s)}
+                              className={`transition-colors ${rating >= s ? "text-amber-400" : "text-slate-200 dark:text-white/10"}`}
+                            >
+                              <Star size={24} fill={rating >= s ? "currentColor" : "none"} />
+                            </button>
+                          ))}
+                        </div>
+                        <span className="text-xs font-bold text-slate-400 dark:text-gray-600 uppercase tracking-widest">
+                          {rating === 0 ? "No rating" : `${rating} Stars`}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <label className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest px-1">Write your review (optional)</label>
+                      <textarea 
+                        value={reviewComment}
+                        onChange={(e) => setReviewComment(e.target.value)}
+                        placeholder="Share your thoughts on this curriculum..."
+                        rows={4}
+                        className="w-full bg-slate-50 dark:bg-black/20 border-2 border-slate-100 dark:border-white/5 rounded-2xl p-4 text-slate-700 dark:text-white font-medium outline-none focus:border-blue-500/30 transition-all resize-none placeholder:text-slate-300 dark:placeholder:text-gray-700"
+                      />
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-4">
+                      <p className="text-[9px] text-slate-400 dark:text-gray-600 leading-relaxed max-w-[240px]">
+                        By clicking Submit, I agree that my feedback may be viewed by the EduNova community, in compliance with the <span className="text-blue-600 underline cursor-pointer">Terms of Use</span> and privacy settings.
+                      </p>
+                      <button 
+                        disabled={rating === 0 || modalLoading}
+                        onClick={async () => {
+                          if (!selectedEnrollment) return;
+                          setModalLoading(true);
+                          try {
+                            const res = await backendRequest("/reviews", {
+                              method: "POST",
+                              body: { courseSlug: selectedEnrollment.course.slug, rating, comment: reviewComment },
+                              clerkUserId: user?.id
+                            });
+                            setModalType(null);
+                          } catch (err) {
+                            console.error(err);
+                          } finally {
+                            setModalLoading(false);
+                          }
+                        }}
+                        className={`px-10 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] transition-all ${rating > 0 ? "bg-blue-600 dark:bg-violet-600 text-white shadow-xl shadow-blue-600/20 active:scale-95" : "bg-slate-100 dark:bg-white/5 text-slate-300 dark:text-gray-700 cursor-not-allowed"}`}
+                      >
+                        {modalLoading ? <Loader2 className="animate-spin" size={16} /> : "Submit"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {modalType === "unenroll" && (
+                  <div className="space-y-8">
+                    <div>
+                      <h2 className="text-3xl font-black text-slate-800 dark:text-white mb-4">Are you sure you want to un-enroll?</h2>
+                      <p className="text-sm text-slate-600 dark:text-gray-400 font-medium leading-relaxed">
+                        When you un-enroll, this course will no longer appear on your dashboard. Your progress will be saved, and you can re-enroll through the catalog if you change your mind.
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-4 pt-4">
+                      <button 
+                        onClick={() => setModalType(null)}
+                        className="flex-1 px-8 py-4 rounded-2xl border border-slate-200 dark:border-white/10 text-slate-600 dark:text-white font-black text-[10px] uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
+                      >
+                        Cancel
+                      </button>
+                      <button 
+                        disabled={modalLoading}
+                        onClick={async () => {
+                          if (!selectedEnrollment) return;
+                          setModalLoading(true);
+                          try {
+                            await backendRequest(`/enrollments/${selectedEnrollment.enrollmentId}`, {
+                              method: "DELETE",
+                              clerkUserId: user?.id
+                            });
+                            window.location.reload();
+                          } catch (err) {
+                            console.error(err);
+                          } finally {
+                            setModalLoading(false);
+                          }
+                        }}
+                        className="flex-1 px-8 py-4 rounded-2xl bg-blue-600 dark:bg-red-600 text-white font-black text-[10px] uppercase tracking-widest shadow-xl shadow-blue-600/20 dark:shadow-red-600/30 active:scale-95 transition-all flex items-center justify-center"
+                      >
+                         {modalLoading ? <Loader2 className="animate-spin" size={16} /> : "Yes, un-enroll"}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
+

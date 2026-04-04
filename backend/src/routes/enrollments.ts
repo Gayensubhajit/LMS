@@ -183,3 +183,34 @@ enrollmentsRouter.get("/check/:slug", async (req, res) => {
   });
 });
 
+enrollmentsRouter.delete("/:id", async (req, res) => {
+  const user = await getUserFromHeader(req, res);
+  if (!user) return;
+
+  const { id } = req.params;
+
+  try {
+    const enrollment = await prisma.enrollment.findUnique({
+      where: { id },
+      select: { userId: true },
+    });
+
+    if (!enrollment) {
+      return res.status(404).json({ ok: false, error: "Enrollment not found" });
+    }
+
+    if (enrollment.userId !== user.id) {
+      return res.status(403).json({ ok: false, error: "Unauthorized" });
+    }
+
+    await prisma.enrollment.delete({
+      where: { id },
+    });
+
+    return res.status(200).json({ ok: true });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: "Internal server error" });
+  }
+});
+
+

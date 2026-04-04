@@ -111,26 +111,26 @@ export default function UserManagementPage() {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
         <div>
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.4)]">
+            <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center shadow-[0_10px_20px_rgba(37,99,235,0.2)] dark:shadow-[0_0_20px_rgba(59,130,246,0.4)]">
               <Users className="text-white size-5" />
             </div>
-            <h1 className="text-2xl lg:text-3xl font-black text-white tracking-tight">
+            <h1 className="text-2xl lg:text-3xl font-black text-slate-700 dark:text-white tracking-tight">
               User Management
             </h1>
           </div>
-          <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">
+          <p className="text-slate-500 dark:text-gray-500 font-bold uppercase tracking-widest text-[10px]">
             Manage permissions and roles for your community
           </p>
         </div>
 
         <div className="relative group w-full lg:max-w-sm">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-500 transition-colors" size={18} />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 dark:text-gray-500 group-focus-within:text-blue-600 dark:group-focus-within:text-blue-500 transition-colors" size={18} />
           <input
             type="text"
             placeholder="Search by name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-white/5 border border-white/5 focus:border-blue-500/50 rounded-2xl pl-12 pr-6 py-3 lg:py-3.5 text-sm text-white placeholder-gray-600 transition-all outline-none"
+            className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5 focus:border-blue-500/50 dark:focus:border-blue-500/50 rounded-2xl pl-12 pr-6 py-3 lg:py-3.5 text-sm text-slate-700 dark:text-white placeholder-slate-400 dark:placeholder-gray-600 transition-all outline-none shadow-sm dark:shadow-none"
           />
         </div>
       </div>
@@ -138,13 +138,13 @@ export default function UserManagementPage() {
       {/* Main Content Area */}
       {loading ? (
         <div className="py-24 text-center">
-          <Loader2 className="w-8 h-8 text-blue-500 animate-spin mx-auto mb-4" />
-          <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">Synchronizing Security Layers...</p>
+          <Loader2 className="w-8 h-8 text-blue-600 dark:text-blue-500 animate-spin mx-auto mb-4" />
+          <p className="text-slate-500 dark:text-gray-500 font-bold uppercase tracking-widest text-[10px]">Synchronizing Security Layers...</p>
         </div>
       ) : filteredUsers.length === 0 ? (
-        <div className="py-24 text-center bg-white/5 rounded-[40px] border border-white/5">
-          <AlertCircle className="w-12 h-12 text-gray-700 mx-auto mb-4" />
-          <p className="text-gray-500 font-bold uppercase tracking-widest text-[10px]">No users found matching your search</p>
+        <div className="py-24 text-center bg-white dark:bg-white/5 rounded-[40px] border border-slate-200 dark:border-white/5 shadow-sm dark:shadow-none">
+          <AlertCircle className="w-12 h-12 text-slate-300 dark:text-gray-700 mx-auto mb-4" />
+          <p className="text-slate-500 dark:text-gray-500 font-bold uppercase tracking-widest text-[10px]">No users found matching your search</p>
         </div>
       ) : (
         <>
@@ -156,20 +156,20 @@ export default function UserManagementPage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }}
-                className={`p-6 rounded-[32px] bg-white/5 border transition-all flex flex-col gap-6 ${u.role === "SUPER_ADMIN" ? "border-amber-500/30 bg-amber-500/[0.03]" : "border-white/5"}`}
+                className={`p-6 rounded-[32px] bg-white dark:bg-white/5 border transition-all flex flex-col gap-6 shadow-sm dark:shadow-none ${u.role === "SUPER_ADMIN" ? "border-amber-500/30 bg-amber-50 dark:bg-amber-500/[0.03]" : "border-slate-200 dark:border-white/5"}`}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center bg-white/5 overflow-hidden">
+                    <div className="w-12 h-12 rounded-full border border-slate-200 dark:border-white/10 flex items-center justify-center bg-slate-50 dark:bg-white/5 overflow-hidden">
                       {u.avatarUrl ? (
                         <img src={u.avatarUrl} alt="" className="w-full h-full object-cover" />
                       ) : (
-                        <UserCircle className="text-gray-600" size={32} />
+                        <UserCircle className="text-slate-400 dark:text-gray-600" size={32} />
                       )}
                     </div>
                     <div className="min-w-0">
-                      <p className="font-black text-white truncate">{u.fullName || "Unnamed User"}</p>
-                      <div className="flex items-center gap-1.5 text-gray-500">
+                      <p className="font-black text-slate-700 dark:text-white truncate">{u.fullName || "Unnamed User"}</p>
+                      <div className="flex items-center gap-1.5 text-slate-500 dark:text-gray-500">
                         <Mail size={12} />
                         <p className="text-xs font-medium truncate">{u.email}</p>
                       </div>
@@ -186,19 +186,19 @@ export default function UserManagementPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
-                    <div className="flex items-center gap-2 text-gray-500 mb-1">
+                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5">
+                    <div className="flex items-center gap-2 text-slate-500 dark:text-gray-500 mb-1">
                       <BookOpen size={12} />
                       <span className="text-[9px] font-black uppercase tracking-widest">Learning</span>
                     </div>
-                    <p className="text-lg font-black text-white">{u._count.enrollments} <span className="text-[10px] text-gray-500 font-bold uppercase">Courses</span></p>
+                    <p className="text-lg font-black text-slate-700 dark:text-white">{u._count.enrollments} <span className="text-[10px] text-slate-400 dark:text-gray-500 font-bold uppercase">Courses</span></p>
                   </div>
-                  <div className="p-4 rounded-2xl bg-white/5 border border-white/5">
-                    <div className="flex items-center gap-2 text-gray-500 mb-1">
+                  <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5">
+                    <div className="flex items-center gap-2 text-slate-500 dark:text-gray-500 mb-1">
                       <Calendar size={12} />
                       <span className="text-[9px] font-black uppercase tracking-widest">Joined</span>
                     </div>
-                    <p className="text-xs font-bold text-white">{format(new Date(u.createdAt), 'MMM yyyy')}</p>
+                    <p className="text-xs font-bold text-slate-700 dark:text-white">{format(new Date(u.createdAt), 'MMM yyyy')}</p>
                   </div>
                 </div>
 
@@ -219,8 +219,8 @@ export default function UserManagementPage() {
                               className={`
                                 flex-1 py-3 rounded-2xl text-[9px] font-black uppercase tracking-[0.1em] transition-all
                                 ${isCurrent 
-                                  ? "bg-violet-600/20 text-violet-400 border border-violet-500/30" 
-                                  : "bg-white/5 text-gray-400 hover:text-white border border-white/5"}
+                                  ? "bg-blue-50 dark:bg-blue-600/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-500/30" 
+                                  : "bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-gray-400 hover:text-slate-700 dark:hover:text-white border border-slate-200 dark:border-white/5"}
                               `}
                             >
                               {ROLE_CONFIG[r as keyof typeof ROLE_CONFIG].label}
@@ -235,19 +235,19 @@ export default function UserManagementPage() {
           </div>
 
           {/* Desktop Table View (shown above 1024px) */}
-          <div className="hidden lg:block bg-white/5 border border-white/5 rounded-[40px] overflow-hidden backdrop-blur-3xl shadow-2xl">
+          <div className="hidden lg:block bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-[40px] overflow-hidden backdrop-blur-3xl shadow-md dark:shadow-2xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-white/5 bg-white/[0.02]">
-                    <th className="px-8 py-6 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Profile Identity</th>
-                    <th className="px-8 py-6 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Security Tier</th>
-                    <th className="px-8 py-6 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Usage</th>
-                    <th className="px-8 py-6 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em]">Membership</th>
-                    <th className="px-8 py-6 text-[10px] font-black text-gray-500 uppercase tracking-[0.2em] text-right">Access Control</th>
+                  <tr className="border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/[0.02]">
+                    <th className="px-8 py-6 text-[10px] font-black text-slate-500 dark:text-gray-500 uppercase tracking-[0.2em]">Profile Identity</th>
+                    <th className="px-8 py-6 text-[10px] font-black text-slate-500 dark:text-gray-500 uppercase tracking-[0.2em]">Security Tier</th>
+                    <th className="px-8 py-6 text-[10px] font-black text-slate-500 dark:text-gray-500 uppercase tracking-[0.2em]">Usage</th>
+                    <th className="px-8 py-6 text-[10px] font-black text-slate-500 dark:text-gray-500 uppercase tracking-[0.2em]">Membership</th>
+                    <th className="px-8 py-6 text-[10px] font-black text-slate-500 dark:text-gray-500 uppercase tracking-[0.2em] text-right">Access Control</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
+                <tbody className="divide-y divide-slate-100 dark:divide-white/5">
                   {filteredUsers.map((u, idx) => (
                     <motion.tr
                       key={u.id}
@@ -258,21 +258,21 @@ export default function UserManagementPage() {
                     >
                       <td className="px-8 py-6">
                         <div className="flex items-center gap-4">
-                          <div className={`w-11 h-11 rounded-2xl border transition-all flex items-center justify-center bg-[#0d0d1f] overflow-hidden ${u.role === "SUPER_ADMIN" ? "border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.2)]" : "border-white/10"}`}>
+                          <div className={`w-11 h-11 rounded-2xl border transition-all flex items-center justify-center bg-slate-50 dark:bg-[#0d0d1f] overflow-hidden ${u.role === "SUPER_ADMIN" ? "border-amber-500/50 shadow-[0_5px_15px_rgba(245,158,11,0.15)] dark:shadow-[0_0_15px_rgba(245,158,11,0.2)]" : "border-slate-200 dark:border-white/10"}`}>
                             {u.avatarUrl ? (
                               <img src={u.avatarUrl} alt="" className="w-full h-full object-cover" />
                             ) : (
-                                u.role === "SUPER_ADMIN" ? <Sparkles className="text-amber-500" size={24} /> : <UserCircle className="text-gray-600" size={24} />
+                                u.role === "SUPER_ADMIN" ? <Sparkles className="text-amber-500" size={24} /> : <UserCircle className="text-slate-400 dark:text-gray-600" size={24} />
                             )}
                           </div>
                           <div>
-                            <p className="text-sm font-black text-white group-hover:text-violet-400 transition-colors uppercase tracking-tight">{u.fullName || "Incognito"}</p>
-                            <p className="text-xs text-gray-600 font-bold tracking-tight">{u.email}</p>
+                            <p className="text-sm font-black text-slate-700 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors uppercase tracking-tight">{u.fullName || "Incognito"}</p>
+                            <p className="text-xs text-slate-500 dark:text-gray-600 font-bold tracking-tight">{u.email}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-8 py-6">
-                        <div className={`inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl border border-white/5 ${ROLE_CONFIG[u.role].bg} ${ROLE_CONFIG[u.role].color}`}>
+                        <div className={`inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl border bg-slate-50 dark:border-white/5 border-slate-200 ${u.role === "SUPER_ADMIN" ? "border-amber-200 dark:border-amber-500/50" : ""} ${ROLE_CONFIG[u.role].bg} ${ROLE_CONFIG[u.role].color}`}>
                           {(() => {
                              const Icon = ROLE_CONFIG[u.role].icon;
                              return <Icon size={14} />;
@@ -284,12 +284,12 @@ export default function UserManagementPage() {
                       </td>
                       <td className="px-8 py-6">
                         <div className="flex items-center gap-3">
-                           <div className="bg-white/5 h-10 w-10 rounded-xl flex items-center justify-center border border-white/5">
-                              <BookOpen size={16} className="text-gray-500" />
+                           <div className="bg-slate-50 dark:bg-white/5 h-10 w-10 rounded-xl flex items-center justify-center border border-slate-200 dark:border-white/5">
+                              <BookOpen size={16} className="text-slate-400 dark:text-gray-500" />
                            </div>
                            <div>
-                              <p className="text-sm font-black text-white">{u._count.enrollments}</p>
-                              <p className="text-[9px] text-gray-600 font-black uppercase">Courses</p>
+                              <p className="text-sm font-black text-slate-700 dark:text-white">{u._count.enrollments}</p>
+                              <p className="text-[9px] text-slate-500 dark:text-gray-600 font-black uppercase">Courses</p>
                            </div>
                         </div>
                       </td>
@@ -317,10 +317,10 @@ export default function UserManagementPage() {
                                      disabled={u.role === r}
                                      title={`Promote to ${ROLE_CONFIG[r].label}`}
                                      className={`
-                                       px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all
+                                       px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-sm dark:shadow-none
                                        ${u.role === r 
-                                         ? "bg-violet-600 text-white shadow-xl shadow-violet-600/40" 
-                                         : "text-gray-600 hover:text-white hover:bg-white/10"}
+                                         ? "bg-blue-600 text-white shadow-md shadow-blue-600/20" 
+                                         : "text-slate-500 dark:text-gray-600 hover:text-slate-700 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/10 border border-slate-200 dark:border-transparent"}
                                      `}
                                    >
                                      {r === "SUPER_ADMIN" ? "SUP" : r.slice(0, 3)}

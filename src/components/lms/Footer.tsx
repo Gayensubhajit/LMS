@@ -1,7 +1,7 @@
 "use client";
 
 import {
-  BookOpen,
+  GraduationCap,
   Twitter,
   Github,
   Linkedin,
@@ -93,7 +93,7 @@ export default function Footer() {
 
   return (
     <footer
-      className={`${montserrat.className} relative border-t border-black/5 dark:border-violet-500/10 pt-16 pb-8 overflow-hidden`}
+      className={`${montserrat.className} relative border-t border-black/5 dark:border-white/5 pt-16 pb-8 overflow-hidden bg-white dark:bg-[#030712]`}
     >
       {/* Background glow */}
       <div
@@ -139,11 +139,11 @@ export default function Footer() {
           {/* Brand column */}
           <div className="col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 rounded-xl bg-black dark:bg-gradient-to-br dark:from-violet-600 dark:to-purple-800 flex items-center justify-center shadow-md dark:shadow-[0_0_15px_rgba(124,58,237,0.4)]">
-                <BookOpen size={18} className="text-white" />
+              <div className="w-9 h-9 rounded-xl bg-linear-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-md dark:shadow-blue-500/20">
+                <GraduationCap size={18} className="text-white" />
               </div>
-              <span className="text-xl font-bold text-black dark:gradient-text-purple">
-                EduNova
+              <span className="text-xl font-black tracking-tighter text-black dark:text-white">
+                Edu<span className="text-blue-600 dark:text-blue-400">Nova</span>
               </span>
             </div>
             <p className="text-sm text-gray-500 leading-relaxed mb-4 max-w-xs">
@@ -178,7 +178,7 @@ export default function Footer() {
                   <li key={link}>
                     <Link
                       href={footerRouteMap[link] ?? "/features"}
-                      className="text-sm text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-gray-300 transition-colors"
+                      className="text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-blue-400 transition-colors"
                     >
                       {link}
                     </Link>

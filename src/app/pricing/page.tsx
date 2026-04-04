@@ -325,7 +325,7 @@ export default function PricingPage() {
   const plans = tab === "individuals" ? INDIVIDUAL_PLANS : TEAM_PLANS;
 
   return (
-    <div className="min-h-screen mx-auto bg-[#f6f8ff] dark:bg-[#050510] transition-colors duration-700">
+    <div className="min-h-screen mx-auto bg-[#f6f8ff] dark:bg-[#030712] transition-colors duration-700">
       <Navbar />
       <div className="min-h-screen max-w-5xl mx-auto text-slate-900 dark:text-white selection:bg-blue-500/30 selection:dark:bg-violet-500/30">
         {/* Ambient */}

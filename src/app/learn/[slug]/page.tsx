@@ -268,7 +268,7 @@ export default function LearnCoursePage() {
   // Check if data is loaded
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#0a0a16] flex items-center justify-center">
+      <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#030712] flex items-center justify-center">
         <div className="w-12 h-12 border-4 border-violet-500/20 border-t-violet-500 rounded-full animate-spin" />
       </div>
     );

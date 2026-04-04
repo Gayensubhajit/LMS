@@ -10,14 +10,30 @@ import {
   Users,
   BarChart2,
   GraduationCap,
+  FileText,
+  Inbox,
+  Send,
+  Archive,
+  Trash,
+  AlertCircle,
+  MessageSquare,
+  ShoppingBag,
+  Tag,
+  Search,
+  RotateCcw,
+  Reply,
+  ReplyAll,
+  Forward,
+  Clock,
+  ChevronDown,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState, useEffect, useRef } from "react";
-import { Montserrat } from "next/font/google";
-import { Syne } from "next/font/google";
+import { Montserrat, Syne, Bricolage_Grotesque } from "next/font/google";
 
 const syne = Syne({ subsets: ["latin"] });
 const montserrat = Montserrat({ subsets: ["latin"] });
+const bricolage = Bricolage_Grotesque({ subsets: ["latin"] });
 
 const words = [
   "Learning",
@@ -40,23 +56,23 @@ const pages = [
     id: "hero",
     label: "Home",
     content: () => (
-      <div className="flex flex-col h-full bg-white relative overflow-hidden">
+      <div className="flex flex-col h-full bg-white dark:bg-[#030712] relative overflow-hidden">
         {/* Mini Navbar */}
-        <div className="h-8 bg-white border-b border-black/5 flex items-center px-4 gap-3 shrink-0">
+        <div className="h-8 bg-white dark:bg-[#111827] border-b border-black/5 dark:border-white/5 flex items-center px-4 gap-3 shrink-0">
           <div className="w-5 h-5 rounded-md bg-linear-to-br from-blue-600 to-indigo-700 flex items-center justify-center">
             <GraduationCap size={10} className="text-white" />
           </div>
-          <span className="text-[8px] font-black tracking-tight text-black">
+          <span className="text-[8px] font-black tracking-tight text-black dark:text-white">
             Edu<span className="text-blue-600">Nova</span>
           </span>
           <div className="flex gap-3 ml-2">
             {["Courses", "Roadmap", "Pricing"].map((l) => (
-              <span key={l} className="text-[7px] text-slate-600 font-bold">
+              <span key={l} className="text-[7px] text-slate-600 dark:text-gray-400 font-bold">
                 {l}
               </span>
             ))}
           </div>
-          <div className="ml-auto w-10 h-3 bg-black rounded-full" />
+          <div className="ml-auto w-10 h-3 bg-black dark:bg-white/20 rounded-full" />
         </div>
         {/* Aurora bg */}
         <div className="absolute inset-0 top-8 pointer-events-none">
@@ -84,7 +100,7 @@ const pages = [
         </div>
         <div className="flex-1 flex flex-col items-center justify-center px-8 text-center z-10">
           <motion.h2
-            className="text-[14px] font-black text-black leading-tight mb-2"
+            className="text-[14px] font-black text-black dark:text-white leading-tight mb-2"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -94,7 +110,7 @@ const pages = [
             Future of Learning
           </motion.h2>
           <motion.p
-            className="text-[7px] text-slate-600 font-medium mb-4 max-w-[160px]"
+            className="text-[7px] text-slate-600 dark:text-gray-400 font-medium mb-4 max-w-[160px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
@@ -107,11 +123,11 @@ const pages = [
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
           >
-            <div className="px-3 py-1 bg-black text-white text-[7px] font-bold rounded-full">
+            <div className="px-3 py-1 bg-black dark:bg-white text-white dark:text-black text-[7px] font-bold rounded-full">
               Start Learning Free
             </div>
-            <div className="px-3 py-1 border border-black/10 text-[7px] text-black font-bold rounded-full flex items-center gap-1">
-              <Play size={6} fill="black" /> Demo
+            <div className="px-3 py-1 border border-black/10 dark:border-white/10 text-[7px] text-black dark:text-white font-bold rounded-full flex items-center gap-1">
+              <Play size={6} className="fill-black dark:fill-white" /> Demo
             </div>
           </motion.div>
         </div>
@@ -122,18 +138,18 @@ const pages = [
     id: "courses",
     label: "Courses",
     content: () => (
-      <div className="flex flex-col h-full bg-gray-50">
-        <div className="h-8 bg-white border-b border-black/5 flex items-center px-4 gap-3 shrink-0">
+      <div className="flex flex-col h-full bg-gray-50 dark:bg-[#030712]">
+        <div className="h-8 bg-white dark:bg-[#111827] border-b border-black/5 dark:border-white/5 flex items-center px-4 gap-3 shrink-0">
           <div className="w-5 h-5 rounded-md bg-linear-to-br from-blue-600 to-indigo-700 flex items-center justify-center">
             <GraduationCap size={10} className="text-white" />
           </div>
-          <span className="text-[8px] font-black text-black">
+          <span className="text-[8px] font-black text-black dark:text-white">
             Edu<span className="text-blue-600">Nova</span>
           </span>
-          <div className="ml-auto h-3 w-16 bg-gray-100 border border-black/5 rounded-full" />
+          <div className="ml-auto h-3 w-16 bg-gray-100 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-full" />
         </div>
         <div className="flex-1 p-3 overflow-hidden">
-          <p className="text-[8px] font-black text-black mb-2">
+          <p className="text-[8px] font-black text-black dark:text-white mb-2">
             Explore Courses
           </p>
           <div className="grid grid-cols-2 gap-2">
@@ -172,19 +188,19 @@ const pages = [
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white rounded-xl p-2 border border-black/5 shadow-xs"
+                className="bg-white dark:bg-[#111827] rounded-xl p-2 border border-black/5 dark:border-white/5 shadow-xs"
               >
                 <span className="text-lg">{course.emoji}</span>
-                <p className="text-[7px] font-bold text-black mt-1 leading-tight">
+                <p className="text-[7px] font-bold text-black dark:text-white mt-1 leading-tight">
                   {course.title}
                 </p>
-                <p className="text-[6px] text-gray-400 mb-1">{course.level}</p>
+                <p className="text-[6px] text-gray-400 dark:text-gray-500 mb-1">{course.level}</p>
                 <div className="flex items-center gap-1">
                   <Star size={5} className="text-yellow-400 fill-yellow-400" />
-                  <span className="text-[6px] font-bold text-black">
+                  <span className="text-[6px] font-bold text-black dark:text-white">
                     {course.rating}
                   </span>
-                  <span className="text-[6px] text-gray-400 ml-auto">
+                  <span className="text-[6px] text-gray-400 dark:text-gray-500 ml-auto">
                     {course.students}
                   </span>
                 </div>
@@ -199,119 +215,157 @@ const pages = [
     id: "dashboard",
     label: "Dashboard",
     content: () => (
-      <div className="flex h-full bg-gray-50">
-        {/* Sidebar */}
-        <div className="w-16 bg-white border-r border-black/5 flex flex-col items-center py-3 gap-3 shrink-0">
-          <div className="w-6 h-6 rounded-lg bg-linear-to-br from-blue-600 to-indigo-700 flex items-center justify-center mb-2">
-            <GraduationCap size={12} className="text-white" />
-          </div>
-          {[BookOpen, BarChart2, Trophy, Users].map((Icon, i) => (
-            <div
-              key={i}
-              className={`w-8 h-8 rounded-xl flex items-center justify-center ${i === 0 ? "bg-blue-100" : "hover:bg-gray-100"}`}
-            >
-              <Icon
-                size={11}
-                className={i === 0 ? "text-blue-600" : "text-gray-400"}
-              />
+      <div className="flex h-full bg-white dark:bg-[#030712] overflow-hidden">
+        {/* Sidebar (Left Column) - 25% */}
+        <div className="hidden lg:flex w-1/4 border-r border-black/5 dark:border-white/5 flex flex-col py-3 shrink-0">
+          <div className="px-3 mb-4">
+            <div className="flex items-center gap-2 p-1.5 rounded-lg bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/5">
+              <div className="w-5 h-5 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[8px] font-bold text-white uppercase">
+                SG
+              </div>
+              <span className="text-[9px] font-bold text-black dark:text-white truncate">Subhajit Gayen</span>
+              <ChevronDown size={8} className="text-gray-400 ml-auto" />
             </div>
-          ))}
-        </div>
-        {/* Main */}
-        <div className="flex-1 p-3 overflow-hidden">
-          <p className="text-[8px] font-black text-black mb-2">My Dashboard</p>
-          <div className="grid grid-cols-3 gap-3 mb-4">
+          </div>
+
+          <div className="space-y-0.5 px-2">
             {[
-              {
-                label: "Courses",
-                value: "12",
-                color: "bg-blue-500/10 border-blue-500/20 text-blue-600",
-                icon: BookOpen
-              },
-              {
-                label: "Progress",
-                value: "84%",
-                color: "bg-indigo-500/10 border-indigo-500/20 text-indigo-600",
-                icon: BarChart2
-              },
-              {
-                label: "Points",
-                value: "2.4k",
-                color: "bg-emerald-500/10 border-emerald-500/20 text-emerald-600",
-                icon: Trophy
-              },
-            ].map((stat, i) => (
-              <motion.div
+              { icon: Inbox, label: "Inbox", count: 128, active: true },
+              { icon: FileText, label: "Assignments", count: 9 },
+              { icon: Send, label: "Sent" },
+              { icon: AlertCircle, label: "Feedback", count: 23 },
+              { icon: Trash, label: "Trash" },
+              { icon: Archive, label: "Archive" },
+            ].map((item, i) => (
+              <div
                 key={i}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + i * 0.1 }}
-                className={`p-3 rounded-2xl border backdrop-blur-md flex flex-col items-center justify-center ${stat.color} shadow-sm group hover:scale-105 transition-transform`}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md transition-colors ${item.active ? "bg-black text-white dark:bg-white dark:text-black" : "text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5"}`}
               >
-                <stat.icon size={12} className="mb-1 opacity-70" />
-                <p className="text-[12px] font-black">{stat.value}</p>
-                <p className="text-[7px] font-bold opacity-80 uppercase tracking-widest leading-none mt-1">
-                  {stat.label}
-                </p>
-              </motion.div>
+                <item.icon size={10} />
+                <span className="text-[9px] font-medium">{item.label}</span>
+                {item.count && (
+                  <span className={`ml-auto text-[8px] font-bold ${item.active ? "opacity-70" : "text-gray-400"}`}>
+                    {item.count}
+                  </span>
+                )}
+              </div>
             ))}
           </div>
 
-          <div className="bg-white/40 dark:bg-black/20 rounded-2xl p-3 border border-black/5 dark:border-white/5 mb-4">
-             <div className="flex items-center justify-between mb-2">
-                <p className="text-[8px] font-black text-black">Weekly Activity</p>
+          <div className="mt-6 px-3">
+            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2 px-2">Categories</p>
+            <div className="space-y-0.5">
+              {[
+                { icon: Users, label: "Social", count: 972 },
+                { icon: Star, label: "Updates", count: 342 },
+                { icon: MessageSquare, label: "Forums", count: 128 },
+                { icon: ShoppingBag, label: "Course Store", count: 8 },
+                { icon: Tag, label: "Promotions", count: 21 },
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-2 px-3 py-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 rounded-md transition-colors">
+                  <item.icon size={10} />
+                  <span className="text-[9px] font-medium">{item.label}</span>
+                  <span className="ml-auto text-[8px] font-bold text-gray-400">{item.count}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Message List (Middle Column) - 35% */}
+        <div className="w-full lg:w-[35%] border-r border-black/5 dark:border-white/5 flex flex-col shrink-0">
+          <div className="p-3 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
+            <h3 className="text-[12px] font-black text-black dark:text-white">Inbox</h3>
+            <div className="flex gap-1">
+              <button className="px-2 py-0.5 rounded-full bg-black text-white dark:bg-white dark:text-black text-[7px] font-bold">All mail</button>
+              <button className="px-2 py-0.5 rounded-full text-gray-500 dark:text-gray-400 text-[7px] font-bold border border-black/5 dark:border-white/5">Unread</button>
+            </div>
+          </div>
+
+          <div className="p-3">
+            <div className="relative">
+              <Search size={10} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input 
+                type="text" 
+                placeholder="Search messages..." 
+                className="w-full bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-lg py-1.5 pl-8 pr-3 text-[9px] outline-hidden placeholder:text-gray-400" 
+              />
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-1 px-2 pb-4 scrollbar-hide">
+            {[
+              { name: "Instructor Sarah", time: "over 1 year ago", title: "Project Feedback", body: "Hi Subhajit, I've reviewed your latest React patterns...", tags: ["review", "feedback"], active: true },
+              { name: "System Admin", time: "over 1 year ago", title: "Assignment Update", body: "Re: Advanced UI Library - The deadline for your...", tags: ["assignment", "urgent"] },
+              { name: "Peer Review Lab", time: "almost 2 years ago", title: "New Lab Results", body: "Your peer evaluation results are now available in...", tags: ["academic"] },
+              { name: "John Doe (Alumni)", time: "almost 2 years ago", title: "Networking Event", body: "Hey! We're hosting a meet-and-greet this Friday...", tags: ["event", "alumni"] },
+            ].map((msg, i) => (
+              <div 
+                key={i} 
+                className={`p-3 rounded-xl border transition-all ${msg.active ? "bg-white dark:bg-white/5 border-black/10 dark:border-white/10 shadow-sm" : "border-transparent opacity-60 hover:opacity-100"}`}
+              >
+                <div className="flex justify-between mb-1">
+                  <span className="text-[9px] font-black text-black dark:text-white">{msg.name}</span>
+                  <span className="text-[7px] text-gray-400 tracking-tight">{msg.time}</span>
+                </div>
+                <p className="text-[8px] font-bold text-gray-700 dark:text-gray-300 mb-1 truncate">{msg.title}</p>
+                <p className="text-[8px] text-gray-400 line-clamp-2 leading-relaxed mb-2">{msg.body}</p>
                 <div className="flex gap-1">
-                   {[1,2,3,4,5,6,7].map(d => <div key={d} className={`w-1 h-3 rounded-full ${d > 4 ? "bg-blue-600" : "bg-gray-200"}`} />)}
+                  {msg.tags.map(tag => (
+                    <span key={tag} className={`px-2 py-0.5 rounded-full text-[6px] font-black uppercase tracking-widest ${tag === "urgent" ? "bg-red-500/10 text-red-600" : "bg-black/5 dark:bg-white/10 text-gray-500 dark:text-white/60"}`}>{tag}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Message Detail (Right Column) - 40% */}
+        <div className="hidden md:flex flex-1 flex flex-col">
+          <div className="h-10 border-b border-black/5 dark:border-white/5 flex items-center px-4 justify-between shrink-0">
+             <div className="flex gap-4">
+                <div className="flex gap-2">
+                   {[Archive, Trash, AlertCircle, Clock].map((Icon, i) => <Icon key={i} size={12} className="text-gray-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer" />)}
+                </div>
+                <div className="w-[1px] h-3 bg-black/5 dark:bg-white/10 self-center" />
+                <div className="flex gap-2">
+                   {[RotateCcw, Reply, ReplyAll, Forward].map((Icon, i) => <Icon key={i} size={12} className="text-gray-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer" />)}
                 </div>
              </div>
-             <div className="h-10 flex items-end gap-1 px-1">
-                {[40, 70, 45, 90, 65, 80, 55, 75, 40, 60, 85, 30].map((h, i) => (
-                  <motion.div 
-                    key={i} 
-                    initial={{ height: 0 }}
-                    animate={{ height: `${h}%` }}
-                    transition={{ delay: 0.5 + i * 0.05, duration: 1 }}
-                    className="flex-1 bg-linear-to-t from-blue-600/20 to-blue-600 rounded-t-sm" 
-                  />
-                ))}
+             <div className="w-1 h-3 flex flex-col gap-0.5">
+                {[1,2,3].map(i => <div key={i} className="w-0.5 h-0.5 rounded-full bg-gray-400" />)}
              </div>
           </div>
-          <p className="text-[7px] font-bold text-black mb-1">
-            Continue Learning
-          </p>
-          <div className="space-y-2">
-            {[
-              { title: "Advanced React Patterns", pct: 83, color: "bg-blue-600", icon: "⚛️" },
-              { title: "Product Design Systems", pct: 45, color: "bg-indigo-600", icon: "🎨" },
-            ].map((course, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 + i * 0.1 }}
-                className="bg-white/60 dark:bg-white/5 rounded-2xl p-3 border border-black/5 dark:border-white/10 flex items-center gap-3 group overflow-hidden relative shadow-sm"
-              >
-                <div className="w-8 h-8 rounded-lg bg-gray-50 dark:bg-white/5 flex items-center justify-center text-sm shrink-0">{course.icon}</div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1.5">
-                    <p className="text-[9px] font-black text-black truncate pr-2">
-                      {course.title}
-                    </p>
-                    <span className="text-[7px] text-blue-600 font-black">
-                      {course.pct}%
-                    </span>
-                  </div>
-                  <div className="h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
-                    <motion.div
-                      className={`h-full rounded-full ${course.color} shadow-[0_0_10px_rgba(37,99,235,0.4)]`}
-                      initial={{ width: 0 }}
-                      animate={{ width: `${course.pct}%` }}
-                      transition={{ duration: 1.5, delay: 0.8 + i * 0.2, ease: "easeOut" }}
-                    />
-                  </div>
+
+          <div className="flex-1 p-6 flex flex-col overflow-y-auto">
+             <div className="flex items-start justify-between mb-8">
+                <div className="flex items-center gap-3">
+                   <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center text-orange-600 dark:text-orange-400 text-[10px] font-black">IS</div>
+                   <div>
+                      <p className="text-[11px] font-black text-black dark:text-white">Instructor Sarah</p>
+                      <p className="text-[8px] font-bold text-gray-500 dark:text-gray-400">Meeting Regarding Capstone Project</p>
+                      <p className="text-[7px] text-gray-400">Reply-To: sarah.inst@edunova.app</p>
+                   </div>
                 </div>
-              </motion.div>
-            ))}
+                <span className="text-[8px] text-gray-400 font-medium">Oct 22, 2023, 9:00:00 AM</span>
+             </div>
+
+             <div className="space-y-4 max-w-md">
+                <p className="text-[10px] text-gray-600 dark:text-gray-300 leading-relaxed font-medium">Hi Subhajit, let's have a meeting tomorrow to discuss the project. I've been reviewing your latest React patterns and have some ideas I'd like to share.</p>
+                <p className="text-[10px] text-gray-600 dark:text-gray-300 leading-relaxed font-medium">It's crucial that we align on our next steps to ensure the project's success. Please come prepared with any questions or insights you may have. Looking forward to our meeting!</p>
+                <p className="text-[10px] text-gray-600 dark:text-gray-300 leading-relaxed font-medium">Best regards, <br/><span className="font-black">Sarah</span></p>
+             </div>
+
+             <div className="mt-auto pt-8">
+                <div className="p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                   <p className="text-[9px] text-gray-400 mb-4">Reply to Instructor Sarah...</p>
+                   <div className="flex justify-end">
+                      <div className="w-8 h-8 rounded-full bg-black text-white dark:bg-white dark:text-black flex items-center justify-center">
+                         <Send size={12} />
+                      </div>
+                   </div>
+                </div>
+             </div>
           </div>
         </div>
       </div>
@@ -350,7 +404,7 @@ export default function HeroSection() {
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-32 pb-20 aurora-bg transition-colors duration-700">
       {/* Bottom white fade */}
-      <div className="absolute inset-x-0 bottom-0 h-[60vh] bg-linear-to-t from-white via-white/70 to-transparent pointer-events-none dark:from-[#050510] dark:via-[#050510]/60" />
+      <div className="absolute inset-x-0 bottom-0 h-[60vh] bg-linear-to-t from-white via-white/70 to-transparent pointer-events-none dark:from-[#030712] dark:via-[#030712]/60" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-center">
         {/* Headline with word marquee */}
@@ -362,7 +416,7 @@ export default function HeroSection() {
             className="font-black tracking-tight mb-8 leading-[1.4] md:leading-loose"
             style={{ color: "var(--foreground)" }}
           >
-            <span className="md:mb-6 inline-block font-serif text-[36px] md:text-7xl lg:text-7xl">
+            <span className="md:mb-6 inline-block font-serif text-[32px] sm:text-5xl md:text-7xl lg:text-7xl leading-tight">
               Step Into the Future of
             </span>
             <div className="md:h-[6.4em] overflow-hidden flex items-center justify-center">
@@ -373,7 +427,7 @@ export default function HeroSection() {
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -60, opacity: 0 }}
                   transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
-                  className={`${syne.className} block text-4xl md:text-8xl text-transparent bg-clip-text  ${
+                  className={`${bricolage.className} block text-4xl md:text-8xl font-black italic text-transparent bg-clip-text  ${
                     isDark
                       ? "bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500"
                       : "bg-linear-to-r from-cyan-700 via-blue-500 to-indigo-600"
@@ -426,10 +480,8 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 80 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="relative max-w-6xl mx-auto mt-12"
-
-
-          style={{ perspective: "1200px" }}
+          className="relative max-w-full md:max-w-7xl mx-auto mt-12 px-0 sm:px-6 scale-100 sm:scale-[0.85] md:scale-100 origin-top"
+          style={{ perspective: "2000px", backfaceVisibility: "hidden", transform: "translateZ(0)" }}
         >
           <motion.div
             style={{
@@ -440,7 +492,7 @@ export default function HeroSection() {
             className="relative"
           >
             {/* Browser chrome */}
-            <div className="relative z-10 rounded-[24px] overflow-hidden border border-black/8 bg-white dark:bg-gray-900 shadow-[0_60px_120px_rgba(0,0,0,0.15)]">
+            <div className="relative z-10 rounded-[24px] overflow-hidden border border-black/8 bg-white dark:bg-[#030712] shadow-[0_60px_120px_rgba(0,0,0,0.15)] dark:shadow-[0_60px_120px_rgba(0,0,0,0.6)]">
               {/* Browser top bar */}
               <div className="h-10 bg-gray-50 dark:bg-gray-800 border-b border-black/5 dark:border-white/5 flex items-center px-5 gap-3">
                 <div className="flex gap-1.5">
@@ -470,7 +522,7 @@ export default function HeroSection() {
               </div>
 
               {/* Page content area */}
-              <div className="h-[500px] relative overflow-hidden">
+              <div className="h-[450px] sm:h-[600px] md:h-[750px] relative overflow-hidden">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activePage}

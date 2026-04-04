@@ -191,7 +191,7 @@ function CheckoutContent() {
 
   if (!isLoaded || loading)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#f6f8ff] dark:bg-[#050510] transition-colors duration-700">
+      <div className="min-h-screen flex items-center justify-center bg-[#f6f8ff] dark:bg-[#030712] transition-colors duration-700">
         <Loader2 className="w-10 h-10 text-blue-600 dark:text-blue-500 animate-spin" />
       </div>
     );
@@ -201,7 +201,7 @@ function CheckoutContent() {
   const finalPrice = getPrice();
 
   return (
-    <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#050510] relative overflow-hidden transition-colors duration-700">
+    <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#030712] relative overflow-hidden transition-colors duration-700">
       {/* Abstract Background Glows */}
       <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-blue-600/5 dark:bg-blue-900/10 blur-[120px] rounded-full -translate-y-1/2 translate-x-1/2" />
       <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-indigo-600/5 dark:bg-indigo-900/10 blur-[120px] rounded-full translate-y-1/2 -translate-x-1/2" />
@@ -364,7 +364,7 @@ export default function CheckoutPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#050510]">
+        <div className="min-h-screen flex items-center justify-center bg-[#030712]">
           <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
         </div>
       }

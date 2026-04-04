@@ -126,7 +126,7 @@ export default function CoursesSection() {
   ).slice(0, 4);
 
   return (
-    <section className="relative py-28 overflow-hidden" id="courses">
+    <section className="relative py-28 overflow-hidden bg-white dark:bg-[#030712]" id="courses">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -178,7 +178,7 @@ export default function CoursesSection() {
               className={`${montserrat.className} px-5 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                 activeCategory === cat
                   ? "bg-black dark:bg-linear-to-r dark:from-blue-600 dark:to-indigo-600 text-white shadow-md dark:shadow-[0_0_20px_rgba(59,130,246,0.4)]"
-                  : "glass-card text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white hover:border-black/20 dark:hover:border-blue-500/40"
+                  : "bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white hover:border-black/20 dark:hover:border-blue-500/40"
               }`}
             >
               {cat}
@@ -207,7 +207,7 @@ export default function CoursesSection() {
                 transition={{ duration: 0.5, delay: i * 0.08 }}
                 onMouseEnter={() => setHoveredCard(i)}
                 onMouseLeave={() => setHoveredCard(null)}
-                className="group relative glass-card rounded-2xl overflow-hidden cursor-pointer"
+                className="group relative rounded-2xl overflow-hidden cursor-pointer bg-white dark:bg-[#111827] border border-black/[0.06] dark:border-white/[0.06] shadow-lg dark:shadow-black/40"
                 style={{
                   transition: "all 0.3s ease",
                   transform:

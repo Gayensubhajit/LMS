@@ -26,9 +26,6 @@ export async function updateUserSettings(
   return backendRequest("/settings", {
     method: "PATCH",
     clerkUserId,
-    body: JSON.stringify(updates),
-    headers: {
-      "Content-Type": "application/json",
-    },
+    body: updates,
   });
 }

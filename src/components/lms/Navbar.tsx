@@ -253,7 +253,7 @@ export default function Navbar() {
       <div 
         className={`absolute inset-0 transition-all duration-700 border-b ${
           scrolled 
-            ? "bg-white/60 dark:bg-[#050510]/60 backdrop-blur-2xl border-black/5 dark:border-white/5 opacity-100" 
+            ? "bg-white/60 dark:bg-[#030712]/80 backdrop-blur-2xl border-black/5 dark:border-white/5 opacity-100" 
             : "bg-transparent border-transparent opacity-0"
         }`} 
       />
@@ -288,7 +288,7 @@ export default function Navbar() {
             <div ref={wrapperRef} className="w-full relative max-w-2xl">
               <form onSubmit={handleSubmit}>
                 <div
-                   className={`flex items-center rounded-full transition-all duration-300 overflow-hidden bg-white dark:bg-[#0c0c1e] border-2 shadow-sm ${searchFocused ? "border-blue-600 dark:border-blue-500 ring-4 ring-blue-500/10" : "border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20"}`}
+                   className={`flex items-center rounded-full transition-all duration-300 overflow-hidden bg-white dark:bg-[#111827] border-2 shadow-sm ${searchFocused ? "border-blue-600 dark:border-blue-500 ring-4 ring-blue-500/10" : "border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20"}`}
                 >
                   <input
                     ref={inputRef}
@@ -311,7 +311,7 @@ export default function Navbar() {
                     initial={{ opacity: 0, y: 10, scale: 0.98 }} 
                     animate={{ opacity: 1, y: 0, scale: 1 }} 
                     exit={{ opacity: 0, y: 10, scale: 0.98 }} 
-                    className="absolute top-full mt-4 rounded-2xl z-[100] bg-white dark:bg-[#0c0c1e] border border-slate-200/80 dark:border-white/10 p-8 shadow-[0_8px_40px_-4px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_40px_-4px_rgba(0,0,0,0.5)] w-[780px] -left-32 xl:-left-48"
+                    className="absolute top-full mt-4 rounded-2xl z-[100] bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-white/5 p-8 shadow-[0_8px_40px_-4px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_40px_-4px_rgba(0,0,0,0.5)] w-[780px] -left-32 xl:-left-48"
                   >
                     {!query.trim() ? (
                       <div className="space-y-10">
@@ -461,7 +461,7 @@ export default function Navbar() {
                 </button>
                 <AnimatePresence>
                   {profileOpen && (
-                    <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="absolute right-0 top-full mt-2 w-56 rounded-2xl bg-white dark:bg-[#0a0a16] border border-black/10 dark:border-white/10 p-2 shadow-2xl">
+                    <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="absolute right-0 top-full mt-2 w-56 rounded-2xl bg-white dark:bg-[#111827] border border-black/10 dark:border-white/10 p-2 shadow-2xl">
                       <div className="px-4 py-2 mb-2 flex items-center justify-between border-b border-black/5 dark:border-white/5">
                         <span className="text-xs font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest">Theme</span>
                         <ThemeToggle />
@@ -507,7 +507,7 @@ export default function Navbar() {
             initial={{ opacity: 0, y: -10 }} 
             animate={{ opacity: 1, y: 0 }} 
             exit={{ opacity: 0, y: -10 }} 
-            className="lg:hidden fixed inset-0 top-18 bg-white dark:bg-[#050510] z-50 overflow-y-auto px-6 py-8"
+            className="lg:hidden fixed inset-0 top-18 bg-white dark:bg-[#030712] z-50 overflow-y-auto px-6 py-8"
           >
             {mobilePanel === "search" ? (
               <div>

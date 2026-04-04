@@ -17,33 +17,33 @@ const montserrat = Montserrat({ subsets: ["latin"] });
 const instructors = [
   {
     id: 1,
-    name: "Jessica Willis",
-    role: "Lead UX Designer",
-    company: "Ex-Apple",
-    initials: "JW",
+    name: "Gunjan Basak",
+    role: "Senior Software Engineer",
+    company: "Ex-Google",
+    initials: "GB",
     color: "from-violet-500 to-purple-700",
     bgColor: "from-violet-900/30 to-purple-900/20",
     rating: 4.9,
     students: "12.4K",
     courses: 8,
-    expertise: ["UI/UX", "Figma", "Design Systems"],
-    bio: "10+ years designing award-winning products at Apple and startups.",
-    image: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500&auto=format&fit=crop&q=60",
+    expertise: ["Cloud Native", "React", "Node.js"],
+    bio: "Passionate about building scalable cloud-native applications and teaching modern web technologies.",
+    image: "/images/instructors/gunjan_real.jpg",
   },
   {
     id: 2,
-    name: "Alex Chen",
-    role: "Senior Engineer",
-    company: "Ex-Meta",
-    initials: "AC",
+    name: "Chirantan Biswas",
+    role: "Full-stack Developer",
+    company: "Ex-Stripe",
+    initials: "CB",
     color: "from-blue-500 to-cyan-600",
     bgColor: "from-blue-900/30 to-cyan-900/20",
     rating: 4.8,
     students: "18.2K",
     courses: 12,
-    expertise: ["React", "Node.js", "AWS"],
-    bio: "Built features used by 3 billion people at Meta. Full-stack expert.",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=60",
+    expertise: ["Next.js", "TypeScript", "Tailwind"],
+    bio: "Focused on creating fluid, user-centric interfaces and robust backend architectures.",
+    image: "/images/instructors/chirantan_real.jpg",
   },
   {
     id: 3,
@@ -83,7 +83,7 @@ export default function InstructorsSection() {
   const [hovered, setHovered] = useState<number | null>(null);
 
   return (
-    <section className="relative py-28 overflow-hidden" id="instructors">
+    <section className="relative py-28 overflow-hidden bg-white dark:bg-[#030712]" id="instructors">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -130,13 +130,7 @@ export default function InstructorsSection() {
               transition={{ duration: 0.5, delay: i * 0.1 }}
               onMouseEnter={() => setHovered(i)}
               onMouseLeave={() => setHovered(null)}
-              className="group glass-card rounded-2xl overflow-hidden cursor-pointer"
-              style={{
-                transition: "all 0.3s ease",
-                transform: hovered === i ? "translateY(-8px)" : "translateY(0)",
-                boxShadow:
-                  hovered === i ? "0 20px 50px rgba(124,58,237,0.25)" : "none",
-              }}
+              className="group relative rounded-2xl overflow-hidden cursor-pointer bg-white dark:bg-[#111827] border border-black/[0.06] dark:border-white/[0.06] shadow-lg dark:shadow-black/40"
             >
               {/* Full Image Area */}
               <div
@@ -166,7 +160,7 @@ export default function InstructorsSection() {
               {/* Content */}
               <div className="p-5">
                 <h3 className="text-base font-bold text-black dark:text-white">{inst.name}</h3>
-                <p className="text-xs text-gray-600 dark:text-violet-400 mb-3">{inst.role}</p>
+                <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mb-3">{inst.role}</p>
 
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 leading-relaxed">
                   {inst.bio}
@@ -177,7 +171,7 @@ export default function InstructorsSection() {
                   {inst.expertise.map((tag, j) => (
                     <span
                       key={j}
-                      className="text-xs bg-black/5 dark:bg-violet-600/15 border border-black/10 dark:border-violet-500/20 text-black dark:text-violet-300 px-2 py-0.5 rounded-md"
+                      className="text-[10px] bg-black/5 dark:bg-blue-500/10 border border-black/10 dark:border-blue-500/20 text-slate-700 dark:text-blue-300 px-2 py-0.5 rounded-md font-medium"
                     >
                       {tag}
                     </span>
@@ -210,7 +204,7 @@ export default function InstructorsSection() {
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2">
                     <a
-                      href={`https://twitter.com/search?q=${encodeURIComponent(inst.name)}`}
+                      href={inst.id === 1 ? "https://x.com/GunjanBasak" : inst.id === 2 ? "https://x.com/Chirantan2002" : `https://twitter.com/search?q=${encodeURIComponent(inst.name)}`}
                       target="_blank"
                       rel="noreferrer"
                       className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-blue-400 hover:border-blue-500/30 transition-colors"
@@ -218,7 +212,7 @@ export default function InstructorsSection() {
                       <Twitter size={12} />
                     </a>
                     <a
-                      href={`https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(inst.name)}`}
+                      href={inst.id === 1 ? "https://www.linkedin.com/in/gunjan-basak-2a7440338" : inst.id === 2 ? "https://www.linkedin.com/in/chirantan2002/" : `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(inst.name)}`}
                       target="_blank"
                       rel="noreferrer"
                       className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-blue-500 hover:border-blue-500/30 transition-colors"
@@ -228,7 +222,7 @@ export default function InstructorsSection() {
                   </div>
                   <a
                     href={`/instructors?profile=${encodeURIComponent(inst.name)}`}
-                    className="flex items-center gap-1 text-xs text-black dark:text-violet-400 hover:opacity-70 dark:hover:text-violet-300 font-medium transition-opacity"
+                    className="flex items-center gap-1 text-xs text-black dark:text-blue-400 hover:opacity-70 dark:hover:text-blue-300 font-bold transition-opacity"
                   >
                     View Profile <ArrowRight size={11} />
                   </a>
@@ -246,7 +240,7 @@ export default function InstructorsSection() {
         >
           <a
             href="/instructors"
-            className="inline-flex items-center gap-2 border border-black/10 dark:border-violet-500/30 text-black dark:text-violet-300 px-8 py-3.5 rounded-2xl text-sm font-semibold hover:bg-black/5 dark:hover:bg-violet-600/10 transition-colors"
+            className="inline-flex items-center gap-2 border border-black/10 dark:border-blue-500/30 text-black dark:text-blue-400 px-8 py-3.5 rounded-2xl text-sm font-bold hover:bg-black/5 dark:hover:bg-blue-600/10 transition-colors"
           >
             Meet All 50+ Instructors <ArrowRight size={16} />
           </a>

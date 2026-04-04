@@ -9,7 +9,7 @@ export default function SupportPage() {
 
   if (!isLoaded) {
     return (
-      <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#0a0a16] flex items-center justify-center transition-colors duration-700">
+      <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#030712] flex items-center justify-center transition-colors duration-700">
         <div className="w-12 h-12 border-4 border-blue-500/20 dark:border-violet-500/20 border-t-blue-600 dark:border-t-violet-500 rounded-full animate-spin" />
       </div>
     );

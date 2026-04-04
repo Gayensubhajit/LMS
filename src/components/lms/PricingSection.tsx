@@ -202,7 +202,7 @@ export default function PricingSection() {
                 transition={{ delay: i * 0.08 }}
                 className={`relative rounded-2xl flex flex-col overflow-hidden transition-all duration-300 ${
                   plan.highlight
-                    ? "border-2 border-indigo-600 dark:border-violet-500/70 shadow-2xl shadow-indigo-500/10 dark:shadow-violet-500/20 bg-white dark:bg-[#0a0a16]"
+                    ? "border-2 border-indigo-600 dark:border-violet-500/70 shadow-2xl shadow-indigo-500/10 dark:shadow-violet-500/20 bg-white dark:bg-[#111827]"
                     : "border border-black/[0.05] dark:border-white/[0.07] bg-white dark:bg-transparent"
                 }`}
                 style={{

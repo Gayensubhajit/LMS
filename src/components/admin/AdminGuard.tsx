@@ -48,7 +48,7 @@ export default function AdminGuard({ children }: { children: React.ReactNode }) 
 
   if (isAuthorized === null) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-[#050510] flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#030712] flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-10 h-10 text-blue-600 dark:text-blue-500 animate-spin" />
         <p className="text-slate-500 dark:text-gray-400 font-bold animate-pulse uppercase tracking-[0.2em] text-[10px]">
           Verifying Admin Access...

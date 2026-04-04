@@ -22,21 +22,19 @@ const INSTRUCTOR_META: Record<
     image?: string;
   }
 > = {
-  "Jessica Willis": {
-    title: "Lead Product Designer",
-    bio: "10+ years designing products at Figma and Airbnb. Specialises in end-to-end UX systems.",
-    avatar: "JW",
-    gradient: ["#f472b6", "#ec4899"],
-    image:
-      "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=500&auto=format&fit=crop&q=60",
-  },
-  "Alex Chen": {
+  "Gunjan Basak": {
     title: "Senior Software Engineer",
-    bio: "Ex-Vercel engineer. Built production systems used by 2M+ developers. Open-source contributor.",
-    avatar: "AC",
-    gradient: ["#60a5fa", "#3b82f6"],
-    image:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=500&auto=format&fit=crop&q=60",
+    bio: "Passionate about building scalable cloud-native applications and teaching modern web technologies.",
+    avatar: "GB",
+    gradient: ["#6366f1", "#4f46e5"],
+    image: "/images/instructors/gunjan_real.jpg",
+  },
+  "Chirantan Biswas": {
+    title: "Full-stack Developer",
+    bio: "Focused on creating fluid, user-centric interfaces and robust backend architectures.",
+    avatar: "CB",
+    gradient: ["#0ea5e9", "#2563eb"],
+    image: "/images/instructors/chirantan_real.jpg",
   },
   "Dr. Sarah Park": {
     title: "AI Research Scientist",

@@ -36,7 +36,7 @@ export default function SignInPage() {
         appearance={{
           elements: {
             rootBox: "w-full max-w-md",
-            card: "bg-white dark:bg-[#0f0f1a] border border-slate-200 dark:border-violet-500/20 shadow-none",
+            card: "bg-white dark:bg-[#111827] border border-slate-200 dark:border-violet-500/20 shadow-none",
             headerTitle: "text-slate-900 dark:text-white",
             headerSubtitle: "text-slate-500 dark:text-gray-400",
             socialButtonsBlockButton:

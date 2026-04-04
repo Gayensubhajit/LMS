@@ -40,7 +40,7 @@ export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="relative py-28 overflow-hidden" id="faq">
+    <section className="relative py-28 overflow-hidden bg-white dark:bg-[#030712]" id="faq">
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -80,14 +80,10 @@ export default function FAQSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.4, delay: i * 0.07 }}
-              className="glass-card rounded-2xl overflow-hidden"
+              className={`rounded-2xl overflow-hidden transition-all duration-300 border bg-white dark:bg-[#111827] ${
+                openIndex === i ? "border-black/20 dark:border-blue-500/30 shadow-lg dark:shadow-blue-500/10" : "border-black/5 dark:border-white/5"
+              }`}
               style={{
-                borderColor:
-                  openIndex === i
-                    ? "rgba(0,0,0,0.1)"
-                    : "rgba(0,0,0,0.05)",
-                boxShadow:
-                  openIndex === i ? "0 0 25px rgba(0,0,0,0.05)" : "none",
                 transition: "all 0.3s ease",
               }}
             >
@@ -138,7 +134,7 @@ export default function FAQSection() {
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.5, delay: 0.7 }}
-          className={`${montserrat.className} text-center mt-12 glass-card rounded-2xl p-8`}
+          className={`${montserrat.className} text-center mt-12 bg-white dark:bg-[#111827] border border-black/10 dark:border-white/10 rounded-2xl p-8 shadow-xl dark:shadow-black/20`}
         >
           <div className="text-2xl mb-2">🤔</div>
           <h3 className="text-lg font-bold text-black dark:text-white mb-2">

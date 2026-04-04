@@ -14,7 +14,7 @@ export default function AdminLayout({
 
   return (
     <AdminGuard>
-      <div className="flex min-h-screen bg-[#f6f8ff] dark:bg-[#050510] text-slate-500 dark:text-gray-400 overflow-hidden">
+      <div className="flex min-h-screen bg-[#f6f8ff] dark:bg-[#030712] text-slate-500 dark:text-gray-400 overflow-hidden">
         {/* Mobile Header */}
         <div className="lg:hidden fixed top-0 left-0 right-0 h-16 bg-white dark:bg-[#080a12] border-b border-slate-200 dark:border-white/5 z-40 flex items-center justify-between px-6">
           <div className="flex items-center gap-2">

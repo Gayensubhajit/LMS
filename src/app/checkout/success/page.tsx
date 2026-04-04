@@ -13,7 +13,7 @@ import {
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { coursesData } from "@/lib/courses-data";
-import { confetti } from "canvas-confetti";
+import confetti from "canvas-confetti";
 
 function SuccessContent() {
   const searchParams = useSearchParams();
@@ -61,13 +61,13 @@ function SuccessContent() {
   }, []);
 
   if (!course) return (
-    <div className="min-h-screen flex items-center justify-center bg-[#050510]">
+    <div className="min-h-screen flex items-center justify-center bg-[#030712]">
        <Loader2 className="w-10 h-10 text-violet-500 animate-spin" />
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-[#050510] flex flex-col items-center justify-center p-6 text-center overflow-hidden relative">
+    <div className="min-h-screen bg-[#030712] flex flex-col items-center justify-center p-6 text-center overflow-hidden relative">
       {/* Background decorations */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-4xl max-h-[600px] pointer-events-none opacity-20">
          <div className="absolute top-0 left-0 w-64 h-64 bg-violet-600/30 blur-[100px] rounded-full" />
@@ -153,7 +153,7 @@ function SuccessContent() {
 export default function CheckoutSuccessPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-[#050510]">
+      <div className="min-h-screen flex items-center justify-center bg-[#030712]">
          <Loader2 className="w-10 h-10 text-violet-500 animate-spin" />
       </div>
     }>

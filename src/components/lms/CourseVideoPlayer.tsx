@@ -279,7 +279,7 @@ const CourseVideoPlayer = ({
         onMouseMove={resetActivityTimer}
         onMouseEnter={resetActivityTimer}
         className={`
-          relative bg-[#050510] overflow-hidden group/player select-none 
+          relative bg-[#030712] overflow-hidden group/player select-none 
           transition-[width,height,border-radius,box-shadow] duration-500 ease-in-out shadow-2xl ring-1 ring-white/5
           ${isPipMode 
             ? "fixed bottom-6 right-6 w-[360px] aspect-video z-[9999] rounded-xl ring-2 ring-violet-500/50 cursor-move" 

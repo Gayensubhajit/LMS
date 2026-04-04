@@ -18,7 +18,7 @@ export default function ClerkProviderWrapper({
         // @ts-ignore - 'baseTheme' is the correct property for clerk/nextjs ^7
         baseTheme: resolvedTheme === "dark" ? dark : undefined,
         variables: {
-          colorBackground: resolvedTheme === "dark" ? "#0f0f1a" : "#ffffff",
+          colorBackground: resolvedTheme === "dark" ? "#111827" : "#ffffff",
           colorText: resolvedTheme === "dark" ? "#ffffff" : "#0f172a",
           colorPrimary: resolvedTheme === "dark" ? "#8b5cf6" : "#4f46e5",
           colorTextOnPrimaryBackground: "#ffffff",

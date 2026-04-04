@@ -202,7 +202,7 @@ export default function MyCoursesPage() {
   return (
     <div className="min-h-screen bg-[#f6f8ff] dark:bg-[#08080f] text-slate-900 dark:text-[#f0f0ff]">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-24 pb-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-20 pb-20">
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
           {/* ── LEFT SIDEBAR ── */}
           {/* ── MOBILE: GREETING ── */}

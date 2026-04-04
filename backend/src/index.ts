@@ -158,7 +158,7 @@ async function autoSeed() {
 
 const app = express();
 
-app.use(cors({ origin: env.CORS_ORIGIN }));
+app.use(cors({ origin: env.CORS_ORIGIN.split(",") }));
 
 // Clerk requires raw body for Svix signature verification.
 app.post(

@@ -220,68 +220,95 @@ const pages = [
         {/* Main */}
         <div className="flex-1 p-3 overflow-hidden">
           <p className="text-[8px] font-black text-black mb-2">My Dashboard</p>
-          <div className="grid grid-cols-3 gap-2 mb-2">
+          <div className="grid grid-cols-3 gap-3 mb-4">
             {[
               {
                 label: "Courses",
-                value: "3",
-                color: "bg-blue-50 border-blue-100",
+                value: "12",
+                color: "bg-blue-500/10 border-blue-500/20 text-blue-600",
+                icon: BookOpen
               },
               {
                 label: "Progress",
-                value: "72%",
-                color: "bg-cyan-50 border-cyan-100",
+                value: "84%",
+                color: "bg-indigo-500/10 border-indigo-500/20 text-indigo-600",
+                icon: BarChart2
               },
               {
-                label: "Streak",
-                value: "14d",
-                color: "bg-green-50 border-green-100",
+                label: "Points",
+                value: "2.4k",
+                color: "bg-emerald-500/10 border-emerald-500/20 text-emerald-600",
+                icon: Trophy
               },
             ].map((stat, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 5 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                className={`p-2 rounded-xl border ${stat.color}`}
+                transition={{ delay: 0.1 + i * 0.1 }}
+                className={`p-3 rounded-2xl border backdrop-blur-md flex flex-col items-center justify-center ${stat.color} shadow-sm group hover:scale-105 transition-transform`}
               >
-                <p className="text-[9px] font-black text-black">{stat.value}</p>
-                <p className="text-[6px] text-slate-600 font-bold">
+                <stat.icon size={12} className="mb-1 opacity-70" />
+                <p className="text-[12px] font-black">{stat.value}</p>
+                <p className="text-[7px] font-bold opacity-80 uppercase tracking-widest leading-none mt-1">
                   {stat.label}
                 </p>
               </motion.div>
             ))}
           </div>
+
+          <div className="bg-white/40 dark:bg-black/20 rounded-2xl p-3 border border-black/5 dark:border-white/5 mb-4">
+             <div className="flex items-center justify-between mb-2">
+                <p className="text-[8px] font-black text-black">Weekly Activity</p>
+                <div className="flex gap-1">
+                   {[1,2,3,4,5,6,7].map(d => <div key={d} className={`w-1 h-3 rounded-full ${d > 4 ? "bg-blue-600" : "bg-gray-200"}`} />)}
+                </div>
+             </div>
+             <div className="h-10 flex items-end gap-1 px-1">
+                {[40, 70, 45, 90, 65, 80, 55, 75, 40, 60, 85, 30].map((h, i) => (
+                  <motion.div 
+                    key={i} 
+                    initial={{ height: 0 }}
+                    animate={{ height: `${h}%` }}
+                    transition={{ delay: 0.5 + i * 0.05, duration: 1 }}
+                    className="flex-1 bg-linear-to-t from-blue-600/20 to-blue-600 rounded-t-sm" 
+                  />
+                ))}
+             </div>
+          </div>
           <p className="text-[7px] font-bold text-black mb-1">
             Continue Learning
           </p>
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             {[
-              { title: "React & Next.js", pct: 83, color: "bg-blue-600" },
-              { title: "UI/UX Design", pct: 45, color: "bg-cyan-600" },
+              { title: "Advanced React Patterns", pct: 83, color: "bg-blue-600", icon: "⚛️" },
+              { title: "Product Design Systems", pct: 45, color: "bg-indigo-600", icon: "🎨" },
             ].map((course, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.3 + i * 0.1 }}
-                className="bg-white rounded-xl p-2 border border-black/5"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 + i * 0.1 }}
+                className="bg-white/60 dark:bg-white/5 rounded-2xl p-3 border border-black/5 dark:border-white/10 flex items-center gap-3 group overflow-hidden relative shadow-sm"
               >
-                <div className="flex items-center justify-between mb-1">
-                  <p className="text-[7px] font-semibold text-black">
-                    {course.title}
-                  </p>
-                  <span className="text-[6px] text-slate-600 font-bold">
-                    {course.pct}%
-                  </span>
-                </div>
-                <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
-                  <motion.div
-                    className={`h-full rounded-full ${course.color}`}
-                    initial={{ width: 0 }}
-                    animate={{ width: `${course.pct}%` }}
-                    transition={{ duration: 1, delay: 0.5 + i * 0.2 }}
-                  />
+                <div className="w-8 h-8 rounded-lg bg-gray-50 dark:bg-white/5 flex items-center justify-center text-sm shrink-0">{course.icon}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <p className="text-[9px] font-black text-black truncate pr-2">
+                      {course.title}
+                    </p>
+                    <span className="text-[7px] text-blue-600 font-black">
+                      {course.pct}%
+                    </span>
+                  </div>
+                  <div className="h-1.5 bg-gray-100 dark:bg-white/5 rounded-full overflow-hidden">
+                    <motion.div
+                      className={`h-full rounded-full ${course.color} shadow-[0_0_10px_rgba(37,99,235,0.4)]`}
+                      initial={{ width: 0 }}
+                      animate={{ width: `${course.pct}%` }}
+                      transition={{ duration: 1.5, delay: 0.8 + i * 0.2, ease: "easeOut" }}
+                    />
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -327,7 +354,7 @@ export default function HeroSection() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 w-full text-center">
         {/* Headline with word marquee */}
-        <div className="min-h-screen max-w-4xl mx-auto mb-12">
+        <div className="max-w-4xl mx-auto mb-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -362,7 +389,7 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className={`${montserrat.className} text-sm md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed font-medium mb-12`}
+            className={`${montserrat.className} text-sm md:text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed font-medium mb-8`}
           >
             Master UI/UX Design, Development & more with AI-guided roadmaps,
             real-world projects, and industry mentors — all in one platform.
@@ -399,7 +426,9 @@ export default function HeroSection() {
           initial={{ opacity: 0, y: 80 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="relative max-w-5xl mx-auto mt-16"
+          className="relative max-w-6xl mx-auto mt-12"
+
+
           style={{ perspective: "1200px" }}
         >
           <motion.div
@@ -441,7 +470,7 @@ export default function HeroSection() {
               </div>
 
               {/* Page content area */}
-              <div className="h-[420px] relative overflow-hidden">
+              <div className="h-[500px] relative overflow-hidden">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activePage}

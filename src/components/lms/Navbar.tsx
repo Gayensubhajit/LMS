@@ -284,7 +284,7 @@ export default function Navbar() {
             ))}
           </div>
 
-          <div className="flex-1 hidden lg:flex justify-center">
+          <div className="flex-1 hidden lg:flex justify-center px-12">
             <div ref={wrapperRef} className="w-full relative max-w-2xl">
               <form onSubmit={handleSubmit}>
                 <div
@@ -315,6 +315,37 @@ export default function Navbar() {
                   >
                     {!query.trim() ? (
                       <div className="space-y-10">
+                        {/* Recent Searches */}
+                        {recentSearches.length > 0 && (
+                          <div>
+                            <div className="flex items-center justify-between mb-5 px-1">
+                              <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest opacity-60">Recent searches</h3>
+                              <button 
+                                onClick={() => {
+                                  setRecentSearches([]);
+                                  localStorage.removeItem(RECENT_SEARCHES_KEY);
+                                }}
+                                className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest hover:text-blue-600 transition-colors"
+                              >
+                                Clear all
+                              </button>
+                            </div>
+                            <div className="space-y-1">
+                              {recentSearches.slice(0, 3).map((term, i) => (
+                                <button 
+                                  key={i}
+                                  onClick={() => handlePopularClick(term)}
+                                  className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-slate-50 dark:hover:bg-white/5 transition-colors text-left group"
+                                >
+                                  <History size={14} className="text-slate-400 dark:text-gray-600" />
+                                  <span className="text-sm font-bold text-slate-600 dark:text-gray-400 group-hover:text-blue-600 transition-colors">{term}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Trending */}
                         <div>
                           <h3 className="text-sm font-black text-slate-900 dark:text-white mb-5 uppercase tracking-widest px-1 opacity-60">Trending on EduNova</h3>
                           <div className="flex flex-wrap gap-2.5">
@@ -330,21 +361,25 @@ export default function Navbar() {
                           </div>
                         </div>
 
+                        {/* Recently Viewed / Handpicked */}
                         <div>
                           <div className="flex items-center justify-between mb-5 px-1">
-                             <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest opacity-60">Handpicked for you</h3>
+                             <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-widest opacity-60">Recently viewed</h3>
                              <button className="text-[10px] font-black text-blue-600 dark:text-blue-400 uppercase tracking-widest hover:underline">View All</button>
                           </div>
                           <div className="grid grid-cols-2 xl:grid-cols-4 gap-4">
-                            {coursesData.slice(0, 4).map((c, i) => (
+                            {coursesData.slice(0, 4).map((c) => (
                               <button 
                                 key={c.slug}
                                 onClick={() => handleResultClick(c.title)}
                                 className="flex flex-col text-left group"
                               >
                                 <div className="aspect-video rounded-2xl overflow-hidden bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 mb-3 relative">
-                                  {/* Dummy thumbnail */}
-                                  <div className="absolute inset-0 flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-500">{c.emoji}</div>
+                                  {c.img ? (
+                                    <img src={c.img} alt={c.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                  ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center text-4xl group-hover:scale-110 transition-transform duration-500">{c.emoji}</div>
+                                  )}
                                   <div className="absolute inset-0 bg-blue-600/0 group-hover:bg-blue-600/10 transition-colors" />
                                 </div>
                                 <div className="flex items-center gap-2 mb-2">
@@ -352,7 +387,7 @@ export default function Navbar() {
                                    <span className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest truncate">EduNova · {c.category}</span>
                                 </div>
                                 <h4 className="text-sm font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2 leading-snug mb-3">{c.title}</h4>
-                                <p className="mt-auto text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest">{c.level} · {c.duration}</p>
+                                <p className="mt-auto text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest">{c.level} · Professional Certificate</p>
                               </button>
                             ))}
                           </div>
@@ -368,8 +403,12 @@ export default function Navbar() {
                              {results.map((course) => (
                                <li key={course.slug}>
                                  <button onClick={() => handleResultClick(course.title)} className="w-full flex items-center gap-4 p-3 rounded-[20px] bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-blue-500/50 hover:bg-white dark:hover:bg-blue-500/10 transition-all text-left group shadow-sm hover:shadow-xl hover:shadow-blue-500/10">
-                                   <div className="w-14 h-14 rounded-2xl bg-white dark:bg-white/5 flex items-center justify-center text-2xl shrink-0 group-hover:scale-110 transition-transform">
-                                     {course.emoji}
+                                   <div className="w-14 h-14 rounded-2xl bg-white dark:bg-white/5 flex items-center justify-center overflow-hidden shrink-0 group-hover:scale-110 transition-transform">
+                                     {course.img ? (
+                                       <img src={course.img} alt={course.title} className="w-full h-full object-cover" />
+                                     ) : (
+                                       <span className="text-2xl">{course.emoji}</span>
+                                     )}
                                    </div>
                                    <div className="flex-1 min-w-0">
                                      <p className="text-slate-900 dark:text-white text-sm font-black truncate mb-1">{course.title}</p>
@@ -396,6 +435,7 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
           </div>
+
 
 
           <div className="hidden lg:flex items-center gap-6 shrink-0">

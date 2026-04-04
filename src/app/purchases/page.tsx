@@ -376,8 +376,8 @@ export default function PurchasesPage() {
             <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-400 to-sky-400 dark:from-violet-600 dark:via-pink-400 dark:to-sky-400 animate-gradient-x opacity-30 group-hover:opacity-100 transition-opacity duration-700" />
             <div className="relative bg-white/90 dark:bg-slate-950/90 backdrop-blur-3xl border border-slate-200 dark:border-transparent rounded-[2.95rem] p-10 sm:p-14 lg:p-20 flex flex-col lg:flex-row items-center gap-12 lg:gap-20 transition-colors duration-700">
               <div className="flex-1 text-center lg:text-left">
-                <div className="flex items-center justify-center lg:justify-start gap-4 mb-8">
-                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-black text-lg shadow-inner">
+                <div className="flex flex-col md:flex-row items-center justify-center lg:justify-start gap-4 mb-8">
+                  <div className="p-3 rounded-2xl bg-slate-50 dark:bg-white/5 border border-slate-500/70 dark:border-white/10 text-slate-900 dark:text-white font-black text-lg shadow-inner">
                     EduNova{" "}
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-500 dark:from-violet-400 dark:to-pink-500">
                       Infinite

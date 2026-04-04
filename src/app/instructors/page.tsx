@@ -207,7 +207,7 @@ export default function InstructorsPage() {
                 value: `${allInstructors.length}+`,
                 label: "Expert Instructors",
               },
-              { value: "50K+", label: "Students Taught" },
+              { value: "25K+", label: "Students Taught" },
               { value: "4.8★", label: "Average Rating" },
             ].map(({ value, label }) => (
               <div

@@ -26,10 +26,10 @@ export default function TrustedBySectionPremium() {
 
   return (
     <section className="relative py-10 overflow-hidden mt-6 md:mt-32 backdrop-blur">
-      <div className="relative z-10 max-w-5xl mx-auto px-6">
+      <div className="relative z-10 w-full mx-auto px-4 md:px-8">
         {/* Label */}
         <p
-          className={`${montserrat.className} text-gray-500 dark:text-gray-400 tracking-wide mb-16 text-sm font-medium`}
+          className={`${montserrat.className} text-gray-500 dark:text-gray-400 tracking-wide mb-16 text-base md:text-lg font-medium text-center`}
         >
           Preferred by individuals from 20+ forward thinking companies
         </p>
@@ -42,7 +42,7 @@ export default function TrustedBySectionPremium() {
 
           <div className="overflow-x-clip">
             <motion.div
-              className="flex items-center gap-14 whitespace-nowrap shrink-0"
+              className="flex items-center gap-8 whitespace-nowrap shrink-0"
               style={{ width: "max-content" }}
               animate={{ x: ["0%", "-100%"] }}
               transition={{ repeat: Infinity, duration: 150, ease: "linear" }}

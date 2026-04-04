@@ -311,7 +311,7 @@ export default function Navbar() {
                     initial={{ opacity: 0, y: 10, scale: 0.98 }} 
                     animate={{ opacity: 1, y: 0, scale: 1 }} 
                     exit={{ opacity: 0, y: 10, scale: 0.98 }} 
-                    className="absolute top-full left-0 right-0 mt-4 rounded-[32px] z-[100] bg-white dark:bg-[#0c0c1e] border border-slate-200 dark:border-white/10 backdrop-blur-3xl p-8 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] dark:shadow-[0_32px_64px_-12px_rgba(0,0,0,0.5)]"
+                    className="absolute top-full mt-4 rounded-2xl z-[100] bg-white dark:bg-[#0c0c1e] border border-slate-200/80 dark:border-white/10 p-8 shadow-[0_8px_40px_-4px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_40px_-4px_rgba(0,0,0,0.5)] w-[780px] -left-32 xl:-left-48"
                   >
                     {!query.trim() ? (
                       <div className="space-y-10">
@@ -347,13 +347,13 @@ export default function Navbar() {
 
                         {/* Trending */}
                         <div>
-                          <h3 className="text-sm font-black text-slate-900 dark:text-white mb-5 uppercase tracking-widest px-1 opacity-60">Trending on EduNova</h3>
-                          <div className="flex flex-wrap gap-2.5">
+                          <h3 className="text-base font-bold text-slate-900 dark:text-white mb-4">Trending on EduNova</h3>
+                          <div className="flex flex-wrap gap-2">
                             {mobileTrendingChips.map((tag) => (
                               <button 
                                 key={tag} 
                                 onClick={() => handlePopularClick(tag)}
-                                className="px-5 py-2.5 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl text-sm font-bold text-slate-700 dark:text-gray-300 hover:border-blue-500/50 hover:bg-blue-500/5 hover:text-blue-600 dark:hover:text-blue-400 transition-all active:scale-95"
+                                className="px-4 py-2 bg-white dark:bg-white/5 border border-slate-300 dark:border-white/15 rounded-full text-sm font-medium text-slate-700 dark:text-gray-300 hover:border-slate-500 hover:bg-slate-50 dark:hover:text-white transition-all"
                               >
                                 {tag}
                               </button>
@@ -361,36 +361,36 @@ export default function Navbar() {
                           </div>
                         </div>
 
-                        {/* Recently Viewed */}
+                        {/* Recently Viewed — 4 big vertical cards like Coursera */}
                         <div>
-                          <div className="flex items-center justify-between mb-4 px-1 font-black uppercase tracking-[0.2em] opacity-40">
-                             <h3 className="text-[10px] text-slate-900 dark:text-white">Recently viewed</h3>
-                             <button className="text-[10px] text-blue-600 dark:text-blue-400 hover:underline">View All</button>
+                          <div className="flex items-center justify-between mb-5">
+                             <h3 className="text-base font-bold text-slate-900 dark:text-white">Recently viewed</h3>
                           </div>
                           
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pb-2">
+                          <div className="grid grid-cols-4 gap-5">
                             {coursesData.slice(0, 4).map((c) => (
                               <button 
                                 key={c.slug}
                                 onClick={() => handleResultClick(c.title)}
-                                className="flex items-center gap-4 p-2.5 rounded-2xl bg-slate-50/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-blue-500/30 hover:bg-white dark:hover:bg-white/10 transition-all text-left group overflow-hidden"
+                                className="flex flex-col text-left group rounded-xl overflow-hidden border border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 hover:shadow-lg transition-all"
                               >
-                                <div className="w-20 h-14 rounded-xl overflow-hidden bg-slate-100 dark:bg-white/5 shrink-0 relative">
+                                {/* Large image on top */}
+                                <div className="w-full aspect-video overflow-hidden bg-slate-100 dark:bg-white/5 relative">
                                   {c.img ? (
-                                    <img src={c.img} alt={c.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                                    <img src={c.img} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                                   ) : (
-                                    <div className="absolute inset-0 flex items-center justify-center text-xl group-hover:scale-110 transition-transform duration-500">{c.emoji}</div>
+                                    <div className="absolute inset-0 flex items-center justify-center text-3xl">{c.emoji}</div>
                                   )}
                                 </div>
-                                <div className="flex-1 min-w-0 pr-2">
-                                  <div className="flex items-center gap-1.5 mb-1">
-                                     <div className="w-4 h-4 rounded-sm flex items-center justify-center bg-blue-600 text-[8px] text-white font-bold shrink-0">N</div>
-                                     <span className="text-[9px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-widest truncate">EduNova · {c.category}</span>
+                                {/* Card body */}
+                                <div className="p-3 flex flex-col gap-1">
+                                  <div className="flex items-center gap-1.5">
+                                    <div className="w-4 h-4 rounded-sm flex items-center justify-center bg-blue-600 text-[8px] text-white font-bold shrink-0">N</div>
+                                    <span className="text-[10px] font-semibold text-slate-500 dark:text-gray-500 truncate">EduNova</span>
                                   </div>
-                                  <h4 className="text-[13px] font-black text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-1 leading-tight mb-1">{c.title}</h4>
-                                  <p className="text-[9px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest truncate">{c.level} · Professional Certificate</p>
+                                  <h4 className="text-[13px] font-bold text-slate-900 dark:text-white line-clamp-2 leading-snug">{c.title}</h4>
+                                  <p className="text-[11px] text-slate-500 dark:text-gray-500 mt-0.5">{c.level} · Professional Certificate</p>
                                 </div>
-                                <ChevronRight size={14} className="text-slate-300 dark:text-gray-700 mr-1 opacity-0 group-hover:opacity-100 transition-all group-hover:translate-x-1" />
                               </button>
                             ))}
                           </div>

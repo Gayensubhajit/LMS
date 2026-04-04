@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("http://localhost:3000"),
+  metadataBase: new URL("https://edunova-lms.vercel.app"),
   title: {
     default: "EduNova — AI-Powered 2026 Learning Platform",
     template: "%s | EduNova",

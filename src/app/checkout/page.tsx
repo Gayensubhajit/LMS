@@ -226,7 +226,7 @@ function CheckoutContent() {
         order_id: orderId,
         handler: function (response: any) {
           toast.success("Payment successful! Redirecting...");
-          setTimeout(() => router.push(course ? `/checkout/success?slug=${course.slug}` : "/dashboard"), 1500);
+          setTimeout(() => router.push(course ? `/checkout/success?slug=${course.slug}` : `/checkout/success?plan=${plan || "plus"}`), 1500);
         },
         prefill: {
           name: user?.fullName || "",

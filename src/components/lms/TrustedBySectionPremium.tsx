@@ -7,28 +7,14 @@ import { Montserrat } from "next/font/google";
 const montserrat = Montserrat({ subsets: ["latin"] });
 
 const trustedLogos = [
-  { href: "/marquee_images/01.svg" },
-  { href: "/marquee_images/02.svg" },
-  { href: "/marquee_images/03.svg" },
-  { href: "/marquee_images/04.svg" },
-  { href: "/marquee_images/05.svg" },
-  { href: "/marquee_images/06.svg" },
-  { href: "/marquee_images/07.svg" },
-  { href: "/marquee_images/08.svg" },
-  { href: "/marquee_images/09.svg" },
-  { href: "/marquee_images/10.svg" },
-  { href: "/marquee_images/11.svg" },
-  { href: "/marquee_images/12.svg" },
-  { href: "/marquee_images/13.svg" },
-  { href: "/marquee_images/14.svg" },
-  { href: "/marquee_images/15.svg" },
-  { href: "/marquee_images/16.svg" },
-  { href: "/marquee_images/17.svg" },
-  { href: "/marquee_images/18.svg" },
-  { href: "/marquee_images/19.svg" },
-  { href: "/marquee_images/20.svg" },
-  { href: "/marquee_images/21.svg" },
-  { href: "/marquee_images/22.svg" },
+  { href: "/marquee_images/colored/ibm.svg" },
+  { href: "/marquee_images/colored/logitech.svg" },
+  { href: "/marquee_images/colored/netflix.svg" },
+  { href: "/marquee_images/colored/spotify.svg" },
+  { href: "/marquee_images/colored/tmobile.svg" },
+  { href: "/marquee_images/colored/tibco.svg" },
+  { href: "/marquee_images/colored/booking.svg" },
+  { href: "/marquee_images/colored/fortinet.svg" },
 ];
 
 export default function TrustedBySectionPremium() {
@@ -64,7 +50,7 @@ export default function TrustedBySectionPremium() {
                   alt={`Marquee_Logo_Image_${idx}`}
                   width={200}
                   height={200}
-                  className="opacity-40 dark:opacity-80 object-contain brightness-0 dark:brightness-100 transition-opacity hover:opacity-100"
+                  className="object-contain transition-all hover:scale-105"
                 />
               ))}
             </motion.div>

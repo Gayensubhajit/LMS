@@ -204,19 +204,9 @@ enrollmentsRouter.get("/check/:slug", async (req, res) => {
     return res.status(200).json({ ok: true, enrolled: true });
   }
 
-  // 2. Check for active membership (grant global access)
-  const isMember = await prisma.enrollment.findFirst({
-    where: {
-      userId: user.id,
-      course: { slug: "plus-membership" },
-      status: EnrollmentStatus.ACTIVE,
-      expiresAt: { gt: new Date() }
-    }
-  });
-
   return res.status(200).json({
     ok: true,
-    enrolled: !!isMember
+    enrolled: !!directEnrollment
   });
 });
 

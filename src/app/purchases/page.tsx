@@ -24,8 +24,11 @@ import {
   BrainCircuit,
   Globe,
   GraduationCap,
+  Loader2,
 } from "lucide-react";
 import { dark } from "@clerk/ui/themes";
+
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
 
 export default function PurchasesPage() {
   const router = useRouter();
@@ -33,71 +36,82 @@ export default function PurchasesPage() {
 
   // Start empty (SSR-safe). Populated client-side after hydration.
   const [historyItems, setHistoryItems] = useState<any[]>([]);
+  const [paymentHistory, setPaymentHistory] = useState<any[]>([]);
+  const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [hasSearchHistory, setHasSearchHistory] = useState(false);
+  const [loadingContent, setLoadingContent] = useState(true);
 
   const { user, isLoaded, isSignedIn } = useUser();
 
   React.useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || !user) return;
 
-    async function loadHistory() {
-      // 1. If signed in, try fetching from backend
-      if (user?.id) {
-        try {
-          const backendItems = await getRecentViews(user.id);
-          if (backendItems.length > 0) {
-            setHistoryItems(
-              backendItems.map((course) => ({
-                type: "course",
-                course,
-                term: course.title,
-              })),
-            );
-            setHasSearchHistory(true);
-            return; // Preference for account sync
-          }
-        } catch (e) {
-          console.error("[PurchasesPage] Backend history fetch failed:", e);
+    async function loadData() {
+      try {
+        setLoadingContent(true);
+        // 1. Fetch recent course views
+        const backendItems = await getRecentViews(user!.id);
+        if (backendItems.length > 0) {
+          setHistoryItems(
+            backendItems.map((course) => ({
+              type: "course",
+              course,
+              term: course.title,
+            })),
+          );
+          setHasSearchHistory(true);
         }
+
+        // 2. Fetch enrollment status (for Subscriptions)
+        const token = await (window as any).Clerk?.session?.getToken(); // Hacky but works in client
+        const enrollRes = await fetch(`${BACKEND_URL}/enrollments/me`, {
+          headers: { "x-clerk-user-id": user!.id }
+        });
+        const enrollData = await enrollRes.json();
+        if (enrollData.ok) {
+          const plus = enrollData.items.find((e: any) => e.course.slug === "plus-membership");
+          if (plus) setSubscriptions([plus]);
+        }
+
+        // 3. Fetch payment history
+        const payRes = await fetch(`${BACKEND_URL}/payments/me`, {
+          headers: { "x-clerk-user-id": user!.id }
+        });
+        const payData = await payRes.json();
+        if (payData.ok) {
+          setPaymentHistory(payData.items);
+        }
+
+      } catch (e) {
+        console.error("[PurchasesPage] Data fetch failed:", e);
+      } finally {
+        setLoadingContent(false);
       }
 
-      // 2. Fallback to localStorage (either guest or backend was empty)
+      // Local storage fallback for search history
       try {
         const raw = localStorage.getItem("lms_recent_searches");
-        if (!raw) return;
-        const terms: string[] = JSON.parse(raw);
-        if (!Array.isArray(terms) || terms.length === 0) return;
-
-        const seen = new Set<string>();
-        const deduped: any[] = [];
-
-        terms.slice(0, 6).forEach((term) => {
-          const termWords = term.toLowerCase().split(/\s+/);
-          const match = coursesData.find((c) => {
-            const titleLower = c.title.toLowerCase();
-            return termWords.some(
-              (word) => word.length > 2 && titleLower.includes(word),
-            );
-          });
-          const key = match ? match.slug : `search:${term}`;
-          if (!seen.has(key)) {
-            seen.add(key);
-            deduped.push({
-              type: match ? "course" : "search",
-              course: match || null,
-              term,
+        if (raw && historyItems.length === 0) {
+          const terms: string[] = JSON.parse(raw);
+          if (Array.isArray(terms) && terms.length > 0) {
+            const seen = new Set<string>();
+            const deduped: any[] = [];
+            terms.slice(0, 6).forEach((term) => {
+              const match = coursesData.find((c) => c.title.toLowerCase().includes(term.toLowerCase()));
+              const key = match ? match.slug : `search:${term}`;
+              if (!seen.has(key)) {
+                seen.add(key);
+                deduped.push({ type: match ? "course" : "search", course: match || null, term });
+              }
             });
+            setHistoryItems(deduped.slice(0, 4));
+            setHasSearchHistory(true);
           }
-        });
-
-        setHistoryItems(deduped.slice(0, 4));
-        setHasSearchHistory(terms.length > 0);
-      } catch (e) {
-        console.error("[PurchasesPage] Local history error:", e);
-      }
+        }
+      } catch {}
     }
 
-    loadHistory();
+    loadData();
   }, [isLoaded, user?.id]);
 
   const containerVariants = {
@@ -225,41 +239,111 @@ export default function PurchasesPage() {
           </div>
         </div>
 
-        {/* ================= CONTENT AREA ================= */}
         <div className="mb-24">
           <AnimatePresence mode="wait">
-            <motion.div
-              key={activeTab}
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 10 }}
-              transition={{ duration: 0.3 }}
-              className="bg-white/50 dark:bg-slate-900/20 border border-slate-200 dark:border-white/5 backdrop-blur-md rounded-[2.5rem] sm:rounded-[3rem] p-8 sm:p-12 lg:p-20 text-center relative overflow-hidden group shadow-xl shadow-slate-200/50 dark:shadow-2xl"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 via-transparent to-indigo-400/5 dark:from-violet-600/5 dark:to-sky-400/5 group-hover:opacity-100 opacity-60 transition-opacity" />
-              <div className="relative z-10 flex flex-col items-center">
-                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center mb-8 shadow-inner animate-pulse">
-                  {activeTab === "subscriptions" ? (
-                    <BookOpen size={32} className="text-blue-600 dark:text-violet-400" />
-                  ) : (
-                    <History size={32} className="text-indigo-500 dark:text-sky-400" />
-                  )}
-                </div>
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight mb-4 leading-none">
-                  No {activeTab} found in your stellar history
-                </h2>
-                <p className="text-slate-500 dark:text-gray-500 text-xs sm:text-sm mb-10 max-w-sm mx-auto font-medium">
-                  Your acquisition logs are currently clear. Ready to begin your
-                  next interstellar mastery traversal?
-                </p>
-                <button
-                  onClick={() => router.push("/courses")}
-                  className="px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-600 dark:to-indigo-600 text-white font-black text-[10px] sm:text-xs uppercase tracking-[0.2em] shadow-[0_0_30px_rgba(37,99,235,0.3)] dark:shadow-[0_0_30px_rgba(124,58,237,0.3)] hover:scale-105 transition-all"
-                >
-                  Start Your Journey
-                </button>
-              </div>
-            </motion.div>
+            {loadingContent ? (
+              <motion.div
+                key="loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="py-20 flex justify-center"
+              >
+                <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+              </motion.div>
+            ) : activeTab === "subscriptions" ? (
+              <motion.div
+                key="subscriptions"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                className="space-y-6"
+              >
+                {subscriptions.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-6">
+                    {subscriptions.map((sub) => (
+                      <div key={sub.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+                        <div className="flex items-center gap-6 text-center md:text-left flex-col md:flex-row">
+                          <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-3xl">
+                            🚀
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">{sub.course.title}</h3>
+                            <p className="text-sm text-slate-500 font-bold uppercase tracking-widest">{sub.plan.replace("_", " ")} Plan • Active</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Expires on</p>
+                          <p className="text-sm font-black text-slate-900 dark:text-white">{new Date(sub.expiresAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-white/50 dark:bg-slate-900/20 border border-slate-200 dark:border-white/5 backdrop-blur-md rounded-[2.5rem] p-8 sm:p-20 text-center relative overflow-hidden group">
+                    <div className="relative z-10 flex flex-col items-center">
+                      <div className="w-20 h-20 rounded-full bg-slate-50 dark:bg-white/5 border border-slate-200 flex items-center justify-center mb-8 shadow-inner">
+                        <BookOpen size={32} className="text-blue-600" />
+                      </div>
+                      <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase mb-4">No active subscriptions</h2>
+                      <p className="text-slate-500 text-sm mb-10 max-w-sm font-medium">Ready to unlock 7,000+ courses and certifications?</p>
+                      <button onClick={() => router.push("/pricing")} className="px-8 py-4 rounded-2xl bg-blue-600 text-white font-black text-xs uppercase tracking-widest shadow-xl">Upgrade to Plus</button>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            ) : (
+              <motion.div
+                key="history"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 10 }}
+                className="space-y-6"
+              >
+                {paymentHistory.length > 0 ? (
+                  <div className="overflow-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl shadow-xl">
+                    <table className="w-full text-left">
+                      <thead>
+                        <tr className="border-b border-slate-100 dark:border-white/5">
+                          <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</th>
+                          <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
+                          <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-50 dark:divide-white/5">
+                        {paymentHistory.map((pay) => (
+                          <tr key={pay.id} className="group hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors">
+                            <td className="px-8 py-6">
+                              <p className="text-sm font-black text-slate-900 dark:text-white">{pay.enrollment.course.title}</p>
+                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{new Date(pay.createdAt).toLocaleDateString()}</p>
+                            </td>
+                            <td className="px-8 py-6">
+                              <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${pay.status === "SUCCESS" ? "bg-emerald-500/10 text-emerald-500" : "bg-amber-500/10 text-amber-500"}`}>
+                                {pay.status}
+                              </span>
+                            </td>
+                            <td className="px-8 py-6 text-right">
+                              <p className="text-sm font-black text-slate-900 dark:text-white">₹{pay.amount.toLocaleString()}</p>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="bg-white/50 dark:bg-slate-900/20 border border-slate-200 dark:border-white/5 backdrop-blur-md rounded-[2.5rem] p-8 sm:p-20 text-center relative overflow-hidden group">
+                    <div className="relative z-10 flex flex-col items-center">
+                      <div className="w-20 h-20 rounded-full bg-slate-50 dark:bg-white/5 border border-slate-200 flex items-center justify-center mb-8 shadow-inner">
+                        <History size={32} className="text-indigo-500" />
+                      </div>
+                      <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase mb-4">No payment logs found</h2>
+                      <p className="text-slate-500 text-sm mb-10 max-w-sm font-medium">Your interstellar traversal history is currently empty.</p>
+                      <button onClick={() => router.push("/courses")} className="px-8 py-4 rounded-2xl bg-indigo-600 text-white font-black text-xs uppercase tracking-widest shadow-xl">Browse Courses</button>
+                    </div>
+                  </div>
+                )}
+              </motion.div>
+            )}
           </AnimatePresence>
         </div>
 

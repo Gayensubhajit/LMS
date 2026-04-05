@@ -60,6 +60,7 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
   const [enrolling, setEnrolling] = useState(false);
   const [isEnrolled, setIsEnrolled] = useState(false);
+  const [isPlusMember, setIsPlusMember] = useState(false);
   const [checkingEnrollment, setCheckingEnrollment] = useState(true);
 
   const handleEnrollClick = async () => {
@@ -77,20 +78,28 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
       setEnrolling(true);
       const token = await getToken();
 
-      // Check for global membership one last time before showing modal
-      const checkRes = await fetch(`${BACKEND_URL}/enrollments/check/${course.slug}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "x-clerk-user-id": userId
+      if (isPlusMember) {
+        // Plus Member: Instant enrollment with visual 1s delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const res = await fetch(`${BACKEND_URL}/enrollments`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            "x-clerk-user-id": userId
+          },
+          body: JSON.stringify({ courseSlug: course.slug })
+        });
+
+        const data = await res.json();
+        if (data.ok) {
+          setIsEnrolled(true);
+          return;
+        } else {
+          alert(data.error || "Enrollment failed");
+          return;
         }
-      });
-      const checkData = await checkRes.json();
-      
-      if (checkData.ok && checkData.enrolled) {
-        // User has access (likely via Plus Membership)
-        setIsEnrolled(true);
-        router.push(`/learn/${course.slug}`);
-        return;
       }
 
       if (course.isFree) {
@@ -157,6 +166,18 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
         const data = await res.json();
         if (data.ok) {
           setIsEnrolled(data.enrolled);
+        }
+
+        // Also check if they are a Plus Member for the 'Enroll Now' button logic
+        const plusRes = await fetch(`${BACKEND_URL}/enrollments/check/plus-membership`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "x-clerk-user-id": userId
+          }
+        });
+        const plusData = await plusRes.json();
+        if (plusData.ok) {
+          setIsPlusMember(plusData.enrolled);
         }
       } catch (err) {
         console.error("Check enrollment error:", err);

@@ -188,7 +188,8 @@ function PlanCard({
   const hasBadge = "badge" in plan && plan.badge;
 
   const isActivePlan = isMember && (
-    ((plan as any).id === "plus" && (memberPlan === "plus" || memberPlan === "ONE_MONTH")) ||
+    // General check: if they have any active plus membership, highlight the Plus/Annual cards accordingly
+    ((plan as any).id === "plus" && (memberPlan === "plus" || memberPlan === "ONE_MONTH" || !memberPlan)) ||
     ((plan as any).id === "annual" && (memberPlan === "annual" || memberPlan === "SIX_MONTH"))
   );
 

@@ -31,6 +31,39 @@ function getStripeClient() {
   return new Stripe(env.STRIPE_SECRET_KEY);
 }
 
+paymentsRouter.get("/me", async (req, res) => {
+  const user = await getUserFromHeader(req, res);
+  if (!user) return;
+
+  const payments = await prisma.paymentOrder.findMany({
+    where: {
+      enrollment: {
+        userId: user.id
+      }
+    },
+    include: {
+      enrollment: {
+        include: {
+          course: {
+            select: {
+              title: true,
+              slug: true
+            }
+          }
+        }
+      }
+    },
+    orderBy: {
+      createdAt: "desc"
+    }
+  });
+
+  return res.status(200).json({
+    ok: true,
+    items: payments
+  });
+});
+
 paymentsRouter.post("/create-order", async (req, res) => {
   const user = await getUserFromHeader(req, res);
   if (!user) return;

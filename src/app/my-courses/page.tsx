@@ -168,9 +168,12 @@ export default function MyCoursesPage() {
   }, []);
 
   const filteredEnrollments = useMemo(() => {
+    // Hide the membership itself from the course list
+    const actualCourses = enrollments.filter((e) => e.course.slug !== "plus-membership");
+    
     if (activeTab === "completed")
-      return enrollments.filter((e) => e.progress.progressPercent === 100);
-    return enrollments.filter((e) => e.progress.progressPercent < 100);
+      return actualCourses.filter((e) => e.progress.progressPercent === 100);
+    return actualCourses.filter((e) => e.progress.progressPercent < 100);
   }, [enrollments, activeTab]);
 
   const displayName =

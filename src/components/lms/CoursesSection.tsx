@@ -77,6 +77,7 @@ export default function CoursesSection() {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [enrolledSlugs, setEnrolledSlugs] = useState<Set<string>>(new Set());
   const [courses, setCourses] = useState<Course[]>(coursesData);
+  const [isPlusMember, setIsPlusMember] = useState(false);
   const { getToken, userId } = useAuth();
 
   const fetchCourses = useCallback(async () => {
@@ -110,6 +111,13 @@ export default function CoursesSection() {
           .filter((e: any) => e.status === "ACTIVE")
           .map((e: any) => e.course.slug);
         setEnrolledSlugs(new Set(activeSlugs));
+
+        // Check if Plus Membership is in the list (including trials)
+        const hasPlus = data.items.some((e: any) => 
+          e.course.slug === "plus-membership" && 
+          (e.status === "ACTIVE" || e.status === "TRIALING")
+        );
+        if (hasPlus) setIsPlusMember(true);
       }
     } catch (err) {}
   }, [userId, getToken]);
@@ -345,6 +353,13 @@ export default function CoursesSection() {
                         className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-black dark:bg-violet-600 hover:bg-zinc-800 dark:hover:bg-violet-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-md dark:shadow-violet-500/20 font-sans"
                       >
                         Go to Course
+                      </Link>
+                    ) : isPlusMember ? (
+                      <Link
+                        href={`/learn/${course.slug}`}
+                        className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-md dark:shadow-emerald-500/20 font-sans"
+                      >
+                        Start Learning
                       </Link>
                     ) : course.isFree ? (
                       <Link

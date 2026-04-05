@@ -392,16 +392,21 @@ export default function PricingPage() {
           headers: { Authorization: `Bearer ${token}`, "x-clerk-user-id": userId },
         });
         const data = await res.json();
-        const memberStatus = data.ok && data.enrolled;
-        setIsMember(memberStatus);
+        
+        if (data.ok && data.enrolled) {
+          setIsMember(true);
+        }
 
-        // Even if the check/plus-membership fails, check the full list as a fallback
+        // Fallback: check full list for any plus-membership (Active or Trialing)
         const meRes = await fetch(`${BACKEND_URL}/enrollments/me`, {
           headers: { Authorization: `Bearer ${token}`, "x-clerk-user-id": userId },
         });
         const meData = await meRes.json();
-        if (meData.ok) {
-          const plus = meData.items.find((e: any) => e.course.slug === "plus-membership" && e.status === "ACTIVE");
+        if (meData.ok && meData.items) {
+          const plus = meData.items.find((e: any) => 
+            e.course.slug === "plus-membership" && 
+            (e.status === "ACTIVE" || e.status === "TRIALING")
+          );
           if (plus) {
             setIsMember(true);
             setMemberPlan(plus.plan);
@@ -621,10 +626,10 @@ export default function PricingPage() {
               </p>
               <div className="flex justify-center gap-4 flex-wrap">
                 <Link
-                  href="/auth/sign-up"
-                  className="px-8 py-4 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-600 dark:to-purple-600 text-white font-bold text-sm shadow-xl shadow-blue-600/20 dark:shadow-violet-600/20 hover:shadow-blue-600/40 dark:hover:shadow-violet-600/40 transition-all active:scale-95"
+                  href={isMember ? "/courses" : "/auth/sign-up"}
+                  className="px-8 py-4 rounded-xl bg-linear-to-r from-blue-600 to-indigo-600 dark:from-violet-600 dark:to-purple-600 text-white font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/20 hover:scale-[1.03] transition-all"
                 >
-                  Start 14-Day Free Trial
+                  {isMember ? "Continue Learning" : "Start 14-Day Free Trial"}
                 </Link>
                 <Link
                   href="/courses"

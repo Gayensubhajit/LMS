@@ -505,7 +505,10 @@ export default function HeroSection() {
           });
           const meData = await meRes.json();
           if (meData.ok) {
-            const hasPlus = meData.items?.some((i: any) => i.course.slug === "plus-membership" && i.status === "ACTIVE");
+            const hasPlus = meData.items?.some((i: any) => 
+              i.course.slug === "plus-membership" && 
+              (i.status === "ACTIVE" || i.status === "TRIALING")
+            );
             if (hasPlus) setIsMember(true);
           }
         }

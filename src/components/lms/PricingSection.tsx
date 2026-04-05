@@ -160,13 +160,18 @@ export default function PricingSection() {
           setIsMember(true);
         }
 
-        // Always check the full list as a fallback/sync measure
+        // Fallback/sync: check the full list for any plus-membership
         const meRes = await fetch(`${BACKEND_URL}/enrollments/me`, {
           headers: { Authorization: `Bearer ${token}`, "x-clerk-user-id": userId }
         });
         const meData = await meRes.json();
-        if (meData.ok) {
-          const plus = meData.items.find((e: any) => e.course.slug === "plus-membership" && e.status === "ACTIVE");
+        
+        if (meData.ok && meData.items) {
+          const plus = meData.items.find((e: any) => 
+            e.course.slug === "plus-membership" && 
+            (e.status === "ACTIVE" || e.status === "TRIALING")
+          );
+          
           if (plus) {
             setIsMember(true);
             setMemberPlan(plus.plan);

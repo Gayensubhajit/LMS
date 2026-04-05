@@ -102,6 +102,7 @@ function CoursesContent() {
   const [courses, setCourses] = useState<Course[]>(coursesData);
   const [backendLoaded, setBackendLoaded] = useState(false);
   const [enrolledSlugs, setEnrolledSlugs] = useState<Set<string>>(new Set());
+  const [isPlusMember, setIsPlusMember] = useState(false);
 
   const fetchCourses = useCallback(async () => {
     try {
@@ -139,6 +140,13 @@ function CoursesContent() {
           .filter((e: any) => e.status === "ACTIVE")
           .map((e: any) => e.course.slug);
         setEnrolledSlugs(new Set(activeSlugs));
+
+        // Check for Plus Membership (Active or Trialing)
+        const hasPlus = data.items.some((e: any) => 
+          e.course.slug === "plus-membership" && 
+          (e.status === "ACTIVE" || e.status === "TRIALING")
+        );
+        if (hasPlus) setIsPlusMember(true);
       }
     } catch (err) {}
   }, [userId, getToken]);
@@ -447,18 +455,25 @@ function CoursesContent() {
                                 >
                                   Go to course
                                 </Link>
-                              ) : (
-                                <Link
-                                  href={
-                                    course.isFree
-                                      ? `/learn/${course.slug}`
-                                      : `/checkout?slug=${course.slug}&plan=1month`
-                                  }
-                                  className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-[#0056d2] text-white shadow-lg shadow-blue-500/20 hover:bg-[#00419e] transition-all flex items-center gap-1.5"
-                                >
-                                  Enroll <ArrowRight size={10} />
-                                </Link>
-                              )}
+                                ) : isPlusMember ? (
+                                  <Link
+                                    href={`/learn/${course.slug}`}
+                                    className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 hover:bg-emerald-500 transition-all font-sans"
+                                  >
+                                    Start Learning
+                                  </Link>
+                                ) : (
+                                  <Link
+                                    href={
+                                      course.isFree
+                                        ? `/learn/${course.slug}`
+                                        : `/checkout?slug=${course.slug}&plan=1month`
+                                    }
+                                    className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-[#0056d2] text-white shadow-lg shadow-blue-500/20 hover:bg-[#00419e] transition-all flex items-center gap-1.5"
+                                  >
+                                    Enroll <ArrowRight size={10} />
+                                  </Link>
+                                )}
                             </div>
                           </div>
                         </div>

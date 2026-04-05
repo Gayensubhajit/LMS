@@ -57,13 +57,6 @@ export const metadata: Metadata = {
     description: "Master high-income skills with AI-guided roadmaps.",
     images: ["/og-image.png?v=1"],
   },
-  icons: {
-    icon: [
-      { url: "/icon.png?v=1", type: "image/png" },
-      { url: "/favicon.ico?v=1" },
-    ],
-    apple: "/apple-icon.png?v=1",
-  },
 };
 
 export default function RootLayout({
@@ -72,10 +65,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-    >
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -12,12 +12,15 @@ import {
   Users,
   HelpCircle,
   ChevronDown,
+  Loader2,
 } from "lucide-react";
 import Navbar from "@/components/lms/Navbar";
 import Footer from "@/components/lms/Footer";
 import { Montserrat } from "next/font/google";
+import { useAuth } from "@clerk/nextjs";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
 
 // ── Data ──────────────────────────────────────────────────────────────────
 
@@ -173,37 +176,59 @@ const FAQS = [
 function PlanCard({
   plan,
   i,
+  isMember,
+  memberPlan,
 }: {
   plan: (typeof INDIVIDUAL_PLANS)[0];
   i: number;
+  isMember: boolean;
+  memberPlan: string | null;
 }) {
   const hasHighlight = "highlight" in plan && plan.highlight;
   const hasBadge = "badge" in plan && plan.badge;
+
+  const isActivePlan = isMember && (
+    ((plan as any).id === "plus" && (memberPlan === "plus" || memberPlan === "ONE_MONTH")) ||
+    ((plan as any).id === "annual" && (memberPlan === "annual" || memberPlan === "SIX_MONTH"))
+  );
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: i * 0.07 }}
       className={`relative rounded-3xl flex flex-col overflow-hidden transition-all duration-300 ${
-        hasHighlight
+        isActivePlan
+          ? "ring-2 ring-emerald-500/60 shadow-2xl shadow-emerald-500/10"
+          : hasHighlight
           ? "ring-2 ring-blue-500/60 dark:ring-violet-500/60 shadow-2xl shadow-blue-500/10 dark:shadow-violet-500/20"
           : "border border-slate-800/20 dark:border-white/20 shadow-sm dark:shadow-none bg-white/80 dark:bg-white/5"
       }`}
       style={
-        hasHighlight
-          ? {
-              background:
-                "linear-gradient(160deg, rgba(37,99,235,0.08) 0%, rgba(255,255,255,1) 100%)",
-            }
+        isActivePlan
+          ? { background: "linear-gradient(160deg, rgba(16,185,129,0.06) 0%, rgba(255,255,255,1) 100%)" }
+          : hasHighlight
+          ? { background: "linear-gradient(160deg, rgba(37,99,235,0.08) 0%, rgba(255,255,255,1) 100%)" }
           : {}
       }
     >
-      {/* Dark mode override for highlight background */}
-      {hasHighlight && (
-        <div className="absolute inset-0 bg-linear-to-br from-blue-600/10 to-white dark:from-violet-600/20 dark:to-slate-950 pointer-events-none" />
+      {/* Dark mode override */}
+      {(hasHighlight || isActivePlan) && (
+        <div className={`absolute inset-0 pointer-events-none ${
+          isActivePlan
+            ? "bg-linear-to-br from-emerald-600/10 to-white dark:from-emerald-600/20 dark:to-slate-950"
+            : "bg-linear-to-br from-blue-600/10 to-white dark:from-violet-600/20 dark:to-slate-950"
+        }`} />
       )}
 
-      {hasBadge && (
+      {/* Active Member badge */}
+      {isActivePlan && (
+        <div className="text-center py-2 text-[11px] font-black uppercase tracking-widest bg-emerald-500 text-white">
+          ✓ Active Plan
+        </div>
+      )}
+
+      {!isActivePlan && hasBadge && (
         <div
           className={`text-center py-2 text-[11px] font-black uppercase tracking-widest ${
             hasHighlight
@@ -235,22 +260,28 @@ function PlanCard({
         </div>
 
         <Link
-          href={plan.href}
+          href={isActivePlan ? "/courses" : plan.href}
           className={`flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-bold text-sm mb-2 transition-all group ${
-            hasHighlight
+            isActivePlan
+              ? "bg-emerald-500 text-white cursor-default"
+              : hasHighlight
               ? "bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-600 dark:to-purple-600 text-white hover:shadow-lg hover:shadow-blue-600/25 dark:hover:shadow-violet-600/25"
               : "border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-white/[0.07]"
           }`}
         >
-          {hasHighlight && <Zap size={14} />}
-          {plan.cta}
-          <ArrowRight
-            size={13}
-            className="opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all"
-          />
+          {!isActivePlan && hasHighlight && <Zap size={14} />}
+          {isActivePlan ? "Continue Learning" : plan.cta}
+          {!isActivePlan && (
+            <ArrowRight
+              size={13}
+              className="opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all"
+            />
+          )}
         </Link>
-        <p className="text-center text-[11px] text-slate-400 dark:text-gray-600 mb-8">
-          {plan.note}
+        <p className={`text-center text-[11px] mb-8 ${
+          isActivePlan ? "text-emerald-500 font-bold" : "text-slate-400 dark:text-gray-600"
+        }`}>
+          {isActivePlan ? "You have an active membership" : plan.note}
         </p>
 
         <div className="border-t border-slate-100 dark:border-white/[0.05] pt-6 space-y-3 flex-1">
@@ -258,7 +289,9 @@ function PlanCard({
             <div key={f} className="flex items-center gap-3">
               <div
                 className={`w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center ${
-                  hasHighlight
+                  isActivePlan
+                    ? "bg-emerald-500/10"
+                    : hasHighlight
                     ? "bg-blue-500/10 dark:bg-violet-600/25"
                     : "bg-slate-100 dark:bg-white/5"
                 }`}
@@ -266,7 +299,9 @@ function PlanCard({
                 <Check
                   size={10}
                   className={
-                    hasHighlight
+                    isActivePlan
+                      ? "text-emerald-500"
+                      : hasHighlight
                       ? "text-blue-600 dark:text-violet-400"
                       : "text-slate-400 dark:text-gray-500"
                   }
@@ -321,8 +356,42 @@ function FAQItem({ q, a }: { q: string; a: string }) {
 // ── Main Page ──────────────────────────────────────────────────────────────
 
 export default function PricingPage() {
+  const { getToken, userId, isLoaded } = useAuth();
   const [tab, setTab] = useState<"individuals" | "teams">("individuals");
+  const [isMember, setIsMember] = useState(false);
+  const [memberPlan, setMemberPlan] = useState<string | null>(null);
+  const [memberLoading, setMemberLoading] = useState(true);
   const plans = tab === "individuals" ? INDIVIDUAL_PLANS : TEAM_PLANS;
+
+  useEffect(() => {
+    if (!isLoaded || !userId) {
+      setMemberLoading(false);
+      return;
+    }
+    const check = async () => {
+      try {
+        const token = await getToken();
+        const res = await fetch(`${BACKEND_URL}/enrollments/check/plus-membership`, {
+          headers: { Authorization: `Bearer ${token}`, "x-clerk-user-id": userId },
+        });
+        const data = await res.json();
+        if (data.ok && data.enrolled) {
+          setIsMember(true);
+          // Fetch the plan type
+          const meRes = await fetch(`${BACKEND_URL}/enrollments/me`, {
+            headers: { Authorization: `Bearer ${token}`, "x-clerk-user-id": userId },
+          });
+          const meData = await meRes.json();
+          if (meData.ok) {
+            const plus = meData.items.find((e: any) => e.course.slug === "plus-membership");
+            if (plus) setMemberPlan(plus.plan);
+          }
+        }
+      } catch {}
+      finally { setMemberLoading(false); }
+    };
+    check();
+  }, [isLoaded, userId, getToken]);
 
   return (
     <div className="min-h-screen mx-auto bg-[#f6f8ff] dark:bg-[#030712] transition-colors duration-700">
@@ -408,7 +477,7 @@ export default function PricingPage() {
               className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24"
             >
               {plans.map((plan, i) => (
-                <PlanCard key={plan.name} plan={plan} i={i} />
+                <PlanCard key={plan.name} plan={plan} i={i} isMember={isMember} memberPlan={memberPlan} />
               ))}
             </motion.div>
           </AnimatePresence>

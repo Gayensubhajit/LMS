@@ -104,6 +104,7 @@ export default function Navbar() {
   const [hasEnrollments, setHasEnrollments] = useState(false);
   const [userRole, setUserRole] = useState<string | null>(null);
   const [focusMobileSearch, setFocusMobileSearch] = useState(false);
+  const [isMember, setIsMember] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -190,6 +191,13 @@ export default function Navbar() {
         if (res.ok) setUserRole(res.item.role);
       })
       .catch(() => setUserRole(null));
+
+    // Check Plus membership for badge
+    backendRequest<{ ok: boolean; enrolled: boolean }>("/enrollments/check/plus-membership", {
+      clerkUserId: user.id,
+    })
+      .then((res) => { if (res.ok && res.enrolled) setIsMember(true); })
+      .catch(() => {});
   }, [isLoaded, user?.id]);
 
   const addRecentSearch = (term: string, slug?: string) => {
@@ -575,16 +583,23 @@ export default function Navbar() {
                   onClick={() => setProfileOpen((o) => !o)}
                   className="flex items-center gap-2 rounded-xl px-2 py-1.5 hover:bg-white/5 transition-colors group"
                 >
-                  <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-violet-500/40 flex items-center justify-center bg-violet-600">
-                    {avatarUrl ? (
-                      <img
-                        src={avatarUrl}
-                        alt={initials}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="text-white text-sm font-bold">
-                        {initials}
+                  <div className="relative w-9 h-9">
+                    <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-violet-500/40 flex items-center justify-center bg-violet-600">
+                      {avatarUrl ? (
+                        <img
+                          src={avatarUrl}
+                          alt={initials}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-white text-sm font-bold">
+                          {initials}
+                        </span>
+                      )}
+                    </div>
+                    {isMember && (
+                      <span className="absolute -bottom-1 -right-1 bg-emerald-500 text-white text-[7px] font-black px-1 py-0.5 rounded-full leading-none uppercase tracking-wider border border-white dark:border-[#030712]">
+                        PLUS
                       </span>
                     )}
                   </div>

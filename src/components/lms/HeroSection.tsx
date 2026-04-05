@@ -30,10 +30,12 @@ import {
 import { useTheme } from "next-themes";
 import { useState, useEffect, useRef } from "react";
 import { Montserrat, Syne, Bricolage_Grotesque } from "next/font/google";
+import { useAuth } from "@clerk/nextjs";
 
 const syne = Syne({ subsets: ["latin"] });
 const montserrat = Montserrat({ subsets: ["latin"] });
 const bricolage = Bricolage_Grotesque({ subsets: ["latin"] });
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
 
 const words = [
   "Learning",
@@ -477,9 +479,27 @@ export default function HeroSection() {
   const [activeWord, setActiveWord] = useState(0);
   const [activePage, setActivePage] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMember, setIsMember] = useState(false);
+  const { getToken, userId, isLoaded } = useAuth();
 
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
+
+  // Check Plus membership
+  useEffect(() => {
+    if (!isLoaded || !userId) return;
+    const check = async () => {
+      try {
+        const token = await getToken();
+        const res = await fetch(`${BACKEND_URL}/enrollments/check/plus-membership`, {
+          headers: { Authorization: `Bearer ${token}`, "x-clerk-user-id": userId },
+        });
+        const data = await res.json();
+        if (data.ok && data.enrolled) setIsMember(true);
+      } catch {}
+    };
+    check();
+  }, [isLoaded, userId, getToken]);
 
   // Cycle words every 2.5s
   useEffect(() => {
@@ -556,10 +576,10 @@ export default function HeroSection() {
             className="flex flex-wrap justify-center items-center gap-4"
           >
             <a
-              href="/auth/sign-up?plan=plus"
+              href={isMember ? "/courses" : "/auth/sign-up?plan=plus"}
               className="group flex items-center gap-3 bg-black dark:bg-white text-white dark:text-black px-8 py-4 rounded-full text-base font-bold hover:scale-105 active:scale-95 transition-all shadow-[0_20px_40px_rgba(0,0,0,0.15)]"
             >
-              <span>Start Learning Free</span>
+              <span>{isMember ? "Continue Learning" : "Start Learning Free"}</span>
               <ArrowRight
                 size={18}
                 className="group-hover:translate-x-1 transition-transform"

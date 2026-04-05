@@ -760,7 +760,7 @@ export default function Navbar() {
                     onClick={() => setMobilePanel("account")}
                     className="w-full flex items-center gap-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-4 rounded-3xl text-left transition-colors hover:bg-slate-100 dark:hover:bg-white/10 group"
                   >
-                    <div className="w-12 h-12 rounded-full bg-violet-600 border-2 border-violet-400/30 overflow-hidden shrink-0">
+                    <div className="relative w-12 h-12 rounded-full bg-violet-600 border-2 border-violet-400/30 overflow-hidden shrink-0">
                       {avatarUrl ? (
                         <img
                           src={avatarUrl}
@@ -768,9 +768,16 @@ export default function Navbar() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="w-full h-full flex items-center justify-center text-white font-bold">
+                        <span className="w-full h-full flex items-center justify-center text-white font-bold text-sm">
                           {initials}
                         </span>
+                      )}
+
+                      {/* Mobile Plus Badge */}
+                      {isMember && (
+                        <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-[8px] font-black px-1.5 py-0.5 rounded-md border-2 border-white dark:border-[#030712] text-white shadow-lg">
+                          PLUS
+                        </div>
                       )}
                     </div>
                     <div className="flex-1">

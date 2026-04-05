@@ -404,7 +404,7 @@ export default function PricingPage() {
 
         if (meData.ok && meData.items) {
           const plus = meData.items.find((e: any) => 
-            e.course.slug === "plus-membership" && 
+            (e.course.slug === "plus-membership" || e.course.slug === "membership") && 
             (e.status === "ACTIVE" || e.status === "TRIALING")
           );
           if (plus) {

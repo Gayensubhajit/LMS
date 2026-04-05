@@ -33,6 +33,7 @@ export const INSTRUCTOR_META: Record<
     avatar: string;
     gradient: [string, string];
     image?: string;
+    visualDescription?: string;
   }
 > = {
   "Gunjan Basak": {
@@ -41,6 +42,7 @@ export const INSTRUCTOR_META: Record<
     avatar: "GB",
     gradient: ["#6366f1", "#4f46e5"],
     image: "/images/instructors/gunjan_real.jpg",
+    visualDescription: "Young Indian man with thick wavy black hair, a short beard and mustache, wearing thin-framed rectangular glasses and a plain white t-shirt. Looking sideways/to the side. Dark background with plants visible.",
   },
   "Chirantan Biswas": {
     title: "Full-stack Developer",
@@ -48,6 +50,7 @@ export const INSTRUCTOR_META: Record<
     avatar: "CB",
     gradient: ["#0ea5e9", "#2563eb"],
     image: "/images/instructors/chirantan_real.jpg",
+    visualDescription: "Young Indian man with short black hair, a thin mustache and small goatee, wearing large square dark sunglasses and a black jacket over a white shirt. Selfie pose, looking directly at camera. Plain brown/copper curtain or wall background.",
   },
   "Dr. Sarah Park": {
     title: "AI Research Scientist",

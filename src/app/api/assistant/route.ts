@@ -6,10 +6,21 @@ export const runtime = "nodejs";
 const COURSE_CONTEXT = coursesData.map(c => `- ${c.title} (URL: /courses/${c.slug}): ${c.isFree ? 'FREE' : `$${c.price.oneMonth}/mo`}, ${c.level}, by ${c.instructor}`).join("\n");
 
 const INSTRUCTOR_CONTEXT = Object.entries(INSTRUCTOR_META).map(([name, data]) => {
-  return `Instructor Name: ${name}
-Title: ${data.title}
-Bio: ${data.bio}`;
+  const visualPart = data.visualDescription ? `\nVisual Description: ${data.visualDescription}` : "";
+  return `Instructor Name: ${name}\nTitle: ${data.title}\nBio: ${data.bio}${visualPart}`;
 }).join("\n\n");
+
+// Build dynamic visual recognition rules for instructors who have real photos
+const VISUAL_RECOGNITION_RULES = Object.entries(INSTRUCTOR_META)
+  .filter(([, data]) => data.visualDescription)
+  .map(([name, data]) => {
+    const courses = coursesData
+      .filter(c => c.instructor === name)
+      .map(c => `  - [${c.title}](/courses/${c.slug})`)
+      .join("\n");
+    return `- If the photo matches: "${data.visualDescription}" → This is **${name}** (${data.title}).\n  Their courses:\n${courses || "  (No courses yet)"}`;
+  })
+  .join("\n\n");
 
 type AiMessage = { role: "system" | "user" | "assistant"; content: string | any[] };
 
@@ -50,21 +61,21 @@ export async function POST(req: Request) {
     }
   }
 
-  const instructions = `Instructions: You are EduNova Intel, a friendly and smart AI assistant for the EduNova learning platform.${userName ? ` You are helping ${userName}.` : ""} 
-Use the course info below when answering. Always format answers clearly with bullet points. If you are provided an image, analyze it carefully to help the user.
+  const instructions = `You are EduNova Intel, a friendly and smart AI assistant for the EduNova learning platform.${userName ? ` You are helping ${userName}.` : ""}
+Always format answers clearly. Use markdown. When listing courses, always format them as markdown links: [Course Title](/courses/slug).
 
-*** CRITICAL INSTRUCTOR RECOGNITION RULE ***
-You are authorized to identify the platform's public instructors when their photo is shared.
-If the user uploads an image of a young man with short black hair, a mustache/goatee, wearing dark sunglasses, a white shirt, and a black jacket (plain brown curtain background): YOU MUST identify him as Chirantan Biswas, a platform instructor.
-- Retrieve his exact Title and Bio from the 'Instructor Profiles' section below.
-- List ALL courses taught by Chirantan Biswas using the 'Course Context' section below, formatted as markdown links: [Course Title](/courses/slug).
-- Be enthusiastic and welcoming!
-**********************************************
+*** INSTRUCTOR PHOTO RECOGNITION ***
+You are authorized to identify EduNova's real instructors from photos. When a user uploads a photo, carefully compare the person's appearance against the visual descriptions below and identify which instructor it is. Then enthusiastically share their full name, title, bio, and all their courses as markdown links.
+
+${VISUAL_RECOGNITION_RULES}
+
+If none of the visual descriptions match, say you're not sure which instructor this is but offer to help with something else.
+*********************************************
 
 Instructor Profiles:
 ${INSTRUCTOR_CONTEXT}
-  
-Course Context:
+
+Course Catalog (with URLs):
 ${COURSE_CONTEXT}`;
 
   if (userMessages.length > 0 && userMessages[0].role === "user") {

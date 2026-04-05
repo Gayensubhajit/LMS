@@ -59,8 +59,8 @@ export default function AdminSidebar({
       ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
     `}>
       {/* Brand */}
-      <div className="p-6 border-b border-slate-200 dark:border-white/5 bg-gradient-to-br from-violet-600/5 to-transparent">
-        <Link href="/" className="flex items-center gap-2 group">
+      <div className="p-6 border-b border-slate-200 dark:border-white/5 bg-linear-to-br from-violet-600/5 to-transparent">
+        <Link href="/admin" className="flex items-center gap-2 group">
           <div className="w-8 h-8 rounded-lg bg-violet-600 flex items-center justify-center shadow-[0_0_20px_rgba(124,58,237,0.4)] group-hover:scale-110 transition-transform duration-300">
             <GraduationCap className="text-white size-5 fill-white" />
           </div>

@@ -176,8 +176,22 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
           }
         });
         const plusData = await plusRes.json();
-        if (plusData.ok) {
-          setIsPlusMember(plusData.enrolled);
+        
+        if (plusData.ok && plusData.enrolled) {
+          setIsPlusMember(true);
+        } else {
+          // Fallback check: look through all enrollments
+          const meRes = await fetch(`${BACKEND_URL}/enrollments/me`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "x-clerk-user-id": userId
+            }
+          });
+          const meData = await meRes.json();
+          if (meData.ok) {
+            const hasPlus = meData.items?.some((i: any) => i.course.slug === "plus-membership" && i.status === "ACTIVE");
+            if (hasPlus) setIsPlusMember(true);
+          }
         }
       } catch (err) {
         console.error("Check enrollment error:", err);

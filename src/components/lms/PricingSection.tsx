@@ -322,10 +322,10 @@ export default function PricingSection() {
 
                     {/* CTA */}
                     <Link
-                      href={isActive ? "/courses" : plan.href}
+                      href={isMember ? "/courses" : plan.href}
                       className={`${montserrat.className} flex items-center justify-center gap-3 w-full py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest mb-3 transition-all group ${
-                        isActive 
-                          ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 cursor-default" 
+                        isMember 
+                          ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" 
                           : plan.highlight
                             ? "bg-blue-600 text-white hover:bg-blue-700 shadow-xl shadow-blue-500/30"
                             : "bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:scale-[1.03] shadow-lg"
@@ -333,10 +333,8 @@ export default function PricingSection() {
                     >
                       {loading ? (
                         <Loader2 size={16} className="animate-spin" />
-                      ) : isActive ? (
+                      ) : isMember ? (
                         <>Continue Learning</>
-                      ) : isMember && (plan.id === "plus" || plan.id === "annual") ? (
-                        <>Manage Membership</>
                       ) : (
                         <>
                           {plan.highlight && <Zap size={14} className="fill-current" />}

@@ -274,9 +274,9 @@ function PlanCard({
         ) : isMember && ((plan as any).id === "plus" || (plan as any).id === "annual") ? (
           <Link
             href="/courses"
-            className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black font-bold text-sm mb-2 transition-all hover:bg-slate-800 dark:hover:bg-slate-200"
+            className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-emerald-500 text-white font-bold text-sm mb-2 transition-all hover:bg-emerald-600"
           >
-            Manage Subscription
+            Continue Learning
           </Link>
         ) : (
           <Link

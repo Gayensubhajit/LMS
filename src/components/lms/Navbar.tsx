@@ -785,7 +785,32 @@ export default function Navbar() {
                 )}
 
                 <div className="space-y-1">
-                  {navLinks.map((l) => (
+                  {/* Main Links */}
+                  <a
+                    href="/courses"
+                    className="block py-3.5 text-lg font-black text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/5 flex items-center justify-between group"
+                  >
+                    Courses{" "}
+                    <ChevronRight
+                      size={18}
+                      className="text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform"
+                    />
+                  </a>
+
+                  {isLoaded && user && (
+                    <a
+                      href="/my-courses"
+                      className="block py-3.5 text-lg font-black text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/5 flex items-center justify-between group"
+                    >
+                      My Learning{" "}
+                      <ChevronRight
+                        size={18}
+                        className="text-emerald-500 group-hover:translate-x-1 transition-transform"
+                      />
+                    </a>
+                  )}
+
+                  {navLinks.filter(l => l.label !== "Courses").map((l) => (
                     <a
                       key={l.label}
                       href={l.href}
@@ -794,34 +819,11 @@ export default function Navbar() {
                       {l.label}{" "}
                       <ChevronRight
                         size={18}
-                        className="text-violet-600 dark:text-violet-400 group-hover:translate-x-1 transition-transform"
+                        className="text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform"
                       />
                     </a>
                   ))}
-                  {isLoaded && user && (
-                    <>
-                      <a
-                        href="/my-courses"
-                        className="block py-3.5 text-lg font-black text-violet-600 dark:text-violet-400 border-b border-slate-200 dark:border-white/5 flex items-center justify-between group"
-                      >
-                        My Learning{" "}
-                        <ChevronRight
-                          size={18}
-                          className="text-violet-600 dark:text-violet-400 group-hover:translate-x-1 transition-transform"
-                        />
-                      </a>
-                      <a
-                        href="/purchases"
-                        className="block py-3.5 text-lg font-black text-indigo-600 dark:text-indigo-400 border-b border-slate-200 dark:border-white/5 flex items-center justify-between group"
-                      >
-                        My Purchases{" "}
-                        <ChevronRight
-                          size={18}
-                          className="text-indigo-600 dark:text-indigo-400 group-hover:translate-x-1 transition-transform"
-                        />
-                      </a>
-                    </>
-                  )}
+
                   {isLoaded &&
                     user &&
                     (userRole === "ADMIN" ||
@@ -851,7 +853,7 @@ export default function Navbar() {
                   <div className="space-y-4 pt-10">
                     <a
                       href="/auth/sign-in"
-                      className="block w-full py-4 bg-violet-600 text-white rounded-2xl font-black uppercase tracking-widest text-center"
+                      className="block w-full py-4 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-widest text-center shadow-lg shadow-blue-500/20"
                     >
                       Sign In
                     </a>
@@ -885,7 +887,7 @@ export default function Navbar() {
                   { label: "Profile", href: "/profile", icon: User },
                   {
                     label: "My Purchases",
-                    href: "/my-courses",
+                    href: "/purchases",
                     icon: ShoppingBag,
                   },
                   { label: "Settings", href: "/settings", icon: Settings },

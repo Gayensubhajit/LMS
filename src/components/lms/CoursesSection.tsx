@@ -359,7 +359,7 @@ export default function CoursesSection() {
                         href={`/learn/${course.slug}`}
                         className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-md dark:shadow-emerald-500/20 font-sans"
                       >
-                        Start Learning
+                        Enroll Now
                       </Link>
                     ) : course.isFree ? (
                       <Link

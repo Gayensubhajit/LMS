@@ -460,7 +460,7 @@ function CoursesContent() {
                                     href={`/learn/${course.slug}`}
                                     className="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 hover:bg-emerald-500 transition-all font-sans"
                                   >
-                                    Start Learning
+                                    Enroll Now
                                   </Link>
                                 ) : (
                                   <Link

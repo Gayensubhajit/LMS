@@ -28,6 +28,7 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_B
 const INDIVIDUAL_PLANS = [
   {
     name: "Single Course",
+    id: "single",
     price: "₹1,999",
     period: "/course",
     description: "Learn a single topic or skill and earn a credential.",
@@ -44,6 +45,7 @@ const INDIVIDUAL_PLANS = [
   },
   {
     name: "EduNova Plus",
+    id: "plus",
     price: "₹2,499",
     period: "/month",
     description:
@@ -64,6 +66,7 @@ const INDIVIDUAL_PLANS = [
   },
   {
     name: "Plus Annual",
+    id: "annual",
     price: "₹19,999",
     period: "/year",
     description:
@@ -85,6 +88,7 @@ const INDIVIDUAL_PLANS = [
 const TEAM_PLANS = [
   {
     name: "Teams Starter",
+    id: "teams-starter",
     price: "₹1,999",
     period: "/seat/month",
     description: "5–25 seats. Simple team learning for growing companies.",
@@ -101,6 +105,7 @@ const TEAM_PLANS = [
   },
   {
     name: "Teams Pro",
+    id: "teams-pro",
     price: "₹1,499",
     period: "/seat/month",
     description: "25+ seats. Volume pricing with dedicated account management.",
@@ -120,6 +125,7 @@ const TEAM_PLANS = [
   },
   {
     name: "Enterprise",
+    id: "enterprise",
     price: "Custom",
     period: "for large teams",
     description: "Fully tailored programs for 100+ seat organizations.",
@@ -189,13 +195,12 @@ function PlanCard({
   const hasBadge = "badge" in plan && plan.badge;
 
   const isActivePlan = isMember && (
-    // General check: if they have any active plus membership, highlight the Plus/Annual cards accordingly
-    ((plan as any).id === "plus" && (memberPlan === "plus" || memberPlan === "ONE_MONTH" || !memberPlan)) ||
-    ((plan as any).id === "annual" && (memberPlan === "annual" || memberPlan === "SIX_MONTH"))
+    ((plan as any).id === "plus" && (memberPlan === "plus" || memberPlan === "ONE_MONTH" || memberPlan === "Monthly" || !memberPlan)) ||
+    ((plan as any).id === "annual" && (memberPlan === "annual" || memberPlan === "SIX_MONTH" || memberPlan === "Annual"))
   );
 
   // Hard-suppress trial CTA for ANY member on these plans
-  const showTrial = !isMember && !isActivePlan;
+  const showTrial = !isMember;
 
   return (
     <motion.div

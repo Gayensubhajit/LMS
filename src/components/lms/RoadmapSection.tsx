@@ -155,7 +155,7 @@ export default function RoadmapSection() {
             Your celestial path
             <br />
             <span
-              className={`${montserrat.className} text-transparent bg-clip-text bg-linear-to-r from-blue-600 via-zinc-800 to-indigo-600 dark:from-blue-400 dark:via-white dark:to-indigo-400 animate-pulse-slow`}
+              className={`${montserrat.className} text-transparent bg-clip-text bg-linear-to-r from-indigo-600 via-purple-600 to-cyan-500 dark:from-indigo-400 dark:via-purple-400 dark:to-cyan-400 font-black`}
             >
               to industry mastery.
             </span>
@@ -285,17 +285,14 @@ function RoadmapStep({
             borderColor: "rgba(0,0,0,0.1)",
           }}
         >
-          {/* Active glow ring - ALWAYS visible at low opacity, brighter when active */}
-          <motion.div
-            style={{ opacity: isActive ? 1 : 0.4 }}
-            className={`absolute -inset-1.5 lg:-inset-2 rounded-3xl lg:rounded-4xl bg-linear-to-br ${step.color} blur-md transition-opacity duration-500`}
+          {/* Glassy border instead of colored glow */}
+          <div
+            className="absolute -inset-[1px] rounded-3xl lg:rounded-4xl bg-black/5 dark:bg-white/10 transition-opacity duration-500"
           />
 
           <div
-            className={`relative z-10 w-full h-full rounded-lg lg:rounded-xl bg-white dark:bg-[#080a10] flex items-center justify-center overflow-hidden group`}
+            className="relative z-10 w-full h-full rounded-lg lg:rounded-xl bg-white dark:bg-[#080a10] flex items-center justify-center overflow-hidden group"
           >
-            {/* Shimmer on active node */}
-            <div className="shimmer-effect opacity-30" />
             
             <step.icon
               size={18}
@@ -306,10 +303,10 @@ function RoadmapStep({
               className="text-black dark:text-white relative z-20 hidden lg:block"
             />
 
-            {/* Dynamic background fill on active */}
+            {/* Subtle neutral background fill on active */}
             <motion.div
-              style={{ scaleY: isActive ? 1 : 0 }}
-              className={`absolute inset-0 bg-black dark:bg-linear-to-br ${step.color} origin-bottom transition-transform duration-700 opacity-5 dark:opacity-100`}
+              style={{ opacity: isActive ? 0.05 : 0 }}
+              className="absolute inset-0 bg-black dark:bg-white transition-opacity duration-700"
             />
           </div>
 
@@ -326,25 +323,55 @@ function RoadmapStep({
           className={`pl-20 pr-4 lg:px-12 ${isEven ? "lg:col-start-1" : "lg:col-start-2 lg:text-right"} z-10`}
         >
           <motion.div
-            initial={{ opacity: 0, x: isEven ? -40 : 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-            className="group"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ 
+              duration: 0.5,
+              ease: "easeOut",
+              delay: index * 0.05
+            }}
+            className="group relative will-change-transform"
           >
             <div
-              className={`relative p-6 lg:p-8 rounded-2xl lg:rounded-3xl border border-black/10 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur-xl hover:bg-white dark:hover:bg-white/10 transition-all duration-500 overflow-hidden ${!isEven ? "lg:flex lg:flex-col lg:items-end" : ""}`}
+              className={`relative p-6 lg:p-8 rounded-2xl lg:rounded-3xl border border-black/10 dark:border-white/10 bg-white/80 dark:bg-white/5 backdrop-blur-xl hover:bg-white dark:hover:bg-white/10 transition-colors duration-500 overflow-hidden ${!isEven ? "lg:flex lg:flex-col lg:items-end" : ""}`}
             >
-              {/* Shimmer Effect */}
-              <div className="shimmer-effect" />
-              
-              {/* Hover highlight line */}
-              <div
-                className={`absolute top-0 bottom-0 ${isEven ? "left-0" : "right-0"} w-1 bg-linear-to-b ${step.color} opacity-0 group-hover:opacity-100 transition-opacity rounded-full`}
-              />
+              {/* SVG Border Beam Effect - Colors travelling through border */}
+              <div className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                <svg className="absolute inset-0 w-full h-full rounded-[inherit]" style={{ filter: 'drop-shadow(0 0 8px #3b82f6)' }}>
+                  <rect
+                    x="0.5"
+                    y="0.5"
+                    width="calc(100% - 1px)"
+                    height="calc(100% - 1px)"
+                    fill="none"
+                    stroke="url(#beam-gradient)"
+                    strokeWidth="2"
+                    strokeDasharray="100, 1000"
+                    rx="inherit"
+                    ry="inherit"
+                    className="beam-animation"
+                  />
+                  <defs>
+                    <linearGradient id="beam-gradient" gradientUnits="userSpaceOnUse">
+                      <stop offset="0%" stopColor="#3b82f6" />
+                      <stop offset="100%" stopColor="#818cf8" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <style jsx>{`
+                  @keyframes beam-travel {
+                    0% { stroke-dashoffset: 1100; }
+                    100% { stroke-dashoffset: 0; }
+                  }
+                  .beam-animation {
+                    animation: beam-travel 4s linear infinite;
+                  }
+                `}</style>
+              </div>
 
               <h3
-                className={`${montserrat.className} text-lg lg:text-xl font-bold text-black dark:text-white mb-2 lg:mb-3 group-hover:text-black dark:group-hover:text-blue-400 transition-colors uppercase tracking-tight`}
+                className={`${montserrat.className} text-lg lg:text-xl font-bold text-black dark:text-white mb-2 lg:mb-3 group-hover:text-blue-500 transition-all uppercase tracking-tight`}
               >
                 {step.title}
               </h3>
@@ -359,7 +386,7 @@ function RoadmapStep({
                 {step.tags.map((tag, j) => (
                   <span
                     key={j}
-                    className={`${montserrat.className} px-2 py-0.5 lg:px-3 lg:py-1 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[8px] lg:text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-tighter`}
+                    className={`${montserrat.className} px-2 py-0.5 lg:px-3 lg:py-1 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[8px] lg:text-[10px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-tighter transition-colors group-hover:border-blue-500/30 group-hover:text-blue-500`}
                   >
                     {tag}
                   </span>

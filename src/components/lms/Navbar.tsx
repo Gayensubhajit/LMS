@@ -331,17 +331,28 @@ export default function Navbar() {
 
           <div className="hidden lg:flex items-center gap-8 shrink-0">
             {navLinks.map((link) => (
-              <motion.a
-                key={link.label}
-                href={link.href}
-                className={`text-sm font-semibold transition-all relative group whitespace-nowrap ${
-                  pathname === link.href
-                    ? "text-blue-600 dark:text-blue-400"
-                    : "text-slate-900 dark:text-white/80 hover:text-blue-600 dark:hover:text-blue-400"
-                }`}
-              >
-                {link.label}
-              </motion.a>
+              <div key={link.label} className="flex items-center gap-8">
+                <motion.a
+                  href={link.href}
+                  className={`text-sm font-semibold transition-all relative group whitespace-nowrap ${
+                    pathname === link.href
+                      ? "text-blue-600 dark:text-blue-400"
+                      : "text-slate-900 dark:text-white/80 hover:text-blue-600 dark:hover:text-blue-400"
+                  }`}
+                >
+                  {link.label}
+                </motion.a>
+                {link.label === "Courses" && isLoaded && user && hasEnrollments && (
+                  <motion.a
+                    initial={{ opacity: 0, x: -5 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    href="/my-courses"
+                    className={`text-sm font-black text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all relative group whitespace-nowrap`}
+                  >
+                    My Learning
+                  </motion.a>
+                )}
+              </div>
             ))}
           </div>
 

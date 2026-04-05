@@ -92,32 +92,16 @@ export default function CTASection() {
             >
               <Sparkles size={14} className="animate-pulse" />
               {isMember ? "Membership Active" : "Limited Time Offer"}
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
             </span>
-=======
-=======
->>>>>>> Stashed changes
-            </div>
->>>>>>> Stashed changes
 
             {/* Headline */}
             <h2 className="font-serif text-5xl md:text-6xl font-black text-black dark:text-white mb-6 leading-tight tracking-tight">
               {isMember ? "Ready for Your" : "Start Learning"}
               <br />
-<<<<<<< Updated upstream
               <span
                 className={`${montserrat.className} text-transparent bg-clip-text bg-linear-to-r from-blue-600 via-indigo-600 to-blue-700 dark:from-blue-400 dark:via-indigo-400 dark:to-blue-300 dark:gradient-text`}
               >
                 {isMember ? "Next Lesson?" : "Today"}
-
-=======
-              <span className={`${montserrat.className} dark:gradient-text`}>
-                {isMember ? "Next Lesson?" : "Today"}
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
               </span>
             </h2>
 
@@ -192,13 +176,7 @@ export default function CTASection() {
                 </motion.div>
               ))}
             </div>
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
           </motion.div>
         </div>
       </div>

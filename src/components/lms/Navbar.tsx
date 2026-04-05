@@ -799,16 +799,28 @@ export default function Navbar() {
                     </a>
                   ))}
                   {isLoaded && user && (
-                    <a
-                      href="/my-courses"
-                      className="block py-3.5 text-lg font-black text-violet-600 dark:text-violet-400 border-b border-slate-200 dark:border-white/5 flex items-center justify-between group"
-                    >
-                      My Learning{" "}
-                      <ChevronRight
-                        size={18}
-                        className="text-violet-600 dark:text-violet-400 group-hover:translate-x-1 transition-transform"
-                      />
-                    </a>
+                    <>
+                      <a
+                        href="/my-courses"
+                        className="block py-3.5 text-lg font-black text-violet-600 dark:text-violet-400 border-b border-slate-200 dark:border-white/5 flex items-center justify-between group"
+                      >
+                        My Learning{" "}
+                        <ChevronRight
+                          size={18}
+                          className="text-violet-600 dark:text-violet-400 group-hover:translate-x-1 transition-transform"
+                        />
+                      </a>
+                      <a
+                        href="/purchases"
+                        className="block py-3.5 text-lg font-black text-indigo-600 dark:text-indigo-400 border-b border-slate-200 dark:border-white/5 flex items-center justify-between group"
+                      >
+                        My Purchases{" "}
+                        <ChevronRight
+                          size={18}
+                          className="text-indigo-600 dark:text-indigo-400 group-hover:translate-x-1 transition-transform"
+                        />
+                      </a>
+                    </>
                   )}
                   {isLoaded &&
                     user &&

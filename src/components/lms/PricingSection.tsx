@@ -158,25 +158,24 @@ export default function PricingSection() {
         
         if (data.ok && data.enrolled) {
           setIsMember(true);
-          // If we want more info like plan name or expiry, we'd fetch /enrollments/me
-          const meRes = await fetch(`${BACKEND_URL}/enrollments/me`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "x-clerk-user-id": userId
-            }
-          });
-          const meData = await meRes.json();
-          if (meData.ok) {
-            const plus = meData.items.find((e: any) => e.course.slug === "plus-membership");
-            if (plus) {
-              setMemberPlan(plus.plan);
-              if (plus.expiresAt) {
-                setExpiryDate(new Date(plus.expiresAt).toLocaleDateString("en-IN", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric"
-                }));
-              }
+        }
+
+        // Always check the full list as a fallback/sync measure
+        const meRes = await fetch(`${BACKEND_URL}/enrollments/me`, {
+          headers: { Authorization: `Bearer ${token}`, "x-clerk-user-id": userId }
+        });
+        const meData = await meRes.json();
+        if (meData.ok) {
+          const plus = meData.items.find((e: any) => e.course.slug === "plus-membership" && e.status === "ACTIVE");
+          if (plus) {
+            setIsMember(true);
+            setMemberPlan(plus.plan);
+            if (plus.expiresAt) {
+              setExpiryDate(new Date(plus.expiresAt).toLocaleDateString("en-IN", {
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+              }));
             }
           }
         }
@@ -266,7 +265,7 @@ export default function PricingSection() {
           >
             {plans.map((plan, i) => {
               const isActive = isMember && (
-                (plan.id === "plus" && (memberPlan === "plus" || memberPlan === "ONE_MONTH")) ||
+                (plan.id === "plus" && (memberPlan === "plus" || memberPlan === "ONE_MONTH" || !memberPlan)) ||
                 (plan.id === "annual" && (memberPlan === "annual" || memberPlan === "SIX_MONTH")) ||
                 (plan.id === "teams" && memberPlan === "teams") ||
                 (plan.id === "teams-pro" && memberPlan === "teams-pro")
@@ -335,7 +334,9 @@ export default function PricingSection() {
                       {loading ? (
                         <Loader2 size={16} className="animate-spin" />
                       ) : isActive ? (
-                        <>Active Member</>
+                        <>Continue Learning</>
+                      ) : isMember && (plan.id === "plus" || plan.id === "annual") ? (
+                        <>Manage Membership</>
                       ) : (
                         <>
                           {plan.highlight && <Zap size={14} className="fill-current" />}

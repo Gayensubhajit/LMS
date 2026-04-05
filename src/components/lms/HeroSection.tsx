@@ -491,11 +491,24 @@ export default function HeroSection() {
     const check = async () => {
       try {
         const token = await getToken();
+        // Check current slug status
         const res = await fetch(`${BACKEND_URL}/enrollments/check/plus-membership`, {
           headers: { Authorization: `Bearer ${token}`, "x-clerk-user-id": userId },
         });
         const data = await res.json();
-        if (data.ok && data.enrolled) setIsMember(true);
+        if (data.ok && data.enrolled) {
+          setIsMember(true);
+        } else {
+          // Fallback to full enrollment list
+          const meRes = await fetch(`${BACKEND_URL}/enrollments/me`, {
+            headers: { Authorization: `Bearer ${token}`, "x-clerk-user-id": userId },
+          });
+          const meData = await meRes.json();
+          if (meData.ok) {
+            const hasPlus = meData.items?.some((i: any) => i.course.slug === "plus-membership" && i.status === "ACTIVE");
+            if (hasPlus) setIsMember(true);
+          }
+        }
       } catch {}
     };
     check();

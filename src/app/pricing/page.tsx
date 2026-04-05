@@ -193,6 +193,9 @@ function PlanCard({
     ((plan as any).id === "annual" && (memberPlan === "annual" || memberPlan === "SIX_MONTH"))
   );
 
+  // Hard-suppress trial CTA for ANY member on these plans
+  const showTrial = !isMember && !isActivePlan;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -389,20 +392,26 @@ export default function PricingPage() {
           headers: { Authorization: `Bearer ${token}`, "x-clerk-user-id": userId },
         });
         const data = await res.json();
-        if (data.ok && data.enrolled) {
-          setIsMember(true);
-          // Fetch the plan type
-          const meRes = await fetch(`${BACKEND_URL}/enrollments/me`, {
-            headers: { Authorization: `Bearer ${token}`, "x-clerk-user-id": userId },
-          });
-          const meData = await meRes.json();
-          if (meData.ok) {
-            const plus = meData.items.find((e: any) => e.course.slug === "plus-membership");
-            if (plus) setMemberPlan(plus.plan);
+        const memberStatus = data.ok && data.enrolled;
+        setIsMember(memberStatus);
+
+        // Even if the check/plus-membership fails, check the full list as a fallback
+        const meRes = await fetch(`${BACKEND_URL}/enrollments/me`, {
+          headers: { Authorization: `Bearer ${token}`, "x-clerk-user-id": userId },
+        });
+        const meData = await meRes.json();
+        if (meData.ok) {
+          const plus = meData.items.find((e: any) => e.course.slug === "plus-membership" && e.status === "ACTIVE");
+          if (plus) {
+            setIsMember(true);
+            setMemberPlan(plus.plan);
           }
         }
-      } catch {}
-      finally { setMemberLoading(false); }
+      } catch (err) {
+        console.error("[PricingPage] Membership check error:", err);
+      } finally {
+        setMemberLoading(false);
+      }
     };
     check();
   }, [isLoaded, userId, getToken]);

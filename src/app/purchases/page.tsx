@@ -79,7 +79,9 @@ export default function PurchasesPage() {
         });
         const payData = await payRes.json();
         if (payData.ok) {
-          setPaymentHistory(payData.items);
+          // Filter out 'CREATED' (abandoned) payments
+          const filteredHistory = payData.items.filter((p: any) => p.status !== "CREATED");
+          setPaymentHistory(filteredHistory);
         }
 
       } catch (e) {
@@ -264,17 +266,35 @@ export default function PurchasesPage() {
                     {subscriptions.map((sub) => (
                       <div key={sub.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
                         <div className="flex items-center gap-6 text-center md:text-left flex-col md:flex-row">
-                          <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-3xl">
+                          <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-3xl shrink-0 group-hover:scale-110 transition-transform">
                             🚀
                           </div>
                           <div>
                             <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">{sub.course.title}</h3>
-                            <p className="text-sm text-slate-500 font-bold uppercase tracking-widest">{sub.plan.replace("_", " ")} Plan • Active</p>
+                            <p className="text-sm text-slate-500 font-bold uppercase tracking-widest">
+                              {sub.plan === "ONE_MONTH" ? "Monthly Plus Membership" : "Annual Premium Access"} • Active
+                            </p>
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Expires on</p>
-                          <p className="text-sm font-black text-slate-900 dark:text-white">{new Date(sub.expiresAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>
+                        <div className="flex flex-col md:items-end gap-3">
+                          <div className="text-right flex flex-col md:items-end">
+                            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Renews on</p>
+                            <p className="text-sm font-black text-slate-900 dark:text-white">{new Date(sub.expiresAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button 
+                              onClick={() => alert("To manage your billing or update payment methods, please contact support@theaim.app")}
+                              className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black text-[10px] font-black uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all shadow-lg"
+                            >
+                              Manage
+                            </button>
+                            <button 
+                              onClick={() => alert("We're sorry to see you go! To cancel your subscription, please send a message to support@theaim.app mentioning your registered email.")}
+                              className="px-4 py-2 rounded-xl border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-500 text-[10px] font-black uppercase tracking-widest hover:bg-red-50 dark:hover:bg-red-500/10 active:scale-95 transition-all"
+                            >
+                              Cancel
+                            </button>
+                          </div>
                         </div>
                       </div>
                     ))}

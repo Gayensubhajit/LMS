@@ -342,12 +342,14 @@ export default function Navbar() {
                 >
                   {link.label}
                 </motion.a>
-                {link.label === "Courses" && isLoaded && user && hasEnrollments && (
+                {link.label === "Courses" && isLoaded && user && (
                   <motion.a
-                    initial={{ opacity: 0, x: -5 }}
-                    animate={{ opacity: 1, x: 0 }}
                     href="/my-courses"
-                    className={`text-sm font-black text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-all relative group whitespace-nowrap`}
+                    className={`text-sm font-semibold transition-all relative group whitespace-nowrap ${
+                      pathname === "/my-courses"
+                        ? "text-blue-600 dark:text-blue-400"
+                        : "text-slate-900 dark:text-white/80 hover:text-blue-600 dark:hover:text-blue-400"
+                    }`}
                   >
                     My Learning
                   </motion.a>

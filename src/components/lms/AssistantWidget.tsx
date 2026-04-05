@@ -4,23 +4,45 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
-import { Send, Bot, X, Minimize2, GraduationCap, DollarSign, Zap, ImagePlus } from "lucide-react";
+import {
+  Send,
+  Bot,
+  X,
+  Minimize2,
+  GraduationCap,
+  DollarSign,
+  Zap,
+  ImagePlus,
+} from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { usePathname } from "next/navigation";
 
-type ChatMessage = { 
-  role: "user" | "assistant" | "system"; 
+type ChatMessage = {
+  role: "user" | "assistant" | "system";
   content: string;
   image?: string;
 };
 
 const QUICK_CHIPS = [
-  { label: "Top courses for 2026", icon: Zap, prompt: "What are the best courses to take in 2026?" },
-  { label: "Free courses", icon: GraduationCap, prompt: "Show me all the free courses on EduNova." },
-  { label: "Pricing info", icon: DollarSign, prompt: "What are the pricing plans and costs?" },
+  {
+    label: "Top courses for 2026",
+    icon: Zap,
+    prompt: "What are the best courses to take in 2026?",
+  },
+  {
+    label: "Free courses",
+    icon: GraduationCap,
+    prompt: "Show me all the free courses on EduNova.",
+  },
+  {
+    label: "Pricing info",
+    icon: DollarSign,
+    prompt: "What are the pricing plans and costs?",
+  },
 ];
 
 export default function AssistantWidget() {
@@ -36,13 +58,33 @@ export default function AssistantWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  const pathName = usePathname();
+  const HIDE_ROUTES = [
+    "/my-courses",
+    "/sign-in",
+    "/accomplishments",
+    "/purchases",
+    "/settings",
+    "/profile",
+    "/admin",
+    "/auth",
+    "/auth/sign-in",
+    "/auth/sign-up",
+    "/auth/login",
+    "/login",
+    "/signup",
+    "/dashboard",
+  ];
+
   useEffect(() => {
     if (messages.length === 0 && userLoaded) {
       const name = user?.firstName ?? "there";
-      setMessages([{
-        role: "assistant",
-        content: `Hey ${name}! 👋 I'm **EduNova Intel**, your personal learning guide. Ask me anything about our courses, pricing, or your learning path!`,
-      }]);
+      setMessages([
+        {
+          role: "assistant",
+          content: `Hey ${name}! 👋 I'm **EduNova Intel**, your personal learning guide. Ask me anything about our courses, pricing, or your learning path!`,
+        },
+      ]);
     }
   }, [userLoaded, user?.firstName, messages.length]);
 
@@ -50,13 +92,17 @@ export default function AssistantWidget() {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
+        scrollContainerRef.current.scrollTop =
+          scrollContainerRef.current.scrollHeight;
       }
     }, 60);
     return () => clearTimeout(timer);
   }, [messages, loading]);
 
-  const canSend = useMemo(() => (input.trim().length > 0 || !!selectedImage) && !loading, [input, selectedImage, loading]);
+  const canSend = useMemo(
+    () => (input.trim().length > 0 || !!selectedImage) && !loading,
+    [input, selectedImage, loading],
+  );
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -77,12 +123,19 @@ export default function AssistantWidget() {
     const capturedImage = selectedImage;
     setSelectedImage(null);
 
-    const userMsg: ChatMessage = { role: "user", content: text, image: capturedImage ?? undefined };
-    setMessages(prev => [...prev, userMsg]);
+    const userMsg: ChatMessage = {
+      role: "user",
+      content: text,
+      image: capturedImage ?? undefined,
+    };
+    setMessages((prev) => [...prev, userMsg]);
 
     try {
       const contentPayload = capturedImage
-        ? [{ type: "text", text: text || "Please analyze this image." }, { type: "image_url", image_url: { url: capturedImage } }]
+        ? [
+            { type: "text", text: text || "Please analyze this image." },
+            { type: "image_url", image_url: { url: capturedImage } },
+          ]
         : text;
 
       const res = await fetch("/api/assistant", {
@@ -91,33 +144,46 @@ export default function AssistantWidget() {
         body: JSON.stringify({
           userName: user?.firstName,
           messages: [
-            ...messages.slice(-8).map(m => ({ role: m.role, content: m.content })),
+            ...messages
+              .slice(-8)
+              .map((m) => ({ role: m.role, content: m.content })),
             { role: "user", content: contentPayload },
           ],
         }),
       });
 
       const data: { reply?: string; error?: string } = await res.json();
-      
+
       if (!res.ok) {
         if (res.status === 429) {
-          throw new Error("Neural Engine Cooling: OpenRouter free tier rate limit hit. Please wait 10-15 minutes or try again later.");
+          throw new Error(
+            "Neural Engine Cooling: OpenRouter free tier rate limit hit. Please wait 10-15 minutes or try again later.",
+          );
         }
         throw new Error(data.error ?? `Server error (${res.status})`);
       }
-      
-      setMessages(prev => [...prev, { role: "assistant", content: data.reply ?? "" }]);
+
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: data.reply ?? "" },
+      ]);
     } catch (err) {
       const errorMessage = (err as Error).message;
-      const displayError = errorMessage.includes("429") || errorMessage.includes("rate limit")
-        ? `⚠️ **Cooldown Active:** ${errorMessage}`
-        : `❌ **Error:** ${errorMessage}`;
-        
-      setMessages(prev => [...prev, { role: "assistant", content: displayError }]);
+      const displayError =
+        errorMessage.includes("429") || errorMessage.includes("rate limit")
+          ? `⚠️ **Cooldown Active:** ${errorMessage}`
+          : `❌ **Error:** ${errorMessage}`;
+
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: displayError },
+      ]);
     } finally {
       setLoading(false);
     }
   };
+
+  if (HIDE_ROUTES.includes(pathName)) return null;
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -142,22 +208,39 @@ export default function AssistantWidget() {
         style={{
           width: "min(100vw, 420px)",
           maxWidth: "100vw",
-          background: isDark ? "#0B1120" : "#ffffff"
+          background: isDark ? "#0B1120" : "#ffffff",
         }}
       >
         {/* ─── Header ─── */}
-        <div className="shrink-0 flex items-center gap-3 px-5 py-4 border-b border-white/5 dark:border-white/5" style={{ background: isDark ? "#0F1A2E" : "#f8fafc" }}>
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: "#0F766E" }}>
+        <div
+          className="shrink-0 flex items-center gap-3 px-5 py-4 border-b border-white/5 dark:border-white/5"
+          style={{ background: isDark ? "#0F1A2E" : "#f8fafc" }}
+        >
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center"
+            style={{ background: "#0F766E" }}
+          >
             <Bot size={18} className="text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className={`text-sm font-bold tracking-wide ${isDark ? "text-white" : "text-slate-900"}`}>EduNova Intel</p>
+            <p
+              className={`text-sm font-bold tracking-wide ${isDark ? "text-white" : "text-slate-900"}`}
+            >
+              EduNova Intel
+            </p>
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
-              <span className={`text-[10px] font-semibold uppercase tracking-widest ${isDark ? "text-teal-400" : "text-teal-600"}`}>Active</span>
+              <span
+                className={`text-[10px] font-semibold uppercase tracking-widest ${isDark ? "text-teal-400" : "text-teal-600"}`}
+              >
+                Active
+              </span>
             </div>
           </div>
-          <button onClick={() => setIsOpen(false)} className={`p-1.5 rounded-lg transition-colors ${isDark ? "text-white/30 hover:text-white hover:bg-white/5" : "text-slate-400 hover:text-slate-600 hover:bg-slate-100"}`}>
+          <button
+            onClick={() => setIsOpen(false)}
+            className={`p-1.5 rounded-lg transition-colors ${isDark ? "text-white/30 hover:text-white hover:bg-white/5" : "text-slate-400 hover:text-slate-600 hover:bg-slate-100"}`}
+          >
             <Minimize2 size={16} />
           </button>
         </div>
@@ -180,7 +263,10 @@ export default function AssistantWidget() {
                   className={`flex ${isUser ? "justify-end" : "justify-start"} items-end gap-2`}
                 >
                   {!isUser && (
-                    <div className="w-7 h-7 shrink-0 rounded-xl flex items-center justify-center mb-0.5" style={{ background: "#0F766E" }}>
+                    <div
+                      className="w-7 h-7 shrink-0 rounded-xl flex items-center justify-center mb-0.5"
+                      style={{ background: "#0F766E" }}
+                    >
                       <Bot size={13} className="text-white" />
                     </div>
                   )}
@@ -188,16 +274,28 @@ export default function AssistantWidget() {
                     className={`max-w-[78%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
                       isUser
                         ? "text-white rounded-br-none"
-                        : isDark ? "text-gray-200 rounded-bl-none border border-white/10" : "text-slate-700 rounded-bl-none border border-slate-200"
+                        : isDark
+                          ? "text-gray-200 rounded-bl-none border border-white/10"
+                          : "text-slate-700 rounded-bl-none border border-slate-200"
                     }`}
-                    style={isUser ? { background: "#0F766E" } : { background: isDark ? "#141E33" : "#ffffff" }}
+                    style={
+                      isUser
+                        ? { background: "#0F766E" }
+                        : { background: isDark ? "#141E33" : "#ffffff" }
+                    }
                   >
                     {m.image && (
                       <div className="mb-2 rounded-xl overflow-hidden">
-                        <img src={m.image} alt="Attached" className="w-full h-auto max-h-40 object-cover" />
+                        <img
+                          src={m.image}
+                          alt="Attached"
+                          className="w-full h-auto max-h-40 object-cover"
+                        />
                       </div>
                     )}
-                    <div className={`prose prose-sm max-w-none prose-p:my-1 prose-li:my-0.5 prose-headings:my-2 ${isDark ? "prose-invert prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/10 prose-code:text-teal-300" : "prose-pre:bg-slate-100 prose-pre:border prose-pre:border-slate-200 prose-code:text-teal-600"}`}>
+                    <div
+                      className={`prose prose-sm max-w-none prose-p:my-1 prose-li:my-0.5 prose-headings:my-2 ${isDark ? "prose-invert prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/10 prose-code:text-teal-300" : "prose-pre:bg-slate-100 prose-pre:border prose-pre:border-slate-200 prose-code:text-teal-600"}`}
+                    >
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>
                         {m.content}
                       </ReactMarkdown>
@@ -214,10 +312,16 @@ export default function AssistantWidget() {
               animate={{ opacity: 1 }}
               className="flex items-end gap-2"
             >
-              <div className="w-7 h-7 shrink-0 rounded-xl flex items-center justify-center" style={{ background: "#0F766E" }}>
+              <div
+                className="w-7 h-7 shrink-0 rounded-xl flex items-center justify-center"
+                style={{ background: "#0F766E" }}
+              >
                 <Bot size={13} className="text-white" />
               </div>
-              <div className={`px-4 py-3 rounded-2xl rounded-bl-none text-xs flex items-center gap-2 border ${isDark ? "text-gray-400 border-white/10" : "text-slate-500 border-slate-200"}`} style={{ background: isDark ? "#141E33" : "#f1f5f9" }}>
+              <div
+                className={`px-4 py-3 rounded-2xl rounded-bl-none text-xs flex items-center gap-2 border ${isDark ? "text-gray-400 border-white/10" : "text-slate-500 border-slate-200"}`}
+                style={{ background: isDark ? "#141E33" : "#f1f5f9" }}
+              >
                 <Spinner className="size-3.5 text-teal-400" />
                 <span>Thinking...</span>
               </div>
@@ -227,7 +331,10 @@ export default function AssistantWidget() {
         </div>
 
         {/* ─── Input Area ─── */}
-        <div className="shrink-0 px-5 py-4 border-t border-white/5 dark:border-white/5" style={{ background: isDark ? "#0F1A2E" : "#f8fafc" }}>
+        <div
+          className="shrink-0 px-5 py-4 border-t border-white/5 dark:border-white/5"
+          style={{ background: isDark ? "#0F1A2E" : "#f8fafc" }}
+        >
           {/* Quick chips — show only when early in conversation */}
           {messages.length <= 1 && !loading && (
             <div className="flex flex-wrap gap-2 mb-4">
@@ -251,7 +358,11 @@ export default function AssistantWidget() {
           {/* Image preview */}
           {selectedImage && (
             <div className="mb-3 relative w-16 h-16 group">
-              <img src={selectedImage} alt="Preview" className="w-full h-full object-cover rounded-xl border border-white/20" />
+              <img
+                src={selectedImage}
+                alt="Preview"
+                className="w-full h-full object-cover rounded-xl border border-white/20"
+              />
               <button
                 onClick={() => setSelectedImage(null)}
                 className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -305,15 +416,23 @@ export default function AssistantWidget() {
               className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 ${
                 canSend
                   ? "text-white hover:scale-105 active:scale-95 shadow-lg"
-                  : isDark ? "text-white/20 cursor-not-allowed" : "text-slate-300 cursor-not-allowed"
+                  : isDark
+                    ? "text-white/20 cursor-not-allowed"
+                    : "text-slate-300 cursor-not-allowed"
               }`}
-              style={canSend ? { background: "#0F766E" } : { background: isDark ? "#1A2540" : "#e2e8f0" }}
+              style={
+                canSend
+                  ? { background: "#0F766E" }
+                  : { background: isDark ? "#1A2540" : "#e2e8f0" }
+              }
             >
               {loading ? <Spinner className="size-4" /> : <Send size={16} />}
             </button>
           </div>
 
-          <p className={`text-[9px] text-center mt-2 uppercase tracking-widest ${isDark ? "text-white/15" : "text-slate-400"}`}>
+          <p
+            className={`text-[9px] text-center mt-2 uppercase tracking-widest ${isDark ? "text-white/15" : "text-slate-400"}`}
+          >
             EduNova Intel · Powered by OpenRouter
           </p>
         </div>

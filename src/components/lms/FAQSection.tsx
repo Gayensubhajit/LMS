@@ -40,7 +40,10 @@ export default function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="relative py-28 overflow-hidden bg-white dark:bg-[#030712]" id="faq">
+    <section
+      className="relative py-28 overflow-hidden bg-white dark:bg-[#030712]"
+      id="faq"
+    >
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -57,17 +60,23 @@ export default function FAQSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-14"
         >
-          <div className="inline-flex items-center gap-2 tag-blue mb-4">
+          <span
+            className={`${montserrat.className} inline-flex items-center gap-2 px-2 py-1 border border-gray-900/50 dark:border-violet-500/50 rounded-lg text-xs font-black tracking-[0.25em] text-black dark:text-violet-400 uppercase mb-4`}
+          >
             Platform Exclusive
-          </div>
+          </span>
           <h2 className="font-serif text-4xl md:text-6xl font-black text-black dark:text-white mb-4">
             Frequently Asked
             <br />
-            <span className={`${montserrat.className} dark:gradient-text`}>
+            <span
+              className={`${montserrat.className} text-transparent bg-clip-text bg-linear-to-r from-blue-600 via-indigo-600 to-blue-700 dark:from-blue-400 dark:via-indigo-400 dark:to-blue-300 dark:gradient-text`}
+            >
               Questions
             </span>
           </h2>
-          <p className={`${montserrat.className} text-gray-600 dark:text-gray-400`}>
+          <p
+            className={`${montserrat.className} text-gray-600 dark:text-gray-400`}
+          >
             Everything you need to know before you begin your learning journey.
           </p>
         </motion.div>
@@ -81,7 +90,9 @@ export default function FAQSection() {
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.4, delay: i * 0.07 }}
               className={`rounded-2xl overflow-hidden transition-all duration-300 border bg-white dark:bg-[#111827] ${
-                openIndex === i ? "border-black/20 dark:border-blue-500/30 shadow-lg dark:shadow-blue-500/10" : "border-black/5 dark:border-white/5"
+                openIndex === i
+                  ? "border-black/20 dark:border-blue-500/30 shadow-lg dark:shadow-blue-500/10"
+                  : "border-black/15 dark:border-white/5"
               }`}
               style={{
                 transition: "all 0.3s ease",
@@ -92,7 +103,7 @@ export default function FAQSection() {
                 className="w-full flex items-center justify-between p-6 text-left group"
               >
                 <span
-                  className={`text-base font-semibold transition-colors duration-200 ${
+                  className={`${montserrat.className} text-base font-semibold transition-colors duration-200 ${
                     openIndex === i
                       ? "text-black dark:text-white"
                       : "text-gray-600 dark:text-gray-300 group-hover:text-black dark:group-hover:text-white"
@@ -101,7 +112,7 @@ export default function FAQSection() {
                   {faq.q}
                 </span>
                 <div
-                  className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
+                  className={`shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 ${
                     openIndex === i
                       ? "bg-black dark:bg-linear-to-r dark:from-blue-600 dark:to-indigo-600 text-white"
                       : "bg-black/5 dark:bg-white/5 text-gray-500 dark:text-gray-400 group-hover:bg-black/10 dark:group-hover:bg-blue-600/20 group-hover:text-black dark:group-hover:text-blue-400"
@@ -119,7 +130,9 @@ export default function FAQSection() {
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                   >
-                    <div className="px-6 pb-6 text-gray-600 dark:text-gray-400 text-sm leading-relaxed border-t border-black/5 dark:border-blue-500/10 pt-4">
+                    <div
+                      className={`${montserrat.className} px-6 pb-6 text-gray-600 dark:text-gray-400 text-sm leading-relaxed border-t border-black/10 dark:border-blue-500/10 pt-4`}
+                    >
                       {faq.a}
                     </div>
                   </motion.div>

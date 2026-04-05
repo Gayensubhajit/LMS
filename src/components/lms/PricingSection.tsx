@@ -145,11 +145,13 @@ export default function PricingSection() {
           transition={{ duration: 0.55 }}
           className="text-center mb-12"
         >
-          <p className="text-xs font-black tracking-[0.25em] text-black dark:text-violet-400 uppercase mb-4">
+          <span
+            className={`${montserrat.className} px-2 py-1 border border-gray-900/50 dark:border-violet-500/50 rounded-lg text-xs font-black tracking-[0.25em] text-black dark:text-violet-400 uppercase mb-8`}
+          >
             Flexible Pricing
-          </p>
+          </span>
           <h2
-            className={`font-serif text-4xl md:text-5xl font-black text-black dark:text-white mb-4 leading-tight`}
+            className={`font-serif text-4xl md:text-6xl font-black text-black dark:text-white mb-4 leading-tight`}
           >
             Invest in Your Future
           </h2>
@@ -159,7 +161,7 @@ export default function PricingSection() {
             All plans include a 7-day free trial. No credit card required.
           </p>
 
-          {/* Tab toggle — same style as Coursera */}
+          {/* Tab toggle */}
           <div className="inline-flex items-center p-1 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 gap-1">
             <button
               onClick={() => setTab("individuals")}
@@ -203,7 +205,7 @@ export default function PricingSection() {
                 className={`relative rounded-2xl flex flex-col overflow-hidden transition-all duration-300 ${
                   plan.highlight
                     ? "border-2 border-indigo-600 dark:border-violet-500/70 shadow-2xl shadow-indigo-500/10 dark:shadow-violet-500/20 bg-white dark:bg-[#111827]"
-                    : "border border-black/[0.05] dark:border-white/[0.07] bg-white dark:bg-transparent"
+                    : "border border-black/20 dark:border-white/20 bg-white dark:bg-transparent"
                 }`}
                 style={{
                   background: "transparent",
@@ -250,7 +252,7 @@ export default function PricingSection() {
                   {/* CTA */}
                   <Link
                     href={plan.href}
-                    className={`${montserrat.className} flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-bold text-sm mb-2 transition-all group ${
+                    className={`${montserrat.className} text-center flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-bold text-sm mb-2 transition-all group ${
                       plan.highlight
                         ? "bg-[#0056d2] text-white hover:bg-[#00419e] shadow-lg shadow-blue-500/20"
                         : "bg-[#0056d2] text-white hover:bg-[#00419e] shadow-lg shadow-blue-500/10"
@@ -275,7 +277,9 @@ export default function PricingSection() {
                       <div key={f} className="flex items-center gap-3">
                         <div
                           className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
-                            plan.highlight ? "bg-black/5 dark:bg-violet-600/20" : "bg-black/5 dark:bg-white/5"
+                            plan.highlight
+                              ? "bg-black/5 dark:bg-violet-600/20"
+                              : "bg-black/5 dark:bg-white/5"
                           }`}
                         >
                           <Check

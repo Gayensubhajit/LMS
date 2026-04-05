@@ -67,7 +67,10 @@ const pages = [
           </span>
           <div className="flex gap-3 ml-2">
             {["Courses", "Roadmap", "Pricing"].map((l) => (
-              <span key={l} className="text-[7px] text-slate-600 dark:text-gray-400 font-bold">
+              <span
+                key={l}
+                className="text-[7px] text-slate-600 dark:text-gray-400 font-bold"
+              >
                 {l}
               </span>
             ))}
@@ -194,7 +197,9 @@ const pages = [
                 <p className="text-[7px] font-bold text-black dark:text-white mt-1 leading-tight">
                   {course.title}
                 </p>
-                <p className="text-[6px] text-gray-400 dark:text-gray-500 mb-1">{course.level}</p>
+                <p className="text-[6px] text-gray-400 dark:text-gray-500 mb-1">
+                  {course.level}
+                </p>
                 <div className="flex items-center gap-1">
                   <Star size={5} className="text-yellow-400 fill-yellow-400" />
                   <span className="text-[6px] font-bold text-black dark:text-white">
@@ -223,7 +228,9 @@ const pages = [
               <div className="w-5 h-5 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[8px] font-bold text-white uppercase">
                 SG
               </div>
-              <span className="text-[9px] font-bold text-black dark:text-white truncate">Subhajit Gayen</span>
+              <span className="text-[9px] font-bold text-black dark:text-white truncate">
+                Subhajit Gayen
+              </span>
               <ChevronDown size={8} className="text-gray-400 ml-auto" />
             </div>
           </div>
@@ -244,7 +251,9 @@ const pages = [
                 <item.icon size={10} />
                 <span className="text-[9px] font-medium">{item.label}</span>
                 {item.count && (
-                  <span className={`ml-auto text-[8px] font-bold ${item.active ? "opacity-70" : "text-gray-400"}`}>
+                  <span
+                    className={`ml-auto text-[8px] font-bold ${item.active ? "opacity-70" : "text-gray-400"}`}
+                  >
                     {item.count}
                   </span>
                 )}
@@ -253,7 +262,9 @@ const pages = [
           </div>
 
           <div className="mt-6 px-3">
-            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2 px-2">Categories</p>
+            <p className="text-[8px] font-black text-gray-400 uppercase tracking-widest mb-2 px-2">
+              Categories
+            </p>
             <div className="space-y-0.5">
               {[
                 { icon: Users, label: "Social", count: 972 },
@@ -262,10 +273,15 @@ const pages = [
                 { icon: ShoppingBag, label: "Course Store", count: 8 },
                 { icon: Tag, label: "Promotions", count: 21 },
               ].map((item, i) => (
-                <div key={i} className="flex items-center gap-2 px-3 py-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 rounded-md transition-colors">
+                <div
+                  key={i}
+                  className="flex items-center gap-2 px-3 py-1.5 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-white/5 rounded-md transition-colors"
+                >
                   <item.icon size={10} />
                   <span className="text-[9px] font-medium">{item.label}</span>
-                  <span className="ml-auto text-[8px] font-bold text-gray-400">{item.count}</span>
+                  <span className="ml-auto text-[8px] font-bold text-gray-400">
+                    {item.count}
+                  </span>
                 </div>
               ))}
             </div>
@@ -275,44 +291,91 @@ const pages = [
         {/* Message List (Middle Column) - 35% */}
         <div className="w-full lg:w-[35%] border-r border-black/5 dark:border-white/5 flex flex-col shrink-0">
           <div className="p-3 border-b border-black/5 dark:border-white/5 flex items-center justify-between">
-            <h3 className="text-[12px] font-black text-black dark:text-white">Inbox</h3>
+            <h3 className="text-[12px] font-black text-black dark:text-white">
+              Inbox
+            </h3>
             <div className="flex gap-1">
-              <button className="px-2 py-0.5 rounded-full bg-black text-white dark:bg-white dark:text-black text-[7px] font-bold">All mail</button>
-              <button className="px-2 py-0.5 rounded-full text-gray-500 dark:text-gray-400 text-[7px] font-bold border border-black/5 dark:border-white/5">Unread</button>
+              <button className="px-2 py-0.5 rounded-full bg-black text-white dark:bg-white dark:text-black text-[7px] font-bold">
+                All mail
+              </button>
+              <button className="px-2 py-0.5 rounded-full text-gray-500 dark:text-gray-400 text-[7px] font-bold border border-black/5 dark:border-white/5">
+                Unread
+              </button>
             </div>
           </div>
 
           <div className="p-3">
             <div className="relative">
-              <Search size={10} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input 
-                type="text" 
-                placeholder="Search messages..." 
-                className="w-full bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-lg py-1.5 pl-8 pr-3 text-[9px] outline-hidden placeholder:text-gray-400" 
+              <Search
+                size={10}
+                className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400"
+              />
+              <input
+                type="text"
+                placeholder="Search messages..."
+                className="w-full bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/5 rounded-lg py-1.5 pl-8 pr-3 text-[9px] outline-hidden placeholder:text-gray-400"
               />
             </div>
           </div>
 
           <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-1 px-2 pb-4 scrollbar-hide">
             {[
-              { name: "Instructor Sarah", time: "over 1 year ago", title: "Project Feedback", body: "Hi Subhajit, I've reviewed your latest React patterns...", tags: ["review", "feedback"], active: true },
-              { name: "System Admin", time: "over 1 year ago", title: "Assignment Update", body: "Re: Advanced UI Library - The deadline for your...", tags: ["assignment", "urgent"] },
-              { name: "Peer Review Lab", time: "almost 2 years ago", title: "New Lab Results", body: "Your peer evaluation results are now available in...", tags: ["academic"] },
-              { name: "John Doe (Alumni)", time: "almost 2 years ago", title: "Networking Event", body: "Hey! We're hosting a meet-and-greet this Friday...", tags: ["event", "alumni"] },
+              {
+                name: "Instructor Sarah",
+                time: "over 1 year ago",
+                title: "Project Feedback",
+                body: "Hi Subhajit, I've reviewed your latest React patterns...",
+                tags: ["review", "feedback"],
+                active: true,
+              },
+              {
+                name: "System Admin",
+                time: "over 1 year ago",
+                title: "Assignment Update",
+                body: "Re: Advanced UI Library - The deadline for your...",
+                tags: ["assignment", "urgent"],
+              },
+              {
+                name: "Peer Review Lab",
+                time: "almost 2 years ago",
+                title: "New Lab Results",
+                body: "Your peer evaluation results are now available in...",
+                tags: ["academic"],
+              },
+              {
+                name: "John Doe (Alumni)",
+                time: "almost 2 years ago",
+                title: "Networking Event",
+                body: "Hey! We're hosting a meet-and-greet this Friday...",
+                tags: ["event", "alumni"],
+              },
             ].map((msg, i) => (
-              <div 
-                key={i} 
+              <div
+                key={i}
                 className={`p-3 rounded-xl border transition-all ${msg.active ? "bg-white dark:bg-white/5 border-black/10 dark:border-white/10 shadow-sm" : "border-transparent opacity-60 hover:opacity-100"}`}
               >
                 <div className="flex justify-between mb-1">
-                  <span className="text-[9px] font-black text-black dark:text-white">{msg.name}</span>
-                  <span className="text-[7px] text-gray-400 tracking-tight">{msg.time}</span>
+                  <span className="text-[9px] font-black text-black dark:text-white">
+                    {msg.name}
+                  </span>
+                  <span className="text-[7px] text-gray-400 tracking-tight">
+                    {msg.time}
+                  </span>
                 </div>
-                <p className="text-[8px] font-bold text-gray-700 dark:text-gray-300 mb-1 truncate">{msg.title}</p>
-                <p className="text-[8px] text-gray-400 line-clamp-2 leading-relaxed mb-2">{msg.body}</p>
+                <p className="text-[8px] font-bold text-gray-700 dark:text-gray-300 mb-1 truncate">
+                  {msg.title}
+                </p>
+                <p className="text-[8px] text-gray-400 line-clamp-2 leading-relaxed mb-2">
+                  {msg.body}
+                </p>
                 <div className="flex gap-1">
-                  {msg.tags.map(tag => (
-                    <span key={tag} className={`px-2 py-0.5 rounded-full text-[6px] font-black uppercase tracking-widest ${tag === "urgent" ? "bg-red-500/10 text-red-600" : "bg-black/5 dark:bg-white/10 text-gray-500 dark:text-white/60"}`}>{tag}</span>
+                  {msg.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className={`px-2 py-0.5 rounded-full text-[6px] font-black uppercase tracking-widest ${tag === "urgent" ? "bg-red-500/10 text-red-600" : "bg-black/5 dark:bg-white/10 text-gray-500 dark:text-white/60"}`}
+                    >
+                      {tag}
+                    </span>
                   ))}
                 </div>
               </div>
@@ -323,49 +386,86 @@ const pages = [
         {/* Message Detail (Right Column) - 40% */}
         <div className="hidden md:flex flex-1 flex flex-col">
           <div className="h-10 border-b border-black/5 dark:border-white/5 flex items-center px-4 justify-between shrink-0">
-             <div className="flex gap-4">
-                <div className="flex gap-2">
-                   {[Archive, Trash, AlertCircle, Clock].map((Icon, i) => <Icon key={i} size={12} className="text-gray-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer" />)}
-                </div>
-                <div className="w-[1px] h-3 bg-black/5 dark:bg-white/10 self-center" />
-                <div className="flex gap-2">
-                   {[RotateCcw, Reply, ReplyAll, Forward].map((Icon, i) => <Icon key={i} size={12} className="text-gray-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer" />)}
-                </div>
-             </div>
-             <div className="w-1 h-3 flex flex-col gap-0.5">
-                {[1,2,3].map(i => <div key={i} className="w-0.5 h-0.5 rounded-full bg-gray-400" />)}
-             </div>
+            <div className="flex gap-4">
+              <div className="flex gap-2">
+                {[Archive, Trash, AlertCircle, Clock].map((Icon, i) => (
+                  <Icon
+                    key={i}
+                    size={12}
+                    className="text-gray-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
+                  />
+                ))}
+              </div>
+              <div className="w-[1px] h-3 bg-black/5 dark:bg-white/10 self-center" />
+              <div className="flex gap-2">
+                {[RotateCcw, Reply, ReplyAll, Forward].map((Icon, i) => (
+                  <Icon
+                    key={i}
+                    size={12}
+                    className="text-gray-400 hover:text-black dark:hover:text-white transition-colors cursor-pointer"
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="w-1 h-3 flex flex-col gap-0.5">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="w-0.5 h-0.5 rounded-full bg-gray-400" />
+              ))}
+            </div>
           </div>
 
           <div className="flex-1 p-6 flex flex-col overflow-y-auto">
-             <div className="flex items-start justify-between mb-8">
-                <div className="flex items-center gap-3">
-                   <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center text-orange-600 dark:text-orange-400 text-[10px] font-black">IS</div>
-                   <div>
-                      <p className="text-[11px] font-black text-black dark:text-white">Instructor Sarah</p>
-                      <p className="text-[8px] font-bold text-gray-500 dark:text-gray-400">Meeting Regarding Capstone Project</p>
-                      <p className="text-[7px] text-gray-400">Reply-To: sarah.inst@edunova.app</p>
-                   </div>
+            <div className="flex items-start justify-between mb-8">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-500/20 flex items-center justify-center text-orange-600 dark:text-orange-400 text-[10px] font-black">
+                  IS
                 </div>
-                <span className="text-[8px] text-gray-400 font-medium">Oct 22, 2023, 9:00:00 AM</span>
-             </div>
-
-             <div className="space-y-4 max-w-md">
-                <p className="text-[10px] text-gray-600 dark:text-gray-300 leading-relaxed font-medium">Hi Subhajit, let's have a meeting tomorrow to discuss the project. I've been reviewing your latest React patterns and have some ideas I'd like to share.</p>
-                <p className="text-[10px] text-gray-600 dark:text-gray-300 leading-relaxed font-medium">It's crucial that we align on our next steps to ensure the project's success. Please come prepared with any questions or insights you may have. Looking forward to our meeting!</p>
-                <p className="text-[10px] text-gray-600 dark:text-gray-300 leading-relaxed font-medium">Best regards, <br/><span className="font-black">Sarah</span></p>
-             </div>
-
-             <div className="mt-auto pt-8">
-                <div className="p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/5">
-                   <p className="text-[9px] text-gray-400 mb-4">Reply to Instructor Sarah...</p>
-                   <div className="flex justify-end">
-                      <div className="w-8 h-8 rounded-full bg-black text-white dark:bg-white dark:text-black flex items-center justify-center">
-                         <Send size={12} />
-                      </div>
-                   </div>
+                <div>
+                  <p className="text-[11px] font-black text-black dark:text-white">
+                    Instructor Sarah
+                  </p>
+                  <p className="text-[8px] font-bold text-gray-500 dark:text-gray-400">
+                    Meeting Regarding Capstone Project
+                  </p>
+                  <p className="text-[7px] text-gray-400">
+                    Reply-To: sarah.inst@edunova.app
+                  </p>
                 </div>
-             </div>
+              </div>
+              <span className="text-[8px] text-gray-400 font-medium">
+                Oct 22, 2023, 9:00:00 AM
+              </span>
+            </div>
+
+            <div className="space-y-4 max-w-md">
+              <p className="text-[10px] text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                Hi Subhajit, let's have a meeting tomorrow to discuss the
+                project. I've been reviewing your latest React patterns and have
+                some ideas I'd like to share.
+              </p>
+              <p className="text-[10px] text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                It's crucial that we align on our next steps to ensure the
+                project's success. Please come prepared with any questions or
+                insights you may have. Looking forward to our meeting!
+              </p>
+              <p className="text-[10px] text-gray-600 dark:text-gray-300 leading-relaxed font-medium">
+                Best regards, <br />
+                <span className="font-black">Sarah</span>
+              </p>
+            </div>
+
+            <div className="mt-auto pt-8">
+              <div className="p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/5">
+                <p className="text-[9px] text-gray-400 mb-4">
+                  Reply to Instructor Sarah...
+                </p>
+                <div className="flex justify-end">
+                  <div className="w-8 h-8 rounded-full bg-black text-white dark:bg-white dark:text-black flex items-center justify-center">
+                    <Send size={12} />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -416,7 +516,7 @@ export default function HeroSection() {
             className="font-black tracking-tight mb-8 leading-[1.4] md:leading-loose"
             style={{ color: "var(--foreground)" }}
           >
-            <span className="md:mb-6 inline-block font-serif text-[32px] sm:text-5xl md:text-7xl lg:text-7xl leading-tight">
+            <span className="md:mb-6 inline-block font-serif text-5xl md:text-7xl lg:text-7xl leading-tight">
               Step Into the Future of
             </span>
             <div className="md:h-[6.4em] overflow-hidden flex items-center justify-center">
@@ -427,7 +527,7 @@ export default function HeroSection() {
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -60, opacity: 0 }}
                   transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
-                  className={`${bricolage.className} block text-4xl md:text-8xl font-black italic text-transparent bg-clip-text  ${
+                  className={`${bricolage.className} block text-5xl md:text-8xl font-black italic text-transparent bg-clip-text  ${
                     isDark
                       ? "bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500"
                       : "bg-linear-to-r from-cyan-700 via-blue-500 to-indigo-600"
@@ -481,7 +581,11 @@ export default function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
           className="relative max-w-full md:max-w-7xl mx-auto mt-12 px-0 sm:px-6 scale-100 sm:scale-[0.85] md:scale-100 origin-top"
-          style={{ perspective: "2000px", backfaceVisibility: "hidden", transform: "translateZ(0)" }}
+          style={{
+            perspective: "2000px",
+            backfaceVisibility: "hidden",
+            transform: "translateZ(0)",
+          }}
         >
           <motion.div
             style={{

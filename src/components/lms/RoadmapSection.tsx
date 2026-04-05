@@ -141,7 +141,7 @@ export default function RoadmapSection() {
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={headerInView ? { opacity: 1, scale: 1 } : {}}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-black/10 dark:border-blue-500/20 bg-black/5 dark:bg-blue-500/5 text-black dark:text-blue-400 text-xs font-bold uppercase tracking-widest mb-6"
+            className={`${montserrat.className} inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-black/10 dark:border-blue-500/20 bg-black/5 dark:bg-blue-500/5 text-black dark:text-blue-400 text-xs font-bold uppercase tracking-widest mb-6`}
           >
             <Sparkles size={12} />
             The Mastery Protocol
@@ -150,7 +150,7 @@ export default function RoadmapSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={headerInView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.1 }}
-            className="font-black text-4xl md:text-6xl text-black dark:text-white mb-6 leading-tight"
+            className="font-serif font-black text-4xl md:text-6xl text-black dark:text-white mb-6 leading-tight"
           >
             Your celestial path
             <br />

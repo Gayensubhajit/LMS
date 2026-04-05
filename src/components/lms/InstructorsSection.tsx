@@ -58,7 +58,8 @@ const instructors = [
     courses: 6,
     expertise: ["ML/AI", "Python", "LLMs"],
     bio: "PhD in AI from MIT. 5 published research papers. Former DeepMind researcher.",
-    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=500&auto=format&fit=crop&q=60",
+    image:
+      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=500&auto=format&fit=crop&q=60",
   },
   {
     id: 4,
@@ -73,7 +74,8 @@ const instructors = [
     courses: 5,
     expertise: ["Mobile Design", "Branding", "Motion"],
     bio: "Helped redesign Airbnb's mobile app. Speaker at Design+.",
-    image: "https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?w=500&auto=format&fit=crop&q=60",
+    image:
+      "https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?w=500&auto=format&fit=crop&q=60",
   },
 ];
 
@@ -83,7 +85,10 @@ export default function InstructorsSection() {
   const [hovered, setHovered] = useState<number | null>(null);
 
   return (
-    <section className="relative py-28 overflow-hidden bg-white dark:bg-[#030712]" id="instructors">
+    <section
+      className="relative py-28 overflow-hidden bg-white dark:bg-[#030712]"
+      id="instructors"
+    >
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -100,13 +105,17 @@ export default function InstructorsSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 tag-purple mb-4">
-            World-Class Mentors
-          </div>
+          <span
+            className={`${montserrat.className} inline-flex items-center gap-2 px-2 py-1 border border-gray-900/50 dark:border-violet-500/50 rounded-lg text-xs font-black tracking-[0.25em] text-black dark:text-violet-400 uppercase mb-4`}
+          >
+            Exceptional Mentors
+          </span>
           <h2 className="font-serif text-4xl md:text-6xl font-black text-black dark:text-white mb-4">
             Learn from Industry Leaders
             <br />
-            <span className={`${montserrat.className} dark:gradient-text`}>
+            <span
+              className={`${montserrat.className} text-transparent bg-clip-text bg-linear-to-r from-blue-600 via-indigo-600 to-blue-700 dark:from-blue-400 dark:via-indigo-400 dark:to-blue-300 dark:gradient-text`}
+            >
               &amp; Top Creators
             </span>
           </h2>
@@ -133,21 +142,21 @@ export default function InstructorsSection() {
               className="group relative rounded-2xl overflow-hidden cursor-pointer bg-white dark:bg-[#111827] border border-black/[0.06] dark:border-white/[0.06] shadow-lg dark:shadow-black/40"
             >
               {/* Full Image Area */}
-              <div
-                className={`relative h-48 overflow-hidden`}
-              >
+              <div className={`relative h-48 overflow-hidden`}>
                 {inst.image ? (
-                  <img 
-                    src={inst.image} 
-                    alt={inst.name} 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                  <img
+                    src={inst.image}
+                    alt={inst.name}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 ) : (
-                  <div className={`w-full h-full bg-linear-to-br ${inst.color} flex items-center justify-center text-white text-4xl font-black`}>
+                  <div
+                    className={`w-full h-full bg-linear-to-br ${inst.color} flex items-center justify-center text-white text-4xl font-black`}
+                  >
                     {inst.initials}
                   </div>
                 )}
-                
+
                 {/* Gradient Overlay for better contrast with the badge */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
 
@@ -159,8 +168,12 @@ export default function InstructorsSection() {
 
               {/* Content */}
               <div className="p-5">
-                <h3 className="text-base font-bold text-black dark:text-white">{inst.name}</h3>
-                <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mb-3">{inst.role}</p>
+                <h3 className="text-base font-bold text-black dark:text-white">
+                  {inst.name}
+                </h3>
+                <p className="text-xs text-blue-600 dark:text-blue-400 font-semibold mb-3">
+                  {inst.role}
+                </p>
 
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 leading-relaxed">
                   {inst.bio}
@@ -204,7 +217,13 @@ export default function InstructorsSection() {
                 <div className="flex items-center justify-between">
                   <div className="flex gap-2">
                     <a
-                      href={inst.id === 1 ? "https://x.com/GunjanBasak" : inst.id === 2 ? "https://x.com/Chirantan2002" : `https://twitter.com/search?q=${encodeURIComponent(inst.name)}`}
+                      href={
+                        inst.id === 1
+                          ? "https://x.com/GunjanBasak"
+                          : inst.id === 2
+                            ? "https://x.com/Chirantan2002"
+                            : `https://twitter.com/search?q=${encodeURIComponent(inst.name)}`
+                      }
                       target="_blank"
                       rel="noreferrer"
                       className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-blue-400 hover:border-blue-500/30 transition-colors"
@@ -212,7 +231,13 @@ export default function InstructorsSection() {
                       <Twitter size={12} />
                     </a>
                     <a
-                      href={inst.id === 1 ? "https://www.linkedin.com/in/gunjan-basak-2a7440338" : inst.id === 2 ? "https://www.linkedin.com/in/chirantan2002/" : `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(inst.name)}`}
+                      href={
+                        inst.id === 1
+                          ? "https://www.linkedin.com/in/gunjan-basak-2a7440338"
+                          : inst.id === 2
+                            ? "https://www.linkedin.com/in/chirantan2002/"
+                            : `https://www.linkedin.com/search/results/all/?keywords=${encodeURIComponent(inst.name)}`
+                      }
                       target="_blank"
                       rel="noreferrer"
                       className="w-7 h-7 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-blue-500 hover:border-blue-500/30 transition-colors"

@@ -21,12 +21,14 @@ const trustedLogos = [
   { href: "/marquee_images/colored/stripe-ar21.svg" },
 ];
 
+const DURATION = 180;
+
 export default function TrustedBySectionPremium() {
   const marqueeItems = [...trustedLogos, ...trustedLogos, ...trustedLogos];
 
   return (
     <section className="relative py-10 overflow-hidden mt-6 md:mt-32 backdrop-blur">
-      <div className="relative z-10 w-full mx-auto px-4 md:px-8">
+      <div className="relative z-10 w-full mx-auto px-4 md:px-8 max-w-6xl">
         {/* Label */}
         <p
           className={`${montserrat.className} text-gray-500 dark:text-gray-400 tracking-wide mb-16 text-base md:text-lg font-medium text-center`}
@@ -45,7 +47,11 @@ export default function TrustedBySectionPremium() {
               className="flex items-center gap-8 whitespace-nowrap shrink-0"
               style={{ width: "max-content" }}
               animate={{ x: ["0%", "-100%"] }}
-              transition={{ repeat: Infinity, duration: 150, ease: "linear" }}
+              transition={{
+                repeat: Infinity,
+                duration: DURATION,
+                ease: "linear",
+              }}
             >
               {marqueeItems.map((items, idx) => (
                 <img
@@ -53,7 +59,7 @@ export default function TrustedBySectionPremium() {
                   src={items.href}
                   alt={`Marquee_Logo_Image_${idx}`}
                   style={{ width: 150, height: 60 }}
-                  className="object-contain opacity-70 hover:opacity-100 transition-opacity"
+                  className="object-contain opacity-80 hover:opacity-100 transition-opacity duration-300 ease-in-out"
                 />
               ))}
             </motion.div>

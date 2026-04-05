@@ -51,16 +51,20 @@ export default function CTASection() {
             transition={{ duration: 0.6 }}
           >
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 tag-blue mb-6">
+            <span
+              className={`${montserrat.className} inline-flex items-center gap-2 px-2 py-1 border border-gray-900/50 dark:border-violet-500/50 rounded-lg text-xs font-black tracking-[0.25em] text-black dark:text-violet-400 uppercase mb-4`}
+            >
               <Sparkles size={14} className="animate-pulse" />
               Limited Time Offer
-            </div>
+            </span>
 
             {/* Headline */}
             <h2 className="font-serif text-5xl md:text-6xl font-black text-black dark:text-white mb-6 leading-tight">
               Start Learning
               <br />
-              <span className={`${montserrat.className} dark:gradient-text`}>
+              <span
+                className={`${montserrat.className} text-transparent bg-clip-text bg-linear-to-r from-blue-600 via-indigo-600 to-blue-700 dark:from-blue-400 dark:via-indigo-400 dark:to-blue-300 dark:gradient-text`}
+              >
                 Today
               </span>
             </h2>
@@ -157,8 +161,10 @@ export default function CTASection() {
                 ))}
               </div>
               <div className="text-sm text-gray-500 dark:text-gray-400">
-                <span className="text-black dark:text-white font-semibold">2,400+</span> joined
-                this week
+                <span className="text-black dark:text-white font-semibold">
+                  2,400+
+                </span>{" "}
+                joined this week
               </div>
             </motion.div>
           </motion.div>

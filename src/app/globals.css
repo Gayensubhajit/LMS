@@ -544,7 +544,6 @@
   padding: 4px 12px;
   border-radius: 999px;
   font-size: 0.75rem;
-  font-weight: 500;
 }
 
 /* Progress bar glow */
@@ -807,4 +806,8 @@ html {
 /* Dark theme */
 .dark .logo-svg {
   color: #666666;
+}
+::view-transition-old(root), ::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
 }

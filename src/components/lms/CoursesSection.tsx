@@ -123,10 +123,15 @@ export default function CoursesSection() {
     activeCategory === "All"
       ? courses
       : courses.filter((c) => c.category === activeCategory)
-  ).filter(c => !c.isHidden).slice(0, 4);
+  )
+    .filter((c) => !c.isHidden)
+    .slice(0, 4);
 
   return (
-    <section className="relative py-28 overflow-hidden bg-white dark:bg-[#030712]" id="courses">
+    <section
+      className="relative py-28 overflow-hidden bg-white dark:bg-[#030712]"
+      id="courses"
+    >
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -146,13 +151,17 @@ export default function CoursesSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 tag-blue mb-4">
+          <span
+            className={`${montserrat.className} inline-flex items-center gap-2 px-2 py-1 border border-gray-900/50 dark:border-violet-500/50 rounded-lg text-xs font-black tracking-[0.25em] text-black dark:text-violet-400 uppercase mb-4`}
+          >
             Top Rated Courses
-          </div>
+          </span>
           <h2 className="font-serif text-4xl md:text-6xl font-black text-black dark:text-white mb-4">
             Level Up with Our
             <br />
-            <span className={`${montserrat.className} dark:gradient-text`}>
+            <span
+              className={`${montserrat.className} text-transparent bg-clip-text bg-linear-to-r from-blue-600 via-zinc-800 to-indigo-600 dark:from-blue-400 dark:via-white dark:to-indigo-400 dark:gradient-text`}
+            >
               Most Popular Courses
             </span>
           </h2>
@@ -223,14 +232,16 @@ export default function CoursesSection() {
                   className={`relative h-44 bg-linear-to-br ${gradient} flex items-center justify-center overflow-hidden`}
                 >
                   {course.img ? (
-                    <img 
-                      src={course.img} 
+                    <img
+                      src={course.img}
                       alt={course.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                   ) : (
                     <motion.div
-                      animate={hoveredCard === i ? { scale: 1.1 } : { scale: 1 }}
+                      animate={
+                        hoveredCard === i ? { scale: 1.1 } : { scale: 1 }
+                      }
                       transition={{ duration: 0.4 }}
                       className="text-6xl"
                     >
@@ -239,9 +250,9 @@ export default function CoursesSection() {
                   )}
                   {course.img && (
                     <div className="absolute inset-0 flex items-center justify-center text-5xl transform group-hover:scale-125 transition-all duration-700 drop-shadow-2xl opacity-0 group-hover:opacity-100">
-                       {course.emoji}
+                      {course.emoji}
                     </div>
-                   )}
+                  )}
 
                   {/* Badge */}
                   <div
@@ -287,14 +298,21 @@ export default function CoursesSection() {
 
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex flex-wrap gap-1.5">
-                      {course.skills.slice(0, 3).map((skill: string, j: number) => (
-                        <span key={j} className="text-[10px] bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-400 px-2 py-0.5 rounded-md">
-                          {skill}
-                        </span>
-                      ))}
+                      {course.skills
+                        .slice(0, 3)
+                        .map((skill: string, j: number) => (
+                          <span
+                            key={j}
+                            className="text-[10px] bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-400 px-2 py-0.5 rounded-md"
+                          >
+                            {skill}
+                          </span>
+                        ))}
                     </div>
                     <div className="text-sm font-bold text-black dark:text-blue-400">
-                      {course.isFree ? "Free" : `${formatLocalPrice(course.price.oneMonth)}/mo`}
+                      {course.isFree
+                        ? "Free"
+                        : `${formatLocalPrice(course.price.oneMonth)}/mo`}
                     </div>
                   </div>
 
@@ -314,36 +332,36 @@ export default function CoursesSection() {
                     </span>
                   </div>
 
-                    <div className="flex items-center gap-2 mt-auto pt-2">
+                  <div className="flex items-center gap-2 mt-auto pt-2">
+                    <Link
+                      href={`/courses/${course.slug}`}
+                      className="flex-1 flex items-center justify-center gap-1.5 h-10 border border-black/10 dark:border-blue-500/30 text-black dark:text-blue-600 text-[11px] font-bold rounded-xl hover:bg-black/5 dark:hover:bg-blue-500/10 transition-all font-sans"
+                    >
+                      Details
+                    </Link>
+                    {enrolledSlugs.has(course.slug) ? (
                       <Link
-                        href={`/courses/${course.slug}`}
-                        className="flex-1 flex items-center justify-center gap-1.5 h-10 border border-black/10 dark:border-blue-500/30 text-black dark:text-blue-600 text-[11px] font-bold rounded-xl hover:bg-black/5 dark:hover:bg-blue-500/10 transition-all font-sans"
+                        href={`/learn/${course.slug}`}
+                        className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-black dark:bg-violet-600 hover:bg-zinc-800 dark:hover:bg-violet-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-md dark:shadow-violet-500/20 font-sans"
                       >
-                        Details
+                        Go to Course
                       </Link>
-                      {enrolledSlugs.has(course.slug) ? (
-                        <Link
-                          href={`/learn/${course.slug}`}
-                          className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-black dark:bg-violet-600 hover:bg-zinc-800 dark:hover:bg-violet-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-md dark:shadow-violet-500/20 font-sans"
-                        >
-                          Go to Course
-                        </Link>
-                      ) : course.isFree ? (
-                        <Link
-                          href={`/learn/${course.slug}`}
-                          className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-black dark:bg-emerald-600 hover:bg-zinc-800 dark:hover:bg-emerald-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-md dark:shadow-emerald-500/20 font-sans"
-                        >
-                          Enroll Free
-                        </Link>
-                      ) : (
-                        <Link
-                          href={`/checkout?slug=${course.slug}&plan=1month`}
-                          className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-black dark:bg-linear-to-r dark:from-blue-600 dark:to-indigo-600 text-white text-[11px] font-bold rounded-xl hover:opacity-90 transition-all shadow-md dark:shadow-blue-500/20 font-sans"
-                        >
-                          Enroll <ArrowRight size={12} />
-                        </Link>
-                      )}
-                    </div>
+                    ) : course.isFree ? (
+                      <Link
+                        href={`/learn/${course.slug}`}
+                        className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-black dark:bg-emerald-600 hover:bg-zinc-800 dark:hover:bg-emerald-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-md dark:shadow-emerald-500/20 font-sans"
+                      >
+                        Enroll Free
+                      </Link>
+                    ) : (
+                      <Link
+                        href={`/checkout?slug=${course.slug}&plan=1month`}
+                        className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-black dark:bg-linear-to-r dark:from-blue-600 dark:to-indigo-600 text-white text-[11px] font-bold rounded-xl hover:opacity-90 transition-all shadow-md dark:shadow-blue-500/20 font-sans"
+                      >
+                        Enroll <ArrowRight size={12} />
+                      </Link>
+                    )}
+                  </div>
                 </div>
               </motion.div>
             );

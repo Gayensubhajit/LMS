@@ -13,7 +13,8 @@ const testimonials = [
     id: 1,
     name: "Priya Sharma",
     role: "UX Designer @ Google",
-    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face",
+    avatar:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face",
     color: "from-violet-500 to-purple-700",
     rating: 5,
     text: "EduNova completely transformed my career. The AI-powered roadmap was spot-on for my goals, and within 6 months I landed a UX role at Google. The quality of instruction is unmatched.",
@@ -24,7 +25,8 @@ const testimonials = [
     id: 2,
     name: "James Callahan",
     role: "Frontend Dev @ Stripe",
-    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face",
+    avatar:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face",
     color: "from-blue-500 to-cyan-600",
     rating: 5,
     text: "The React & Next.js course is absolutely world-class. Real-world projects, expert mentors, and a community that actually helps each other. I went from zero to senior dev in 8 months.",
@@ -35,7 +37,8 @@ const testimonials = [
     id: 3,
     name: "Amara Okonkwo",
     role: "Product Manager @ Meta",
-    avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=80&h=80&fit=crop&crop=face",
+    avatar:
+      "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=80&h=80&fit=crop&crop=face",
     color: "from-pink-500 to-rose-600",
     rating: 5,
     text: "I was skeptical at first, but EduNova delivered beyond my expectations. The personalized learning path adapted to my busy schedule perfectly. Best investment I've made in my career.",
@@ -46,7 +49,8 @@ const testimonials = [
     id: 4,
     name: "Luca Ferrari",
     role: "AI Engineer @ OpenAI",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&crop=face",
+    avatar:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&crop=face",
     color: "from-emerald-500 to-teal-600",
     rating: 5,
     text: "The AI/ML course is simply the best I've encountered. Practical, up-to-date, and taught by people who actually work in the field. The certificate opened so many doors for me.",
@@ -57,7 +61,8 @@ const testimonials = [
     id: 5,
     name: "Sofia Marte",
     role: "Freelance Designer",
-    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face",
+    avatar:
+      "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face",
     color: "from-amber-500 to-orange-600",
     rating: 5,
     text: "From complete beginner to landing my first $5,000 freelance project in 3 months! The community and mentors are incredibly supportive. EduNova is the real deal.",
@@ -78,15 +83,20 @@ export default function TestimonialsSection() {
     return () => clearInterval(interval);
   }, []);
 
-  const prev = () => setCurrent((c) => (c - 1 + testimonials.length) % testimonials.length);
+  const prev = () =>
+    setCurrent((c) => (c - 1 + testimonials.length) % testimonials.length);
   const next = () => setCurrent((c) => (c + 1) % testimonials.length);
 
   return (
-    <section className="relative py-28 overflow-hidden bg-white dark:bg-[#030712]" id="community">
+    <section
+      className="relative py-28 overflow-hidden bg-white dark:bg-[#030712]"
+      id="community"
+    >
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(124,58,237,0.05) 0%, transparent 70%)",
+          background:
+            "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(124,58,237,0.05) 0%, transparent 70%)",
         }}
       />
 
@@ -98,23 +108,43 @@ export default function TestimonialsSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 tag-purple mb-4">Community Stories</div>
+          <span
+            className={`${montserrat.className} inline-flex items-center gap-2 px-2 py-1 border border-gray-900/50 dark:border-violet-500/50 rounded-lg text-xs font-black tracking-[0.25em] text-black dark:text-violet-400 uppercase mb-4`}
+          >
+            Community Stories
+          </span>
           <h2 className="font-serif text-4xl md:text-6xl font-black text-slate-900 dark:text-white mb-4">
             Success Stories from Our
             <br />
-            <span className={`${montserrat.className} text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 dark:from-blue-400 dark:via-indigo-400 dark:to-blue-300`}>Growing Community</span>
+            <span
+              className={`${montserrat.className} text-transparent bg-clip-text bg-linear-to-r from-blue-600 via-indigo-600 to-blue-700 dark:from-blue-400 dark:via-indigo-400 dark:to-blue-300`}
+            >
+              Growing Community
+            </span>
           </h2>
-          <p className={`${montserrat.className} text-slate-600 dark:text-gray-400 text-lg max-w-xl mx-auto`}>
-            Join thousands of learners who have transformed their careers with EduNova.
+          <p
+            className={`${montserrat.className} text-slate-600 dark:text-gray-400 text-lg max-w-xl mx-auto`}
+          >
+            Join thousands of learners who have transformed their careers with
+            EduNova.
           </p>
 
           {/* Trust bar */}
           <div className="flex items-center justify-center gap-2 mt-6">
             {[...Array(5)].map((_, i) => (
-              <Star key={i} size={20} fill="#facc15" className="text-yellow-400" />
+              <Star
+                key={i}
+                size={20}
+                fill="#facc15"
+                className="text-yellow-400"
+              />
             ))}
-            <span className="text-slate-900 dark:text-white font-bold ml-2">4.9/5</span>
-            <span className="text-slate-500 dark:text-gray-400 text-sm ml-1">from 25,000+ reviews</span>
+            <span className="text-slate-900 dark:text-white font-bold ml-2">
+              4.9/5
+            </span>
+            <span className="text-slate-500 dark:text-gray-400 text-sm ml-1">
+              from 25,000+ reviews
+            </span>
           </div>
         </motion.div>
 
@@ -125,10 +155,13 @@ export default function TestimonialsSection() {
           transition={{ duration: 0.6, delay: 0.2 }}
           className="max-w-3xl mx-auto mb-12"
         >
-          <div className="bg-white dark:bg-[#111827] border border-black/[0.06] dark:border-white/[0.06] shadow-xl dark:shadow-black/40 rounded-3xl p-8 relative overflow-hidden">
+          <div className="bg-white dark:bg-[#111827] border border-black/10 dark:border-white/10 shadow-xl dark:shadow-black/40 rounded-3xl p-8 relative overflow-hidden">
             {/* Bg glow */}
-            <div className="absolute inset-0 opacity-5 rounded-3xl"
-              style={{ background: "linear-gradient(135deg, #7c3aed, #ec4899)" }}
+            <div
+              className="absolute inset-0 opacity-5 rounded-3xl"
+              style={{
+                background: "linear-gradient(135deg, #7c3aed, #ec4899)",
+              }}
             />
 
             <Quote className="text-violet-500/30 mb-4" size={48} />
@@ -148,7 +181,9 @@ export default function TestimonialsSection() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     {/* Profile picture */}
-                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${testimonials[current].color} flex items-center justify-center shadow-lg overflow-hidden`}>
+                    <div
+                      className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${testimonials[current].color} flex items-center justify-center shadow-lg overflow-hidden`}
+                    >
                       <img
                         src={testimonials[current].avatar}
                         alt={testimonials[current].name}
@@ -156,11 +191,17 @@ export default function TestimonialsSection() {
                       />
                     </div>
                     <div>
-                      <div className="text-slate-900 dark:text-white font-bold">{testimonials[current].name}</div>
-                      <div className="text-sm text-slate-500 dark:text-gray-400">{testimonials[current].role}</div>
+                      <div className="text-slate-900 dark:text-white font-bold">
+                        {testimonials[current].name}
+                      </div>
+                      <div className="text-sm text-slate-500 dark:text-gray-400">
+                        {testimonials[current].role}
+                      </div>
                     </div>
                   </div>
-                  <div className={`hidden sm:inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-xl border ${testimonials[current].outcomeBg} border-current/20`}>
+                  <div
+                    className={`hidden sm:inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-xl border ${testimonials[current].outcomeBg} border-current/20`}
+                  >
                     🎯 {testimonials[current].outcome}
                   </div>
                 </div>
@@ -170,7 +211,12 @@ export default function TestimonialsSection() {
             {/* Stars */}
             <div className="flex items-center gap-1 mt-4">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} size={14} fill="#facc15" className="text-yellow-400" />
+                <Star
+                  key={i}
+                  size={14}
+                  fill="#facc15"
+                  className="text-yellow-400"
+                />
               ))}
             </div>
           </div>
@@ -189,7 +235,9 @@ export default function TestimonialsSection() {
                   key={i}
                   onClick={() => setCurrent(i)}
                   className={`h-1.5 rounded-full transition-all duration-300 ${
-                    i === current ? "bg-violet-500 w-8" : "bg-black/20 dark:bg-white/20 w-4"
+                    i === current
+                      ? "bg-violet-500 w-8"
+                      : "bg-black/20 dark:bg-white/20 w-4"
                   }`}
                 />
               ))}
@@ -214,25 +262,37 @@ export default function TestimonialsSection() {
               onClick={() => setCurrent(i)}
               className={`rounded-2xl p-4 cursor-pointer transition-all duration-300 border
                 bg-white dark:bg-[#111827]
-                ${i === current
-                  ? "border-violet-500/60 shadow-[0_0_20px_rgba(124,58,237,0.3)]"
-                  : "border-black/[0.06] dark:border-white/[0.06]"
+                ${
+                  i === current
+                    ? "border-violet-500/60 shadow-[0_0_20px_rgba(124,58,237,0.3)]"
+                    : "border-black/[0.06] dark:border-white/[0.06]"
                 }`}
               whileHover={{ scale: 1.04 }}
             >
               {/* Profile picture */}
-              <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${t.color} flex items-center justify-center mb-3 overflow-hidden shadow-md`}>
+              <div
+                className={`w-10 h-10 rounded-xl bg-gradient-to-br ${t.color} flex items-center justify-center mb-3 overflow-hidden shadow-md`}
+              >
                 <img
                   src={t.avatar}
                   alt={t.name}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="text-sm font-bold text-slate-900 dark:text-white leading-tight">{t.name}</div>
-              <div className="text-xs text-slate-500 dark:text-gray-400 mt-0.5 leading-tight">{t.role}</div>
+              <div className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
+                {t.name}
+              </div>
+              <div className="text-xs text-slate-500 dark:text-gray-400 mt-0.5 leading-tight">
+                {t.role}
+              </div>
               <div className="flex gap-0.5 mt-2">
                 {[...Array(5)].map((_, j) => (
-                  <Star key={j} size={9} fill="#facc15" className="text-yellow-400" />
+                  <Star
+                    key={j}
+                    size={9}
+                    fill="#facc15"
+                    className="text-yellow-400"
+                  />
                 ))}
               </div>
             </motion.div>

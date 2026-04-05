@@ -760,6 +760,15 @@ export default function Navbar() {
                   </button>
                 )}
 
+                {isLoaded && !user && (
+                  <div className="flex items-center justify-between py-4 border-t border-slate-200 dark:border-white/5 mt-8 bg-slate-50 dark:bg-white/5 px-4 rounded-2xl">
+                    <span className="text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-widest">
+                      Theme Switch
+                    </span>
+                    <ThemeToggle />
+                  </div>
+                )}
+
                 <div className="space-y-1">
                   {navLinks.map((l) => (
                     <a
@@ -825,15 +834,6 @@ export default function Navbar() {
                     >
                       Create Free Account
                     </a>
-                  </div>
-                )}
-
-                {isLoaded && !user && (
-                  <div className="flex items-center justify-between py-4 border-t border-slate-200 dark:border-white/5 mt-8 bg-slate-50 dark:bg-white/5 px-4 rounded-2xl">
-                    <span className="text-sm font-black text-slate-700 dark:text-gray-300 uppercase tracking-widest">
-                      Theme Switch
-                    </span>
-                    <ThemeToggle />
                   </div>
                 )}
               </div>

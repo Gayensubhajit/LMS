@@ -91,7 +91,7 @@ ${COURSE_CONTEXT}`;
         "X-OpenRouter-Title": "EduNova AI Assistant",
       },
       body: JSON.stringify({
-        model: "qwen/qwen-vl-plus:free", // Changed to a Vision-Language Free Tier model on OpenRouter
+        model: "nvidia/nemotron-nano-12b-v2-vl:free", // Valid Vision-Language Free Tier model
         messages: userMessages,
         temperature: 0.7,
         max_tokens: 1024,

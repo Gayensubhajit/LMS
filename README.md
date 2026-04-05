@@ -110,181 +110,189 @@ No tests are included by default in this starter. Add test setup with Jest/Playw
 
 ```bash
 ├── .npmrc
-├── clerk-nextjs/
-    ├── CLAUDE.md
-    ├── app/
+├── clerk-nextjs/ 
+    ├── app/ 
     │   ├── favicon.ico
-    │   ├── globals.css
-    │   ├── layout.tsx
-    │   └── page.tsx
-    ├── public/
+    │   ├── globals.css 
+    │   ├── layout.tsx 
+    │   └── page.tsx 
+    ├── public/ 
     │   ├── vercel.svg
     │   ├── window.svg
     │   ├── file.svg
-    │   ├── globe.svg
-    │   └── next.svg
+    │   ├── globe.svg 
+    │   └── next.svg 
     ├── postcss.config.mjs
     ├── next.config.ts
-    ├── AGENTS.md
-    ├── eslint.config.mjs
-    ├── .gitignore
-    ├── package.json
-    ├── tsconfig.json
-    └── README.md
-├── src/
-    ├── app/
-    │   ├── favicon.ico
-    │   ├── global-error.tsx
-    │   ├── legal/
-    │   │   ├── privacy/
-    │   │   │   └── page.tsx
-    │   │   ├── cookies/
-    │   │   │   └── page.tsx
-    │   │   └── terms/
-    │   │   │   └── page.tsx
-    │   ├── demo/
-    │   │   └── page.tsx
-    │   ├── admin/
-    │   │   └── layout.tsx
-    │   ├── sign-in/
-    │   │   └── page.tsx
-    │   ├── support/
-    │   │   └── page.tsx
-    │   ├── page.tsx
-    │   ├── courses/
-    │   │   └── [slug]/
-    │   │   │   └── page.tsx
-    │   ├── auth/
-    │   │   ├── sign-up/
-    │   │   │   └── [[...sign-up]]/
-    │   │   │   │   └── page.tsx
-    │   │   └── sign-in/
-    │   │   │   └── [[...sign-in]]/
-    │   │   │       └── page.tsx
-    │   ├── api/
-    │   │   └── assistant/
-    │   │   │   └── route.ts
-    │   └── layout.tsx
-    ├── lib/
-    │   ├── utils.ts
-    │   ├── history-api.ts
-    │   ├── settings-api.ts
-    │   ├── backend-client.ts
-    │   ├── course-utils.ts
-    │   └── utils/
-    │   │   └── currency.ts
-    ├── components/
-    │   ├── ui/
+    ├── eslint.config.mjs 
+    ├── package.json 
+    ├── .gitignore 
+    ├── tsconfig.json 
+    └── README.md 
+├── src/ 
+    ├── components/ 
+    │   ├── lms/ 
+    │   │   ├── CourseDesignCard.tsx
+    │   │   ├── ThemeToggle.tsx 
+    │   │   ├── SimplePage.tsx 
+    │   │   └── TrustedBySectionPremium.tsx 
+    │   ├── ui/ 
     │   │   ├── aspect-ratio.tsx
     │   │   ├── skeleton.tsx
     │   │   ├── spinner.tsx
-    │   │   ├── label.tsx
-    │   │   ├── textarea.tsx
-    │   │   ├── separator.tsx
-    │   │   ├── progress.tsx
-    │   │   ├── collapsible.tsx
-    │   │   ├── kbd.tsx
-    │   │   ├── input.tsx
-    │   │   ├── sonner.tsx
-    │   │   ├── switch.tsx
-    │   │   ├── checkbox.tsx
-    │   │   ├── avatar.tsx
-    │   │   ├── radio-group.tsx
-    │   │   ├── hover-card.tsx
-    │   │   ├── toggle.tsx
-    │   │   ├── badge.tsx
-    │   │   ├── popover.tsx
-    │   │   ├── scroll-area.tsx
-    │   │   ├── alert.tsx
-    │   │   ├── tooltip.tsx
-    │   │   ├── tabs.tsx
-    │   │   ├── resizable.tsx
-    │   │   ├── slider.tsx
-    │   │   ├── accordion.tsx
-    │   │   ├── card.tsx
-    │   │   ├── button.tsx
-    │   │   ├── button-group.tsx
-    │   │   ├── input-otp.tsx
-    │   │   ├── toggle-group.tsx
-    │   │   ├── empty.tsx
-    │   │   ├── breadcrumb.tsx
-    │   │   ├── table.tsx
-    │   │   ├── pagination.tsx
-    │   │   ├── form.tsx
-    │   │   ├── alert-dialog.tsx
-    │   │   ├── dialog.tsx
-    │   │   └── sheet.tsx
-    │   ├── auth/
-    │   │   └── ClerkProviderWrapper.tsx
-    │   ├── theme/
+    │   │   ├── label.tsx 
+    │   │   ├── separator.tsx 
+    │   │   ├── textarea.tsx 
+    │   │   ├── progress.tsx 
+    │   │   ├── collapsible.tsx 
+    │   │   ├── kbd.tsx 
+    │   │   ├── input.tsx 
+    │   │   ├── sonner.tsx 
+    │   │   ├── switch.tsx 
+    │   │   ├── avatar.tsx 
+    │   │   ├── checkbox.tsx 
+    │   │   ├── radio-group.tsx 
+    │   │   ├── hover-card.tsx 
+    │   │   ├── toggle.tsx 
+    │   │   ├── badge.tsx 
+    │   │   ├── popover.tsx 
+    │   │   ├── alert.tsx 
+    │   │   ├── scroll-area.tsx 
+    │   │   ├── tooltip.tsx 
+    │   │   ├── tabs.tsx 
+    │   │   ├── resizable.tsx 
+    │   │   ├── slider.tsx 
+    │   │   ├── accordion.tsx 
+    │   │   ├── card.tsx 
+    │   │   ├── button.tsx 
+    │   │   ├── button-group.tsx 
+    │   │   ├── input-otp.tsx 
+    │   │   ├── toggle-group.tsx 
+    │   │   ├── breadcrumb.tsx 
+    │   │   ├── empty.tsx 
+    │   │   ├── table.tsx 
+    │   │   ├── animated-theme-toggler.tsx 
+    │   │   └── pagination.tsx 
+    │   ├── theme/ 
     │   │   └── ThemeProviderWrapper.tsx
-    │   ├── lms/
-    │   │   ├── ThemeToggle.tsx
-    │   │   ├── SimplePage.tsx
-    │   │   └── TrustedBySectionPremium.tsx
-    │   └── admin/
-    │   │   └── AdminGuard.tsx
-    ├── hooks/
-    │   └── use-mobile.ts
-    └── middleware.ts
-├── postcss.config.mjs
-├── public/
+    │   ├── auth/ 
+    │   │   └── ClerkProviderWrapper.tsx 
+    │   └── admin/ 
+    │   │   └── AdminGuard.tsx 
+    ├── app/ 
+    │   ├── icon.png
+    │   ├── favicon.ico
+    │   ├── global-error.tsx
+    │   ├── legal/ 
+    │   │   ├── privacy/ 
+    │   │   │   └── page.tsx
+    │   │   ├── cookies/ 
+    │   │   │   └── page.tsx
+    │   │   └── terms/ 
+    │   │   │   └── page.tsx
+    │   ├── demo/ 
+    │   │   └── page.tsx
+    │   ├── sign-in/ 
+    │   │   └── page.tsx 
+    │   ├── support/ 
+    │   │   └── page.tsx 
+    │   ├── page.tsx 
+    │   ├── courses/ 
+    │   │   └── [slug]/ 
+    │   │   │   └── page.tsx 
+    │   ├── admin/ 
+    │   │   └── layout.tsx 
+    │   ├── auth/ 
+    │   │   ├── sign-up/ 
+    │   │   │   └── [[...sign-up]]/ 
+    │   │   │   │   └── page.tsx 
+    │   │   └── sign-in/ 
+    │   │   │   └── [[...sign-in]]/ 
+    │   │   │       └── page.tsx 
+    │   └── layout.tsx 
+    ├── lib/ 
+    │   ├── utils.ts
+    │   ├── history-api.ts 
+    │   ├── settings-api.ts 
+    │   ├── backend-client.ts 
+    │   └── course-utils.ts 
+    ├── hooks/ 
+    │   └── use-mobile.ts 
+    └── middleware.ts 
+├── public/ 
+    ├── favicon.png
+    ├── og-image.png
+    ├── images/ 
+    │   └── instructors/ 
+    │   │   ├── gunjan_real.jpg
+    │   │   └── chirantan_real.jpg
     ├── vercel.svg
     ├── window.svg
     ├── file.svg
-    ├── globe.svg
     ├── marquee_images/
-    │   ├── 04.svg
-    │   ├── 19.svg
-    │   ├── 05.svg
-    │   ├── 14.svg
-    │   ├── 08.svg
-    │   ├── 10.svg
-    │   ├── 18.svg
-    │   ├── 02.svg
-    │   ├── 09.svg
-    │   └── 15.svg
-    └── next.svg
-├── .gayen/
+    │   ├── colored/ 
+    │   │   ├── netflix-ar21.svg 
+    │   │   ├── ebay-ar21.svg 
+    │   │   ├── stripe-ar21.svg 
+    │   │   ├── ibm-ar21.svg 
+    │   │   ├── google-ar21.svg 
+    │   │   ├── dropbox-ar21.svg 
+    │   │   ├── gitlab-ar21.svg 
+    │   │   ├── apple-ar21.svg 
+    │   │   ├── framer-ar21.svg 
+    │   │   ├── spotify-ar21.svg 
+    │   │   ├── microsoft-ar21.svg 
+    │   │   ├── airbnb-ar21.svg 
+    │   │   ├── amazon-ar21.svg 
+    │   │   ├── paypal-ar21.svg 
+    │   │   └── docker-ar21.svg 
+    │   ├── 04.svg 
+    │   ├── 19.svg 
+    │   ├── 05.svg 
+    │   ├── 14.svg 
+    │   ├── 08.svg 
+    │   ├── 10.svg 
+    │   ├── 18.svg 
+    │   ├── 02.svg 
+    │   └── 09.svg 
+    ├── globe.svg 
+    └── next.svg 
+├── postcss.config.mjs
+├── .gayen/ 
     ├── orchids.json
-    └── files/
-    │   └── claude-1774118190093-2d42kd/
-    │       └── 1-image_1774116869349-resized-1774118081363.jpg
-├── backend/
+    └── files
+├── backend/ 
     ├── .env.example
-    ├── dist/
-    │   ├── lib/
+    ├── dist/ 
+    │   ├── lib/ 
     │   │   ├── prisma.js
-    │   │   └── auth.js
-    │   ├── config/
-    │   │   └── env.js
-    │   └── routes/
-    │   │   ├── access.js
-    │   │   └── clerk-webhook.js
+    │   │   └── auth.js 
+    │   └── config/ 
+    │   │   └── env.js 
     ├── .gitignore
     ├── tsconfig.json
-    ├── src/
-    │   ├── lib/
+    ├── src/ 
+    │   ├── lib/ 
     │   │   ├── prisma.ts
-    │   │   └── auth.ts
-    │   ├── config/
-    │   │   └── env.ts
-    │   └── routes/
-    │   │   ├── settings.ts
-    │   │   ├── users.ts
-    │   │   ├── accomplishments.ts
-    │   │   ├── history.ts
-    │   │   ├── access.ts
-    │   │   └── courses.ts
-    ├── package.json
-    └── README.md
-├── components.json
-├── .gitignore
-├── tsconfig.json
-├── next.config.ts
-├── eslint.config.mjs
-├── README.md
-└── package.json
+    │   │   └── auth.ts 
+    │   ├── config/ 
+    │   │   └── env.ts 
+    │   └── routes/ 
+    │   │   ├── settings.ts 
+    │   │   ├── reviews.ts 
+    │   │   ├── users.ts 
+    │   │   ├── accomplishments.ts 
+    │   │   ├── history.ts 
+    │   │   └── access.ts 
+    ├── package.json 
+    └── README.md 
+├── .gitattributes
+├── components.json 
+├── .gitignore 
+├── tsconfig.json 
+├── next.config.ts 
+├── eslint.config.mjs 
+└── package.json 
 ```
 
 ## 🤝 Contributing

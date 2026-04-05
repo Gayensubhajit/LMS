@@ -40,12 +40,40 @@ const categories = [
 ] as const;
 type Category = (typeof categories)[number];
 
-const categoryColors: Record<string, { text: string; bg: string; lightText: string; lightBg: string }> = {
-  Development: { text: "#60a5fa", bg: "rgba(59,130,246,0.12)", lightText: "#1d4ed8", lightBg: "rgba(29,78,216,0.08)" },
-  Design: { text: "#38bdf8", bg: "rgba(56,189,248,0.12)", lightText: "#0369a1", lightBg: "rgba(3,105,161,0.08)" },
-  "AI/ML": { text: "#818cf8", bg: "rgba(129,140,248,0.12)", lightText: "#4338ca", lightBg: "rgba(67,56,202,0.08)" },
-  Business: { text: "#fbbf24", bg: "rgba(245,158,11,0.12)", lightText: "#b45309", lightBg: "rgba(180,83,9,0.08)" },
-  Marketing: { text: "#34d399", bg: "rgba(16,185,129,0.12)", lightText: "#047857", lightBg: "rgba(4,120,87,0.08)" },
+const categoryColors: Record<
+  string,
+  { text: string; bg: string; lightText: string; lightBg: string }
+> = {
+  Development: {
+    text: "#60a5fa",
+    bg: "rgba(59,130,246,0.12)",
+    lightText: "#1d4ed8",
+    lightBg: "rgba(29,78,216,0.08)",
+  },
+  Design: {
+    text: "#38bdf8",
+    bg: "rgba(56,189,248,0.12)",
+    lightText: "#0369a1",
+    lightBg: "rgba(3,105,161,0.08)",
+  },
+  "AI/ML": {
+    text: "#818cf8",
+    bg: "rgba(129,140,248,0.12)",
+    lightText: "#4338ca",
+    lightBg: "rgba(67,56,202,0.08)",
+  },
+  Business: {
+    text: "#fbbf24",
+    bg: "rgba(245,158,11,0.12)",
+    lightText: "#b45309",
+    lightBg: "rgba(180,83,9,0.08)",
+  },
+  Marketing: {
+    text: "#34d399",
+    bg: "rgba(16,185,129,0.12)",
+    lightText: "#047857",
+    lightBg: "rgba(4,120,87,0.08)",
+  },
 };
 
 function getRelatedChips(q: string): string[] {
@@ -172,11 +200,13 @@ function CoursesContent() {
           <header className="mb-12">
             <div className="flex flex-col md:flex-row md:items-end justify-center gap-6 mb-8">
               <div className="flex flex-col items-center justify-center">
-                <div className="tag-blue inline-flex mb-3">
+                <span
+                  className={`${montserrat.className} inline-flex items-center gap-2 px-2 py-1 border border-gray-900/50 dark:border-violet-500/50 rounded-lg text-xs font-black tracking-[0.25em] text-black dark:text-violet-400 uppercase mb-4`}
+                >
                   EDU-NOVA Academy
-                </div>
+                </span>
                 <div className="flex items-center justify-center">
-                  <h1 className="text-center text-4xl md:text-6xl font-black text-slate-900 dark:text-white mb-4">
+                  <h1 className="font-serif text-center text-4xl md:text-6xl font-black text-slate-900 dark:text-white mb-4">
                     {isSearchMode ? "Search Results" : "Explore Our Catalog"}
                   </h1>
                 </div>
@@ -192,7 +222,10 @@ function CoursesContent() {
               <div className="w-full max-w-4xl flex flex-col md:flex-row bg-white dark:bg-white/5 rounded-xl border border-slate-200 dark:border-blue-500/20 shadow-md dark:shadow-none backdrop-blur-xl overflow-hidden">
                 {/* Search */}
                 <div className="relative flex-1 min-w-0 flex items-center">
-                  <Search className="absolute left-3 text-slate-400 dark:text-gray-500" size={16} />
+                  <Search
+                    className="absolute left-3 text-slate-400 dark:text-gray-500"
+                    size={16}
+                  />
                   <input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
@@ -206,7 +239,10 @@ function CoursesContent() {
 
                 {/* Sort */}
                 <div className="flex items-center gap-2 px-3 py-2 border-t md:border-t-0 md:border-l border-slate-200 dark:border-white/10 min-w-0">
-                  <TrendingUp size={14} className="text-blue-500 dark:text-blue-400 shrink-0" />
+                  <TrendingUp
+                    size={14}
+                    className="text-blue-500 dark:text-blue-400 shrink-0"
+                  />
 
                   {/* Hide label on very small screens */}
                   <span className="hidden sm:block text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest whitespace-nowrap">
@@ -258,7 +294,10 @@ function CoursesContent() {
             <aside className="hidden lg:block space-y-8 sticky top-28 self-start">
               <div>
                 <h3 className="text-slate-900 dark:text-white font-black mb-4 flex items-center gap-2 uppercase tracking-tight text-sm">
-                  <SlidersHorizontal size={16} className="text-blue-500 dark:text-blue-400" />{" "}
+                  <SlidersHorizontal
+                    size={16}
+                    className="text-blue-500 dark:text-blue-400"
+                  />{" "}
                   Categories
                 </h3>
                 <div className="flex flex-col gap-2">
@@ -275,8 +314,13 @@ function CoursesContent() {
               </div>
 
               <div className="p-6 rounded-3xl bg-linear-to-br from-blue-600/10 to-indigo-600/5 border border-blue-500/10">
-                <Sparkles className="text-blue-600 dark:text-blue-400 mb-3" size={20} />
-                <h4 className="text-slate-900 dark:text-white font-bold mb-1">Elite Learning</h4>
+                <Sparkles
+                  className="text-blue-600 dark:text-blue-400 mb-3"
+                  size={20}
+                />
+                <h4 className="text-slate-900 dark:text-white font-bold mb-1">
+                  Elite Learning
+                </h4>
                 <p className="text-xs text-slate-500 dark:text-gray-500 leading-relaxed">
                   Join 45,000+ students leveling up their careers with EduNova.
                 </p>
@@ -287,16 +331,16 @@ function CoursesContent() {
             <div className="lg:col-span-3">
               {filtered.length === 0 ? (
                 <div className="text-center py-20 rounded-3xl border border-dashed border-slate-200 dark:border-blue-500/20 bg-white dark:bg-white/5 shadow-sm">
-                <p className="text-slate-500 dark:text-gray-500">
-                  No courses matching your search. Try another keyword!
-                </p>
-                <button
-                  onClick={() => setQuery("")}
-                  className="mt-4 text-[#0056d2] dark:text-blue-400 underline underline-offset-4"
-                >
-                  Clear all filters
-                </button>
-              </div>
+                  <p className="text-slate-500 dark:text-gray-500">
+                    No courses matching your search. Try another keyword!
+                  </p>
+                  <button
+                    onClick={() => setQuery("")}
+                    className="mt-4 text-[#0056d2] dark:text-blue-400 underline underline-offset-4"
+                  >
+                    Clear all filters
+                  </button>
+                </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   {filtered.map((course, i) => {
@@ -346,10 +390,19 @@ function CoursesContent() {
                                 color: col.lightText,
                               }}
                             >
-                              <span className="dark:hidden">{course.category}</span>
-                              <span className="hidden dark:inline" style={{ color: col.text }}>{course.category}</span>
+                              <span className="dark:hidden">
+                                {course.category}
+                              </span>
+                              <span
+                                className="hidden dark:inline"
+                                style={{ color: col.text }}
+                              >
+                                {course.category}
+                              </span>
                             </span>
-                            <span className="text-slate-300 dark:text-gray-600 text-xs">•</span>
+                            <span className="text-slate-300 dark:text-gray-600 text-xs">
+                              •
+                            </span>
                             <span className="text-slate-400 dark:text-gray-400 text-xs flex items-center gap-1">
                               <BookOpen size={12} /> {course.lessons} Lessons
                             </span>
@@ -369,7 +422,9 @@ function CoursesContent() {
                               </p>
                               <p className="text-xl font-black text-slate-900 dark:text-white">
                                 {course.isFree ? (
-                                  <span className="text-emerald-600 dark:text-emerald-400">Free</span>
+                                  <span className="text-emerald-600 dark:text-emerald-400">
+                                    Free
+                                  </span>
                                 ) : (
                                   formatLocalPrice(course.price.oneMonth)
                                 )}

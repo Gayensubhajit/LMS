@@ -186,10 +186,10 @@ export default function InstructorsPage() {
               <Star size={14} className="fill-current" /> World-Class
               Instructors
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-slate-900 dark:text-white leading-tight mb-4">
+            <h1 className="font-serif text-4xl md:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-tight mb-4">
               Learn From{" "}
               <span
-                className="inline-block text-blue-600 dark:text-blue-400"
+                className={`${montserrat.className} font-black inline-block text-blue-600 dark:text-blue-400`}
               >
                 The Best
               </span>

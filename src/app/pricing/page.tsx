@@ -187,7 +187,7 @@ function PlanCard({
       className={`relative rounded-3xl flex flex-col overflow-hidden transition-all duration-300 ${
         hasHighlight
           ? "ring-2 ring-blue-500/60 dark:ring-violet-500/60 shadow-2xl shadow-blue-500/10 dark:shadow-violet-500/20"
-          : "border border-slate-200 dark:border-white/[0.08] shadow-sm dark:shadow-none bg-white/50 dark:bg-white/[0.025]"
+          : "border border-slate-800/20 dark:border-white/20 shadow-sm dark:shadow-none bg-white/80 dark:bg-white/5"
       }`}
       style={
         hasHighlight
@@ -207,7 +207,7 @@ function PlanCard({
         <div
           className={`text-center py-2 text-[11px] font-black uppercase tracking-widest ${
             hasHighlight
-              ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white"
+              ? "bg-linear-to-r from-violet-600 to-purple-600 text-white"
               : "bg-amber-500/10 text-amber-400 border-b border-amber-500/20"
           }`}
         >
@@ -350,11 +350,11 @@ export default function PricingPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.08 }}
-              className="text-4xl md:text-5xl lg:text-7xl font-black text-slate-900 dark:text-white mb-5 leading-[1.1] tracking-tight uppercase"
+              className="font-serif text-4xl md:text-5xl lg:text-7xl font-black text-slate-900 dark:text-white mb-5 leading-[1.1] tracking-tight"
             >
               Flexible Plans for <br />
               <span
-                className={`${montserrat.className} bg-linear-to-r from-blue-600 to-indigo-600 dark:from-violet-400 dark:to-purple-500 bg-clip-text text-transparent`}
+                className={`${montserrat.className} uppercase font-black bg-linear-to-r from-blue-600 to-indigo-600 dark:from-violet-400 dark:to-purple-500 bg-clip-text text-transparent`}
               >
                 Every Level
               </span>

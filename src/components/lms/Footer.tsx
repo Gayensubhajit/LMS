@@ -100,7 +100,7 @@ export default function Footer() {
         className="absolute inset-0 pointer-events-none"
         style={{
           background:
-          "radial-gradient(ellipse 60% 30% at 50% 100%, rgba(124,58,237,0.06) 0%, transparent 70%)",
+            "radial-gradient(ellipse 60% 30% at 50% 100%, rgba(124,58,237,0.06) 0%, transparent 70%)",
         }}
       />
 
@@ -108,7 +108,7 @@ export default function Footer() {
         {/* Newsletter bar */}
 
         {!isSignedIn && (
-          <div className="glass-card rounded-2xl p-6 mb-14 flex flex-col sm:flex-row items-center justify-between gap-6 max-w-5xl mx-auto border border-black/5 dark:border-white/5">
+          <div className="rounded-2xl p-6 mb-14 flex flex-col sm:flex-row items-center justify-between gap-6 max-w-5xl mx-auto border border-slate-900/15 dark:border-white/15">
             <div className="">
               <h3 className="text-lg font-bold whitespace-nowrap text-black dark:text-white mb-1">
                 Stay ahead of the curve
@@ -123,10 +123,10 @@ export default function Footer() {
                 type="email"
                 placeholder="your@email.com"
                 className="flex-1 sm:w-64 bg-black/5 dark:bg-white/5 border border-black/10 dark:border-violet-500/20 text-black dark:text-white placeholder-gray-500 text-sm px-4 py-2.5 rounded-xl focus:outline-none focus:border-black/30 dark:focus:border-violet-500/60 transition-colors"
-                />
+              />
               <Link
                 href="/auth/sign-up?plan=plus"
-                className="flex w-full md:w-auto justify-center items-center gap-1.5 bg-black dark:bg-gradient-to-r dark:from-violet-600 dark:to-purple-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap hover:opacity-90 dark:hover:shadow-[0_0_20px_rgba(124,58,237,0.4)] transition-all"
+                className="flex w-full md:w-auto justify-center items-center gap-1.5 bg-black dark:bg-linear-to-r dark:from-violet-600 dark:to-purple-600 text-white text-sm font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap hover:opacity-90 dark:hover:shadow-[0_0_20px_rgba(124,58,237,0.4)] transition-all"
               >
                 Subscribe <ArrowRight size={14} />
               </Link>
@@ -143,7 +143,8 @@ export default function Footer() {
                 <GraduationCap size={18} className="text-white" />
               </div>
               <span className="text-xl font-black tracking-tighter text-black dark:text-white">
-                Edu<span className="text-blue-600 dark:text-blue-400">Nova</span>
+                Edu
+                <span className="text-blue-600 dark:text-blue-400">Nova</span>
               </span>
             </div>
             <p className="text-sm text-gray-500 leading-relaxed mb-4 max-w-xs">

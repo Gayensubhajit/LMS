@@ -18,6 +18,7 @@ import Navbar from "@/components/lms/Navbar";
 import Footer from "@/components/lms/Footer";
 import { Montserrat } from "next/font/google";
 import { useAuth } from "@clerk/nextjs";
+import { backendRequest } from "@/lib/backend-client";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
@@ -387,21 +388,20 @@ export default function PricingPage() {
     }
     const check = async () => {
       try {
-        const token = await getToken();
-        const res = await fetch(`${BACKEND_URL}/enrollments/check/plus-membership`, {
-          headers: { Authorization: `Bearer ${token}`, "x-clerk-user-id": userId },
+        // Use unified backendRequest for 100% Navbar consistency
+        const res = await backendRequest<{ ok: boolean; enrolled: boolean }>("/enrollments/check/plus-membership", {
+          clerkUserId: userId,
         });
-        const data = await res.json();
         
-        if (data.ok && data.enrolled) {
+        if (res.ok && res.enrolled) {
           setIsMember(true);
         }
 
-        // Fallback: check full list for any plus-membership (Active or Trialing)
-        const meRes = await fetch(`${BACKEND_URL}/enrollments/me`, {
-          headers: { Authorization: `Bearer ${token}`, "x-clerk-user-id": userId },
+        // Fallback: check full enrollment list for status-based detection
+        const meData = await backendRequest<{ ok: boolean; items: any[] }>("/enrollments/me", {
+          clerkUserId: userId,
         });
-        const meData = await meRes.json();
+
         if (meData.ok && meData.items) {
           const plus = meData.items.find((e: any) => 
             e.course.slug === "plus-membership" && 
@@ -413,7 +413,7 @@ export default function PricingPage() {
           }
         }
       } catch (err) {
-        console.error("[PricingPage] Membership check error:", err);
+        console.error("[PricingPage] Sync Error:", err);
       } finally {
         setMemberLoading(false);
       }

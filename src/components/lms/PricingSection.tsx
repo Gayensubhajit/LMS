@@ -5,7 +5,8 @@ import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Check, Users, Zap, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Montserrat } from "next/font/google";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth, useUser } from "@clerk/nextjs";
+import { backendRequest } from "@/lib/backend-client";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -146,25 +147,19 @@ export default function PricingSection() {
 
     const checkMembership = async () => {
       try {
-        const token = await getToken();
-        // Check for Plus Membership specifically
-        const res = await fetch(`${BACKEND_URL}/enrollments/check/plus-membership`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "x-clerk-user-id": userId
-          }
+        // Use the exact same logic as Navbar for 100% consistency
+        const res = await backendRequest<{ ok: boolean; enrolled: boolean }>("/enrollments/check/plus-membership", {
+          clerkUserId: userId
         });
-        const data = await res.json();
         
-        if (data.ok && data.enrolled) {
+        if (res.ok && res.enrolled) {
           setIsMember(true);
         }
 
-        // Fallback/sync: check the full list for any plus-membership
-        const meRes = await fetch(`${BACKEND_URL}/enrollments/me`, {
-          headers: { Authorization: `Bearer ${token}`, "x-clerk-user-id": userId }
+        // Fallback/sync: check the full list for any plus-membership status
+        const meData = await backendRequest<{ ok: boolean; items: any[] }>("/enrollments/me", {
+          clerkUserId: userId
         });
-        const meData = await meRes.json();
         
         if (meData.ok && meData.items) {
           const plus = meData.items.find((e: any) => 
@@ -177,15 +172,13 @@ export default function PricingSection() {
             setMemberPlan(plus.plan);
             if (plus.expiresAt) {
               setExpiryDate(new Date(plus.expiresAt).toLocaleDateString("en-IN", {
-                day: "numeric",
-                month: "long",
-                year: "numeric"
+                day: "numeric", month: "long", year: "numeric"
               }));
             }
           }
         }
       } catch (err) {
-        console.error("Check membership error:", err);
+        console.error("[PricingSection] Sync Error:", err);
       } finally {
         setLoading(false);
       }

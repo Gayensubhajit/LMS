@@ -74,6 +74,7 @@ export default function AssistantWidget() {
     "/login",
     "/signup",
     "/dashboard",
+    "/checkout",
   ];
 
   useEffect(() => {
@@ -183,7 +184,12 @@ export default function AssistantWidget() {
     }
   };
 
-  if (HIDE_ROUTES.includes(pathName)) return null;
+  const shouldHide = HIDE_ROUTES.some((route) => {
+    pathName.startsWith(route);
+  });
+
+  if (shouldHide) return null;
+  if (pathName.startsWith("/checkout")) return null;
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>

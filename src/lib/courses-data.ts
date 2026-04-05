@@ -35,13 +35,6 @@ export const INSTRUCTOR_META: Record<
     image?: string;
   }
 > = {
-  "Subhajit Gayen": {
-    title: "Founder & Lead Instructor",
-    bio: "The visionary creator behind this platform. Passionate about AI, full-stack development, and making quality education accessible to everyone.",
-    avatar: "SG",
-    gradient: ["#14b8a6", "#0f766e"],
-    image: "/images/instructors/chirantan_real.jpg",
-  },
   "Gunjan Basak": {
     title: "Senior Software Engineer",
     bio: "Passionate about building scalable cloud-native applications and teaching modern web technologies.",
@@ -144,7 +137,7 @@ export const coursesData: Course[] = [
     slug: "frontend-fundamentals-free",
     title: "Frontend Fundamentals (Free)",
     category: "Development",
-    instructor: "Subhajit Gayen",
+    instructor: "Chirantan Biswas",
     duration: "18h",
     lessons: 42,
     students: "23.1K",
@@ -232,7 +225,7 @@ export const coursesData: Course[] = [
     slug: "react-nextjs-mastery-2026",
     title: "React & Next.js Mastery 2026",
     category: "Development",
-    instructor: "Subhajit Gayen",
+    instructor: "Chirantan Biswas",
     duration: "62h",
     lessons: 155,
     students: "9.8K",
@@ -536,7 +529,7 @@ export const coursesData: Course[] = [
     slug: "plus-membership",
     title: "EduNova Plus Membership",
     category: "Development",
-    instructor: "Subhajit Gayen",
+    instructor: "EduNova Team",
     duration: "Unlimited",
     lessons: 7000,
     students: "50K+",

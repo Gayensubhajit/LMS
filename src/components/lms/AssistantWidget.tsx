@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
-import { Send, Bot, X, Minimize2, GraduationCap, DollarSign, Zap, ImagePlus, Sparkles, BrainCircuit } from "lucide-react";
+import { Send, X, Minimize2, GraduationCap, DollarSign, Zap, ImagePlus, Sparkles, BrainCircuit, SquarePen, History, ChevronLeft } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import { Spinner } from "@/components/ui/spinner";
@@ -16,6 +16,13 @@ type ChatMessage = {
   role: "user" | "assistant" | "system";
   content: string;
   image?: string;
+};
+
+type ChatSession = {
+  id: string;
+  title: string;
+  messages: ChatMessage[];
+  updatedAt: number;
 };
 
 const QUICK_CHIPS = [
@@ -45,7 +52,11 @@ export default function AssistantWidget() {
   const { user, isLoaded: userLoaded } = useUser();
   const { theme } = useTheme();
   const isDark = theme !== "light";
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  
+  const [sessions, setSessions] = useState<ChatSession[]>([]);
+  const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [showHistory, setShowHistory] = useState(false);
+
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -54,48 +65,86 @@ export default function AssistantWidget() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Load chat history from localStorage on mount
+  const userId = user?.id || "guest";
+  const storageKey = `edunova_chats_${userId}`;
+
+  // Load chat history from localStorage scoped by user
   useEffect(() => {
-    const saved = localStorage.getItem("edunova_chat_history");
+    if (!userLoaded) return;
+    const saved = localStorage.getItem(storageKey);
     if (saved) {
       try {
-        setMessages(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setSessions(parsed);
+          setActiveSessionId(parsed[0].id);
+          return;
+        }
       } catch (err) {
         console.error("Failed to load chat history:", err);
       }
     }
-  }, []);
+    // No saved session found for this user, clear local state so we gen a new one
+    setSessions([]);
+    setActiveSessionId(null);
+  }, [userLoaded, storageKey]);
 
-  // Save chat history to localStorage whenever messages change
+  // Save chat history to localStorage whenever sessions change
   useEffect(() => {
-    if (messages.length > 0) {
-      localStorage.setItem("edunova_chat_history", JSON.stringify(messages));
+    if (sessions.length > 0) {
+      localStorage.setItem(storageKey, JSON.stringify(sessions));
     }
-  }, [messages]);
+  }, [sessions, storageKey]);
 
-  // Define logic for where the chatbot is needed
-  const isNeeded = pathname === "/" || pathname.startsWith("/courses") || pathname.startsWith("/dashboard");
-
+  // Auto-initiate the first chat
   useEffect(() => {
-    // Only show greeting if there's no history
-    if (messages.length === 0 && userLoaded) {
-      const name = user?.firstName ?? "there";
-      setMessages([{
-        role: "assistant",
-        content: `Hey ${name}! 👋 I'm **EduNova Intel**, your personal learning guide. Ask me anything about our courses, pricing, or your learning path!`,
-      }]);
+    if (!activeSessionId && userLoaded && sessions.length === 0) {
+      handleNewChat();
     }
-  }, [userLoaded, user?.firstName, messages.length]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userLoaded, activeSessionId, sessions.length]);
+
+  const handleNewChat = () => {
+    // If the current top session is practically empty (only has greeting), just switch to it.
+    if (sessions[0]?.messages.length === 1 && sessions[0]?.messages[0].role === "assistant") {
+        setActiveSessionId(sessions[0].id);
+        setShowHistory(false);
+        return;
+    }
+
+    const name = user?.firstName ?? "there";
+    const newId = crypto.randomUUID();
+    const initMsg: ChatMessage = {
+      role: "assistant",
+      content: `Hey ${name}! 👋 I'm **EduNova Intel**, your personal learning guide. Ask me anything about our courses, pricing, or your learning path!`,
+    };
+    const newSession: ChatSession = {
+      id: newId,
+      title: "New Conversation",
+      messages: [initMsg],
+      updatedAt: Date.now()
+    };
+
+    setSessions(prev => [newSession, ...prev]);
+    setActiveSessionId(newId);
+    setShowHistory(false);
+    setInput("");
+    setSelectedImage(null);
+  };
+
+  const activeSession = sessions.find(s => s.id === activeSessionId);
+  const messages = activeSession?.messages || [];
 
   // Auto-scroll to bottom
   useEffect(() => {
+    if (showHistory) return;
     const timer = setTimeout(() => {
       if (scrollContainerRef.current) {
         scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
       }
     }, 60);
     return () => clearTimeout(timer);
-  }, [messages, loading]);
+  }, [messages, loading, showHistory]);
 
   const canSend = useMemo(() => (input.trim().length > 0 || !!selectedImage) && !loading, [input, selectedImage, loading]);
 
@@ -108,9 +157,23 @@ export default function AssistantWidget() {
     e.target.value = "";
   };
 
+  const updateActiveSession = (newMessages: ChatMessage[], newTitle?: string) => {
+    setSessions(prev => prev.map(s => {
+      if (s.id === activeSessionId) {
+        return { 
+          ...s, 
+          messages: newMessages, 
+          updatedAt: Date.now(), 
+          title: newTitle || s.title 
+        };
+      }
+      return s;
+    }).sort((a,b) => b.updatedAt - a.updatedAt));
+  };
+
   const sendMessage = async (overrideText?: string) => {
     const text = overrideText ?? input.trim();
-    if ((!text && !selectedImage) || loading) return;
+    if ((!text && !selectedImage) || loading || !activeSessionId) return;
 
     setLoading(true);
     if (!overrideText) setInput("");
@@ -118,12 +181,30 @@ export default function AssistantWidget() {
     setSelectedImage(null);
 
     const userMsg: ChatMessage = { role: "user", content: text, image: capturedImage ?? undefined };
-    setMessages((prev) => [...prev, userMsg]);
+    
+    // If this is the first user prompt, dynamically rename the title for the history viewer
+    let newTitle = activeSession?.title;
+    if (messages.length <= 1) {
+       newTitle = text.length > 28 ? text.substring(0, 28) + '...' : text;
+    }
+
+    const optimisticMessages = [...messages, userMsg];
+    updateActiveSession(optimisticMessages, newTitle);
 
     try {
       const contentPayload = capturedImage
         ? [{ type: "text", text: text || "Please analyze this image." }, { type: "image_url", image_url: { url: capturedImage } }]
         : text;
+
+      // Extract raw inputs recursively for the API call to bypass any legacy system injection issues locally
+      const extractRawText = (contentObj: unknown): string => {
+        if (typeof contentObj === "string") return contentObj;
+        if (Array.isArray(contentObj)) {
+          const t = contentObj.find(x => x.type === "text");
+          return t ? t.text : "";
+        }
+        return "";
+      }
 
       const res = await fetch("/api/assistant", {
         method: "POST",
@@ -131,8 +212,8 @@ export default function AssistantWidget() {
         body: JSON.stringify({
           userName: user?.firstName,
           messages: [
-            ...messages.slice(-8).map((m) => ({ role: m.role, content: m.content })),
-            { role: "user", content: contentPayload },
+            ...optimisticMessages.slice(-8).map((m) => ({ role: m.role, content: extractRawText(m.content) })),
+            { role: "user", content: contentPayload }, 
           ],
         }),
       });
@@ -141,24 +222,25 @@ export default function AssistantWidget() {
 
       if (!res.ok) {
         if (res.status === 429) {
-          throw new Error("Neural Engine Cooling: OpenRouter free tier rate limit hit. Please wait 10-15 minutes or try again later.");
+          throw new Error("Neural Engine Cooling: OpenRouter free tier rate limit hit. Please wait 10-15 minutes.");
         }
         throw new Error(data.error ?? `Server error (${res.status})`);
       }
 
-      setMessages((prev) => [...prev, { role: "assistant", content: data.reply ?? "" }]);
+      updateActiveSession([...optimisticMessages, { role: "assistant", content: data.reply ?? "" }]);
     } catch (err) {
       const errorMessage = (err as Error).message;
       const displayError = errorMessage.includes("429") || errorMessage.includes("rate limit")
         ? `⚠️ **Cooldown Active:** ${errorMessage}`
         : `❌ **Error:** ${errorMessage}`;
 
-      setMessages((prev) => [...prev, { role: "assistant", content: displayError }]);
+      updateActiveSession([...optimisticMessages, { role: "assistant", content: displayError }]);
     } finally {
       setLoading(false);
     }
   };
 
+  const isNeeded = pathname === "/" || pathname.startsWith("/courses") || pathname.startsWith("/dashboard");
   if (!isNeeded) return null;
 
   return (
@@ -191,174 +273,229 @@ export default function AssistantWidget() {
         }}
       >
         {/* ─── Header ─── */}
-        <div className="shrink-0 flex items-center gap-4 px-6 py-5 border-b border-white/10" style={{ background: isDark ? "rgba(15, 26, 46, 0.4)" : "rgba(248, 250, 252, 0.4)" }}>
-          <AiLogo size={38} />
-          <div className="flex-1 min-w-0">
-            <h3 className={`text-base font-bold tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>EduNova Intel</h3>
-            <div className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-teal-400 shadow-[0_0_8px_#2dd4bf] animate-pulse" />
-              <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? "text-teal-400" : "text-teal-600"}`}>Neural Engine Active</span>
+        <div className="shrink-0 flex items-center justify-between px-6 py-5 border-b border-white/10 transition-colors" style={{ background: isDark ? "rgba(15, 26, 46, 0.4)" : "rgba(248, 250, 252, 0.4)" }}>
+          {showHistory ? (
+            <button onClick={() => setShowHistory(false)} className={`flex items-center gap-2 transition-all ${isDark ? "text-white/70 hover:text-white" : "text-slate-600 hover:text-slate-900"}`}>
+               <ChevronLeft size={20} />
+               <span className="font-bold text-sm">Previous Chats</span>
+            </button>
+          ) : (
+            <div className="flex items-center gap-4">
+              <AiLogo size={38} />
+              <div className="flex-1 min-w-0">
+                <h3 className={`text-base font-bold tracking-tight ${isDark ? "text-white" : "text-slate-900"}`}>EduNova Intel</h3>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-teal-400 shadow-[0_0_8px_#2dd4bf] animate-pulse" />
+                  <span className={`text-[10px] font-bold uppercase tracking-widest ${isDark ? "text-teal-400" : "text-teal-600"}`}>Neural Engine Active</span>
+                </div>
+              </div>
             </div>
+          )}
+
+          <div className="flex items-center gap-1">
+             {!showHistory && (
+               <>
+                 <button onClick={() => setShowHistory(true)} className={`p-2 rounded-xl transition-all ${isDark ? "text-white/30 hover:text-white hover:bg-white/5" : "text-slate-400 hover:text-slate-900 hover:bg-slate-200/50"}`} title="Chat History">
+                   <History size={18} />
+                 </button>
+                 <button onClick={handleNewChat} className={`p-2 rounded-xl transition-all ${isDark ? "text-white/30 hover:text-white hover:bg-white/5" : "text-slate-400 hover:text-slate-900 hover:bg-slate-200/50"}`} title="New Chat">
+                   <SquarePen size={18} />
+                 </button>
+               </>
+             )}
+             <button onClick={() => setIsOpen(false)} className={`p-2 rounded-xl transition-all ${isDark ? "text-white/30 hover:text-white hover:bg-white/5" : "text-slate-400 hover:text-slate-900 hover:bg-slate-200/50"}`} title="Close Assistant">
+               <Minimize2 size={18} />
+             </button>
           </div>
-          <button onClick={() => setIsOpen(false)} className={`p-2 rounded-xl transition-all ${isDark ? "text-white/30 hover:text-white hover:bg-white/5" : "text-slate-400 hover:text-slate-900 hover:bg-slate-200/50"}`}>
-            <Minimize2 size={18} />
-          </button>
         </div>
 
-        {/* ─── Messages ─── */}
-        <div
-          ref={scrollContainerRef}
-          className="flex-1 overflow-y-auto px-5 py-5 space-y-4 overscroll-contain"
-          style={{ minHeight: 0, background: isDark ? undefined : "#f8fafc" }}
-        >
-          <AnimatePresence initial={false}>
-            {messages.map((m, idx) => {
-              const isUser = m.role === "user";
-              return (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className={`flex ${isUser ? "justify-end" : "justify-start"} items-end gap-2`}
-                >
-                  {!isUser && (
-                    <div className="shrink-0 mb-0.5">
-                      <AiLogo size={26} />
-                    </div>
-                  )}
-                  <div
-                    className={`max-w-[85%] px-5 py-4 rounded-[24px] text-sm leading-relaxed shadow-sm ${
-                      isUser
-                        ? "text-white rounded-br-none"
-                        : isDark ? "text-gray-200 rounded-bl-none border border-white/10" : "text-slate-700 rounded-bl-none border border-slate-200"
+        {/* ─── Body ─── */}
+        {showHistory ? (
+          <div className="flex-1 overflow-y-auto w-full p-4 space-y-2 overscroll-contain">
+            {sessions.map(s => {
+               const isActive = s.id === activeSessionId;
+               const date = new Date(s.updatedAt);
+               const isToday = date.toDateString() === new Date().toDateString();
+               const timeString = isToday ? date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : date.toLocaleDateString();
+
+               return (
+                  <button 
+                    key={s.id} 
+                    onClick={() => { setActiveSessionId(s.id); setShowHistory(false); }}
+                    className={`w-full flex flex-col text-left px-5 py-4 rounded-2xl transition-all border ${
+                       isActive 
+                        ? (isDark ? "bg-teal-500/10 border-teal-500/30" : "bg-teal-700/5 border-teal-600/30 shadow-sm") 
+                        : (isDark ? "bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10" : "bg-white border-slate-200 hover:border-slate-300 shadow-sm")
                     }`}
-                    style={isUser ? { background: "linear-gradient(135deg, #0D7068, #115E59)" } : { background: isDark ? "rgba(20, 30, 51, 0.8)" : "rgba(255, 255, 255, 0.9)" }}
                   >
-                    {m.image && (
-                      <div className="mb-2 rounded-xl overflow-hidden">
-                        <img src={m.image} alt="Attached" className="w-full h-auto max-h-40 object-cover" />
+                    <div className="flex justify-between items-start mb-1.5 w-full">
+                       <span className={`text-sm font-bold truncate pr-3 ${isDark ? "text-white" : "text-slate-900"}`}>{s.title}</span>
+                       <span className={`text-[10px] whitespace-nowrap mt-0.5 ${isDark ? "text-white/40" : "text-slate-400"}`}>{timeString}</span>
+                    </div>
+                    <span className={`text-xs w-full line-clamp-1 ${isDark ? "text-white/50" : "text-slate-500"}`}>
+                       {s.messages.length > 1 ? String(s.messages[s.messages.length - 1].content).substring(0, 70) : "Started a new conversation..."}
+                    </span>
+                  </button>
+               )
+            })}
+          </div>
+        ) : (
+          <div
+            ref={scrollContainerRef}
+            className="flex-1 overflow-y-auto px-5 py-5 space-y-4 overscroll-contain"
+            style={{ minHeight: 0, background: isDark ? undefined : "#f8fafc" }}
+          >
+            <AnimatePresence initial={false}>
+              {messages.map((m, idx) => {
+                const isUser = m.role === "user";
+                return (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className={`flex ${isUser ? "justify-end" : "justify-start"} items-end gap-2`}
+                  >
+                    {!isUser && (
+                      <div className="shrink-0 mb-0.5">
+                        <AiLogo size={26} />
                       </div>
                     )}
-                    <div className={`prose prose-sm max-w-none prose-p:my-1 prose-li:my-0.5 prose-headings:my-2 ${isDark ? "prose-invert prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/10 prose-code:text-teal-300" : "prose-pre:bg-slate-100 prose-pre:border prose-pre:border-slate-200 prose-code:text-teal-600"}`}>
-                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {m.content}
-                      </ReactMarkdown>
+                    <div
+                      className={`max-w-[85%] px-5 py-4 rounded-[24px] text-sm leading-relaxed shadow-sm overflow-hidden ${
+                        isUser
+                          ? "text-white rounded-br-none"
+                          : isDark ? "text-gray-200 rounded-bl-none border border-white/10" : "text-slate-700 rounded-bl-none border border-slate-200"
+                      }`}
+                      style={isUser ? { background: "linear-gradient(135deg, #0D7068, #115E59)" } : { background: isDark ? "rgba(20, 30, 51, 0.8)" : "rgba(255, 255, 255, 0.9)" }}
+                    >
+                      {m.image && (
+                        <div className="mb-2 rounded-xl overflow-hidden">
+                          <img src={m.image} alt="Attached" className="w-full h-auto max-h-40 object-cover" />
+                        </div>
+                      )}
+                      <div className={`prose prose-sm max-w-none break-words prose-p:my-1 prose-li:my-0.5 prose-headings:my-2 ${isDark ? "prose-invert prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/10 prose-code:text-teal-300" : "prose-pre:bg-slate-100 prose-pre:border prose-pre:border-slate-200 prose-code:text-teal-600"}`}>
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {String(m.content)}
+                        </ReactMarkdown>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
 
-          {loading && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="flex items-end gap-2"
-            >
-              <div className="shrink-0">
-                <AiLogo size={26} />
-              </div>
-              <div className={`px-4 py-3 rounded-2xl rounded-bl-none text-xs flex items-center gap-2 border ${isDark ? "text-gray-400 border-white/10" : "text-slate-500 border-slate-200"}`} style={{ background: isDark ? "#141E33" : "#f1f5f9" }}>
-                <Spinner className="size-3.5 text-teal-400" />
-                <span>Thinking...</span>
-              </div>
-            </motion.div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
+            {loading && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="flex items-end gap-2"
+              >
+                <div className="shrink-0">
+                  <AiLogo size={26} />
+                </div>
+                <div className={`px-4 py-3 rounded-2xl rounded-bl-none text-xs flex items-center gap-2 border ${isDark ? "text-gray-400 border-white/10" : "text-slate-500 border-slate-200"}`} style={{ background: isDark ? "#141E33" : "#f1f5f9" }}>
+                  <Spinner className="size-3.5 text-teal-400" />
+                  <span>Thinking...</span>
+                </div>
+              </motion.div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        )}
 
         {/* ─── Input Area ─── */}
-        <div className="shrink-0 px-5 py-4 border-t border-white/5 dark:border-white/5" style={{ background: isDark ? "#0F1A2E" : "#f8fafc" }}>
-          {/* Quick chips — show only when early in conversation */}
-          {messages.length <= 1 && !loading && (
-            <div className="flex flex-wrap gap-2 mb-4">
-              {QUICK_CHIPS.map((chip, i) => (
+        {!showHistory && (
+          <div className="shrink-0 px-5 py-4 border-t border-white/5 dark:border-white/5" style={{ background: isDark ? "#0F1A2E" : "#f8fafc" }}>
+            {/* Quick chips — show only when early in conversation */}
+            {messages.length <= 1 && !loading && (
+              <div className="flex flex-wrap gap-2 mb-4">
+                {QUICK_CHIPS.map((chip, i) => (
+                  <button
+                    key={i}
+                    onClick={() => void sendMessage(chip.prompt)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all ${
+                      isDark
+                        ? "border border-white/10 text-white/60 hover:text-white hover:border-teal-500/50 hover:bg-teal-500/10"
+                        : "border border-slate-200 text-slate-500 hover:text-slate-700 hover:border-teal-500/50 hover:bg-teal-50"
+                    }`}
+                  >
+                    <chip.icon size={11} className="text-teal-400" />
+                    {chip.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Image preview */}
+            {selectedImage && (
+              <div className="mb-3 relative w-16 h-16 group">
+                <img src={selectedImage} alt="Preview" className="w-full h-full object-cover rounded-xl border border-white/20" />
                 <button
-                  key={i}
-                  onClick={() => void sendMessage(chip.prompt)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-semibold transition-all ${
-                    isDark
-                      ? "border border-white/10 text-white/60 hover:text-white hover:border-teal-500/50 hover:bg-teal-500/10"
-                      : "border border-slate-200 text-slate-500 hover:text-slate-700 hover:border-teal-500/50 hover:bg-teal-50"
-                  }`}
+                  onClick={() => setSelectedImage(null)}
+                  className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <chip.icon size={11} className="text-teal-400" />
-                  {chip.label}
+                  <X size={10} />
                 </button>
-              ))}
-            </div>
-          )}
+              </div>
+            )}
 
-          {/* Image preview */}
-          {selectedImage && (
-            <div className="mb-3 relative w-16 h-16 group">
-              <img src={selectedImage} alt="Preview" className="w-full h-full object-cover rounded-xl border border-white/20" />
+            {/* Message input */}
+            <div className="flex gap-2 items-end">
+              <div className="flex-1 relative">
+                <Textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      void sendMessage();
+                    }
+                  }}
+                  placeholder="Ask anything..."
+                  rows={2}
+                  className={`w-full text-sm rounded-2xl px-4 py-3 resize-none focus-visible:ring-0 ${
+                    isDark
+                      ? "text-white border-white/10 focus:border-teal-500/50 placeholder:text-white/25"
+                      : "text-slate-900 border-slate-200 focus:border-teal-500/50 placeholder:text-slate-400"
+                  }`}
+                  style={{ background: isDark ? "#1A2540" : "#ffffff" }}
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`absolute right-3 bottom-3 transition-colors ${isDark ? "text-white/30 hover:text-teal-400" : "text-slate-400 hover:text-teal-600"}`}
+                  title="Attach image"
+                >
+                  <ImagePlus size={17} />
+                </button>
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                />
+              </div>
+
               <button
-                onClick={() => setSelectedImage(null)}
-                className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                <X size={10} />
-              </button>
-            </div>
-          )}
-
-          {/* Message input */}
-          <div className="flex gap-2 items-end">
-            <div className="flex-1 relative">
-              <Textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    void sendMessage();
-                  }
-                }}
-                placeholder="Ask anything..."
-                rows={2}
-                className={`w-full text-sm rounded-2xl px-4 py-3 resize-none focus-visible:ring-0 ${
-                  isDark
-                    ? "text-white border-white/10 focus:border-teal-500/50 placeholder:text-white/25"
-                    : "text-slate-900 border-slate-200 focus:border-teal-500/50 placeholder:text-slate-400"
+                onClick={() => void sendMessage()}
+                disabled={!canSend}
+                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 ${
+                  canSend
+                    ? "text-white hover:scale-105 active:scale-95 shadow-lg"
+                    : isDark ? "text-white/20 cursor-not-allowed" : "text-slate-300 cursor-not-allowed"
                 }`}
-                style={{ background: isDark ? "#1A2540" : "#ffffff" }}
-              />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className={`absolute right-3 bottom-3 transition-colors ${isDark ? "text-white/30 hover:text-teal-400" : "text-slate-400 hover:text-teal-600"}`}
-                title="Attach image"
+                style={canSend ? { background: "#0F766E" } : { background: isDark ? "#1A2540" : "#e2e8f0" }}
               >
-                <ImagePlus size={17} />
+                {loading ? <Spinner className="size-4" /> : <Send size={16} />}
               </button>
-              <input
-                type="file"
-                accept="image/*"
-                hidden
-                ref={fileInputRef}
-                onChange={handleImageUpload}
-              />
             </div>
 
-            <button
-              onClick={() => void sendMessage()}
-              disabled={!canSend}
-              className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all shrink-0 ${
-                canSend
-                  ? "text-white hover:scale-105 active:scale-95 shadow-lg"
-                  : isDark ? "text-white/20 cursor-not-allowed" : "text-slate-300 cursor-not-allowed"
-              }`}
-              style={canSend ? { background: "#0F766E" } : { background: isDark ? "#1A2540" : "#e2e8f0" }}
-            >
-              {loading ? <Spinner className="size-4" /> : <Send size={16} />}
-            </button>
+            <p className={`text-[9px] text-center mt-2 uppercase tracking-widest ${isDark ? "text-white/15" : "text-slate-400"}`}>
+              EduNova Intel · Powered by OpenRouter
+            </p>
           </div>
-
-          <p className={`text-[9px] text-center mt-2 uppercase tracking-widest ${isDark ? "text-white/15" : "text-slate-400"}`}>
-            EduNova Intel · Powered by OpenRouter
-          </p>
-        </div>
+        )}
       </SheetContent>
     </Sheet>
   );

@@ -17,7 +17,7 @@ const COURSE_CONTEXT = `EduNova courses:
 - Product Management Accelerator: $35/mo, All Levels, by Jordan Kim
 - Entrepreneurship Bootcamp: $35/mo, All Levels, by Alex Chen`;
 
-type SimpleMessage = { role: "system" | "user" | "assistant"; content: string };
+type AiMessage = { role: "system" | "user" | "assistant"; content: string | any[] };
 
 export async function POST(req: Request) {
   let body: { messages?: unknown[]; userName?: string };
@@ -38,8 +38,8 @@ export async function POST(req: Request) {
 
   const userName = typeof body.userName === "string" ? body.userName : null;
 
-  // Normalize incoming messages
-  const userMessages: SimpleMessage[] = [];
+  // Normalize incoming messages to support both text and vision (image_url arrays)
+  const userMessages: AiMessage[] = [];
   if (Array.isArray(body.messages)) {
     for (const m of body.messages) {
       if (
@@ -47,34 +47,36 @@ export async function POST(req: Request) {
         ("role" in m) && ("content" in m) &&
         (m as {role: string}).role !== "system"
       ) {
-        const role = (m as {role: string}).role;
+        const role = (m as {role: string}).role as "user" | "assistant";
         const content = (m as {content: unknown}).content;
-        if (role === "user" || role === "assistant") {
-          const text = typeof content === "string"
-            ? content
-            : Array.isArray(content)
-              ? (content as {type: string; text?: string}[])
-                  .filter(c => c.type === "text")
-                  .map(c => c.text ?? "")
-                  .join(" ")
-              : "";
-          if (text) userMessages.push({ role: role as "user" | "assistant", content: text });
+        if (content) {
+          userMessages.push({ role, content: content as any });
         }
       }
     }
   }
 
-  // Some free models on OpenRouter (especially Llama and Gemma) fail with a 400 error 
+  // Some free models on OpenRouter fail with a 400 error 
   // if you use the 'system' role. To fix this, we'll put the instructions into the 
   // very first 'user' message instead.
   const instructions = `Instructions: You are EduNova Intel, a friendly and smart AI assistant for the EduNova learning platform.${userName ? ` You are helping ${userName}.` : ""} 
-Use the course info below when answering. Always format answers clearly with bullet points.
+Use the course info below when answering. Always format answers clearly with bullet points. If you are provided an image, analyze it carefully to help the user.
   
 Course Context:
 ${COURSE_CONTEXT}`;
 
   if (userMessages.length > 0 && userMessages[0].role === "user") {
-    userMessages[0].content = `${instructions}\n\nUser Question: ${userMessages[0].content}`;
+    if (typeof userMessages[0].content === "string") {
+      userMessages[0].content = `${instructions}\n\nUser Question: ${userMessages[0].content}`;
+    } else if (Array.isArray(userMessages[0].content)) {
+      // Find the text part of the multimodel array to inject instructions
+      const textItem = userMessages[0].content.find((c: any) => c.type === "text");
+      if (textItem) {
+        textItem.text = `${instructions}\n\nUser Question: ${textItem.text}`;
+      } else {
+        userMessages[0].content.unshift({ type: "text", text: instructions });
+      }
+    }
   } else {
     userMessages.unshift({ role: "user", content: instructions });
   }
@@ -89,8 +91,8 @@ ${COURSE_CONTEXT}`;
         "X-OpenRouter-Title": "EduNova AI Assistant",
       },
       body: JSON.stringify({
-        model: "qwen/qwen3.6-plus:free",
-        messages: userMessages, // No system role used here to avoid 400 errors
+        model: "qwen/qwen-vl-plus:free", // Changed to a Vision-Language Free Tier model on OpenRouter
+        messages: userMessages,
         temperature: 0.7,
         max_tokens: 1024,
       }),

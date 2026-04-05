@@ -7,6 +7,7 @@ import Script from "next/script";
 import { ThemeProviderWrapper } from "@/components/theme/ThemeProviderWrapper";
 import ClerkProviderWrapper from "@/components/auth/ClerkProviderWrapper";
 import AssistantWidget from "@/components/lms/AssistantWidget";
+import { Analytics } from "@vercel/analytics/react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -85,6 +86,7 @@ export default function RootLayout({
             {children}
             <AssistantWidget />
             <VisualEditsMessenger />
+            <Analytics />
           </ClerkProviderWrapper>
         </ThemeProviderWrapper>
       </body>

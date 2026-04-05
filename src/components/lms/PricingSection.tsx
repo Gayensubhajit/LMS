@@ -212,6 +212,7 @@ export default function PricingSection() {
           className="text-center mb-12"
         >
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
           <span
             className={`${montserrat.className} px-2 py-1 border border-gray-900/50 dark:border-violet-500/50 rounded-lg text-xs font-black tracking-[0.25em] text-black dark:text-violet-400 uppercase mb-8`}
           >
@@ -221,11 +222,16 @@ export default function PricingSection() {
             className={`font-serif text-4xl md:text-5xl font-black text-black dark:text-white mb-4 leading-tight tracking-tight`}
 
 =======
+=======
+>>>>>>> Stashed changes
           <p className="text-xs font-black tracking-[0.25em] text-blue-600 dark:text-blue-400 uppercase mb-4">
             Membership Advantage
           </p>
           <h2
             className={`font-serif text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 leading-tight tracking-tight`}
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
           >
             Invest in Your Future
@@ -237,9 +243,13 @@ export default function PricingSection() {
           </p>
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
           {/* Tab toggle */}
           <div className="inline-flex items-center p-1.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 gap-1.5">
 
+=======
+          <div className="inline-flex items-center p-1.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 gap-1.5">
+>>>>>>> Stashed changes
 =======
           <div className="inline-flex items-center p-1.5 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 gap-1.5">
 >>>>>>> Stashed changes
@@ -291,9 +301,15 @@ export default function PricingSection() {
                   animate={inView ? { opacity: 1, y: 0 } : {}}
                   transition={{ delay: i * 0.08 }}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                   className={`relative rounded-3xl flex flex-col overflow-hidden transition-all duration-300 hover:scale-[1.02] ${
                     plan.highlight
                       ? "border-2 border-indigo-600 dark:border-violet-500 shadow-2xl shadow-indigo-500/10 dark:shadow-violet-500/20 bg-white dark:bg-[#0f0f1e]"
+=======
+                  className={`relative rounded-[2.5rem] flex flex-col overflow-hidden transition-all duration-500 hover:scale-[1.02] ${
+                    plan.highlight
+                      ? "border-2 border-blue-600 dark:border-blue-500 shadow-2xl shadow-blue-500/10 dark:shadow-blue-500/20 bg-white dark:bg-[#0f0f1e]"
+>>>>>>> Stashed changes
 =======
                   className={`relative rounded-[2.5rem] flex flex-col overflow-hidden transition-all duration-500 hover:scale-[1.02] ${
                     plan.highlight
@@ -308,7 +324,11 @@ export default function PricingSection() {
                       className={`text-center py-2.5 text-[10px] font-black uppercase tracking-widest ${
                         plan.highlight
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                           ? "bg-indigo-600 dark:bg-gradient-to-r dark:from-violet-600 dark:to-purple-600 text-white"
+=======
+                          ? "bg-blue-600 dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 text-white"
+>>>>>>> Stashed changes
 =======
                           ? "bg-blue-600 dark:bg-gradient-to-r dark:from-blue-600 dark:to-indigo-600 text-white"
 >>>>>>> Stashed changes
@@ -320,7 +340,11 @@ export default function PricingSection() {
                   )}
 
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                   <div className="p-8 flex flex-col flex-1">
+=======
+                  <div className="p-10 flex flex-col flex-1">
+>>>>>>> Stashed changes
 =======
                   <div className="p-10 flex flex-col flex-1">
 >>>>>>> Stashed changes

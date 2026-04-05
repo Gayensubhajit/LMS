@@ -93,8 +93,11 @@ export default function CTASection() {
               <Sparkles size={14} className="animate-pulse" />
               {isMember ? "Membership Active" : "Limited Time Offer"}
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             </span>
 =======
+=======
+>>>>>>> Stashed changes
             </div>
 >>>>>>> Stashed changes
 
@@ -111,6 +114,9 @@ export default function CTASection() {
 =======
               <span className={`${montserrat.className} dark:gradient-text`}>
                 {isMember ? "Next Lesson?" : "Today"}
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
               </span>
             </h2>
@@ -187,7 +193,10 @@ export default function CTASection() {
               ))}
             </div>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
           </motion.div>

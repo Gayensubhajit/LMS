@@ -188,6 +188,62 @@ paymentsRouter.post("/create-order", async (req, res) => {
   }
 });
 
+// ── Verify Razorpay Payment & Activate Enrollment ───────────────────────────
+paymentsRouter.post("/verify", async (req, res) => {
+  const user = await getUserFromHeader(req, res);
+  if (!user) return;
+
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature, enrollmentId } = req.body;
+
+  if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !enrollmentId) {
+    return res.status(400).json({ ok: false, error: "Missing payment verification fields" });
+  }
+
+  if (!env.RAZORPAY_KEY_SECRET) {
+    return res.status(500).json({ ok: false, error: "Razorpay secret not configured" });
+  }
+
+  // Verify signature - prevents fraudulent activation
+  const expectedSignature = crypto
+    .createHmac("sha256", env.RAZORPAY_KEY_SECRET)
+    .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+    .digest("hex");
+
+  if (expectedSignature !== razorpay_signature) {
+    return res.status(400).json({ ok: false, error: "Invalid payment signature" });
+  }
+
+  // Find enrollment
+  const enrollment = await prisma.enrollment.findFirst({
+    where: { id: enrollmentId, userId: user.id }
+  });
+
+  if (!enrollment) {
+    return res.status(404).json({ ok: false, error: "Enrollment not found" });
+  }
+
+  // Set 30-day access window
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 30);
+
+  // Activate the enrollment
+  await prisma.enrollment.update({
+    where: { id: enrollmentId },
+    data: { status: EnrollmentStatus.ACTIVE, expiresAt }
+  });
+
+  // Mark payment as succeeded
+  await prisma.paymentOrder.updateMany({
+    where: { enrollmentId },
+    data: {
+      providerTxnId: razorpay_payment_id,
+      status: PaymentStatus.SUCCESS
+    }
+  });
+
+  return res.status(200).json({ ok: true, message: "Enrollment activated successfully" });
+});
+
 export async function handleRazorpayWebhook(req: Request, res: Response) {
   if (!env.RAZORPAY_WEBHOOK_SECRET) {
     return res.status(500).json({ ok: false, error: "RAZORPAY_WEBHOOK_SECRET is not configured" });

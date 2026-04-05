@@ -191,6 +191,8 @@ function CheckoutContent() {
         return;
       }
 
+      const enrollmentId = enrollRes.item.id;
+
       const orderRes = await backendRequest<{
         ok: boolean;
         item: {
@@ -202,7 +204,7 @@ function CheckoutContent() {
       }>("/payments/create-order", {
         method: "POST",
         body: { 
-          enrollmentId: enrollRes.item.id, 
+          enrollmentId, 
           provider: "razorpay",
           isTrial: !!isTrialPlan 
         },
@@ -224,9 +226,30 @@ function CheckoutContent() {
           : `Payment for ${targetTitle} (${getDurationLabel()})`,
         image: "https://cdn-icons-png.flaticon.com/512/3413/3413535.png",
         order_id: orderId,
-        handler: function (response: any) {
-          toast.success("Payment successful! Redirecting...");
-          setTimeout(() => router.push(course ? `/checkout/success?slug=${course.slug}` : `/checkout/success?plan=${plan || "plus"}`), 1500);
+        handler: async function (response: any) {
+          try {
+            // Verify payment server-side and activate enrollment immediately
+            const verifyRes = await backendRequest<{ ok: boolean; message: string }>("/payments/verify", {
+              method: "POST",
+              body: {
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+                enrollmentId,
+              },
+              clerkUserId: userId!,
+            });
+
+            if (verifyRes.ok) {
+              toast.success("Payment verified! Your membership is now active.");
+              setTimeout(() => router.push(course ? `/checkout/success?slug=${course.slug}` : `/checkout/success?plan=${plan || "plus"}`), 1500);
+            } else {
+              toast.error("Payment received but verification failed. Please contact support.");
+            }
+          } catch (err) {
+            console.error("Verification error:", err);
+            toast.error("Payment received but could not activate enrollment. Please contact support.");
+          }
         },
         prefill: {
           name: user?.fullName || "",

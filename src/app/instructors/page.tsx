@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { Star, BookOpen, Users, ArrowRight, Search } from "lucide-react";
-import { coursesData } from "@/lib/courses-data";
+import { coursesData, INSTRUCTOR_META } from "@/lib/courses-data";
 import { Montserrat } from "next/font/google";
 import Footer from "@/components/lms/Footer";
 import Navbar from "@/components/lms/Navbar";
@@ -12,111 +12,6 @@ import Navbar from "@/components/lms/Navbar";
 const montserrat = Montserrat({ subsets: ["latin"] });
 
 // ── Build instructor profiles from course data ──────────────────────────────
-const INSTRUCTOR_META: Record<
-  string,
-  {
-    title: string;
-    bio: string;
-    avatar: string;
-    gradient: [string, string];
-    image?: string;
-  }
-> = {
-  "Gunjan Basak": {
-    title: "Senior Software Engineer",
-    bio: "Passionate about building scalable cloud-native applications and teaching modern web technologies.",
-    avatar: "GB",
-    gradient: ["#6366f1", "#4f46e5"],
-    image: "/images/instructors/gunjan_real.jpg",
-  },
-  "Chirantan Biswas": {
-    title: "Full-stack Developer",
-    bio: "Focused on creating fluid, user-centric interfaces and robust backend architectures.",
-    avatar: "CB",
-    gradient: ["#0ea5e9", "#2563eb"],
-    image: "/images/instructors/chirantan_real.jpg",
-  },
-  "Dr. Sarah Park": {
-    title: "AI Research Scientist",
-    bio: "PhD in ML from Stanford. Worked at DeepMind and Google Brain on generative models.",
-    avatar: "SP",
-    gradient: ["#a78bfa", "#8b5cf6"],
-    image:
-      "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=500&auto=format&fit=crop&q=60",
-  },
-  "Marcus Lee": {
-    title: "Mobile & UI Designer",
-    bio: "Design lead at Meta's mobile design team. Created iOS apps with 5M+ downloads.",
-    avatar: "ML",
-    gradient: ["#f97316", "#fb923c"],
-    image:
-      "https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?w=500&auto=format&fit=crop&q=60",
-  },
-  "Ryan Torres": {
-    title: "Principal Full-Stack Engineer",
-    bio: "Architected backend systems at Stripe and Shopify processing $1B+ annually.",
-    avatar: "RT",
-    gradient: ["#34d399", "#10b981"],
-    image:
-      "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=500&auto=format&fit=crop&q=60",
-  },
-  "Emily Watson": {
-    title: "Senior Product Manager",
-    bio: "Former PM at Notion and Linear. Expert in product-led growth and PLG strategies.",
-    avatar: "EW",
-    gradient: ["#fbbf24", "#f59e0b"],
-    image:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60",
-  },
-  "Nina Kaur": {
-    title: "Motion Designer",
-    bio: "Award-winning motion designer. Former Disney Creative Labs. Framer MVP.",
-    avatar: "NK",
-    gradient: ["#e879f9", "#d946ef"],
-    image:
-      "https://images.unsplash.com/photo-1554151228-14d9def656e4?w=500&auto=format&fit=crop&q=60",
-  },
-  "Arjun Patel": {
-    title: "Data Scientist",
-    bio: "Data science lead at McKinsey. Built ML models for Fortune 500 companies.",
-    avatar: "AP",
-    gradient: ["#22d3ee", "#06b6d4"],
-    image:
-      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&auto=format&fit=crop&q=60",
-  },
-  "Leah Kim": {
-    title: "Growth Marketing Director",
-    bio: "Scaled Duolingo and Calm's user base through data-driven growth loops.",
-    avatar: "LK",
-    gradient: ["#4ade80", "#22c55e"],
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&auto=format&fit=crop&q=60",
-  },
-  "Diego Martins": {
-    title: "Frontend Architect",
-    bio: "Staff engineer at Atlassian. Expert in scalable frontend systems and performance.",
-    avatar: "DM",
-    gradient: ["#818cf8", "#6366f1"],
-    image:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=60",
-  },
-  "Olivia Harper": {
-    title: "UX Research Lead",
-    bio: "Research lead at IBM Design. Champion of inclusive research practices.",
-    avatar: "OH",
-    gradient: ["#fb7185", "#f43f5e"],
-    image:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=500&auto=format&fit=crop&q=60",
-  },
-  "Kevin Roy": {
-    title: "No-Code & Automation Expert",
-    bio: "Built 200+ automation systems. Advisor to AI-native startups.",
-    avatar: "KR",
-    gradient: ["#38bdf8", "#0ea5e9"],
-    image:
-      "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=500&auto=format&fit=crop&q=60",
-  },
-};
 
 function buildInstructors() {
   const map: Record<

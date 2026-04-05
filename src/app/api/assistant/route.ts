@@ -1,21 +1,15 @@
 import { NextResponse } from "next/server";
+import { coursesData, INSTRUCTOR_META } from "@/lib/courses-data";
 
 export const runtime = "nodejs";
 
-const COURSE_CONTEXT = `EduNova courses:
-- Frontend Fundamentals: FREE, Beginner, by Alex Chen (HTML/CSS/JS)
-- React & Next.js Mastery: $29/mo, Intermediate, by Alex Chen 
-- Full-Stack Bootcamp: $49/mo, Advanced, by Marcus Lee
-- TypeScript Masterclass: $29/mo, Intermediate, by Sarah Kim
-- Node.js Advanced: $39/mo, Advanced, by Marcus Lee
-- UI/UX Design Bootcamp: $29/mo, Beginner, by Jessica Willis
-- Mobile App Design with Figma: $29/mo, Intermediate, by Marcus Lee
-- Brand Design & Strategy: $29/mo, All Levels, by Jessica Willis
-- Generative AI Essentials: FREE, Beginner, by Dr. Sarah Park
-- Machine Learning Fundamentals: $39/mo, Intermediate, by Dr. Sarah Park
-- Deep Learning & Neural Networks: $49/mo, Advanced, by Dr. Sarah Park
-- Product Management Accelerator: $35/mo, All Levels, by Jordan Kim
-- Entrepreneurship Bootcamp: $35/mo, All Levels, by Alex Chen`;
+const COURSE_CONTEXT = coursesData.map(c => `- ${c.title}: ${c.isFree ? 'FREE' : `$${c.price.oneMonth}/mo`}, ${c.level}, by ${c.instructor}`).join("\n");
+
+const INSTRUCTOR_CONTEXT = Object.entries(INSTRUCTOR_META).map(([name, data]) => {
+  return `Instructor Name: ${name}
+Title: ${data.title}
+Bio: ${data.bio}`;
+}).join("\n\n");
 
 type AiMessage = { role: "system" | "user" | "assistant"; content: string | any[] };
 
@@ -59,9 +53,12 @@ export async function POST(req: Request) {
   const instructions = `Instructions: You are EduNova Intel, a friendly and smart AI assistant for the EduNova learning platform.${userName ? ` You are helping ${userName}.` : ""} 
 Use the course info below when answering. Always format answers clearly with bullet points. If you are provided an image, analyze it carefully to help the user.
 
-*** CRITICAL INSTRUCTOR RECOGNITION RULE ***
-If the user uploads an image showing a young man with short black hair, wearing reflective sunglasses, a white shirt, and a black jacket or cardigan (often with a mustache and stubble, or similar appearance), YOU MUST IMMEDIATELY IDENTIFY HIM. This is Subhajit Gayen, the esteemed Founder & Lead Instructor of the platform. Do NOT give a generic description of his clothes. Instead, enthusiastically introduce him as the creator and lead instructor of TheAim/EduNova!
-**********************************************
+*** INSTRUCTOR RECOGNITION RULE ***
+If the user uploads an image containing an instructor, immediately access the 'Instructor Profiles' below to identify them based on the context of their question or visual queues. Cross reference your visual analysis with their name to provide their exact title and bio. DO NOT provide generic visual descriptions of their clothes. Provide their real name, title, and bio directly.
+***********************************
+
+Instructor Profiles:
+${INSTRUCTOR_CONTEXT}
   
 Course Context:
 ${COURSE_CONTEXT}`;

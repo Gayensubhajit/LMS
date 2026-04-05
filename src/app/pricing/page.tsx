@@ -260,25 +260,38 @@ function PlanCard({
           </div>
         </div>
 
-        <Link
-          href={isActivePlan ? "/courses" : plan.href}
-          className={`flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-bold text-sm mb-2 transition-all group ${
-            isActivePlan
-              ? "bg-emerald-500 text-white cursor-default"
-              : hasHighlight
-              ? "bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-600 dark:to-purple-600 text-white hover:shadow-lg hover:shadow-blue-600/25 dark:hover:shadow-violet-600/25"
-              : "border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-white/[0.07]"
-          }`}
-        >
-          {!isActivePlan && hasHighlight && <Zap size={14} />}
-          {isActivePlan ? "Continue Learning" : plan.cta}
-          {!isActivePlan && (
+        {/* Action Button */}
+        {isActivePlan ? (
+          <Link
+            href="/courses"
+            className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-emerald-500 text-white font-bold text-sm mb-2 transition-all cursor-default"
+          >
+            Continue Learning
+          </Link>
+        ) : isMember && ((plan as any).id === "plus" || (plan as any).id === "annual") ? (
+          <Link
+            href="/courses"
+            className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black font-bold text-sm mb-2 transition-all hover:bg-slate-800 dark:hover:bg-slate-200"
+          >
+            Manage Subscription
+          </Link>
+        ) : (
+          <Link
+            href={plan.href}
+            className={`flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-bold text-sm mb-2 transition-all group ${
+              hasHighlight
+                ? "bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-600 dark:to-purple-600 text-white hover:shadow-lg"
+                : "border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] text-slate-900 dark:text-white hover:bg-slate-100"
+            }`}
+          >
+            {hasHighlight && <Zap size={14} />}
+            {plan.cta}
             <ArrowRight
               size={13}
               className="opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all"
             />
-          )}
-        </Link>
+          </Link>
+        )}
         <p className={`text-center text-[11px] mb-8 ${
           isActivePlan ? "text-emerald-500 font-bold" : "text-slate-400 dark:text-gray-600"
         }`}>

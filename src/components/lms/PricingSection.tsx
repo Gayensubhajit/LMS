@@ -1,17 +1,21 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
-import { Check, Users, Zap, ArrowRight } from "lucide-react";
+import { Check, Users, Zap, ArrowRight, Loader2 } from "lucide-react";
 import Link from "next/link";
 import { Montserrat } from "next/font/google";
+import { useAuth } from "@clerk/nextjs";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
+
 const INDIVIDUAL_PLANS = [
   {
+    id: "single",
     name: "Single Course",
-    price: "₹1,999",
+    price: "₹1,499",
     period: "/ course",
     description: "Pick a single topic or skill and earn a verified credential.",
     highlight: false,
@@ -26,6 +30,7 @@ const INDIVIDUAL_PLANS = [
     ],
   },
   {
+    id: "plus",
     name: "EduNova Plus",
     price: "₹2,499",
     period: "/ month",
@@ -45,6 +50,7 @@ const INDIVIDUAL_PLANS = [
     ],
   },
   {
+    id: "annual",
     name: "Plus Annual",
     price: "₹19,999",
     period: "/ year",
@@ -66,6 +72,7 @@ const INDIVIDUAL_PLANS = [
 
 const TEAM_PLANS = [
   {
+    id: "teams",
     name: "Teams Starter",
     price: "₹1,999",
     period: "/ seat / month",
@@ -82,6 +89,7 @@ const TEAM_PLANS = [
     ],
   },
   {
+    id: "teams-pro",
     name: "Teams Pro",
     price: "₹1,499",
     period: "/ seat / month",
@@ -101,6 +109,7 @@ const TEAM_PLANS = [
     ],
   },
   {
+    id: "enterprise",
     name: "Enterprise",
     price: "Custom",
     period: "for large teams",
@@ -120,9 +129,66 @@ const TEAM_PLANS = [
 ];
 
 export default function PricingSection() {
+  const { getToken, userId, isLoaded } = useAuth();
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const [tab, setTab] = useState<"individuals" | "teams">("individuals");
+  const [isMember, setIsMember] = useState(false);
+  const [memberPlan, setMemberPlan] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [expiryDate, setExpiryDate] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isLoaded || !userId) {
+      setLoading(false);
+      return;
+    }
+
+    const checkMembership = async () => {
+      try {
+        const token = await getToken();
+        // Check for Plus Membership specifically
+        const res = await fetch(`${BACKEND_URL}/enrollments/check/plus-membership`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "x-clerk-user-id": userId
+          }
+        });
+        const data = await res.json();
+        
+        if (data.ok && data.enrolled) {
+          setIsMember(true);
+          // If we want more info like plan name or expiry, we'd fetch /enrollments/me
+          const meRes = await fetch(`${BACKEND_URL}/enrollments/me`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "x-clerk-user-id": userId
+            }
+          });
+          const meData = await meRes.json();
+          if (meData.ok) {
+            const plus = meData.items.find((e: any) => e.course.slug === "plus-membership");
+            if (plus) {
+              setMemberPlan(plus.plan);
+              if (plus.expiresAt) {
+                setExpiryDate(new Date(plus.expiresAt).toLocaleDateString("en-IN", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric"
+                }));
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Check membership error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkMembership();
+  }, [userId, isLoaded, getToken]);
 
   const plans = tab === "individuals" ? INDIVIDUAL_PLANS : TEAM_PLANS;
 
@@ -134,7 +200,7 @@ export default function PricingSection() {
     >
       {/* Ambient glow */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-175 h-100 bg-violet-600/5 rounded-full blur-[120px]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-175 h-100 bg-blue-600/5 rounded-full blur-[120px]" />
       </div>
 
       <div className="relative z-10 max-w-6xl mx-auto px-6">
@@ -151,37 +217,39 @@ export default function PricingSection() {
             Flexible Pricing
           </span>
           <h2
-            className={`font-serif text-4xl md:text-6xl font-black text-black dark:text-white mb-4 leading-tight`}
+            className={`font-serif text-4xl md:text-5xl font-black text-black dark:text-white mb-4 leading-tight tracking-tight`}
+
           >
             Invest in Your Future
           </h2>
           <p
-            className={`${montserrat.className} text-gray-600 dark:text-gray-400 text-base max-w-xl mx-auto mb-10`}
+            className={`${montserrat.className} text-gray-600 dark:text-gray-400 text-base max-w-xl mx-auto mb-10 font-bold`}
           >
-            All plans include a 7-day free trial. No credit card required.
+            All plans include a 14-day free trial. Unlock the full catalog for exactly ₹1 today.
           </p>
 
           {/* Tab toggle */}
-          <div className="inline-flex items-center p-1 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 gap-1">
+          <div className="inline-flex items-center p-1.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 gap-1.5">
+
             <button
               onClick={() => setTab("individuals")}
-              className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${
+              className={`px-8 py-3 rounded-xl text-sm font-black transition-all duration-300 ${
                 tab === "individuals"
-                  ? "bg-black dark:bg-white text-white dark:text-black shadow-md"
-                  : "text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white"
+                  ? "bg-white dark:bg-blue-600 text-slate-900 dark:text-white shadow-lg shadow-blue-500/20"
+                  : "text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               For Individuals
             </button>
             <button
               onClick={() => setTab("teams")}
-              className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2 ${
+              className={`px-8 py-3 rounded-xl text-sm font-black transition-all duration-300 flex items-center gap-2.5 ${
                 tab === "teams"
-                  ? "bg-black dark:bg-violet-600 text-white shadow-md dark:shadow-violet-600/30"
-                  : "text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white"
+                  ? "bg-white dark:bg-indigo-600 text-slate-900 dark:text-white shadow-lg shadow-indigo-500/20"
+                  : "text-slate-400 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
-              <Users size={14} /> For Teams
+              <Users size={16} /> For Teams
             </button>
           </div>
         </motion.div>
@@ -194,115 +262,131 @@ export default function PricingSection() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.25 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start"
+            className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start"
           >
-            {plans.map((plan, i) => (
-              <motion.div
-                key={plan.name}
-                initial={{ opacity: 0, y: 20 }}
-                animate={inView ? { opacity: 1, y: 0 } : {}}
-                transition={{ delay: i * 0.08 }}
-                className={`relative rounded-2xl flex flex-col overflow-hidden transition-all duration-300 ${
-                  plan.highlight
-                    ? "border-2 border-indigo-600 dark:border-violet-500/70 shadow-2xl shadow-indigo-500/10 dark:shadow-violet-500/20 bg-white dark:bg-[#111827]"
-                    : "border border-black/20 dark:border-white/20 bg-white dark:bg-transparent"
-                }`}
-                style={{
-                  background: "transparent",
-                }}
-              >
-                {/* Badge */}
-                {"badge" in plan && plan.badge && (
-                  <div
-                    className={`text-center py-2 text-[11px] font-black uppercase tracking-widest ${
-                      plan.highlight
-                        ? "bg-black dark:bg-linear-to-r dark:from-violet-600 dark:to-purple-600 text-white"
-                        : "bg-gray-100 dark:bg-amber-500/10 text-black dark:text-amber-400 border-b border-black/5 dark:border-amber-500/20"
-                    }`}
-                  >
-                    {plan.badge}
-                  </div>
-                )}
+            {plans.map((plan, i) => {
+              const isActive = isMember && (
+                (plan.id === "plus" && (memberPlan === "plus" || memberPlan === "ONE_MONTH")) ||
+                (plan.id === "annual" && (memberPlan === "annual" || memberPlan === "SIX_MONTH")) ||
+                (plan.id === "teams" && memberPlan === "teams") ||
+                (plan.id === "teams-pro" && memberPlan === "teams-pro")
+              );
 
-                <div className="p-8 flex flex-col flex-1">
-                  {/* Name + desc */}
-                  <h3 className="font-serif text-xl font-black mb-2 leading-6 text-slate-900 dark:text-white">
-                    {plan.name}
-                  </h3>
-                  <p
-                    className={`${montserrat.className} text-sm leading-relaxed mb-6 text-slate-500 dark:text-gray-400`}
-                  >
-                    {plan.description}
-                  </p>
-
-                  {/* Price */}
-                  <div className="mb-6">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-4xl font-serif font-black tracking-tight text-slate-900 dark:text-white">
-                        {plan.price}
-                      </span>
-                      <span
-                        className={`${montserrat.className} text-slate-500 dark:text-gray-500 text-sm font-medium`}
-                      >
-                        {plan.period}
-                      </span>
+              return (
+                <motion.div
+                  key={plan.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={inView ? { opacity: 1, y: 0 } : {}}
+                  transition={{ delay: i * 0.08 }}
+                  className={`relative rounded-3xl flex flex-col overflow-hidden transition-all duration-300 hover:scale-[1.02] ${
+                    plan.highlight
+                      ? "border-2 border-indigo-600 dark:border-violet-500 shadow-2xl shadow-indigo-500/10 dark:shadow-violet-500/20 bg-white dark:bg-[#0f0f1e]"
+                      : "border border-slate-200 dark:border-white/[0.07] bg-white dark:bg-white/[0.02] backdrop-blur-xl"
+                  }`}
+                >
+                  {/* Badge */}
+                  {plan.badge && (
+                    <div
+                      className={`text-center py-2.5 text-[10px] font-black uppercase tracking-widest ${
+                        plan.highlight
+                          ? "bg-indigo-600 dark:bg-gradient-to-r dark:from-violet-600 dark:to-purple-600 text-white"
+                          : "bg-slate-50 dark:bg-amber-500/10 text-slate-900 dark:text-amber-400 border-b border-slate-100 dark:border-amber-500/20"
+                      }`}
+                    >
+                      {plan.badge}
                     </div>
-                  </div>
+                  )}
 
-                  {/* CTA */}
-                  <Link
-                    href={plan.href}
-                    className={`${montserrat.className} text-center flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-bold text-sm mb-2 transition-all group ${
-                      plan.highlight
-                        ? "bg-[#0056d2] text-white hover:bg-[#00419e] shadow-lg shadow-blue-500/20"
-                        : "bg-[#0056d2] text-white hover:bg-[#00419e] shadow-lg shadow-blue-500/10"
-                    }`}
-                  >
-                    {plan.highlight && <Zap size={14} />}
-                    {plan.cta}
-                    <ArrowRight
-                      size={14}
-                      className="opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all"
-                    />
-                  </Link>
-                  <p
-                    className={`${montserrat.className} text-center text-[11px] mb-8 text-slate-400 dark:text-gray-600`}
-                  >
-                    {plan.note}
-                  </p>
+                  <div className="p-8 flex flex-col flex-1">
+                    <h3 className="font-black text-2xl mb-2 leading-tight text-slate-900 dark:text-white tracking-tight">
+                      {plan.name}
+                    </h3>
+                    <p
+                      className={`${montserrat.className} text-sm leading-relaxed mb-8 text-slate-500 dark:text-gray-400 font-medium`}
+                    >
+                      {plan.description}
+                    </p>
 
-                  {/* Features */}
-                  <div className="border-t border-white/5 pt-6 space-y-3 flex-1">
-                    {plan.features.map((f) => (
-                      <div key={f} className="flex items-center gap-3">
-                        <div
-                          className={`w-4 h-4 rounded-full flex items-center justify-center shrink-0 ${
-                            plan.highlight
-                              ? "bg-black/5 dark:bg-violet-600/20"
-                              : "bg-black/5 dark:bg-white/5"
-                          }`}
-                        >
-                          <Check
-                            size={10}
-                            className={
-                              plan.highlight
-                                ? "text-black dark:text-violet-400"
-                                : "text-gray-400 dark:text-gray-500"
-                            }
-                            strokeWidth={3}
-                          />
-                        </div>
+                    {/* Price */}
+                    <div className="mb-8">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-4xl font-black tracking-tighter text-slate-900 dark:text-white">
+                          {plan.price}
+                        </span>
                         <span
-                          className={`${montserrat.className} text-sm font-medium text-slate-600 dark:text-gray-300`}
+                          className={`${montserrat.className} text-slate-400 dark:text-gray-600 text-sm font-bold`}
                         >
-                          {f}
+                          {plan.period}
                         </span>
                       </div>
-                    ))}
+                    </div>
+
+                    {/* CTA */}
+                    <Link
+                      href={isActive ? "/courses" : plan.href}
+                      className={`${montserrat.className} flex items-center justify-center gap-3 w-full py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest mb-3 transition-all group ${
+                        isActive 
+                          ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20 cursor-default" 
+                          : plan.highlight
+                            ? "bg-blue-600 text-white hover:bg-blue-700 shadow-xl shadow-blue-500/30"
+                            : "bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:scale-[1.03] shadow-lg"
+                      }`}
+                    >
+                      {loading ? (
+                        <Loader2 size={16} className="animate-spin" />
+                      ) : isActive ? (
+                        <>Active Member</>
+                      ) : (
+                        <>
+                          {plan.highlight && <Zap size={14} className="fill-current" />}
+                          {plan.cta}
+                          <ArrowRight
+                            size={16}
+                            className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all duration-300"
+                          />
+                        </>
+                      )}
+                    </Link>
+                    
+                    <p
+                      className={`${montserrat.className} text-center text-[10px] font-black mb-8 uppercase tracking-widest ${
+                        isActive ? "text-emerald-500" : "text-slate-400 dark:text-gray-600"
+                      }`}
+                    >
+                      {isActive && expiryDate ? `Next Billing: ${expiryDate}` : plan.note}
+                    </p>
+
+                    {/* Features */}
+                    <div className="border-t border-slate-100 dark:border-white/5 pt-8 space-y-4 flex-1">
+                      {plan.features.map((f) => (
+                        <div key={f} className="flex items-center gap-4">
+                          <div
+                            className={`w-5 h-5 rounded-lg flex items-center justify-center shrink-0 ${
+                              plan.highlight ? "bg-blue-50 dark:bg-blue-600/20" : "bg-slate-50 dark:bg-white/5"
+                            }`}
+                          >
+                            <Check
+                              size={12}
+                              className={
+                                plan.highlight
+                                  ? "text-blue-600 dark:text-blue-400"
+                                  : "text-slate-400 dark:text-gray-500"
+                              }
+                              strokeWidth={4}
+                            />
+                          </div>
+                          <span
+                            className={`${montserrat.className} text-[13px] font-bold text-slate-600 dark:text-gray-300`}
+                          >
+                            {f}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
           </motion.div>
         </AnimatePresence>
 
@@ -311,17 +395,17 @@ export default function PricingSection() {
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ delay: 0.5 }}
-          className="text-center mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-gray-600"
+          className="text-center mt-16 flex flex-wrap items-center justify-center gap-10 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 dark:text-gray-600"
         >
-          <span>🛡️ 30-day money-back guarantee</span>
+          <span className="flex items-center gap-2">🛡️ 30-day money-back</span>
           <span>·</span>
-          <span>No hidden fees</span>
+          <span className="flex items-center gap-2">💳 No hidden fees</span>
           <span>·</span>
           <Link
-            href="/pricing"
-            className="text-black dark:text-violet-400 hover:opacity-70 dark:hover:text-violet-300 font-semibold transition-all"
+            href="/billing"
+            className="text-blue-600 dark:text-blue-400 hover:opacity-70 font-black transition-all"
           >
-            See full plan details →
+            Manage Billing →
           </Link>
         </motion.div>
       </div>

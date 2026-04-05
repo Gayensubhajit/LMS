@@ -17,7 +17,7 @@ export const SUPPORTED_CURRENCIES: Record<string, CurrencyInfo> = {
   'AU': { code: 'AUD', symbol: 'A$', rate: 1.52 },
 };
 
-// Default currency if location detection fails
+// Default currency for the platform (EduNova is focused on India/INR)
 const DEFAULT_CURRENCY: CurrencyInfo = SUPPORTED_CURRENCIES['IN'];
 
 /**
@@ -65,10 +65,10 @@ export function detectUserCountry(): string {
 
 /**
  * Get currency information for user's location
+ * (LOCKED TO INR FOR EDUNOVA PLATFORM)
  */
 export function getUserCurrency(): CurrencyInfo {
-  const country = detectUserCountry();
-  return SUPPORTED_CURRENCIES[country] || DEFAULT_CURRENCY;
+  return SUPPORTED_CURRENCIES['IN'];
 }
 
 /**
@@ -99,10 +99,13 @@ export function formatPrice(amount: number): string {
 
 /**
  * Convert and format USD price to local currency
+ * (LOCKED TO INR FOR EDUNOVA PLATFORM)
  */
 export function formatLocalPrice(usdAmount: number): string {
-  const localAmount = convertToLocalCurrency(usdAmount);
-  return formatPrice(localAmount);
+  // Even if we have a USD amount, we want to show it in INR for the Indian market
+  // If the amount is small (like 25), it's likely USD. Let's convert it.
+  const localAmount = usdAmount < 1000 ? convertToLocalCurrency(usdAmount) : usdAmount;
+  return formatINR(localAmount);
 }
 
 /**

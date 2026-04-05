@@ -417,9 +417,6 @@ function CoursesContent() {
 
                           <div className="mt-auto pt-6 border-t border-slate-100 dark:border-white/5 flex items-center justify-between gap-4">
                             <div>
-                              <p className="text-xs text-slate-400 dark:text-gray-600 uppercase font-bold tracking-wider mb-1">
-                                Pricing
-                              </p>
                               <p className="text-xl font-black text-slate-900 dark:text-white">
                                 {course.isFree ? (
                                   <span className="text-emerald-600 dark:text-emerald-400">

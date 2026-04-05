@@ -689,7 +689,7 @@ async function main() {
     where: { slug: "complete-ui-ux-design-bootcamp" },
     update: { 
       imageUrl: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=800&auto=format&fit=crop",
-      oneMonthPrice: 19, threeMonthPrice: 49, sixMonthPrice: 89
+      oneMonthPrice: 9, threeMonthPrice: 24, sixMonthPrice: 39
     },
     create: {
       slug: "complete-ui-ux-design-bootcamp",
@@ -699,7 +699,7 @@ async function main() {
       category: "Design",
       level: CourseLevel.BEGINNER,
       instructorName: "Jessica Willis",
-      oneMonthPrice: 19, threeMonthPrice: 49, sixMonthPrice: 89,
+      oneMonthPrice: 9, threeMonthPrice: 24, sixMonthPrice: 39,
       isFree: false, isPublished: true,
       imageUrl: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=800&auto=format&fit=crop",
     },
@@ -709,7 +709,7 @@ async function main() {
     where: { slug: "react-nextjs-mastery-2026" },
     update: { 
       imageUrl: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=800&auto=format&fit=crop",
-      oneMonthPrice: 29, threeMonthPrice: 79, sixMonthPrice: 139
+      oneMonthPrice: 14, threeMonthPrice: 39, sixMonthPrice: 69
     },
     create: {
       slug: "react-nextjs-mastery-2026",
@@ -719,7 +719,7 @@ async function main() {
       category: "Development",
       level: CourseLevel.INTERMEDIATE,
       instructorName: "Alex Chen",
-      oneMonthPrice: 29, threeMonthPrice: 79, sixMonthPrice: 139,
+      oneMonthPrice: 14, threeMonthPrice: 39, sixMonthPrice: 69,
       isFree: false, isPublished: true,
       imageUrl: "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=800&auto=format&fit=crop",
     },
@@ -729,7 +729,7 @@ async function main() {
     where: { slug: "ai-machine-learning-for-designers" },
     update: { 
       imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&auto=format&fit=crop",
-      oneMonthPrice: 119, threeMonthPrice: 309, sixMonthPrice: 569
+      oneMonthPrice: 12, threeMonthPrice: 34, sixMonthPrice: 59
     },
     create: {
       slug: "ai-machine-learning-for-designers",
@@ -739,7 +739,7 @@ async function main() {
       category: "AI/ML",
       level: CourseLevel.ALL_LEVELS,
       instructorName: "Dr. Sarah Park",
-      oneMonthPrice: 119, threeMonthPrice: 309, sixMonthPrice: 569,
+      oneMonthPrice: 12, threeMonthPrice: 34, sixMonthPrice: 59,
       isFree: false, isPublished: true,
       imageUrl: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=800&auto=format&fit=crop",
     },
@@ -749,7 +749,7 @@ async function main() {
     where: { slug: "mobile-app-design-with-figma" },
     update: { 
       imageUrl: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=800&auto=format&fit=crop",
-      oneMonthPrice: 79, threeMonthPrice: 199, sixMonthPrice: 359
+      oneMonthPrice: 12, threeMonthPrice: 34, sixMonthPrice: 59
     },
     create: {
       slug: "mobile-app-design-with-figma",
@@ -759,7 +759,7 @@ async function main() {
       category: "Design",
       level: CourseLevel.BEGINNER,
       instructorName: "Marcus Lee",
-      oneMonthPrice: 79, threeMonthPrice: 199, sixMonthPrice: 359,
+      oneMonthPrice: 12, threeMonthPrice: 34, sixMonthPrice: 59,
       isFree: false, isPublished: true,
       imageUrl: "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=800&auto=format&fit=crop",
     },
@@ -769,7 +769,7 @@ async function main() {
     where: { slug: "full-stack-development-accelerator" },
     update: { 
       imageUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop",
-      oneMonthPrice: 149, threeMonthPrice: 389, sixMonthPrice: 719
+      oneMonthPrice: 19, threeMonthPrice: 49, sixMonthPrice: 89
     },
     create: {
       slug: "full-stack-development-accelerator",
@@ -779,7 +779,7 @@ async function main() {
       category: "Development",
       level: CourseLevel.ADVANCED,
       instructorName: "Ryan Torres",
-      oneMonthPrice: 149, threeMonthPrice: 389, sixMonthPrice: 719,
+      oneMonthPrice: 19, threeMonthPrice: 49, sixMonthPrice: 89,
       isFree: false, isPublished: true,
       imageUrl: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=800&auto=format&fit=crop",
     },
@@ -789,7 +789,7 @@ async function main() {
     where: { slug: "prompt-engineering-for-business" },
     update: { 
       imageUrl: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=800&auto=format&fit=crop",
-      oneMonthPrice: 24, threeMonthPrice: 59, sixMonthPrice: 99
+      oneMonthPrice: 9, threeMonthPrice: 24, sixMonthPrice: 39
     },
     create: {
       slug: "prompt-engineering-for-business",
@@ -799,7 +799,7 @@ async function main() {
       category: "AI/ML",
       level: CourseLevel.ALL_LEVELS,
       instructorName: "Kevin Roy",
-      oneMonthPrice: 24, threeMonthPrice: 59, sixMonthPrice: 99,
+      oneMonthPrice: 9, threeMonthPrice: 24, sixMonthPrice: 39,
       isFree: false, isPublished: true,
       imageUrl: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=800&auto=format&fit=crop",
     },

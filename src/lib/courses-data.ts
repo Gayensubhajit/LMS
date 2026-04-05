@@ -113,7 +113,7 @@ export const coursesData: Course[] = [
     longDescription:
       "Learn wireframing, visual systems, user flows, prototyping, usability testing, and complete end-to-end case studies. Build portfolio projects reviewed by industry mentors.",
     skills: ["Figma", "Design Systems", "User Research", "Prototyping"],
-    price: { oneMonth: 19, threeMonth: 49, sixMonth: 89 },
+    price: { oneMonth: 9, threeMonth: 24, sixMonth: 39 },
   },
   {
     slug: "react-nextjs-mastery-2026",
@@ -134,7 +134,7 @@ export const coursesData: Course[] = [
     longDescription:
       "Cover React architecture, App Router, server components, API routes, performance optimization, and deployment workflows for real-world production apps.",
     skills: ["React", "Next.js", "TypeScript", "API Design"],
-    price: { oneMonth: 29, threeMonth: 79, sixMonth: 139 },
+    price: { oneMonth: 14, threeMonth: 39, sixMonth: 69 },
   },
   {
     slug: "ai-machine-learning-for-designers",
@@ -155,7 +155,7 @@ export const coursesData: Course[] = [
     longDescription:
       "Understand practical ML concepts, prompt engineering, AI-assisted UX research, content generation pipelines, and prototyping with LLM-powered interfaces.",
     skills: ["Prompt Design", "AI Workflows", "LLMs", "Automation"],
-    price: { oneMonth: 119, threeMonth: 309, sixMonth: 569 },
+    price: { oneMonth: 12, threeMonth: 34, sixMonth: 59 },
   },
   {
     slug: "mobile-app-design-with-figma",
@@ -176,7 +176,7 @@ export const coursesData: Course[] = [
     longDescription:
       "Design iOS and Android app flows, create reusable components, build interactive prototypes, and validate UI decisions with rapid usability feedback.",
     skills: ["Mobile UI", "Figma", "Interaction Design", "Design Tokens"],
-    price: { oneMonth: 79, threeMonth: 199, sixMonth: 359 },
+    price: { oneMonth: 12, threeMonth: 34, sixMonth: 59 },
   },
   {
     slug: "full-stack-development-accelerator",
@@ -197,7 +197,7 @@ export const coursesData: Course[] = [
     longDescription:
       "Create scalable systems with backend APIs, databases, auth, CI/CD, cloud deployment, and monitoring. Ship real projects suitable for hiring pipelines.",
     skills: ["Node.js", "Databases", "Cloud Deploy", "System Design"],
-    price: { oneMonth: 149, threeMonth: 389, sixMonth: 719 },
+    price: { oneMonth: 19, threeMonth: 49, sixMonth: 89 },
   },
   {
     slug: "product-management-fundamentals",
@@ -218,7 +218,7 @@ export const coursesData: Course[] = [
     longDescription:
       "Master problem discovery, opportunity sizing, roadmap prioritization, stakeholder communication, and measuring product impact with practical templates.",
     skills: ["Product Strategy", "Roadmapping", "Agile", "Metrics"],
-    price: { oneMonth: 69, threeMonth: 179, sixMonth: 319 },
+    price: { oneMonth: 12, threeMonth: 34, sixMonth: 59 },
   },
   {
     slug: "advanced-motion-design-framer",
@@ -239,7 +239,7 @@ export const coursesData: Course[] = [
     longDescription:
       "Design smooth, performant motion systems for web interfaces, build reusable animation components, and craft premium interaction patterns.",
     skills: ["Framer Motion", "Micro-interactions", "Animation Systems", "UX Motion"],
-    price: { oneMonth: 74, threeMonth: 189, sixMonth: 339 },
+    price: { oneMonth: 12, threeMonth: 34, sixMonth: 59 },
   },
   {
     slug: "python-for-data-analysis",
@@ -260,7 +260,7 @@ export const coursesData: Course[] = [
     longDescription:
       "Work through practical data analysis workflows including preprocessing, visualization, exploratory analysis, and basic predictive modeling.",
     skills: ["Python", "Pandas", "Data Visualization", "Statistics"],
-    price: { oneMonth: 84, threeMonth: 219, sixMonth: 399 },
+    price: { oneMonth: 12, threeMonth: 34, sixMonth: 59 },
   },
   {
     slug: "growth-marketing-playbook",
@@ -281,7 +281,7 @@ export const coursesData: Course[] = [
     longDescription:
       "Plan acquisition campaigns, optimize conversion funnels, run experiments, and track ROI with structured growth frameworks used by top startups.",
     skills: ["Performance Marketing", "Funnel Design", "A/B Testing", "Analytics"],
-    price: { oneMonth: 72, threeMonth: 185, sixMonth: 329 },
+    price: { oneMonth: 12, threeMonth: 34, sixMonth: 59 },
   },
   {
     slug: "system-design-for-frontend-engineers",
@@ -302,7 +302,7 @@ export const coursesData: Course[] = [
     longDescription:
       "Learn architecture decisions, state modeling, caching, rendering strategies, and performance trade-offs for complex frontend applications.",
     skills: ["Frontend Architecture", "Performance", "State Management", "Scalability"],
-    price: { oneMonth: 94, threeMonth: 245, sixMonth: 449 },
+    price: { oneMonth: 14, threeMonth: 39, sixMonth: 69 },
   },
   {
     slug: "ux-research-interview-lab",
@@ -323,7 +323,7 @@ export const coursesData: Course[] = [
     longDescription:
       "Design research plans, conduct high-quality interviews, synthesize findings, and create actionable reports to influence roadmap decisions.",
     skills: ["User Interviews", "Research Ops", "Insight Synthesis", "UX Strategy"],
-    price: { oneMonth: 68, threeMonth: 169, sixMonth: 299 },
+    price: { oneMonth: 12, threeMonth: 34, sixMonth: 59 },
   },
   {
     slug: "no-code-ai-automation",
@@ -344,7 +344,7 @@ export const coursesData: Course[] = [
     longDescription:
       "Build practical AI automations using popular no-code platforms, connect APIs, create agents, and deploy reusable productivity systems.",
     skills: ["No-Code", "AI Agents", "Automation", "API Integrations"],
-    price: { oneMonth: 17, threeMonth: 39, sixMonth: 69 },
+    price: { oneMonth: 9, threeMonth: 24, sixMonth: 39 },
   },
   {
     slug: "prompt-engineering-for-business",
@@ -380,7 +380,7 @@ export const coursesData: Course[] = [
     shortDescription: "Master Python libraries like Pandas, NumPy, and Scikit-Learn for data analysis.",
     longDescription: "A complete path from basic Python syntax to complex data modeling and visualization for data scientists.",
     skills: ["Python", "Pandas", "Scikit-Learn", "Data Viz"],
-    price: { oneMonth: 34, threeMonth: 89, sixMonth: 159 },
+    price: { oneMonth: 12, threeMonth: 34, sixMonth: 59 },
   },
   {
     slug: "digital-marketing-mastery",
@@ -398,7 +398,7 @@ export const coursesData: Course[] = [
     shortDescription: "Dominate SEO, Social Media, and Paid Ads in 2026.",
     longDescription: "Practical frameworks for growth marketing, funnel optimization, and scaling brands from scratch.",
     skills: ["SEO", "SMM", "Meta Ads", "Funnel Design"],
-    price: { oneMonth: 19, threeMonth: 49, sixMonth: 89 },
+    price: { oneMonth: 9, threeMonth: 24, sixMonth: 39 },
   },
   {
     slug: "product-management-elite",
@@ -416,7 +416,7 @@ export const coursesData: Course[] = [
     shortDescription: "Master product strategy, roadmap prioritization, and data-driven execution.",
     longDescription: "Learn the frameworks used by top FAANG product managers to build and ship world-class products.",
     skills: ["Strategy", "Roadmapping", "Agile", "Stakeholder Mgmt"],
-    price: { oneMonth: 39, threeMonth: 99, sixMonth: 179 },
+    price: { oneMonth: 12, threeMonth: 34, sixMonth: 59 },
   },
   // ── VIRTUAL COURSES (FOR SUBSCRIPTIONS) ───────────────────────────────────
   {

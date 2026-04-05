@@ -8,7 +8,7 @@ const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_B
 async function getCourse(slug: string) {
   try {
     const res = await fetch(`${BACKEND_URL}/courses/${slug}`, {
-      next: { revalidate: 3600 } // Cache for 1 hour
+      next: { revalidate: 0 } // Always fetch fresh prices
     });
     if (!res.ok) return null;
     const data = await res.json();

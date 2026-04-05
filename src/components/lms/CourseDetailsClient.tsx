@@ -68,15 +68,32 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
       return;
     }
 
-    if (course.isFree) {
-      if (!userId) {
-        router.push(`/auth/sign-in?redirect_url=/courses/${course.slug}`);
+    if (!userId) {
+      router.push(`/auth/sign-in?redirect_url=/courses/${course.slug}`);
+      return;
+    }
+
+    try {
+      setEnrolling(true);
+      const token = await getToken();
+
+      // Check for global membership one last time before showing modal
+      const checkRes = await fetch(`${BACKEND_URL}/enrollments/check/${course.slug}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "x-clerk-user-id": userId
+        }
+      });
+      const checkData = await checkRes.json();
+      
+      if (checkData.ok && checkData.enrolled) {
+        // User has access (likely via Plus Membership)
+        setIsEnrolled(true);
+        router.push(`/learn/${course.slug}`);
         return;
       }
 
-      try {
-        setEnrolling(true);
-        const token = await getToken();
+      if (course.isFree) {
         const res = await fetch(`${BACKEND_URL}/enrollments`, {
           method: "POST",
           headers: {
@@ -89,20 +106,18 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
 
         const data = await res.json();
         if (data.ok) {
-          // Success! Redirect to the learn page or show success
-          // For now, let's just refresh or redirect to learn
           router.push(`/learn/${course.slug}`);
         } else {
           alert(data.error || "Enrollment failed");
         }
-      } catch (err) {
-        console.error("Enrollment error:", err);
-        alert("Something went wrong during enrollment.");
-      } finally {
-        setEnrolling(false);
+      } else {
+        setIsEnrollModalOpen(true);
       }
-    } else {
-      setIsEnrollModalOpen(true);
+    } catch (err) {
+      console.error("Enrollment error:", err);
+      alert("Something went wrong during enrollment.");
+    } finally {
+      setEnrolling(false);
     }
   };
 

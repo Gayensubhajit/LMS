@@ -341,7 +341,7 @@ export default function Navbar() {
             <div ref={wrapperRef} className="w-full relative max-w-2xl">
               <form onSubmit={handleSubmit}>
                 <div
-                  className={`flex items-center rounded-full transition-all duration-300 overflow-hidden bg-white dark:bg-[#111827] border-2 shadow-sm ${searchFocused ? "border-blue-600 dark:border-blue-500 ring-4 ring-blue-500/10" : "border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20"}`}
+                  className={`flex items-center rounded-full transition-all duration-300 ease-in-out overflow-hidden bg-white dark:bg-[#111827] border shadow-sm ${searchFocused ? "border-2 border-blue-600 dark:border-blue-500 ring-4 ring-blue-500/10" : "border-slate-500/40 dark:border-white/15 hover:border-slate-300 dark:hover:border-white/20"}`}
                 >
                   <input
                     ref={inputRef}

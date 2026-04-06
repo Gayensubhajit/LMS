@@ -150,7 +150,7 @@ export default function MyCoursesPage() {
         // Surface a friendlier message for network errors
         setError(
           msg === "Failed to fetch"
-            ? "Cannot reach the backend server. Make sure it is running on port 4000."
+            ? "Cannot reach the backend server. Please check your internet connection or try again later."
             : msg || "Failed to load dashboard",
         );
       } finally {

@@ -202,10 +202,6 @@ enrollmentsRouter.get("/check/:slug", async (req, res) => {
     select: { status: true }
   });
 
-  if (directEnrollment?.status === EnrollmentStatus.ACTIVE) {
-    return res.status(200).json({ ok: true, enrolled: true });
-  }
-
   // 2. Check for global Plus Membership
   const plusMembership = await prisma.enrollment.findFirst({
     where: {
@@ -223,8 +219,6 @@ enrollmentsRouter.get("/check/:slug", async (req, res) => {
 
   return res.status(200).json({
     ok: true,
-    // 'enrolled' is true if THEY HAVE ACCESS (either direct or via plus)
-    // but the frontend will use isDirectEnrolled to decide between "Go to course" and "Enroll Now"
     enrolled: isActiveDirect || (isActivePlus && slug !== "plus-membership"),
     isDirectEnrolled: isActiveDirect,
     isPlusMember: isActivePlus,

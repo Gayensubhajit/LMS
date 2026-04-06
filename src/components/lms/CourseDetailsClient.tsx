@@ -59,12 +59,13 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
   const [openSectionIndex, setOpenSectionIndex] = useState<number | null>(0);
   const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
   const [enrolling, setEnrolling] = useState(false);
-  const [isEnrolled, setIsEnrolled] = useState(false);
-  const [isPlusMember, setIsPlusMember] = useState(false);
+  const [isDirectEnrolled, setIsDirectEnrolled] = useState(false); // enrolled in THIS course specifically
+  const [isPlusMember, setIsPlusMember] = useState(false);         // has global Plus membership
   const [checkingEnrollment, setCheckingEnrollment] = useState(true);
 
   const handleEnrollClick = async () => {
-    if (isEnrolled) {
+    // Already directly enrolled → go straight to course
+    if (isDirectEnrolled) {
       router.push(`/learn/${course.slug}`);
       return;
     }
@@ -76,35 +77,33 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
 
     try {
       setEnrolling(true);
-      const token = await getToken();
 
       if (isPlusMember) {
-        // Plus Member: Instant enrollment with visual 1s delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
+        // Plus Member: instant free enrollment, then redirect
         const data = await backendRequest<{ ok: boolean; error?: string }>("/enrollments", {
           method: "POST",
           clerkUserId: userId,
           body: { courseSlug: course.slug }
         });
- 
+
         if (data.ok) {
-          setIsEnrolled(true);
-          return;
+          setIsDirectEnrolled(true);
+          router.push(`/learn/${course.slug}`);
         } else {
           alert(data.error || "Enrollment failed");
-          return;
         }
+        return;
       }
- 
+
       if (course.isFree) {
         const data = await backendRequest<{ ok: boolean; error?: string }>("/enrollments", {
           method: "POST",
           clerkUserId: userId,
           body: { courseSlug: course.slug }
         });
- 
+
         if (data.ok) {
+          setIsDirectEnrolled(true);
           router.push(`/learn/${course.slug}`);
         } else {
           alert(data.error || "Enrollment failed");
@@ -144,32 +143,31 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
 
     const checkEnrollment = async () => {
       try {
-        const data = await backendRequest<{ ok: boolean; enrolled: boolean }>(`/enrollments/check/${course.slug}`, {
+        // 1. Check plus membership status
+        const plusData = await backendRequest<{ ok: boolean; enrolled: boolean; isPlusMember?: boolean }>("/enrollments/check/plus-membership", {
           clerkUserId: userId,
         });
-        if (data.ok) {
-          setIsEnrolled(data.enrolled);
-        }
- 
-        // Also check if they are a Plus Member for the 'Enroll Now' button logic
-        const plusData = await backendRequest<{ ok: boolean; enrolled: boolean }>("/enrollments/check/plus-membership", {
-          clerkUserId: userId,
-        });
-        
-        if (plusData.ok && plusData.enrolled) {
+        if (plusData.ok && (plusData.enrolled || plusData.isPlusMember)) {
           setIsPlusMember(true);
-        } else {
-          // Fallback check: look through all enrollments
-          const meData = await backendRequest<{ ok: boolean; items: any[] }>("/enrollments/me", {
-            clerkUserId: userId,
-          });
-          if (meData.ok) {
-            const hasPlus = meData.items?.some((i: any) => 
-              i.course.slug === "plus-membership" && 
-              (i.status === "ACTIVE" || i.status === "TRIALING")
-            );
-            if (hasPlus) setIsPlusMember(true);
-          }
+        }
+
+        // 2. Check direct enrollment in THIS specific course (separate from Plus)
+        // We call the backend but only treat it as "directly enrolled" if the user
+        // has a specific enrollment record, not just Plus membership coverage.
+        const meData = await backendRequest<{ ok: boolean; items: any[] }>("/enrollments/me", {
+          clerkUserId: userId,
+        });
+        if (meData.ok && meData.items) {
+          const directEnrollment = meData.items.find(
+            (i: any) => i.course.slug === course.slug && (i.status === "ACTIVE" || i.status === "TRIALING")
+          );
+          if (directEnrollment) setIsDirectEnrolled(true);
+
+          // Also check Plus from the list as a fallback
+          const hasPlus = meData.items.some(
+            (i: any) => i.course.slug === "plus-membership" && (i.status === "ACTIVE" || i.status === "TRIALING")
+          );
+          if (hasPlus) setIsPlusMember(true);
         }
       } catch (err) {
         console.error("Check enrollment error:", err);
@@ -427,7 +425,7 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
             >
               <div className="p-8">
                 {/* Price Display */}
-                {!isEnrolled && (
+                {!isDirectEnrolled && (
                   <div className="flex items-center justify-between mb-6">
                     <div>
                       <span className="text-4xl font-black text-slate-900 dark:text-white">{course.isFree ? "Free" : formatLocalPrice(course.price.oneMonth)}</span>
@@ -447,23 +445,31 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
                     disabled={enrolling || checkingEnrollment}
                     className="w-full bg-blue-600 text-white font-bold px-6 py-4 rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg shadow-blue-600/20 disabled:opacity-50 flex items-center justify-center gap-2 text-base"
                   >
-                    {enrolling ? (
+                  {enrolling ? (
                       <>
                         <Loader2 size={18} className="animate-spin" />
                         Enrolling...
                       </>
                     ) : checkingEnrollment ? (
                       "Checking..."
-                    ) : isEnrolled ? (
+                    ) : isDirectEnrolled ? (
                       "Go to course"
+                    ) : isPlusMember ? (
+                      "✦ Enroll Now (Plus)"
                     ) : (
                       course.isFree ? "Enroll for free" : "Enroll Now"
                     )}
                   </button>
-                  {isEnrolled && (
+                  {isDirectEnrolled && (
                     <div className="flex items-center justify-center gap-2 text-sm text-emerald-400 font-medium">
                       <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                       Already enrolled
+                    </div>
+                  )}
+                  {isPlusMember && !isDirectEnrolled && (
+                    <div className="flex items-center justify-center gap-2 text-sm text-violet-400 font-medium">
+                      <div className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
+                      Included in your Plus plan
                     </div>
                   )}
                 </div>

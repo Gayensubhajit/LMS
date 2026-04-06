@@ -195,12 +195,12 @@ enrollmentsRouter.get("/check/:slug", async (req, res) => {
     where: {
       userId: user.id,
       course: { slug },
-      status: EnrollmentStatus.ACTIVE,
       expiresAt: { gt: new Date() }
-    }
+    },
+    select: { status: true }
   });
 
-  if (directEnrollment) {
+  if (directEnrollment?.status === EnrollmentStatus.ACTIVE) {
     return res.status(200).json({ ok: true, enrolled: true });
   }
 
@@ -209,15 +209,19 @@ enrollmentsRouter.get("/check/:slug", async (req, res) => {
     where: {
       userId: user.id,
       course: { slug: "plus-membership" },
-      status: EnrollmentStatus.ACTIVE,
       expiresAt: { gt: new Date() }
-    }
+    },
+    select: { status: true }
   });
+
+  const isActivePlus = plusMembership?.status === EnrollmentStatus.ACTIVE;
+  const isPendingPlus = plusMembership?.status === EnrollmentStatus.PENDING;
 
   return res.status(200).json({
     ok: true,
-    enrolled: !!directEnrollment || (!!plusMembership && slug !== "plus-membership"),
-    isPlusMember: !!plusMembership
+    enrolled: isActivePlus && slug !== "plus-membership",
+    isPlusMember: isActivePlus,
+    isPendingPlus: isPendingPlus || (directEnrollment?.status === EnrollmentStatus.PENDING && slug === "plus-membership")
   });
 });
 

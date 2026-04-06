@@ -78,11 +78,7 @@ export default function PurchasesPage() {
           clerkUserId: user!.id,
         });
         if (payData.ok) {
-          // Filter out 'CREATED' (abandoned) payments
-          const filteredHistory = payData.items.filter(
-            (p: any) => p.status !== "CREATED",
-          );
-          setPaymentHistory(filteredHistory);
+          setPaymentHistory(payData.items || []);
         }
       } catch (e) {
         console.error("[PurchasesPage] Data fetch failed:", e);

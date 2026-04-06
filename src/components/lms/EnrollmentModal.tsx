@@ -29,6 +29,7 @@ export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentM
   const [selectedDuration, setSelectedDuration] = useState<Duration>("3month");
   const [enrolling, setEnrolling] = useState(false);
   const [isMember, setIsMember] = useState(false);
+  const [isPending, setIsPending] = useState(false);
   const [checkingMember, setCheckingMember] = useState(true);
  
   useEffect(() => {
@@ -39,24 +40,18 @@ export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentM
  
     const checkStatus = async () => {
       try {
-        const data = await backendRequest<{ ok: boolean; enrolled: boolean }>("/enrollments/check/plus-membership", {
+        const data = await backendRequest<{ 
+          ok: boolean; 
+          enrolled: boolean;
+          isPendingPlus?: boolean;
+          isPlusMember?: boolean;
+        }>("/enrollments/check/plus-membership", {
           clerkUserId: userId
         });
         
-        if (data.ok && data.enrolled) {
-          setIsMember(true);
-        } else {
-          // Robust check: check full enrollment list
-          const meData = await backendRequest<{ ok: boolean; items: any[] }>("/enrollments/me", {
-            clerkUserId: userId
-          });
-          if (meData.ok && meData.items) {
-            const hasPlus = meData.items.some((e: any) => 
-              e.course.slug === "plus-membership" && 
-              (e.status === "ACTIVE" || e.status === "TRIALING")
-            );
-            if (hasPlus) setIsMember(true);
-          }
+        if (data.ok) {
+          setIsMember(data.enrolled || !!data.isPlusMember);
+          setIsPending(!!data.isPendingPlus);
         }
       } catch (err) {
         console.error("Enrollment modal status check error:", err);
@@ -162,7 +157,20 @@ export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentM
 
         {/* Body */}
         <div className="px-7 py-6">
-          {isMember ? (
+          {isPending && !isMember ? (
+            <div className="text-center py-10 animate-pulse">
+              <div className="w-16 h-16 rounded-full bg-amber-500/10 flex items-center justify-center mx-auto mb-6 border border-amber-500/20">
+                <Loader2 className="text-amber-500 animate-spin" size={24} />
+              </div>
+              <p className="text-slate-900 dark:text-white font-black text-lg mb-2 uppercase tracking-tight">Verifying Payment</p>
+              <p className="text-slate-500 dark:text-gray-400 text-sm mb-2 leading-relaxed">
+                We've found your payment attempt. Confirmation takes a few seconds...
+              </p>
+              <div className="flex items-center justify-center gap-2 text-[10px] font-black text-amber-600 uppercase tracking-widest mt-4">
+                 Don't Refresh The Page
+              </div>
+            </div>
+          ) : isMember ? (
             <div className="text-center py-6">
               <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-6 border border-emerald-500/20 shadow-[0_0_20px_rgba(16,185,129,0.1)]">
                 <Sparkles className="text-emerald-500" size={24} />

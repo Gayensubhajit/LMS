@@ -23,6 +23,7 @@ import {
   ArrowLeft,
   Star,
   LayoutDashboard,
+  Loader2,
 } from "lucide-react";
 import { coursesData } from "@/lib/courses-data";
 import { useRouter, usePathname } from "next/navigation";
@@ -106,6 +107,8 @@ export default function Navbar() {
   const [userRole, setUserRole] = useState<string | null>(null);
   const [focusMobileSearch, setFocusMobileSearch] = useState(false);
   const [isMember, setIsMember] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -196,23 +199,22 @@ export default function Navbar() {
     // Check Plus membership for badge
     const checkMembership = async () => {
       try {
-        const res = await backendRequest<{ ok: boolean; enrolled: boolean }>("/enrollments/check/plus-membership", {
+        const res = await backendRequest<{ 
+          ok: boolean; 
+          enrolled: boolean;
+          isPendingPlus?: boolean;
+          isPlusMember?: boolean;
+        }>("/enrollments/check/plus-membership", {
           clerkUserId: user.id,
         });
         
-        if (res.ok && res.enrolled) {
-          setIsMember(true);
-        } else {
-          // Fallback: check full enrollment list to be robust
-          const meRes = await backendRequest<{ ok: boolean; items: any[] }>("/enrollments/me", {
-            clerkUserId: user.id,
-          });
-          if (meRes.ok && meRes.items) {
-            const hasPlus = meRes.items.some((e: any) => 
-              e.course.slug === "plus-membership" && 
-              (e.status === "ACTIVE" || e.status === "TRIALING")
-            );
-            setIsMember(hasPlus);
+        if (res.ok) {
+          setIsMember(res.enrolled || !!res.isPlusMember);
+          setIsPending(!!res.isPendingPlus);
+
+          // If pending, retry after 5 seconds (up to 5 times)
+          if (res.isPendingPlus && retryCount < 5) {
+            setTimeout(() => setRetryCount(prev => prev + 1), 5000);
           }
         }
       } catch (err) {
@@ -221,7 +223,7 @@ export default function Navbar() {
     };
 
     checkMembership();
-  }, [isLoaded, user?.id]);
+  }, [isLoaded, user?.id, retryCount]);
 
   const addRecentSearch = (term: string, slug?: string) => {
     const t = term.trim();
@@ -804,6 +806,11 @@ export default function Navbar() {
                         {isMember && (
                           <span className="bg-linear-to-r from-emerald-500 to-teal-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-lg shadow-emerald-500/20 border border-white/20 dark:border-white/10 shrink-0">
                             <Star size={10} fill="currentColor" /> PLUS
+                          </span>
+                        )}
+                        {isPending && !isMember && (
+                          <span className="bg-amber-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-lg shadow-amber-500/20 border border-white/20 shrink-0 animate-pulse">
+                            <Loader2 size={10} className="animate-spin" /> VERIFYING
                           </span>
                         )}
                       </div>

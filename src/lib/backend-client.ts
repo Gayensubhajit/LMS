@@ -1,11 +1,13 @@
-"use client";
+// No "use client" - this file is intentionally isomorphic (works on server AND client).
+// Server Components (like /courses/[slug]/page.tsx) import BACKEND_URL from here,
+// so adding "use client" would make BACKEND_URL undefined on the server and break all course pages.
 
 const IS_PROD = typeof window !== "undefined" && (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1");
 const DEFAULT_URL = "http://localhost:4000";
 
-export const BACKEND_URL = 
-  process.env.NEXT_PUBLIC_API_URL ?? 
-  process.env.NEXT_PUBLIC_BACKEND_URL ?? 
+export const BACKEND_URL =
+  process.env.NEXT_PUBLIC_API_URL ??
+  process.env.NEXT_PUBLIC_BACKEND_URL ??
   DEFAULT_URL;
 
 if (typeof window !== "undefined" && IS_PROD && BACKEND_URL === DEFAULT_URL) {
@@ -32,7 +34,7 @@ export async function backendRequest<T>(path: string, options: RequestOptions = 
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
-    keepalive: true, // Ensure request finishes if page navigates
+    keepalive: true,
   });
 
   const data = await response.json().catch(() => ({}));
@@ -45,4 +47,3 @@ export async function backendRequest<T>(path: string, options: RequestOptions = 
 
   return data as T;
 }
-

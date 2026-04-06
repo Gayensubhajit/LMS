@@ -35,7 +35,7 @@ import { useAuth } from "@clerk/nextjs";
 const syne = Syne({ subsets: ["latin"] });
 const montserrat = Montserrat({ subsets: ["latin"] });
 const bricolage = Bricolage_Grotesque({ subsets: ["latin"] });
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
+import { backendRequest } from "@/lib/backend-client";
 
 const words = [
   "Learning",
@@ -490,20 +490,17 @@ export default function HeroSection() {
     if (!isLoaded || !userId) return;
     const check = async () => {
       try {
-        const token = await getToken();
         // Check current slug status
-        const res = await fetch(`${BACKEND_URL}/enrollments/check/plus-membership`, {
-          headers: { Authorization: `Bearer ${token}`, "x-clerk-user-id": userId },
+        const data = await backendRequest<{ ok: boolean; enrolled: boolean }>("/enrollments/check/plus-membership", {
+          clerkUserId: userId,
         });
-        const data = await res.json();
         if (data.ok && data.enrolled) {
           setIsMember(true);
         } else {
           // Fallback to full enrollment list
-          const meRes = await fetch(`${BACKEND_URL}/enrollments/me`, {
-            headers: { Authorization: `Bearer ${token}`, "x-clerk-user-id": userId },
+          const meData = await backendRequest<{ ok: boolean; items: any[] }>("/enrollments/me", {
+            clerkUserId: userId,
           });
-          const meData = await meRes.json();
           if (meData.ok) {
             const hasPlus = meData.items?.some((i: any) => 
               i.course.slug === "plus-membership" && 

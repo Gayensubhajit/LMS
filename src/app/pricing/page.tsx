@@ -21,7 +21,6 @@ import { useAuth } from "@clerk/nextjs";
 import { backendRequest } from "@/lib/backend-client";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
 
 // ── Data ──────────────────────────────────────────────────────────────────
 

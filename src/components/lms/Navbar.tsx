@@ -21,6 +21,7 @@ import {
   Globe,
   Bell,
   ArrowLeft,
+  Star,
   LayoutDashboard,
 } from "lucide-react";
 import { coursesData } from "@/lib/courses-data";
@@ -193,11 +194,33 @@ export default function Navbar() {
       .catch(() => setUserRole(null));
 
     // Check Plus membership for badge
-    backendRequest<{ ok: boolean; enrolled: boolean }>("/enrollments/check/plus-membership", {
-      clerkUserId: user.id,
-    })
-      .then((res) => { if (res.ok && res.enrolled) setIsMember(true); })
-      .catch(() => {});
+    const checkMembership = async () => {
+      try {
+        const res = await backendRequest<{ ok: boolean; enrolled: boolean }>("/enrollments/check/plus-membership", {
+          clerkUserId: user.id,
+        });
+        
+        if (res.ok && res.enrolled) {
+          setIsMember(true);
+        } else {
+          // Fallback: check full enrollment list to be robust
+          const meRes = await backendRequest<{ ok: boolean; items: any[] }>("/enrollments/me", {
+            clerkUserId: user.id,
+          });
+          if (meRes.ok && meRes.items) {
+            const hasPlus = meRes.items.some((e: any) => 
+              e.course.slug === "plus-membership" && 
+              (e.status === "ACTIVE" || e.status === "TRIALING")
+            );
+            setIsMember(hasPlus);
+          }
+        }
+      } catch (err) {
+        console.error("[Navbar] Membership check failed:", err);
+      }
+    };
+
+    checkMembership();
   }, [isLoaded, user?.id]);
 
   const addRecentSearch = (term: string, slug?: string) => {
@@ -760,7 +783,7 @@ export default function Navbar() {
                     onClick={() => setMobilePanel("account")}
                     className="w-full flex items-center gap-4 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/5 p-4 rounded-3xl text-left transition-colors hover:bg-slate-100 dark:hover:bg-white/10 group"
                   >
-                    <div className="relative w-12 h-12 rounded-full bg-violet-600 border-2 border-violet-400/30 overflow-hidden shrink-0">
+                    <div className="relative w-12 h-12 rounded-full bg-linear-to-br from-indigo-600 to-violet-600 border-2 border-white/20 dark:border-white/10 overflow-hidden shrink-0 shadow-xl">
                       {avatarUrl ? (
                         <img
                           src={avatarUrl}
@@ -768,29 +791,29 @@ export default function Navbar() {
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <span className="w-full h-full flex items-center justify-center text-white font-bold text-sm">
+                        <span className="w-full h-full flex items-center justify-center text-white font-black text-sm">
                           {initials}
                         </span>
                       )}
-
-                      {/* Mobile Plus Badge */}
-                      {isMember && (
-                        <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-[8px] font-black px-1.5 py-0.5 rounded-md border-2 border-white dark:border-[#030712] text-white shadow-lg">
-                          PLUS
-                        </div>
-                      )}
                     </div>
-                    <div className="flex-1">
-                      <p className="text-slate-900 dark:text-white font-black truncate">
-                        {user.fullName}
-                      </p>
-                      <p className="text-slate-500 dark:text-gray-500 text-xs truncate">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-slate-900 dark:text-white font-black truncate">
+                          {user.fullName}
+                        </p>
+                        {isMember && (
+                          <span className="bg-linear-to-r from-emerald-500 to-teal-600 text-white text-[9px] font-black px-2 py-0.5 rounded-full flex items-center gap-1 shadow-lg shadow-emerald-500/20 border border-white/20 dark:border-white/10 shrink-0">
+                            <Star size={10} fill="currentColor" /> PLUS
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-slate-500 dark:text-gray-500 text-[10px] font-bold uppercase tracking-widest truncate">
                         View Account Details
                       </p>
                     </div>
                     <ChevronRight
                       size={18}
-                      className="text-slate-400 dark:text-gray-600 group-hover:text-slate-600 dark:group-hover:text-white"
+                      className="text-slate-400 dark:text-gray-600 group-hover:text-slate-600 dark:group-hover:text-white transition-all group-hover:translate-x-1"
                     />
                   </button>
                 )}

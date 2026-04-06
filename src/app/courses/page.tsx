@@ -24,10 +24,7 @@ import Navbar from "@/components/lms/Navbar";
 import { formatLocalPrice } from "@/lib/utils/currency";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_API_URL ??
-  process.env.NEXT_PUBLIC_BACKEND_URL ??
-  "http://localhost:4000";
+import { backendRequest } from "@/lib/backend-client";
 
 const categories = [
   "All",
@@ -106,10 +103,8 @@ function CoursesContent() {
 
   const fetchCourses = useCallback(async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}/courses`);
-      if (!res.ok) return;
-      const data = await res.json();
-      if (data.ok && data.items?.length) {
+      const data = await backendRequest<{ ok: boolean; items: any[] }>("/courses");
+      if (data && data.ok && data.items?.length) {
         const merged = data.items
           .map(mergeCourse)
           .filter((c: any): c is Course => c !== null);
@@ -127,20 +122,15 @@ function CoursesContent() {
       return;
     }
     try {
-      const token = await getToken();
-      const res = await fetch(`${BACKEND_URL}/enrollments/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "x-clerk-user-id": userId,
-        },
+      const data = await backendRequest<{ ok: boolean; items: any[] }>("/enrollments/me", {
+        clerkUserId: userId,
       });
-      const data = await res.json();
       if (data.ok && data.items) {
         const activeSlugs = data.items
-          .filter((e: any) => e.status === "ACTIVE")
+          .filter((e: any) => e.status === "ACTIVE" || e.status === "TRIALING")
           .map((e: any) => e.course.slug);
         setEnrolledSlugs(new Set(activeSlugs));
-
+ 
         // Check for Plus Membership (Active or Trialing)
         const hasPlus = data.items.some((e: any) => 
           e.course.slug === "plus-membership" && 

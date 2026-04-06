@@ -6,24 +6,23 @@ import { Check, X, Loader2, Sparkles } from "lucide-react";
 import type { Course } from "@/lib/courses-data";
 import { formatINR, convertToLocalCurrency } from "@/lib/utils/currency";
 import { useAuth } from "@clerk/nextjs";
+import { backendRequest } from "@/lib/backend-client";
 import { useRouter } from "next/navigation";
-
+ 
 interface EnrollmentModalProps {
   course: Course;
   isOpen: boolean;
   onClose: () => void;
 }
-
+ 
 type Duration = "1month" | "3month" | "6month";
-
+ 
 const durationConfig = [
   { value: "1month" as Duration, label: "1 month" },
   { value: "3month" as Duration, label: "3 months" },
   { value: "6month" as Duration, label: "6 months", hasFreeUpgrade: true },
 ];
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
-
+ 
 export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentModalProps) {
   const { getToken, userId, isLoaded } = useAuth();
   const router = useRouter();
@@ -31,25 +30,33 @@ export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentM
   const [enrolling, setEnrolling] = useState(false);
   const [isMember, setIsMember] = useState(false);
   const [checkingMember, setCheckingMember] = useState(true);
-
+ 
   useEffect(() => {
     if (!userId || !isOpen) {
       setCheckingMember(false);
       return;
     }
-
+ 
     const checkStatus = async () => {
       try {
-        const token = await getToken();
-        const res = await fetch(`${BACKEND_URL}/enrollments/check/plus-membership`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "x-clerk-user-id": userId
-          }
+        const data = await backendRequest<{ ok: boolean; enrolled: boolean }>("/enrollments/check/plus-membership", {
+          clerkUserId: userId
         });
-        const data = await res.json();
+        
         if (data.ok && data.enrolled) {
           setIsMember(true);
+        } else {
+          // Robust check: check full enrollment list
+          const meData = await backendRequest<{ ok: boolean; items: any[] }>("/enrollments/me", {
+            clerkUserId: userId
+          });
+          if (meData.ok && meData.items) {
+            const hasPlus = meData.items.some((e: any) => 
+              e.course.slug === "plus-membership" && 
+              (e.status === "ACTIVE" || e.status === "TRIALING")
+            );
+            if (hasPlus) setIsMember(true);
+          }
         }
       } catch (err) {
         console.error("Enrollment modal status check error:", err);
@@ -57,30 +64,24 @@ export default function EnrollmentModal({ course, isOpen, onClose }: EnrollmentM
         setCheckingMember(false);
       }
     };
-
+ 
     checkStatus();
   }, [userId, isOpen, getToken]);
-
+ 
   const handleEnrollFree = async () => {
     if (!userId) {
       router.push(`/auth/sign-in?redirect_url=/courses/${course.slug}`);
       return;
     }
-
+ 
     try {
       setEnrolling(true);
-      const token = await getToken();
-      const res = await fetch(`${BACKEND_URL}/enrollments`, {
+      const data = await backendRequest<{ ok: boolean; error?: string }>("/enrollments", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-          "x-clerk-user-id": userId
-        },
-        body: JSON.stringify({ courseSlug: course.slug })
+        clerkUserId: userId,
+        body: { courseSlug: course.slug }
       });
-
-      const data = await res.json();
+ 
       if (data.ok) {
         onClose();
         router.push(`/learn/${course.slug}`);

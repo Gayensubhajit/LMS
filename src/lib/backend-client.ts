@@ -1,6 +1,16 @@
 "use client";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
+const IS_PROD = typeof window !== "undefined" && (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1");
+const DEFAULT_URL = "http://localhost:4000";
+
+export const BACKEND_URL = 
+  process.env.NEXT_PUBLIC_API_URL ?? 
+  process.env.NEXT_PUBLIC_BACKEND_URL ?? 
+  DEFAULT_URL;
+
+if (typeof window !== "undefined" && IS_PROD && BACKEND_URL === DEFAULT_URL) {
+  console.warn("⚠️ [LMS] API is falling back to localhost in production! Ensure NEXT_PUBLIC_API_URL is set in Vercel.");
+}
 
 type RequestOptions = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";

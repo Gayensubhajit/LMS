@@ -5,35 +5,29 @@ import { motion, useInView } from "framer-motion";
 import { ArrowRight, Sparkles, Zap, Loader2 } from "lucide-react";
 import { Montserrat } from "next/font/google";
 import { useAuth } from "@clerk/nextjs";
+import { backendRequest } from "@/lib/backend-client";
 import Link from "next/link";
-
+ 
 const montserrat = Montserrat({ subsets: ["latin"] });
-
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
-
+ 
 export default function CTASection() {
   const { getToken, userId, isLoaded } = useAuth();
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-60px" });
   const [isMember, setIsMember] = useState(false);
   const [loading, setLoading] = useState(true);
-
+ 
   useEffect(() => {
     if (!isLoaded || !userId) {
       setLoading(false);
       return;
     }
-
+ 
     const checkMembership = async () => {
       try {
-        const token = await getToken();
-        const res = await fetch(`${BACKEND_URL}/enrollments/check/plus-membership`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "x-clerk-user-id": userId
-          }
+        const data = await backendRequest<{ ok: boolean; enrolled: boolean }>("/enrollments/check/plus-membership", {
+          clerkUserId: userId
         });
-        const data = await res.json();
         if (data.ok && data.enrolled) {
           setIsMember(true);
         }
@@ -43,7 +37,7 @@ export default function CTASection() {
         setLoading(false);
       }
     };
-
+ 
     checkMembership();
   }, [userId, isLoaded, getToken]);
 

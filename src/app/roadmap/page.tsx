@@ -22,6 +22,7 @@ import { Montserrat } from "next/font/google";
 import { useUser } from "@clerk/nextjs";
 import Navbar from "@/components/lms/Navbar";
 import Footer from "@/components/lms/Footer";
+import { backendRequest } from "@/lib/backend-client";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
@@ -482,12 +483,10 @@ export default function RoadmapPage() {
       return;
     }
     try {
-      const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
-      const res = await fetch(
-        `${BACKEND_URL}/dashboard/roadmap?userId=${user.id}`,
-      );
-      if (res.ok) {
-        const data: BackendRoadmapResponse = await res.json();
+      const data: BackendRoadmapResponse = await backendRequest("/dashboard/roadmap", {
+        clerkUserId: user.id
+      });
+      if (data) {
         const devPath = data["dev"];
         if (devPath && devPath.stages) {
           const map: Record<

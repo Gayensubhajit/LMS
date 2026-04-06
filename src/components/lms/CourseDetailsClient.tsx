@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import EnrollmentModal from "./EnrollmentModal";
 import { formatLocalPrice } from "@/lib/utils/currency";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
+import { backendRequest } from "@/lib/backend-client";
 
 type BackendLesson = {
   id: string;
@@ -82,17 +82,12 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
         // Plus Member: Instant enrollment with visual 1s delay
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        const res = await fetch(`${BACKEND_URL}/enrollments`, {
+        const data = await backendRequest<{ ok: boolean; error?: string }>("/enrollments", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            "x-clerk-user-id": userId
-          },
-          body: JSON.stringify({ courseSlug: course.slug })
+          clerkUserId: userId,
+          body: { courseSlug: course.slug }
         });
-
-        const data = await res.json();
+ 
         if (data.ok) {
           setIsEnrolled(true);
           return;
@@ -101,19 +96,14 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
           return;
         }
       }
-
+ 
       if (course.isFree) {
-        const res = await fetch(`${BACKEND_URL}/enrollments`, {
+        const data = await backendRequest<{ ok: boolean; error?: string }>("/enrollments", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-            "x-clerk-user-id": userId
-          },
-          body: JSON.stringify({ courseSlug: course.slug })
+          clerkUserId: userId,
+          body: { courseSlug: course.slug }
         });
-
-        const data = await res.json();
+ 
         if (data.ok) {
           router.push(`/learn/${course.slug}`);
         } else {
@@ -135,9 +125,8 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
   const [sectionsLoaded, setSectionsLoaded] = useState(false);
 
   useEffect(() => {
-    fetch(`${BACKEND_URL}/courses/${course.slug}/lessons`)
-      .then(r => r.json())
-      .then((data: { ok: boolean; item: BackendCourseWithLessons }) => {
+    backendRequest<{ ok: boolean; item: BackendCourseWithLessons }>(`/courses/${course.slug}/lessons`)
+      .then((data) => {
         if (data.ok && data.item?.sections?.length) {
           setSections(data.item.sections);
         }
@@ -155,41 +144,30 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
 
     const checkEnrollment = async () => {
       try {
-        const token = await getToken();
-        const res = await fetch(`${BACKEND_URL}/enrollments/check/${course.slug}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            // Backend auth expects this header to identify the Clerk user
-            "x-clerk-user-id": userId
-          }
+        const data = await backendRequest<{ ok: boolean; enrolled: boolean }>(`/enrollments/check/${course.slug}`, {
+          clerkUserId: userId,
         });
-        const data = await res.json();
         if (data.ok) {
           setIsEnrolled(data.enrolled);
         }
-
+ 
         // Also check if they are a Plus Member for the 'Enroll Now' button logic
-        const plusRes = await fetch(`${BACKEND_URL}/enrollments/check/plus-membership`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "x-clerk-user-id": userId
-          }
+        const plusData = await backendRequest<{ ok: boolean; enrolled: boolean }>("/enrollments/check/plus-membership", {
+          clerkUserId: userId,
         });
-        const plusData = await plusRes.json();
         
         if (plusData.ok && plusData.enrolled) {
           setIsPlusMember(true);
         } else {
           // Fallback check: look through all enrollments
-          const meRes = await fetch(`${BACKEND_URL}/enrollments/me`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "x-clerk-user-id": userId
-            }
+          const meData = await backendRequest<{ ok: boolean; items: any[] }>("/enrollments/me", {
+            clerkUserId: userId,
           });
-          const meData = await meRes.json();
           if (meData.ok) {
-            const hasPlus = meData.items?.some((i: any) => i.course.slug === "plus-membership" && i.status === "ACTIVE");
+            const hasPlus = meData.items?.some((i: any) => 
+              i.course.slug === "plus-membership" && 
+              (i.status === "ACTIVE" || i.status === "TRIALING")
+            );
             if (hasPlus) setIsPlusMember(true);
           }
         }

@@ -28,10 +28,7 @@ import {
 } from "lucide-react";
 import { dark } from "@clerk/ui/themes";
 
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_API_URL ??
-  process.env.NEXT_PUBLIC_BACKEND_URL ??
-  "http://localhost:4000";
+import { backendRequest, BACKEND_URL } from "@/lib/backend-client";
 
 export default function PurchasesPage() {
   const router = useRouter();
@@ -66,23 +63,20 @@ export default function PurchasesPage() {
         }
 
         // 2. Fetch enrollment status (for Subscriptions)
-        const token = await (window as any).Clerk?.session?.getToken(); // Hacky but works in client
-        const enrollRes = await fetch(`${BACKEND_URL}/enrollments/me`, {
-          headers: { "x-clerk-user-id": user!.id },
+        const enrollData = await backendRequest<{ ok: boolean; items: any[] }>("/enrollments/me", {
+          clerkUserId: user!.id,
         });
-        const enrollData = await enrollRes.json();
         if (enrollData.ok) {
           const plus = enrollData.items.find(
-            (e: any) => e.course.slug === "plus-membership",
+            (e: any) => e.course.slug === "plus-membership" && (e.status === "ACTIVE" || e.status === "TRIALING"),
           );
           if (plus) setSubscriptions([plus]);
         }
-
+ 
         // 3. Fetch payment history
-        const payRes = await fetch(`${BACKEND_URL}/payments/me`, {
-          headers: { "x-clerk-user-id": user!.id },
+        const payData = await backendRequest<{ ok: boolean; items: any[] }>("/payments/me", {
+          clerkUserId: user!.id,
         });
-        const payData = await payRes.json();
         if (payData.ok) {
           // Filter out 'CREATED' (abandoned) payments
           const filteredHistory = payData.items.filter(

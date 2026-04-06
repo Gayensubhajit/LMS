@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import CourseDetailsClient from "@/components/lms/CourseDetailsClient";
 import { mergeCourse, type BackendCourse } from "@/lib/course-utils";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
+import { BACKEND_URL } from "@/lib/backend-client";
 
 async function getCourse(slug: string) {
   try {

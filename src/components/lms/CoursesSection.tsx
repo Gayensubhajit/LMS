@@ -64,11 +64,7 @@ const badgeMap: Record<string, { label: string; color: string }> = {
   },
 };
 
-// Show all relevant courses from live database
-const BACKEND_URL =
-  process.env.NEXT_PUBLIC_API_URL ??
-  process.env.NEXT_PUBLIC_BACKEND_URL ??
-  "http://localhost:4000";
+import { backendRequest, BACKEND_URL } from "@/lib/backend-client";
 
 export default function CoursesSection() {
   const ref = useRef(null);
@@ -82,9 +78,7 @@ export default function CoursesSection() {
 
   const fetchCourses = useCallback(async () => {
     try {
-      const res = await fetch(`${BACKEND_URL}/courses`);
-      if (!res.ok) return;
-      const data = await res.json();
+      const data = await backendRequest<{ ok: boolean; items: any[] }>("/courses");
       if (data.ok && data.items?.length) {
         const merged = data.items.map(mergeCourse);
         if (merged.length > 0) setCourses(unionCourses(coursesData, merged));
@@ -98,20 +92,15 @@ export default function CoursesSection() {
       return;
     }
     try {
-      const token = await getToken();
-      const res = await fetch(`${BACKEND_URL}/enrollments/me`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "x-clerk-user-id": userId,
-        },
+      const data = await backendRequest<{ ok: boolean; items: any[] }>("/enrollments/me", {
+        clerkUserId: userId,
       });
-      const data = await res.json();
       if (data.ok && data.items) {
         const activeSlugs = data.items
           .filter((e: any) => e.status === "ACTIVE")
           .map((e: any) => e.course.slug);
         setEnrolledSlugs(new Set(activeSlugs));
-
+ 
         // Check if Plus Membership is in the list (including trials)
         const hasPlus = data.items.some((e: any) => 
           e.course.slug === "plus-membership" && 

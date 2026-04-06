@@ -216,14 +216,20 @@ enrollmentsRouter.get("/check/:slug", async (req, res) => {
     select: { status: true }
   });
 
+  const isActiveDirect = directEnrollment?.status === EnrollmentStatus.ACTIVE;
   const isActivePlus = plusMembership?.status === EnrollmentStatus.ACTIVE;
   const isPendingPlus = plusMembership?.status === EnrollmentStatus.PENDING;
+  const isPendingDirect = directEnrollment?.status === EnrollmentStatus.PENDING;
 
   return res.status(200).json({
     ok: true,
-    enrolled: isActivePlus && slug !== "plus-membership",
+    // 'enrolled' is true if THEY HAVE ACCESS (either direct or via plus)
+    // but the frontend will use isDirectEnrolled to decide between "Go to course" and "Enroll Now"
+    enrolled: isActiveDirect || (isActivePlus && slug !== "plus-membership"),
+    isDirectEnrolled: isActiveDirect,
     isPlusMember: isActivePlus,
-    isPendingPlus: isPendingPlus || (directEnrollment?.status === EnrollmentStatus.PENDING && slug === "plus-membership")
+    isPendingPlus: isPendingPlus || (isPendingDirect && slug === "plus-membership"),
+    isPendingDirect: isPendingDirect && slug !== "plus-membership"
   });
 });
 

@@ -143,31 +143,21 @@ export default function CourseDetailsClient({ course }: { course: Course }) {
 
     const checkEnrollment = async () => {
       try {
-        // 1. Check plus membership status
-        const plusData = await backendRequest<{ ok: boolean; enrolled: boolean; isPlusMember?: boolean }>("/enrollments/check/plus-membership", {
+        const data = await backendRequest<{ 
+          ok: boolean; 
+          enrolled: boolean; 
+          isDirectEnrolled: boolean;
+          isPlusMember: boolean;
+          isPendingDirect: boolean;
+          isPendingPlus: boolean;
+        }>(`/enrollments/check/${course.slug}`, {
           clerkUserId: userId,
         });
-        if (plusData.ok && (plusData.enrolled || plusData.isPlusMember)) {
-          setIsPlusMember(true);
-        }
 
-        // 2. Check direct enrollment in THIS specific course (separate from Plus)
-        // We call the backend but only treat it as "directly enrolled" if the user
-        // has a specific enrollment record, not just Plus membership coverage.
-        const meData = await backendRequest<{ ok: boolean; items: any[] }>("/enrollments/me", {
-          clerkUserId: userId,
-        });
-        if (meData.ok && meData.items) {
-          const directEnrollment = meData.items.find(
-            (i: any) => i.course.slug === course.slug && (i.status === "ACTIVE" || i.status === "TRIALING")
-          );
-          if (directEnrollment) setIsDirectEnrolled(true);
-
-          // Also check Plus from the list as a fallback
-          const hasPlus = meData.items.some(
-            (i: any) => i.course.slug === "plus-membership" && (i.status === "ACTIVE" || i.status === "TRIALING")
-          );
-          if (hasPlus) setIsPlusMember(true);
+        if (data.ok) {
+          setIsDirectEnrolled(data.isDirectEnrolled);
+          setIsPlusMember(data.isPlusMember);
+          // If they have Plus but NOT direct enrolled, it will now show "Enroll Now"
         }
       } catch (err) {
         console.error("Check enrollment error:", err);

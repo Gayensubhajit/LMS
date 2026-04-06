@@ -21,6 +21,8 @@ import { CourseLevel } from "@prisma/client";
 import { execSync } from "child_process";
 import { prisma } from "./lib/prisma.js";
 import { usersRouter } from "./routes/users.js";
+import { clerkMiddleware } from "@clerk/express";
+import { extractClerkUserId } from "./lib/clerkMiddleware.js";
 
 async function autoSeed() {
   console.log("Starting self-healing database sync...");
@@ -28,13 +30,16 @@ async function autoSeed() {
     // Force push the schema to ensure tables exist
     console.log("Executing prisma db push...");
     // Use a short timeout and pipe output to avoid hanging
-    execSync("npx prisma db push --accept-data-loss", { 
+    execSync("npx prisma db push --accept-data-loss", {
       stdio: "pipe",
-      timeout: 30000 // 30s timeout
+      timeout: 30000, // 30s timeout
     });
     console.log("Database schema synced successfully.");
   } catch (err) {
-    console.warn("Prisma db push encountered an issue (it might already be synced):", err instanceof Error ? err.message : String(err));
+    console.warn(
+      "Prisma db push encountered an issue (it might already be synced):",
+      err instanceof Error ? err.message : String(err),
+    );
   }
 
   try {
@@ -44,7 +49,10 @@ async function autoSeed() {
       return;
     }
   } catch (err) {
-    console.error("Could not count courses. Database might not be ready yet.", err);
+    console.error(
+      "Could not count courses. Database might not be ready yet.",
+      err,
+    );
     return;
   }
 
@@ -53,7 +61,8 @@ async function autoSeed() {
     {
       slug: "complete-ui-ux-design-bootcamp",
       title: "Complete UI/UX Design Bootcamp",
-      shortDescription: "Master the art of designing beautiful and functional user interfaces.",
+      shortDescription:
+        "Master the art of designing beautiful and functional user interfaces.",
       longDescription: "Compelling design bootcamp...",
       category: "Design",
       level: CourseLevel.BEGINNER,
@@ -67,7 +76,8 @@ async function autoSeed() {
     {
       slug: "react-nextjs-mastery-2026",
       title: "React & Next.js Mastery 2026",
-      shortDescription: "Build production-ready full-stack applications with the latest Next.js features.",
+      shortDescription:
+        "Build production-ready full-stack applications with the latest Next.js features.",
       longDescription: "Deep dive into App Router...",
       category: "Development",
       level: CourseLevel.INTERMEDIATE,
@@ -119,7 +129,7 @@ async function autoSeed() {
       sixMonthPrice: 0,
       isFree: true,
       isPublished: true,
-    }
+    },
   ];
 
   for (const c of courses) {
@@ -158,7 +168,12 @@ async function autoSeed() {
 
 const app = express();
 
-app.use(cors({ origin: env.CORS_ORIGIN.split(",") }));
+app.use(
+  cors({
+    origin: env.CORS_ORIGIN ? env.CORS_ORIGIN.split(",") : "*",
+    credentials: true,
+  }),
+);
 
 // Clerk requires raw body for Svix signature verification.
 app.post(
@@ -177,6 +192,8 @@ app.post(
   handleStripeWebhook,
 );
 
+app.use(clerkMiddleware());
+app.use(extractClerkUserId);
 app.use(express.json());
 
 app.get("/health", (_req, res) => {
@@ -200,13 +217,15 @@ app.use("/settings", settingsRouter);
 app.use("/admin", adminRouter);
 app.use("/reviews", reviewsRouter);
 
-autoSeed().then(() => {
-  app.listen(env.PORT, () => {
-    console.log(`Backend running on http://localhost:${env.PORT}`);
+autoSeed()
+  .then(() => {
+    app.listen(env.PORT, () => {
+      console.log(`Backend running on http://localhost:${env.PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Auto-seed failed, starting anyway:", err);
+    app.listen(env.PORT, () => {
+      console.log(`Backend running on http://localhost:${env.PORT}`);
+    });
   });
-}).catch(err => {
-  console.error("Auto-seed failed, starting anyway:", err);
-  app.listen(env.PORT, () => {
-    console.log(`Backend running on http://localhost:${env.PORT}`);
-  });
-});

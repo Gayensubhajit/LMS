@@ -188,7 +188,7 @@ enrollmentsRouter.get("/me", async (req, res) => {
 
 enrollmentsRouter.get("/check/:slug", async (req, res) => {
   const user = await getUserFromHeader(req, res);
-  if (!user) return res.status(401).json({ ok: false, enrolled: false });
+  if (!user) return;
 
   const { slug } = req.params;
 

@@ -177,12 +177,21 @@
 }
 /* pricing-page-comparison-table-scrollbar ends here */
 
+/* Custom scrollbar for admin user management */
+.user-table-custom-scrollbar::-webkit-scrollbar {
+  height: 10px;
+}
+
+.user-table-custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 /* Custom scrollbar - Dark mode (default) */
 ::-webkit-scrollbar {
-  width: 3px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #030712;
+  background: #243b4a;
 }
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
@@ -193,6 +202,9 @@
 }
 
 /* Light mode scrollbar */
+:root:not(.dark) ::-webkit-scrollbar {
+  height: 8px;
+}
 :root:not(.dark) ::-webkit-scrollbar-track {
   background: #f1f1f1;
 }

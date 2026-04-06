@@ -28,7 +28,10 @@ import {
 } from "lucide-react";
 import { dark } from "@clerk/ui/themes";
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:4000";
+const BACKEND_URL =
+  process.env.NEXT_PUBLIC_API_URL ??
+  process.env.NEXT_PUBLIC_BACKEND_URL ??
+  "http://localhost:4000";
 
 export default function PurchasesPage() {
   const router = useRouter();
@@ -65,25 +68,28 @@ export default function PurchasesPage() {
         // 2. Fetch enrollment status (for Subscriptions)
         const token = await (window as any).Clerk?.session?.getToken(); // Hacky but works in client
         const enrollRes = await fetch(`${BACKEND_URL}/enrollments/me`, {
-          headers: { "x-clerk-user-id": user!.id }
+          headers: { "x-clerk-user-id": user!.id },
         });
         const enrollData = await enrollRes.json();
         if (enrollData.ok) {
-          const plus = enrollData.items.find((e: any) => e.course.slug === "plus-membership");
+          const plus = enrollData.items.find(
+            (e: any) => e.course.slug === "plus-membership",
+          );
           if (plus) setSubscriptions([plus]);
         }
 
         // 3. Fetch payment history
         const payRes = await fetch(`${BACKEND_URL}/payments/me`, {
-          headers: { "x-clerk-user-id": user!.id }
+          headers: { "x-clerk-user-id": user!.id },
         });
         const payData = await payRes.json();
         if (payData.ok) {
           // Filter out 'CREATED' (abandoned) payments
-          const filteredHistory = payData.items.filter((p: any) => p.status !== "CREATED");
+          const filteredHistory = payData.items.filter(
+            (p: any) => p.status !== "CREATED",
+          );
           setPaymentHistory(filteredHistory);
         }
-
       } catch (e) {
         console.error("[PurchasesPage] Data fetch failed:", e);
       } finally {
@@ -99,11 +105,17 @@ export default function PurchasesPage() {
             const seen = new Set<string>();
             const deduped: any[] = [];
             terms.slice(0, 6).forEach((term) => {
-              const match = coursesData.find((c) => c.title.toLowerCase().includes(term.toLowerCase()));
+              const match = coursesData.find((c) =>
+                c.title.toLowerCase().includes(term.toLowerCase()),
+              );
               const key = match ? match.slug : `search:${term}`;
               if (!seen.has(key)) {
                 seen.add(key);
-                deduped.push({ type: match ? "course" : "search", course: match || null, term });
+                deduped.push({
+                  type: match ? "course" : "search",
+                  course: match || null,
+                  term,
+                });
               }
             });
             setHistoryItems(deduped.slice(0, 4));
@@ -205,7 +217,9 @@ export default function PurchasesPage() {
           <div className="flex items-center gap-2 text-[10px] sm:text-xs font-black text-slate-500 dark:text-gray-500 uppercase tracking-[0.2em] mb-4">
             <span>Stellar Hub</span>
             <ChevronRight size={10} />
-            <span className="text-blue-600 dark:text-violet-400">Acquisition Logs</span>
+            <span className="text-blue-600 dark:text-violet-400">
+              Acquisition Logs
+            </span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white tracking-tighter mb-8 leading-none uppercase">
@@ -264,32 +278,61 @@ export default function PurchasesPage() {
                 {subscriptions.length > 0 ? (
                   <div className="grid grid-cols-1 gap-6">
                     {subscriptions.map((sub) => (
-                      <div key={sub.id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
+                      <div
+                        key={sub.id}
+                        className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl"
+                      >
                         <div className="flex items-center gap-6 text-center md:text-left flex-col md:flex-row">
                           <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-3xl shrink-0 group-hover:scale-110 transition-transform">
                             🚀
                           </div>
-                          <div>
-                            <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">{sub.course.title}</h3>
+                          <div className="flex flex-col gap-4">
+                            <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                              {sub.course.title}
+                            </h3>
                             <p className="text-sm text-slate-500 font-bold uppercase tracking-widest">
-                              {sub.plan === "ONE_MONTH" ? "Monthly Plus Membership" : "Annual Premium Access"} • Active
+                              {sub.plan === "ONE_MONTH"
+                                ? "Monthly Plus Membership"
+                                : "Annual Premium Access"}{" "}
+                              • Active
                             </p>
                           </div>
                         </div>
-                        <div className="flex flex-col md:items-end gap-3">
-                          <div className="text-right flex flex-col md:items-end">
-                            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-1">Renews on</p>
-                            <p className="text-sm font-black text-slate-900 dark:text-white">{new Date(sub.expiresAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>
+                        <div className="flex flex-col md:flex-row md:items-end gap-3">
+                          <div className="text-right flex flex-col gap-3 my-auto md:flex-row md:items-end">
+                            <div className="flex gap-4 items-center mb-4 md:mb-0 md:mr-4">
+                              <p className="text-sm text-slate-400 font-bold uppercase tracking-widest mb-1">
+                                Renews on
+                              </p>
+                              <p className="text-sm pb-1 md:pb-1.5 font-black text-slate-900 dark:text-white">
+                                {new Date(sub.expiresAt).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    month: "long",
+                                    day: "numeric",
+                                    year: "numeric",
+                                  },
+                                )}
+                              </p>
+                            </div>
                           </div>
-                          <div className="flex gap-2">
-                            <button 
-                              onClick={() => alert("To manage your billing or update payment methods, please contact support@theaim.app")}
+                          <div className="flex gap-8 items-center justify-center">
+                            <button
+                              onClick={() =>
+                                alert(
+                                  "To manage your billing or update payment methods, please contact support@theaim.app",
+                                )
+                              }
                               className="px-4 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black text-[10px] font-black uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all shadow-lg"
                             >
                               Manage
                             </button>
-                            <button 
-                              onClick={() => alert("We're sorry to see you go! To cancel your subscription, please send a message to support@theaim.app mentioning your registered email.")}
+                            <button
+                              onClick={() =>
+                                alert(
+                                  "We're sorry to see you go! To cancel your subscription, please send a message to support@theaim.app mentioning your registered email.",
+                                )
+                              }
                               className="px-4 py-2 rounded-xl border border-red-200 dark:border-red-500/20 text-red-600 dark:text-red-500 text-[10px] font-black uppercase tracking-widest hover:bg-red-50 dark:hover:bg-red-500/10 active:scale-95 transition-all"
                             >
                               Cancel
@@ -305,9 +348,18 @@ export default function PurchasesPage() {
                       <div className="w-20 h-20 rounded-full bg-slate-50 dark:bg-white/5 border border-slate-200 flex items-center justify-center mb-8 shadow-inner">
                         <BookOpen size={32} className="text-blue-600" />
                       </div>
-                      <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase mb-4">No active subscriptions</h2>
-                      <p className="text-slate-500 text-sm mb-10 max-w-sm font-medium">Ready to unlock 7,000+ courses and certifications?</p>
-                      <button onClick={() => router.push("/pricing")} className="px-8 py-4 rounded-2xl bg-blue-600 text-white font-black text-xs uppercase tracking-widest shadow-xl">Upgrade to Plus</button>
+                      <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase mb-4">
+                        No active subscriptions
+                      </h2>
+                      <p className="text-slate-500 text-sm mb-10 max-w-sm font-medium">
+                        Ready to unlock 7,000+ courses and certifications?
+                      </p>
+                      <button
+                        onClick={() => router.push("/pricing")}
+                        className="px-8 py-4 rounded-2xl bg-blue-600 text-white font-black text-xs uppercase tracking-widest shadow-xl"
+                      >
+                        Upgrade to Plus
+                      </button>
                     </div>
                   </div>
                 )}
@@ -325,25 +377,42 @@ export default function PurchasesPage() {
                     <table className="w-full text-left">
                       <thead>
                         <tr className="border-b border-slate-100 dark:border-white/5">
-                          <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Description</th>
-                          <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status</th>
-                          <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Amount</th>
+                          <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Description
+                          </th>
+                          <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                            Status
+                          </th>
+                          <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">
+                            Amount
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-50 dark:divide-white/5">
                         {paymentHistory.map((pay) => (
-                          <tr key={pay.id} className="group hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors">
+                          <tr
+                            key={pay.id}
+                            className="group hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors"
+                          >
                             <td className="px-8 py-6">
-                              <p className="text-sm font-black text-slate-900 dark:text-white">{pay.enrollment.course.title}</p>
-                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">{new Date(pay.createdAt).toLocaleDateString()}</p>
+                              <p className="text-sm font-black text-slate-900 dark:text-white">
+                                {pay.enrollment.course.title}
+                              </p>
+                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+                                {new Date(pay.createdAt).toLocaleDateString()}
+                              </p>
                             </td>
                             <td className="px-8 py-6">
-                              <span className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${pay.status === "SUCCESS" ? "bg-emerald-500/10 text-emerald-500" : "bg-amber-500/10 text-amber-500"}`}>
+                              <span
+                                className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest ${pay.status === "SUCCESS" ? "bg-emerald-500/10 text-emerald-500" : "bg-amber-500/10 text-amber-500"}`}
+                              >
                                 {pay.status}
                               </span>
                             </td>
                             <td className="px-8 py-6 text-right">
-                              <p className="text-sm font-black text-slate-900 dark:text-white">₹{pay.amount.toLocaleString()}</p>
+                              <p className="text-sm font-black text-slate-900 dark:text-white">
+                                ₹{pay.amount.toLocaleString()}
+                              </p>
                             </td>
                           </tr>
                         ))}
@@ -356,9 +425,18 @@ export default function PurchasesPage() {
                       <div className="w-20 h-20 rounded-full bg-slate-50 dark:bg-white/5 border border-slate-200 flex items-center justify-center mb-8 shadow-inner">
                         <History size={32} className="text-indigo-500" />
                       </div>
-                      <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase mb-4">No payment logs found</h2>
-                      <p className="text-slate-500 text-sm mb-10 max-w-sm font-medium">Your interstellar traversal history is currently empty.</p>
-                      <button onClick={() => router.push("/courses")} className="px-8 py-4 rounded-2xl bg-indigo-600 text-white font-black text-xs uppercase tracking-widest shadow-xl">Browse Courses</button>
+                      <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase mb-4">
+                        No payment logs found
+                      </h2>
+                      <p className="text-slate-500 text-sm mb-10 max-w-sm font-medium">
+                        Your interstellar traversal history is currently empty.
+                      </p>
+                      <button
+                        onClick={() => router.push("/courses")}
+                        className="px-8 py-4 rounded-2xl bg-indigo-600 text-white font-black text-xs uppercase tracking-widest shadow-xl"
+                      >
+                        Browse Courses
+                      </button>
                     </div>
                   </div>
                 )}
@@ -423,7 +501,7 @@ export default function PurchasesPage() {
                             className="w-full h-full object-cover opacity-50 dark:opacity-30"
                           />
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent dark:from-slate-950 dark:via-slate-950/20 dark:to-transparent opacity-70" />
+                        <div className="absolute inset-0 bg-linear-to-t from-slate-900/40 via-transparent to-transparent dark:from-slate-950 dark:via-slate-950/20 dark:to-transparent opacity-70" />
                         <div className="absolute top-4 left-4">
                           <span className="px-3 py-1 rounded-full bg-blue-600/20 dark:bg-violet-500/20 backdrop-blur-md border border-blue-500/30 dark:border-violet-500/30 text-[8px] font-black text-blue-900 dark:text-white uppercase tracking-widest">
                             {course ? course.category : "Search"}
@@ -445,7 +523,9 @@ export default function PurchasesPage() {
                                 )
                                   .split(" ")
                                   .map((n: string) => n[0])
-                                  .join("")}&backgroundColor=${course ? "2563eb" : "7c3aed"}`}
+                                  .join(
+                                    "",
+                                  )}&backgroundColor=${course ? "2563eb" : "7c3aed"}`}
                                 alt={course?.instructor || item.term}
                                 className="w-full h-full object-cover"
                               />
@@ -477,7 +557,7 @@ export default function PurchasesPage() {
             variants={itemVariants}
             className="relative rounded-[3rem] p-px overflow-hidden shadow-2xl group cursor-pointer"
           >
-            <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-indigo-400 to-sky-400 dark:from-violet-600 dark:via-pink-400 dark:to-sky-400 animate-gradient-x opacity-30 group-hover:opacity-100 transition-opacity duration-700" />
+            <div className="absolute inset-0 bg-linear-to-r from-blue-600 via-indigo-400 to-sky-400 dark:from-violet-600 dark:via-pink-400 dark:to-sky-400 animate-gradient-x opacity-30 group-hover:opacity-100 transition-opacity duration-700" />
             <div className="relative bg-white/90 dark:bg-slate-950/90 backdrop-blur-3xl border border-slate-200 dark:border-transparent rounded-[2.95rem] p-10 sm:p-14 lg:p-20 flex flex-col lg:flex-row items-center gap-12 lg:gap-20 transition-colors duration-700">
               <div className="flex-1 text-center lg:text-left">
                 <div className="flex flex-col md:flex-row items-center justify-center lg:justify-start gap-4 mb-8">

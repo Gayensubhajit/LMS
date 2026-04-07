@@ -25,6 +25,7 @@ import { clerkMiddleware } from "@clerk/express";
 import { extractClerkUserId } from "./lib/clerkMiddleware.js";
 import { quizzesRouter } from "./routes/quizzes.js";
 import { notesRouter } from "./routes/notes.js";
+import { aiRouter } from "./routes/ai.js";
 
 async function autoSeed() {
   console.log("Starting self-healing database sync...");
@@ -220,6 +221,7 @@ app.use("/admin", adminRouter);
 app.use("/reviews", reviewsRouter);
 app.use("/quizzes", quizzesRouter);
 app.use("/notes", notesRouter);
+app.use("/ai", aiRouter);
 
 autoSeed()
   .then(() => {

@@ -29,6 +29,7 @@ import CertificateModal from "@/components/lms/CertificateModal";
 import QuizComponent from "@/components/lms/QuizComponent";
 import LessonNotes from "@/components/lms/LessonNotes";
 import CodePlayground from "@/components/lms/CodePlayground";
+import CourseAssistant from "@/components/lms/CourseAssistant";
 import { motion, AnimatePresence } from "framer-motion";
 import { dark } from "@clerk/themes";
 import confetti from "canvas-confetti";

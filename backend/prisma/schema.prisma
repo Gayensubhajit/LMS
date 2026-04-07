@@ -64,6 +64,8 @@ model User {
   certificates    Certificate[]
   quizAttempts    QuizAttempt[]
   lessonNotes     LessonNote[]
+  xp              Int          @default(0)
+  badges          UserBadge[]
 
   isNameVerified  Boolean      @default(false)
   verifiedName    String?
@@ -294,5 +296,28 @@ model Certificate {
 
   @@unique([userId, courseId])
   @@index([userId, issuedAt])
+}
+
+model Badge {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String
+  icon        String      // Lucide icon name or emoji
+  criteria    String      // e.g. "complete_course", "perf_quiz_10"
+  createdAt   DateTime    @default(now())
+
+  users       UserBadge[]
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  badgeId   String
+  earnedAt  DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
 }
 

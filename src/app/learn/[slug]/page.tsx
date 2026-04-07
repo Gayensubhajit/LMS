@@ -30,6 +30,8 @@ import QuizComponent from "@/components/lms/QuizComponent";
 import LessonNotes from "@/components/lms/LessonNotes";
 import CodePlayground from "@/components/lms/CodePlayground";
 import CourseAssistant from "@/components/lms/CourseAssistant";
+import XpBar from "@/components/lms/XpBar";
+import XpEarnedToast, { XpEarnedToastRef } from "@/components/lms/XpEarnedToast";
 import { motion, AnimatePresence } from "framer-motion";
 import { dark } from "@clerk/themes";
 import confetti from "canvas-confetti";
@@ -107,6 +109,7 @@ export default function LearnCoursePage() {
   const [certificateData, setCertificateData] = useState<any>(null);
   const [activeTime, setActiveTime] = useState(0);
   const playerRef = useRef<CourseVideoPlayerRef>(null);
+  const xpToastRef = useRef<XpEarnedToastRef>(null);
 
   // flat lesson list
   const lessonItems = useMemo(
@@ -221,11 +224,18 @@ export default function LearnCoursePage() {
     if (!activeLesson || !user?.id || markingDone) return;
     setMarkingDone(true);
     try {
-      await backendRequest(`/progress/lessons/${activeLesson.id}`, {
+      const res = await backendRequest<{
+        xpAwarded?: number;
+      }>(`/progress/lessons/${activeLesson.id}`, {
         method: "POST",
         clerkUserId: user.id,
         body: { isCompleted: true },
       });
+
+      if (res.xpAwarded) {
+        xpToastRef.current?.show(res.xpAwarded);
+      }
+
       setCompleted((prev) => {
         const n = new Set(prev);
         n.add(activeLesson.id);
@@ -587,6 +597,11 @@ export default function LearnCoursePage() {
                 );
               })}
             </div>
+
+            {/* Gamification Bar at bottom of sidebar */}
+            <div className="p-4 border-t border-slate-200 dark:border-violet-500/12 bg-white/50 dark:bg-white/2">
+               <XpBar />
+            </div>
           </aside>
         </>
 
@@ -883,7 +898,13 @@ export default function LearnCoursePage() {
                 {/* TAB: Quiz */}
                 {activeTab === "quiz" && (
                   <div className="pb-10 min-h-[400px]">
-                    <QuizComponent sectionId={activeLesson.sectionId} />
+                    <QuizComponent 
+                      sectionId={activeLesson.sectionId} 
+                      onSuccess={(xp, badge) => {
+                        if (badge) xpToastRef.current?.show(0, badge.name, "badge");
+                        else if (xp) xpToastRef.current?.show(xp);
+                      }}
+                    />
                   </div>
                 )}
 
@@ -1003,6 +1024,7 @@ export default function LearnCoursePage() {
           "CERT-" + Math.random().toString(36).substring(7).toUpperCase()
         }
       />
+      <XpEarnedToast ref={xpToastRef} />
     </main>
   );
 }

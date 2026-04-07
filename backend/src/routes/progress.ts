@@ -144,9 +144,19 @@ progressRouter.post("/lessons/:lessonId", async (req, res) => {
         update: {} // already exists, just keep it
       });
     }
+
+    // Award 50 XP for completing a lesson
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { xp: { increment: 50 } }
+    });
   }
 
-  return res.status(200).json({ ok: true, item: progress });
+  return res.status(200).json({ 
+    ok: true, 
+    item: progress,
+    xpAwarded: isCompleted ? 50 : 0
+  });
 });
 
 progressRouter.get("/courses/:slug", async (req, res) => {

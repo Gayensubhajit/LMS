@@ -40,9 +40,10 @@ interface Attempt {
 
 interface QuizComponentProps {
   sectionId: string;
+  onSuccess?: (xpAwarded: number, badgeEarned: any) => void;
 }
 
-export default function QuizComponent({ sectionId }: QuizComponentProps) {
+export default function QuizComponent({ sectionId, onSuccess }: QuizComponentProps) {
   const { user, isLoaded: userLoaded } = useUser();
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [lastAttempt, setLastAttempt] = useState<Attempt | null>(null);
@@ -108,6 +109,8 @@ export default function QuizComponent({ sectionId }: QuizComponentProps) {
           passed: boolean;
           results: any[];
           attempt: Attempt;
+          xpAwarded?: number;
+          badgeEarned?: any;
         }
       }>(`/quizzes/${quiz.id}/submit`, {
         method: "POST",
@@ -118,6 +121,9 @@ export default function QuizComponent({ sectionId }: QuizComponentProps) {
       if (data.ok) {
         setResult(data.item);
         setLastAttempt(data.item.attempt);
+        if (data.item.xpAwarded || data.item.badgeEarned) {
+          onSuccess?.(data.item.xpAwarded || 0, data.item.badgeEarned);
+        }
       }
     } catch (err: any) {
       setError(err.message || "Submission failed");

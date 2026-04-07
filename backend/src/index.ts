@@ -26,6 +26,7 @@ import { extractClerkUserId } from "./lib/clerkMiddleware.js";
 import { quizzesRouter } from "./routes/quizzes.js";
 import { notesRouter } from "./routes/notes.js";
 import { aiRouter } from "./routes/ai.js";
+import { gamificationRouter } from "./routes/gamification.js";
 
 async function autoSeed() {
   console.log("Starting self-healing database sync...");
@@ -164,6 +165,37 @@ async function autoSeed() {
       });
       console.log("Seeded a sample certificate for the first user.");
     }
+  }
+
+  // Seed default badges if they don't exist
+  console.log("Seeding default badges...");
+  const defaultBadges = [
+    {
+      name: "Quiz Master",
+      description: "Achieve a perfect 100% score on any quiz.",
+      icon: "Trophy",
+      criteria: "perf_quiz"
+    },
+    {
+      name: "Explorer",
+      description: "Complete your first lesson on the platform.",
+      icon: "Map",
+      criteria: "first_lesson"
+    },
+    {
+      name: "Note Taker",
+      description: "Create your first timestamped note.",
+      icon: "PenTool",
+      criteria: "first_note"
+    }
+  ];
+
+  for (const b of defaultBadges) {
+    await (prisma as any).badge.upsert({
+      where: { name: b.name },
+      update: {},
+      create: b
+    });
   }
 
   console.log("Auto-seed complete.");

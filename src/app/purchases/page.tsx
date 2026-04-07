@@ -67,9 +67,20 @@ export default function PurchasesPage() {
           clerkUserId: user!.id,
         });
         if (enrollData.ok) {
+          // For debugging purposes use console.log
+          // console.log("[DEBUG] All enrollments:", enrollData.items);
           const plus = enrollData.items.find(
-            (e: any) => e.course.slug === "plus-membership" && (e.status === "ACTIVE" || e.status === "TRIALING"),
+            (e: any) => {
+              // For debugging purposes use console.log
+              // console.log(`[DEBUG] Checking enrollment: slug=${e.course.slug}, status=${e.status}, expiresAt=${e.expiresAt}`);
+              const isPlus = e.course.slug === "plus-membership";
+              const isActive = e.status === "ACTIVE" || e.status === "PENDING" || e.status === "TRIALING";
+              const notExpired = new Date(e.expiresAt) > new Date();
+              return isPlus && isActive && notExpired;
+            }
           );
+          // For debugging purposes use console.log
+          // console.log("[DEBUG] Found plus subscription:", plus);
           if (plus) setSubscriptions([plus]);
         }
  

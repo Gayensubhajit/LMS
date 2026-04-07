@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useCallback, useMemo } from "react";
+import React, { useRef, useState, useEffect, useCallback, useMemo, forwardRef, useImperativeHandle } from "react";
 import { 
   Play, Pause, Volume2, VolumeX, RotateCcw, RotateCw, 
   Maximize, Minimize, Settings, ChevronRight, MonitorDot, 
@@ -22,7 +22,12 @@ interface Props {
   onTimeUpdate?: (seconds: number) => void;
 }
 
-const CourseVideoPlayer = ({ 
+export interface CourseVideoPlayerRef {
+  seekTo: (seconds: number) => void;
+  getCurrentTime: () => number;
+}
+
+const CourseVideoPlayer = forwardRef<CourseVideoPlayerRef, Props>(({ 
   url, 
   title, 
   startSec = 0, 
@@ -33,7 +38,7 @@ const CourseVideoPlayer = ({
   lessonId,
   initialTime = 0,
   onTimeUpdate
-}: Props) => {
+}, ref) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const playerContainerRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -62,6 +67,21 @@ const CourseVideoPlayer = ({
     return match && match[2].length === 11 ? match[2] : null;
   }, [url]);
 
+  const ytCommand = useCallback((func: string, args: unknown[] = []) => {
+    iframeRef.current?.contentWindow?.postMessage(
+      JSON.stringify({ event: "command", func, args }),
+      "*"
+    );
+  }, []);
+
+  // Expose methods to parent
+  useImperativeHandle(ref, () => ({
+    seekTo: (seconds: number) => {
+      ytCommand("seekTo", [startSec + seconds, true]);
+    },
+    getCurrentTime: () => currentTime
+  }));
+
   const embedUrl = useMemo(() => {
     if (!videoId) return "";
     const params = new URLSearchParams({
@@ -74,18 +94,11 @@ const CourseVideoPlayer = ({
       rel: "0",
       showinfo: "0",
       iv_load_policy: "3",
-      start: (pendingSeekRef.current ?? startSec).toString(), // Use pending seek as start if available
+      start: (pendingSeekRef.current ?? startSec).toString(), 
       cc_load_policy: captionsEnabled ? "1" : "0",
     });
     return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
   }, [videoId, startSec, captionsEnabled]);
-
-  const ytCommand = useCallback((func: string, args: unknown[] = []) => {
-    iframeRef.current?.contentWindow?.postMessage(
-      JSON.stringify({ event: "command", func, args }),
-      "*"
-    );
-  }, []);
 
   // Activity tracking
   const activityTimerRef = useRef<NodeJS.Timeout>(null);
@@ -138,7 +151,6 @@ const CourseVideoPlayer = ({
             if (data.info.playerState === 0) handleSliceEnd();
           }
         }
-        // When video is ready, clear pending seek
         if (data.event === "onReady") {
           pendingSeekRef.current = null;
         }
@@ -160,12 +172,11 @@ const CourseVideoPlayer = ({
     if (!isPlaying || !lessonId || !onTimeUpdate) return;
 
     const syncInterval = setInterval(() => {
-      // Only sync if time has moved significantly (e.g. > 5s)
       if (Math.abs(currentTime - lastSyncTimeRef.current) >= 10) {
         onTimeUpdate(Math.floor(currentTime));
         lastSyncTimeRef.current = currentTime;
       }
-    }, 10000); // Check every 10s
+    }, 10000);
 
     return () => clearInterval(syncInterval);
   }, [isPlaying, lessonId, currentTime, onTimeUpdate]);
@@ -180,7 +191,6 @@ const CourseVideoPlayer = ({
   }, [initialTime, duration, startSec, ytCommand]);
 
   useEffect(() => {
-    // Reset resume flag when lesson changes
     hasResumedRef.current = false;
     lastSyncTimeRef.current = 0;
   }, [lessonId]);
@@ -252,7 +262,6 @@ const CourseVideoPlayer = ({
   };
 
   const toggleCaptions = () => {
-    // Smart Seek: jump back to current time after reload
     pendingSeekRef.current = Math.floor(currentTime + startSec);
     setCaptionsEnabled(!captionsEnabled);
     resetActivityTimer();
@@ -274,7 +283,6 @@ const CourseVideoPlayer = ({
         layout
         drag={isPipMode}
         dragMomentum={false}
-        // Reset position when PiP is toggled off
         animate={isPipMode ? {} : { x: 0, y: 0 }}
         onMouseMove={resetActivityTimer}
         onMouseEnter={resetActivityTimer}
@@ -288,7 +296,6 @@ const CourseVideoPlayer = ({
           ${!showCursor && isFullscreen ? "!cursor-none" : ""}
         `}
       >
-        {/* Next Up Overlay */}
         <AnimatePresence>
           {showNextUp && !isPipMode && (
             <motion.div
@@ -314,7 +321,6 @@ const CourseVideoPlayer = ({
           )}
         </AnimatePresence>
 
-        {/* PiP Controls */}
         {isPipMode && (
           <div className="absolute top-2 right-2 z-[110] flex gap-2 opacity-0 group-hover/player:opacity-100 transition-opacity">
             <button onClick={togglePipMode} className="p-2 bg-black/60 rounded-full text-white backdrop-blur-md hover:bg-violet-600/80"><Maximize size={16} /></button>
@@ -330,14 +336,8 @@ const CourseVideoPlayer = ({
           allow="autoplay; encrypted-media"
         />
 
-        {/* CLICK OVERLAY */}
-        <div 
-          className={`absolute inset-0 z-10 cursor-pointer ${!showCursor && isFullscreen ? "!cursor-none" : ""}`} 
-          onClick={togglePlay} 
-          onMouseMove={resetActivityTimer} 
-        />
+        <div className={`absolute inset-0 z-10 cursor-pointer ${!showCursor && isFullscreen ? "!cursor-none" : ""}`} onClick={togglePlay} onMouseMove={resetActivityTimer} />
 
-        {/* CONTROLS */}
         <div className={`
           absolute inset-0 bg-gradient-to-t from-black/95 via-transparent to-transparent 
           transition-opacity duration-300 z-20 pointer-events-none flex flex-col justify-end
@@ -346,7 +346,6 @@ const CourseVideoPlayer = ({
           ${!showCursor && isFullscreen ? "hidden" : ""}
         `}>
           <div className="p-3 sm:p-6 pointer-events-auto">
-            {/* Progress */}
             <div className={`relative h-1 w-full bg-white/10 rounded-full mb-4 sm:mb-6 group/progress cursor-pointer overflow-hidden ${isPipMode ? 'mb-2 h-0.5' : ''}`} onClick={handleSeek}>
               <div className="absolute top-0 left-0 h-full bg-violet-600 rounded-full" style={{ width: `${duration > 0 ? (currentTime / duration) * 100 : 0}%` }} />
             </div>
@@ -411,6 +410,8 @@ const CourseVideoPlayer = ({
       )}
     </>
   );
-};
+});
+
+CourseVideoPlayer.displayName = "CourseVideoPlayer";
 
 export default CourseVideoPlayer;

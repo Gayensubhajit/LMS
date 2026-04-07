@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { SignIn, useUser } from "@clerk/nextjs";
 // Removed static import
@@ -24,8 +24,11 @@ import {
   HelpCircle,
   ArrowUpRight,
 } from "lucide-react";
-import CourseVideoPlayer from "@/components/lms/CourseVideoPlayer";
+import CourseVideoPlayer, { CourseVideoPlayerRef } from "@/components/lms/CourseVideoPlayer";
 import CertificateModal from "@/components/lms/CertificateModal";
+import QuizComponent from "@/components/lms/QuizComponent";
+import LessonNotes from "@/components/lms/LessonNotes";
+import CodePlayground from "@/components/lms/CodePlayground";
 import { motion, AnimatePresence } from "framer-motion";
 import { dark } from "@clerk/themes";
 import confetti from "canvas-confetti";
@@ -63,7 +66,7 @@ type BackendSection = {
   lessons: BackendLesson[];
 };
 
-type Tab = "transcript" | "notes" | "downloads";
+type Tab = "transcript" | "notes" | "downloads" | "quiz" | "lab";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 const FALLBACK_VIDEO =
@@ -101,6 +104,8 @@ export default function LearnCoursePage() {
   const [coachInput, setCoachInput] = useState("");
   const [showCertModal, setShowCertModal] = useState(false);
   const [certificateData, setCertificateData] = useState<any>(null);
+  const [activeTime, setActiveTime] = useState(0);
+  const playerRef = useRef<CourseVideoPlayerRef>(null);
 
   // flat lesson list
   const lessonItems = useMemo(
@@ -248,6 +253,7 @@ export default function LearnCoursePage() {
   };
 
   const handleProgressSync = async (seconds: number) => {
+    setActiveTime(seconds);
     if (!activeLessonId || !user?.id) return;
     try {
       await backendRequest(`/progress/lessons/${activeLessonId}/watch`, {
@@ -597,6 +603,7 @@ export default function LearnCoursePage() {
                       className="overflow-hidden rounded-xl shadow-[0_8px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.6)] border border-slate-200 dark:border-violet-500/20 transition-all duration-700"
                     >
                       <CourseVideoPlayer
+                        ref={playerRef}
                         url={activeLesson.videoUrl ?? FALLBACK_VIDEO}
                         title={activeLesson.title}
                         lessonId={activeLesson.id}
@@ -786,6 +793,16 @@ export default function LearnCoursePage() {
                           icon: <NotebookPen size={13} />,
                         },
                         {
+                          id: "quiz",
+                          label: "Quiz",
+                          icon: <HelpCircle size={13} />,
+                        },
+                        {
+                          id: "lab",
+                          label: "Lab",
+                          icon: <Sparkles size={13} />,
+                        },
+                        {
                           id: "downloads",
                           label: "Downloads",
                           icon: <Download size={13} />,
@@ -854,29 +871,25 @@ export default function LearnCoursePage() {
                 {/* TAB: Notes */}
                 {activeTab === "notes" && (
                   <div className="pb-10">
-                    <textarea
-                      value={userNote}
-                      onChange={(e) => setUserNote(e.target.value)}
-                      placeholder="Write your personal notes for this lesson…"
-                      rows={8}
-                      className="w-full text-sm bg-white dark:bg-[#0c0c19]/80 border border-slate-200 dark:border-violet-500/20 text-slate-900 dark:text-gray-200 rounded-xl px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500/20 dark:focus:ring-violet-500/20 transition-all placeholder-slate-400 dark:placeholder-gray-700 shadow-inner"
+                    <LessonNotes 
+                      lessonId={activeLesson.id} 
+                      currentTime={activeTime} 
+                      onSeek={(s) => playerRef.current?.seekTo(s)}
                     />
-                    <div className="flex items-center justify-between mt-3">
-                      <p className="text-xs text-slate-500 dark:text-gray-600">
-                        Notes are local to this session.
-                      </p>
-                      <button
-                        onClick={saveNote}
-                        className="px-4 py-2 rounded-lg text-xs font-bold text-white transition-all shadow-sm"
-                        style={{
-                          background: noteSaved
-                            ? "rgba(124,58,237,0.3)"
-                            : "linear-gradient(135deg,#2563eb,#7c3aed)",
-                        }}
-                      >
-                        {noteSaved ? "✓ Saved!" : "Save Note"}
-                      </button>
-                    </div>
+                  </div>
+                )}
+
+                {/* TAB: Quiz */}
+                {activeTab === "quiz" && (
+                  <div className="pb-10 min-h-[400px]">
+                    <QuizComponent sectionId={activeLesson.sectionId} />
+                  </div>
+                )}
+
+                {/* TAB: Lab */}
+                {activeTab === "lab" && (
+                  <div className="pb-10 min-h-[500px]">
+                    <CodePlayground />
                   </div>
                 )}
 

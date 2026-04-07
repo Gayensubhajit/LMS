@@ -21,6 +21,8 @@ import { CourseLevel } from "@prisma/client";
 import { execSync } from "child_process";
 import { prisma } from "./lib/prisma.js";
 import { usersRouter } from "./routes/users.js";
+import { quizzesRouter } from "./routes/quizzes.js";
+import { notesRouter } from "./routes/notes.js";
 
 async function autoSeed() {
   console.log("Starting self-healing database sync...");
@@ -199,6 +201,8 @@ app.use("/accomplishments", accomplishmentsRouter);
 app.use("/settings", settingsRouter);
 app.use("/admin", adminRouter);
 app.use("/reviews", reviewsRouter);
+app.use("/quizzes", quizzesRouter);
+app.use("/notes", notesRouter);
 
 autoSeed().then(() => {
   app.listen(env.PORT, () => {

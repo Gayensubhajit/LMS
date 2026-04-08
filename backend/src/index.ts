@@ -254,6 +254,7 @@ app.use("/reviews", reviewsRouter);
 app.use("/quizzes", quizzesRouter);
 app.use("/notes", notesRouter);
 app.use("/ai", aiRouter);
+app.use("/gamification", gamificationRouter);
 
 autoSeed()
   .then(() => {

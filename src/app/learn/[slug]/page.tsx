@@ -100,6 +100,22 @@ export default function LearnCoursePage() {
   const [markingDone, setMarkingDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<Tab>("transcript");
+
+  // Premium Success Indicator Component
+  const SuccessIndicator = ({ isActive }: { isActive?: boolean }) => (
+    <motion.div
+      initial={{ scale: 0.5, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      className="relative flex items-center justify-center"
+    >
+       <div className="absolute inset-0 bg-emerald-500/40 dark:bg-emerald-400/30 blur-[4px] rounded-full scale-110" />
+       <div className="relative w-3.5 h-3.5 rounded-full bg-gradient-to-br from-emerald-400 to-emerald-600 dark:from-emerald-300 dark:to-emerald-500 flex items-center justify-center shadow-[0_0_8px_rgba(16,185,129,0.5)]">
+          <CheckCircle2 size={10} className="text-white" strokeWidth={3} />
+       </div>
+    </motion.div>
+  );
+
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
   const [userNote, setUserNote] = useState("");
   const [noteSaved, setNoteSaved] = useState(false);
@@ -110,6 +126,8 @@ export default function LearnCoursePage() {
   const [activeTime, setActiveTime] = useState(0);
   const playerRef = useRef<CourseVideoPlayerRef>(null);
   const xpToastRef = useRef<XpEarnedToastRef>(null);
+  const transcriptScrollRef = useRef<HTMLDivElement>(null);
+  const activeLineRef = useRef<HTMLDivElement>(null);
 
   // flat lesson list
   const lessonItems = useMemo(
@@ -123,6 +141,25 @@ export default function LearnCoursePage() {
       ),
     [backendSections],
   );
+
+  const [isUserScrolling, setIsUserScrolling] = useState(false);
+  const scrollTimeoutRef = useRef<any>(null);
+
+  const handleManualScroll = () => {
+    setIsUserScrolling(true);
+    if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+    scrollTimeoutRef.current = setTimeout(() => setIsUserScrolling(false), 3000);
+  };
+
+  // Auto-scroll transcript (Coursera style: only if user is not manually navigating)
+  useEffect(() => {
+    if (!isUserScrolling && activeTab === "transcript" && activeLineRef.current && transcriptScrollRef.current) {
+      activeLineRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+      });
+    }
+  }, [activeTime, activeTab, isUserScrolling]); 
 
   // ── Data fetching ─────────────────────────────────────────────────────────
   useEffect(() => {
@@ -158,10 +195,11 @@ export default function LearnCoursePage() {
 
         const progressRes = await backendRequest<{
           ok: true;
-          item: { progressPercent: number; hasActiveEnrollment: boolean };
+          item: { progressPercent: number; hasActiveEnrollment: boolean; completedLessonIds: string[] };
         }>(`/progress/courses/${slug}`, { clerkUserId: user.id });
         setProgressPercent(progressRes.item.progressPercent);
         setHasEnrollment(progressRes.item.hasActiveEnrollment);
+        setCompleted(new Set(progressRes.item.completedLessonIds || []));
 
         const nextRes = await backendRequest<{
           ok: true;
@@ -333,9 +371,28 @@ export default function LearnCoursePage() {
   const currentIdx = lessonItems.findIndex((l) => l.id === activeLessonId);
   const totalLessons = lessonItems.length;
   const nextLesson = lessonItems[currentIdx + 1];
+
+  // Helper to convert MM:SS to seconds
+  const timeToSeconds = (timeStr: string) => {
+    if (!timeStr) return 0;
+    const parts = timeStr.split(":").map(Number);
+    if (parts.length === 2) return parts[0] * 60 + parts[1];
+    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    return 0;
+  };
+
   const transcript = activeLesson?.content?.transcript ?? [];
   const resources = activeLesson?.content?.resources ?? [];
   const lessonNote = activeLesson?.content?.notes ?? "";
+
+  const activeTranscriptIndex = useMemo(() => {
+    return transcript.findIndex((entry, i) => {
+      const nextEntry = transcript[i + 1];
+      const entrySec = timeToSeconds(entry.time);
+      const nextSec = nextEntry ? timeToSeconds(nextEntry.time) : Infinity;
+      return activeTime >= entrySec && activeTime < nextSec;
+    });
+  }, [transcript, activeTime]);
 
   // ── Loading UI ────────────────────────────────────────────────────────────
   if (!isLoaded || loading) {
@@ -455,7 +512,7 @@ export default function LearnCoursePage() {
 
           <aside
             className={`
-              w-80 shrink-0 flex flex-col overflow-hidden transition-transform duration-300
+              w-80 h-full shrink-0 flex flex-col overflow-hidden transition-transform duration-300
               fixed inset-y-14 left-0 z-40 lg:relative lg:inset-auto lg:translate-x-0
               bg-slate-50 dark:bg-[#0a0a14] border-r border-slate-200 dark:border-violet-500/15
               ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
@@ -534,7 +591,9 @@ export default function LearnCoursePage() {
                                 className={`w-full text-left px-4 py-2.5 flex items-start gap-3 transition-all duration-150 border-l-2 ${
                                   isActive
                                     ? "bg-blue-50 dark:bg-violet-500/10 border-blue-600 dark:border-violet-500"
-                                    : "border-transparent hover:bg-slate-200/30 dark:hover:bg-white/4 hover:border-slate-300 dark:hover:border-violet-500/30"
+                                    : isDone
+                                      ? "bg-emerald-500/5 dark:bg-emerald-400/3 border-emerald-500/20"
+                                      : "border-transparent hover:bg-slate-200/30 dark:hover:bg-white/4 hover:border-slate-300 dark:hover:border-violet-500/30"
                                 } ${isLocked ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}`}
                               >
                                 {/* Icon */}
@@ -542,12 +601,7 @@ export default function LearnCoursePage() {
                                   {isLocked ? (
                                     <Lock size={12} className="text-slate-400 dark:text-gray-600" />
                                   ) : isDone ? (
-                                    <CheckCircle2
-                                      size={12}
-                                      className="text-emerald-500 dark:text-violet-400"
-                                      fill={isDone ? "currentColor" : "transparent"}
-                                      strokeWidth={isDone ? 2 : 1}
-                                    />
+                                    <SuccessIndicator isActive={isActive} />
                                   ) : isActive ? (
                                     <PlayCircle
                                       size={12}
@@ -568,7 +622,7 @@ export default function LearnCoursePage() {
                                       isActive
                                         ? "text-slate-900 dark:text-white font-bold"
                                         : isDone
-                                          ? "text-slate-500 dark:text-gray-400"
+                                          ? "text-slate-600 dark:text-gray-300 font-medium"
                                           : "text-slate-600 dark:text-gray-400 font-medium"
                                     }`}
                                   >
@@ -844,32 +898,65 @@ export default function LearnCoursePage() {
                   </div>
                 </div>
 
-                {/* TAB: Transcript */}
+                {/* TAB: Transcript — High-Fidelity Dual Column Layout */}
                 {activeTab === "transcript" && (
-                  <div className="space-y-3 pb-10">
+                  <div 
+                    ref={transcriptScrollRef}
+                    onWheel={handleManualScroll}
+                    onTouchMove={handleManualScroll}
+                    className="pb-10 max-h-[600px] overflow-y-auto no-scrollbar scroll-smooth pr-2"
+                  >
                     {transcript.length > 0 ? (
-                      transcript.map((entry, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, x: -6 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.04 }}
-                          className="flex gap-4 group cursor-pointer"
-                        >
-                          <span
-                            className="text-xs font-mono shrink-0 mt-0.5 px-2 py-0.5 rounded font-bold transition-colors bg-blue-50/80 dark:bg-violet-500/10 text-blue-600 dark:text-violet-400"
-                            style={{
-                              minWidth: "3.5rem",
-                              textAlign: "center",
-                            }}
-                          >
-                            {entry.time}
-                          </span>
-                          <p className="text-sm text-slate-600 dark:text-gray-300 leading-relaxed group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                            {entry.text}
-                          </p>
-                        </motion.div>
-                      ))
+                      <div className="space-y-1">
+                        {transcript.map((entry, i) => {
+                          const isActive = i === activeTranscriptIndex;
+                          return (
+                            <motion.div
+                              key={i}
+                              ref={isActive ? activeLineRef : null}
+                              initial={false}
+                              animate={{ 
+                                backgroundColor: isActive ? "rgba(59, 130, 246, 0.05)" : "transparent",
+                                x: isActive ? 4 : 0
+                              }}
+                              onClick={() => {
+                                const sec = timeToSeconds(entry.time);
+                                playerRef.current?.seekTo(sec);
+                                setIsUserScrolling(false);
+                              }}
+                              className={`flex gap-6 p-3 rounded-xl cursor-pointer transition-all duration-300 group ${
+                                isActive 
+                                  ? "z-10 relative shadow-[inset_0_-1px_0_0_rgba(37,99,235,0.4)] dark:shadow-[inset_0_-1px_0_0_rgba(139,92,246,0.6)]" 
+                                  : "hover:bg-slate-50 dark:hover:bg-white/2"
+                              }`}
+                            >
+                              {/* TIMESTAMP COLUMN */}
+                              <div className={`w-14 shrink-0 text-xs font-black font-mono tracking-tighter transition-colors duration-300 ${
+                                isActive 
+                                  ? "text-blue-600 dark:text-violet-400" 
+                                  : "text-slate-400 dark:text-gray-600 group-hover:text-slate-600 dark:group-hover:text-gray-400"
+                              }`}>
+                                {entry.time}
+                              </div>
+
+                              {/* TEXT CONTENT COLUMN */}
+                              <div className={`flex-1 text-[15px] leading-[1.6] transition-all duration-300 ${
+                                isActive 
+                                  ? "text-slate-900 dark:text-white font-bold" 
+                                  : "text-slate-600 dark:text-gray-400 group-hover:text-slate-900 dark:group-hover:text-white"
+                              }`}>
+                                {entry.text}
+                                {isActive && (
+                                  <motion.div 
+                                    layoutId="activeUnderline"
+                                    className="h-[2px] w-full bg-blue-600 dark:bg-violet-500 mt-1 shadow-[0_0_12px_rgba(37,99,235,0.8)]"
+                                  />
+                                )}
+                              </div>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
                     ) : (
                       <div className="text-center py-10">
                         <MessageSquare

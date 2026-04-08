@@ -623,8 +623,29 @@ export default function RoadmapPage() {
             {/* Content */}
             <div className="flex-1 min-w-0">
               {!active ? (
-                /* ── Dashboard Grid ── */
                 <div className="space-y-12">
+                  {/* Special AI Roadmap Banner */}
+                  <Link href="/ai-roadmap" className="block relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-600 p-8 sm:p-10 shadow-2xl group shadow-indigo-500/20 mb-12 cursor-pointer transition-transform hover:-translate-y-1">
+                    <div className="absolute -top-10 -right-10 p-8 opacity-20 group-hover:opacity-40 group-hover:rotate-12 group-hover:scale-110 transition-all duration-700 pointer-events-none">
+                      <Sparkles size={200} className="text-white" />
+                    </div>
+                    <div className="relative z-10">
+                      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-black bg-white/20 text-white backdrop-blur-md mb-4 border border-white/30 tracking-widest uppercase shadow-sm">
+                        <StarIcon size={12} className="fill-white" /> Special Premium Track
+                      </div>
+                      <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white mb-3">
+                        The AI Engineering Roadmap
+                      </h2>
+                      <p className="text-white/80 text-base sm:text-lg max-w-xl mb-8 font-medium leading-relaxed">
+                        Master the skills to build autonomous, production-ready AI systems with our comprehensive 7-month curriculum.
+                      </p>
+                      <div className="flex items-center gap-2 text-indigo-950 font-black bg-white w-fit px-6 py-3 rounded-xl shadow-xl transition-all group-hover:bg-indigo-50">
+                        View Curriculum <ArrowRight size={18} className="text-indigo-600 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </Link>
+
+                  {/* ── Dashboard Grid ── */}
                   {ROADMAP_CATEGORIES.filter(
                     (category) =>
                       activeCategory === null ||

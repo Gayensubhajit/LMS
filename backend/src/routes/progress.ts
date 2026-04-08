@@ -214,22 +214,24 @@ progressRouter.get("/courses/:slug", async (req, res) => {
     });
   }
 
-  const completedCount = await prisma.progress.count({
+  const completedLessons = await prisma.progress.findMany({
     where: {
       userId: user.id,
       lessonId: { in: lessonIds },
       isCompleted: true
-    }
+    },
+    select: { lessonId: true }
   });
 
   const totalLessons = lessonIds.length;
-  const progressPercent = Math.round((completedCount / totalLessons) * 100);
+  const progressPercent = Math.round((completedLessons.length / totalLessons) * 100);
 
   return res.status(200).json({
     ok: true,
     item: {
       courseSlug: course.slug,
-      completedLessons: completedCount,
+      completedLessons: completedLessons.length,
+      completedLessonIds: completedLessons.map(cl => cl.lessonId),
       totalLessons,
       progressPercent,
       hasActiveEnrollment: Boolean(activeEnrollment)

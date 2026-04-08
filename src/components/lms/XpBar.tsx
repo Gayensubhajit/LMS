@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUser } from "@clerk/nextjs";
 import { Sparkles, Trophy, Zap } from "lucide-react";
 import { backendRequest } from "@/lib/backend-client";
 
@@ -13,13 +14,18 @@ interface GamificationData {
 }
 
 export default function XpBar() {
+  const { user, isLoaded } = useUser();
   const [data, setData] = useState<GamificationData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!isLoaded || !user?.id) return;
+
     const fetchGamification = async () => {
       try {
-        const res = await backendRequest<{ ok: boolean, item: GamificationData }>("/gamification/me");
+        const res = await backendRequest<{ ok: boolean, item: GamificationData }>("/gamification/me", {
+          clerkUserId: user.id
+        });
         if (res.ok) {
           setData(res.item);
         }
@@ -35,7 +41,7 @@ export default function XpBar() {
     // Refresh XP every 30 seconds or when an event occurs (simplified poll for now)
     const interval = setInterval(fetchGamification, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isLoaded, user?.id]);
 
   if (loading || !data) return (
     <div className="h-16 w-full bg-slate-100 dark:bg-white/5 animate-pulse rounded-2xl" />

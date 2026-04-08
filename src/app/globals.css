@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -529,7 +530,7 @@
 }
 
 .bg-dark-gradient {
-  background: linear-gradient(180deg, #030712 0%, #0B1120 50%, #030712 100%);
+  background: linear-gradient(180deg, #030712 0%, #0b1120 50%, #030712 100%);
 }
 
 /* Noise texture overlay */
@@ -819,7 +820,40 @@ html {
 .dark .logo-svg {
   color: #666666;
 }
-::view-transition-old(root), ::view-transition-new(root) {
-    animation: none;
-    mix-blend-mode: normal;
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+.google-sans-400 {
+  font-family: "Google Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-variation-settings: "GRAD" 0;
+}
+
+.google-sans-500 {
+  font-family: "Google Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+  font-variation-settings: "GRAD" 0;
+}
+
+.google-sans-600 {
+  font-family: "Google Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-style: normal;
+  font-variation-settings: "GRAD" 0;
+}
+
+.google-sans-700 {
+  font-family: "Google Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  font-variation-settings: "GRAD" 0;
 }

@@ -284,7 +284,7 @@ export default function PricingSection() {
                     <div
                       className={`text-center py-2.5 text-[10px] font-black uppercase tracking-widest ${
                         plan.highlight
-                          ? "bg-indigo-600 dark:bg-gradient-to-r dark:from-violet-600 dark:to-purple-600 text-white"
+                          ? "bg-indigo-600 dark:bg-linear-to-r dark:from-violet-600 dark:to-purple-600 text-white"
                           : "bg-slate-50 dark:bg-amber-500/10 text-slate-900 dark:text-amber-400 border-b border-slate-100 dark:border-amber-500/20"
                       }`}
                     >
@@ -304,8 +304,8 @@ export default function PricingSection() {
 
                     {/* Price */}
                     <div className="mb-8">
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-4xl font-black tracking-tighter text-slate-900 dark:text-white">
+                      <div className="google-sans-600 flex items-baseline gap-2">
+                        <span className="text-4xl tracking-tighter text-slate-900 dark:text-white">
                           {plan.price}
                         </span>
                         <span

@@ -30,7 +30,6 @@ import QuizComponent from "@/components/lms/QuizComponent";
 import LessonNotes from "@/components/lms/LessonNotes";
 import CodePlayground from "@/components/lms/CodePlayground";
 import CourseAssistant from "@/components/lms/CourseAssistant";
-import XpBar from "@/components/lms/XpBar";
 import XpEarnedToast, { XpEarnedToastRef } from "@/components/lms/XpEarnedToast";
 import { motion, AnimatePresence } from "framer-motion";
 import { dark } from "@clerk/themes";
@@ -652,10 +651,6 @@ export default function LearnCoursePage() {
               })}
             </div>
 
-            {/* Gamification Bar at bottom of sidebar */}
-            <div className="p-4 border-t border-slate-200 dark:border-violet-500/12 bg-white/50 dark:bg-white/2">
-               <XpBar />
-            </div>
           </aside>
         </>
 

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import Navbar from "@/components/lms/Navbar";
 import Footer from "@/components/lms/Footer";
 import RoadmapTimeline from "@/components/lms/RoadmapTimeline";
@@ -51,9 +52,12 @@ export default function AIRoadmapPage() {
             </div>
             
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <button className="h-12 bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 inline-flex items-center justify-center rounded-xl px-8 text-sm font-bold transition-colors shadow-sm">
+              <Link 
+                href="/courses/ai-engineering-roadmap" 
+                className="h-12 bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 inline-flex items-center justify-center rounded-xl px-8 text-sm font-bold transition-colors shadow-sm"
+              >
                 Start Learning <ArrowRight className="ml-2 w-4 h-4" />
-              </button>
+              </Link>
               <a 
                 href="https://github.com/alexeygrigorev/ai-engineering-field-guide" 
                 target="_blank" 

@@ -23,6 +23,7 @@ import {
   X,
   HelpCircle,
   ArrowUpRight,
+  MessageCircle,
 } from "lucide-react";
 import CourseVideoPlayer, { CourseVideoPlayerRef } from "@/components/lms/CourseVideoPlayer";
 import CertificateModal from "@/components/lms/CertificateModal";
@@ -31,6 +32,7 @@ import LessonNotes from "@/components/lms/LessonNotes";
 import CodePlayground from "@/components/lms/CodePlayground";
 import CourseAssistant from "@/components/lms/CourseAssistant";
 import XpEarnedToast, { XpEarnedToastRef } from "@/components/lms/XpEarnedToast";
+import DiscussionForum from "@/components/lms/DiscussionForum";
 import { motion, AnimatePresence } from "framer-motion";
 import { dark } from "@clerk/themes";
 import confetti from "canvas-confetti";
@@ -68,7 +70,7 @@ type BackendSection = {
   lessons: BackendLesson[];
 };
 
-type Tab = "transcript" | "notes" | "downloads" | "quiz" | "lab";
+type Tab = "transcript" | "notes" | "discussion" | "downloads" | "quiz" | "lab";
 
 // ── Constants ──────────────────────────────────────────────────────────────────
 const FALLBACK_VIDEO =
@@ -858,6 +860,11 @@ export default function LearnCoursePage() {
                           icon: <NotebookPen size={13} />,
                         },
                         {
+                          id: "discussion",
+                          label: "Discussion",
+                          icon: <MessageCircle size={13} />,
+                        },
+                        {
                           id: "quiz",
                           label: "Quiz",
                           icon: <HelpCircle size={13} />,
@@ -973,6 +980,16 @@ export default function LearnCoursePage() {
                       lessonId={activeLesson.id} 
                       currentTime={activeTime} 
                       onSeek={(s) => playerRef.current?.seekTo(s)}
+                    />
+                  </div>
+                )}
+
+                {/* TAB: Discussion */}
+                {activeTab === "discussion" && (
+                  <div className="pb-10">
+                    <DiscussionForum 
+                      courseId={course?.id} 
+                      lessonId={activeLesson?.id} 
                     />
                   </div>
                 )}

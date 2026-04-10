@@ -217,3 +217,39 @@ dashboardRouter.get("/roadmap", async (req, res) => {
         stages: results
     });
 });
+dashboardRouter.get("/stats", async (req, res) => {
+    const user = await getUserFromHeader(req, res);
+    if (!user)
+        return;
+    try {
+        const [enrollments, certificates, progress] = await Promise.all([
+            prisma.enrollment.findMany({
+                where: { userId: user.id },
+                select: { status: true, courseId: true }
+            }),
+            prisma.certificate.count({
+                where: { userId: user.id }
+            }),
+            prisma.progress.findMany({
+                where: { userId: user.id, isCompleted: true },
+                orderBy: { completedAt: "desc" },
+                take: 1
+            })
+        ]);
+        const activeEnrollments = enrollments.filter(e => e.status === EnrollmentStatus.ACTIVE);
+        return res.status(200).json({
+            ok: true,
+            stats: {
+                xp: user.xp,
+                streak: user.streakCount,
+                certificates,
+                activeCourses: activeEnrollments.length,
+                lastActivity: user.lastActivityAt
+            }
+        });
+    }
+    catch (err) {
+        console.error("Dashboard stats error:", err);
+        return res.status(500).json({ ok: false, error: "Internal server error" });
+    }
+});

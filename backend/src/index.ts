@@ -1,11 +1,15 @@
 import "reflect-metadata";
 import express from "express";
+import { createServer } from "node:http";
+import { Server } from "socket.io";
 import cors from "cors";
 import { ApolloServer } from "@apollo/server";
-import { expressMiddleware } from "@apollo/server/express4";
+import { expressMiddleware } from "@as-integrations/express4";
 import { createSchema } from "./graphql/schema.js";
 import { env } from "./config/env.js";
 import { handleClerkWebhook } from "./routes/clerk-webhook.js";
+import { adminAnalyticsRouter } from "./routes/admin-analytics.js";
+import { recommendationsRouter } from "./routes/recommendations.js";
 import { coursesRouter } from "./routes/courses.js";
 import { enrollmentsRouter } from "./routes/enrollments.js";
 import { accessRouter } from "./routes/access.js";
@@ -207,6 +211,32 @@ async function autoSeed() {
 }
 
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
+// Socket.io logic
+io.on("connection", (socket) => {
+  console.log("A user connected:", socket.id);
+
+  socket.on("join_room", (room) => {
+    socket.join(room);
+    console.log(`User ${socket.id} joined room: ${room}`);
+  });
+
+  socket.on("send_message", (data) => {
+    // data: { room, message, author, avatar }
+    io.to(data.room).emit("receive_message", data);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
+});
 
 app.use(
   cors({
@@ -253,6 +283,8 @@ app.use("/dashboard", dashboardRouter);
 app.use("/users", usersRouter);
 app.use("/history", historyRouter);
 app.use("/accomplishments", accomplishmentsRouter);
+app.use("/admin/analytics", adminAnalyticsRouter);
+app.use("/recommendations", recommendationsRouter);
 app.use("/settings", settingsRouter);
 app.use("/admin", adminRouter);
 app.use("/reviews", reviewsRouter);
@@ -273,14 +305,15 @@ autoSeed()
 
     app.use("/graphql", expressMiddleware(apolloServer) as any);
 
-    app.listen(env.PORT, () => {
+    httpServer.listen(env.PORT, () => {
       console.log(`Backend running on http://localhost:${env.PORT}`);
       console.log(`GraphQL endpoint: http://localhost:${env.PORT}/graphql`);
+      console.log(`Socket.io is enabled`);
     });
   })
   .catch((err) => {
     console.error("Auto-seed failed, starting anyway:", err);
-    app.listen(env.PORT, () => {
+    httpServer.listen(env.PORT, () => {
       console.log(`Backend running on http://localhost:${env.PORT}`);
     });
   });

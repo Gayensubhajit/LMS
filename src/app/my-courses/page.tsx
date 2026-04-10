@@ -106,6 +106,7 @@ export default function MyCoursesPage() {
   const [modalLoading, setModalLoading] = useState(false);
   const [rating, setRating] = useState(0);
   const [reviewComment, setReviewComment] = useState("");
+  const [recommendations, setRecommendations] = useState<any[]>([]);
 
   const now = new Date();
   const todayDate = now.getDate();
@@ -157,7 +158,17 @@ export default function MyCoursesPage() {
         setLoading(false);
       }
     };
+    const fetchRecommendations = async () => {
+        try {
+            const res = await backendRequest<{ ok: boolean; recommendations: any[] }>("/recommendations");
+            if (res.ok) setRecommendations(res.recommendations);
+        } catch (err) {
+            console.error("Failed to fetch recommendations");
+        }
+    };
+
     void run();
+    if (user?.id) fetchRecommendations();
   }, [isLoaded, user?.id]);
 
   const greeting = useMemo(() => {
@@ -548,6 +559,51 @@ export default function MyCoursesPage() {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            {/* Recommendations section */}
+            {recommendations.length > 0 && (
+                <div className="mt-20 space-y-8">
+                    <div className="flex items-center gap-4">
+                        <div className="h-px flex-1 bg-linear-to-r from-transparent to-slate-200 dark:to-white/5" />
+                        <h2 className={`${montserrat.className} text-sm font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-500`}>
+                            Recommended for You
+                        </h2>
+                        <div className="h-px flex-1 bg-linear-to-l from-transparent to-slate-200 dark:to-white/5" />
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {recommendations.map((course, i) => (
+                            <Link key={course.id} href={`/courses/${course.slug}`}>
+                                <motion.div 
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: i * 0.1 }}
+                                    className="group relative p-6 rounded-[2rem] bg-white dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 hover:border-violet-500/30 transition-all overflow-hidden"
+                                >
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-violet-600/5 blur-3xl rounded-full translate-x-10 -translate-y-10 group-hover:bg-violet-600/10 transition-colors" />
+                                    <div className="flex gap-6">
+                                        <div className="w-24 h-24 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-4xl shrink-0">
+                                            {course.imageUrl ? <img src={course.imageUrl} className="w-full h-full object-cover rounded-2xl" /> : "📚"}
+                                        </div>
+                                        <div className="flex-1">
+                                            <p className="text-[10px] font-black uppercase tracking-widest text-violet-500 mb-1">{course.category}</p>
+                                            <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug group-hover:text-violet-400 transition-colors">{course.title}</h4>
+                                            <div className="flex items-center gap-3 mt-4">
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600 px-2 py-1 rounded bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
+                                                    {course.level}
+                                                </span>
+                                                <span className="text-xs font-black text-slate-900 dark:text-white">
+                                                    {course.isFree ? "FREE" : "Premium"}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
           </section>
 
           {/* ── SIDEBAR (SHOW BELOW COURSES ON MOBILE) ── */}

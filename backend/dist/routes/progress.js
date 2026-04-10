@@ -27,6 +27,35 @@ async function hasActiveEnrollment(userId, courseId) {
         }
     });
 }
+// PATCH /progress/lessons/:lessonId/watch - Sync current playhead
+progressRouter.patch("/lessons/:lessonId/watch", async (req, res) => {
+    const user = await getUserFromHeader(req, res);
+    if (!user)
+        return;
+    const params = lessonParamsSchema.safeParse(req.params);
+    if (!params.success)
+        return res.status(400).json({ ok: false, error: "Invalid lesson id" });
+    const body = z.object({ seconds: z.number().int().min(0) }).safeParse(req.body);
+    if (!body.success)
+        return res.status(400).json({ ok: false, error: "Invalid watch time" });
+    const progress = await prisma.progress.upsert({
+        where: {
+            userId_lessonId: {
+                userId: user.id,
+                lessonId: params.data.lessonId
+            }
+        },
+        create: {
+            userId: user.id,
+            lessonId: params.data.lessonId,
+            lastPlayedSeconds: body.data.seconds
+        },
+        update: {
+            lastPlayedSeconds: body.data.seconds
+        }
+    });
+    return res.status(200).json({ ok: true, item: progress });
+});
 progressRouter.post("/lessons/:lessonId", async (req, res) => {
     const user = await getUserFromHeader(req, res);
     if (!user)
@@ -39,47 +68,17 @@ progressRouter.post("/lessons/:lessonId", async (req, res) => {
     if (!body.success) {
         return res.status(400).json({ ok: false, error: "Invalid body payload" });
     }
-    const lesson = await prisma.lesson.findUnique({
-        where: { id: params.data.lessonId },
-        select: {
-            id: true,
-            isPreview: true,
-            section: {
-                select: {
-                    course: {
-                        select: {
-                            id: true,
-                            slug: true,
-                            isPublished: true
-                        }
-                    }
-                }
-            }
-        }
-    });
-    if (!lesson || !lesson.section.course.isPublished) {
-        return res.status(404).json({ ok: false, error: "Lesson not found" });
-    }
-    const enrollment = lesson.isPreview
-        ? null
-        : await hasActiveEnrollment(user.id, lesson.section.course.id);
-    if (!lesson.isPreview && !enrollment) {
-        return res.status(403).json({
-            ok: false,
-            error: "No active enrollment for this lesson"
-        });
-    }
     const isCompleted = body.data.isCompleted ?? true;
     const progress = await prisma.progress.upsert({
         where: {
             userId_lessonId: {
                 userId: user.id,
-                lessonId: lesson.id
+                lessonId: params.data.lessonId
             }
         },
         create: {
             userId: user.id,
-            lessonId: lesson.id,
+            lessonId: params.data.lessonId,
             isCompleted,
             completedAt: isCompleted ? new Date() : null
         },
@@ -90,15 +89,58 @@ progressRouter.post("/lessons/:lessonId", async (req, res) => {
         select: {
             lessonId: true,
             isCompleted: true,
-            completedAt: true
+            completedAt: true,
+            lesson: {
+                select: {
+                    section: {
+                        select: {
+                            courseId: true
+                        }
+                    }
+                }
+            }
         }
     });
+    // Check for course completion
+    if (isCompleted) {
+        const courseId = progress.lesson.section.courseId;
+        const allCourseLessons = await prisma.lesson.findMany({
+            where: { section: { courseId } },
+            select: { id: true }
+        });
+        const completedCount = await prisma.progress.count({
+            where: {
+                userId: user.id,
+                lessonId: { in: allCourseLessons.map(l => l.id) },
+                isCompleted: true
+            }
+        });
+        if (completedCount === allCourseLessons.length) {
+            // 100% Complete! Issue certificate.
+            await prisma.certificate.upsert({
+                where: {
+                    userId_courseId: {
+                        userId: user.id,
+                        courseId: courseId
+                    }
+                },
+                create: {
+                    userId: user.id,
+                    courseId: courseId
+                },
+                update: {} // already exists, just keep it
+            });
+        }
+        // Award 50 XP for completing a lesson
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { xp: { increment: 50 } }
+        });
+    }
     return res.status(200).json({
         ok: true,
-        item: {
-            ...progress,
-            courseSlug: lesson.section.course.slug
-        }
+        item: progress,
+        xpAwarded: isCompleted ? 50 : 0
     });
 });
 progressRouter.get("/courses/:slug", async (req, res) => {
@@ -150,20 +192,22 @@ progressRouter.get("/courses/:slug", async (req, res) => {
             }
         });
     }
-    const completedCount = await prisma.progress.count({
+    const completedLessons = await prisma.progress.findMany({
         where: {
             userId: user.id,
             lessonId: { in: lessonIds },
             isCompleted: true
-        }
+        },
+        select: { lessonId: true }
     });
     const totalLessons = lessonIds.length;
-    const progressPercent = Math.round((completedCount / totalLessons) * 100);
+    const progressPercent = Math.round((completedLessons.length / totalLessons) * 100);
     return res.status(200).json({
         ok: true,
         item: {
             courseSlug: course.slug,
-            completedLessons: completedCount,
+            completedLessons: completedLessons.length,
+            completedLessonIds: completedLessons.map(cl => cl.lessonId),
             totalLessons,
             progressPercent,
             hasActiveEnrollment: Boolean(activeEnrollment)
@@ -236,17 +280,22 @@ progressRouter.get("/courses/:slug/continue", async (req, res) => {
         },
         select: {
             lessonId: true,
-            isCompleted: true
+            isCompleted: true,
+            lastPlayedSeconds: true
         }
     });
-    const completedSet = new Set(progress.filter((p) => p.isCompleted).map((p) => p.lessonId));
-    const nextLesson = allowedLessons.find((lesson) => !completedSet.has(lesson.id)) ??
+    const progressMap = new Map(progress.map(p => [p.lessonId, p]));
+    const nextLessonCandidate = allowedLessons.find((lesson) => !progressMap.get(lesson.id)?.isCompleted) ??
         allowedLessons[allowedLessons.length - 1];
+    const lastPlayedSeconds = progressMap.get(nextLessonCandidate?.id)?.lastPlayedSeconds ?? 0;
     return res.status(200).json({
         ok: true,
         item: {
             courseSlug: course.slug,
-            nextLesson,
+            nextLesson: nextLessonCandidate ? {
+                ...nextLessonCandidate,
+                lastPlayedSeconds
+            } : null,
             hasActiveEnrollment: Boolean(activeEnrollment)
         }
     });

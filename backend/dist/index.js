@@ -1,7 +1,15 @@
+import "reflect-metadata";
 import express from "express";
+import { createServer } from "node:http";
+import { Server } from "socket.io";
 import cors from "cors";
+import { ApolloServer } from "@apollo/server";
+import { expressMiddleware } from "@as-integrations/express4";
+import { createSchema } from "./graphql/schema.js";
 import { env } from "./config/env.js";
 import { handleClerkWebhook } from "./routes/clerk-webhook.js";
+import { adminAnalyticsRouter } from "./routes/admin-analytics.js";
+import { recommendationsRouter } from "./routes/recommendations.js";
 import { coursesRouter } from "./routes/courses.js";
 import { enrollmentsRouter } from "./routes/enrollments.js";
 import { accessRouter } from "./routes/access.js";
@@ -11,10 +19,19 @@ import { dashboardRouter } from "./routes/dashboard.js";
 import { historyRouter } from "./routes/history.js";
 import { accomplishmentsRouter } from "./routes/accomplishments.js";
 import settingsRouter from "./routes/settings.js";
+import { adminRouter } from "./routes/admin.js";
+import { reviewsRouter } from "./routes/reviews.js";
 import { CourseLevel } from "@prisma/client";
 import { execSync } from "child_process";
 import { prisma } from "./lib/prisma.js";
 import { usersRouter } from "./routes/users.js";
+import { clerkMiddleware } from "@clerk/express";
+import { extractClerkUserId } from "./lib/clerkMiddleware.js";
+import { forumsRouter } from "./routes/forums.js";
+import { quizzesRouter } from "./routes/quizzes.js";
+import { notesRouter } from "./routes/notes.js";
+import { aiRouter } from "./routes/ai.js";
+import { gamificationRouter } from "./routes/gamification.js";
 async function autoSeed() {
     console.log("Starting self-healing database sync...");
     try {
@@ -23,7 +40,7 @@ async function autoSeed() {
         // Use a short timeout and pipe output to avoid hanging
         execSync("npx prisma db push --accept-data-loss", {
             stdio: "pipe",
-            timeout: 30000 // 30s timeout
+            timeout: 30000, // 30s timeout
         });
         console.log("Database schema synced successfully.");
     }
@@ -112,7 +129,7 @@ async function autoSeed() {
             sixMonthPrice: 0,
             isFree: true,
             isPublished: true,
-        }
+        },
     ];
     for (const c of courses) {
         await prisma.course.upsert({
@@ -143,14 +160,70 @@ async function autoSeed() {
             console.log("Seeded a sample certificate for the first user.");
         }
     }
+    // Seed default badges if they don't exist
+    console.log("Seeding default badges...");
+    const defaultBadges = [
+        {
+            name: "Quiz Master",
+            description: "Achieve a perfect 100% score on any quiz.",
+            icon: "Trophy",
+            criteria: "perf_quiz"
+        },
+        {
+            name: "Explorer",
+            description: "Complete your first lesson on the platform.",
+            icon: "Map",
+            criteria: "first_lesson"
+        },
+        {
+            name: "Note Taker",
+            description: "Create your first timestamped note.",
+            icon: "PenTool",
+            criteria: "first_note"
+        }
+    ];
+    for (const b of defaultBadges) {
+        await prisma.badge.upsert({
+            where: { name: b.name },
+            update: {},
+            create: b
+        });
+    }
     console.log("Auto-seed complete.");
 }
 const app = express();
-app.use(cors({ origin: env.CORS_ORIGIN }));
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+    }
+});
+// Socket.io logic
+io.on("connection", (socket) => {
+    console.log("A user connected:", socket.id);
+    socket.on("join_room", (room) => {
+        socket.join(room);
+        console.log(`User ${socket.id} joined room: ${room}`);
+    });
+    socket.on("send_message", (data) => {
+        // data: { room, message, author, avatar }
+        io.to(data.room).emit("receive_message", data);
+    });
+    socket.on("disconnect", () => {
+        console.log("User disconnected:", socket.id);
+    });
+});
+app.use(cors({
+    origin: env.CORS_ORIGIN ? env.CORS_ORIGIN.split(",") : "*",
+    credentials: true,
+}));
 // Clerk requires raw body for Svix signature verification.
 app.post("/webhooks/clerk", express.raw({ type: "application/json" }), handleClerkWebhook);
 app.post("/payments/webhooks/razorpay", express.raw({ type: "application/json" }), handleRazorpayWebhook);
 app.post("/payments/webhooks/stripe", express.raw({ type: "application/json" }), handleStripeWebhook);
+app.use(clerkMiddleware());
+app.use(extractClerkUserId);
 app.use(express.json());
 app.get("/health", (_req, res) => {
     res.json({
@@ -168,14 +241,34 @@ app.use("/dashboard", dashboardRouter);
 app.use("/users", usersRouter);
 app.use("/history", historyRouter);
 app.use("/accomplishments", accomplishmentsRouter);
+app.use("/admin/analytics", adminAnalyticsRouter);
+app.use("/recommendations", recommendationsRouter);
 app.use("/settings", settingsRouter);
-autoSeed().then(() => {
-    app.listen(env.PORT, () => {
-        console.log(`Backend running on http://localhost:${env.PORT}`);
+app.use("/admin", adminRouter);
+app.use("/reviews", reviewsRouter);
+app.use("/quizzes", quizzesRouter);
+app.use("/notes", notesRouter);
+app.use("/forums", forumsRouter);
+app.use("/ai", aiRouter);
+app.use("/gamification", gamificationRouter);
+autoSeed()
+    .then(async () => {
+    // GraphQL Setup
+    const schema = await createSchema();
+    const apolloServer = new ApolloServer({
+        schema,
     });
-}).catch(err => {
+    await apolloServer.start();
+    app.use("/graphql", expressMiddleware(apolloServer));
+    httpServer.listen(env.PORT, () => {
+        console.log(`Backend running on http://localhost:${env.PORT}`);
+        console.log(`GraphQL endpoint: http://localhost:${env.PORT}/graphql`);
+        console.log(`Socket.io is enabled`);
+    });
+})
+    .catch((err) => {
     console.error("Auto-seed failed, starting anyway:", err);
-    app.listen(env.PORT, () => {
+    httpServer.listen(env.PORT, () => {
         console.log(`Backend running on http://localhost:${env.PORT}`);
     });
 });

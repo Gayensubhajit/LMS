@@ -44,3 +44,7 @@ next-env.d.ts
 backend/.env
 # clerk configuration (can include secrets)
 /.clerk/
+
+# compiled code
+/dist
+backend/dist

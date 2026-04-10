@@ -79,3 +79,46 @@ accomplishmentsRouter.post("/verify-name", async (req, res) => {
     return res.status(500).json({ ok: false, error: "Internal server error" });
   }
 });
+
+// GET /accomplishments/verify/:certId
+// Public endpoint to verify a certificate
+accomplishmentsRouter.get("/verify/:certId", async (req, res) => {
+  const { certId } = req.params;
+
+  try {
+    const certificate = await prisma.certificate.findUnique({
+      where: { certificateId: certId },
+      include: {
+        user: {
+          select: {
+            fullName: true,
+            verifiedName: true,
+            isNameVerified: true,
+            avatarUrl: true,
+          },
+        },
+        course: {
+          select: {
+            title: true,
+            instructorName: true,
+            category: true,
+          },
+        },
+      },
+    });
+
+    if (!certificate) {
+      return res.status(404).json({ ok: true, found: false, error: "Certificate not found" });
+    }
+
+    return res.status(200).json({
+      ok: true,
+      found: true,
+      certificate,
+      studentName: certificate.user.verifiedName || certificate.user.fullName || "Student",
+    });
+  } catch (err) {
+    console.error("Certificate verification error:", err);
+    return res.status(500).json({ ok: false, error: "Internal server error" });
+  }
+});

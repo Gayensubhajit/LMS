@@ -93,6 +93,8 @@ function CoursesContent() {
   const [query, setQuery] = useState(urlQ);
   const [debouncedQuery, setDebouncedQuery] = useState(query);
   const [category, setCategory] = useState<Category>("All");
+  const [level, setLevel] = useState<string>("All");
+  const [priceType, setPriceType] = useState<"All" | "Free" | "Premium">("All");
   const [sortBy, setSortBy] = useState<
     "popular" | "rating" | "priceLow" | "priceHigh"
   >("popular");
@@ -161,12 +163,21 @@ function CoursesContent() {
     return courses
       .filter((c) => {
         if (c.isHidden) return false;
-        const matchesFree = category === "Free" ? c.isFree : true;
-        const matchesCat =
-          category === "All" || category === "Free" || c.category === category;
-        const hay =
-          `${c.title} ${c.instructor} ${c.category} ${c.skills.join(" ")}`.toLowerCase();
-        return matchesFree && matchesCat && (q === "" || hay.includes(q));
+        
+        // Category Facet
+        const matchesCat = category === "All" || c.category === category || (category === "Free" && c.isFree);
+        
+        // Level Facet
+        const matchesLevel = level === "All" || c.level === level;
+
+        // Price Type Facet
+        const matchesPrice = priceType === "All" || (priceType === "Free" ? c.isFree : !c.isFree);
+
+        // Search Query
+        const hay = `${c.title} ${c.instructor} ${c.category} ${c.skills.join(" ")}`.toLowerCase();
+        const matchesSearch = q === "" || hay.includes(q);
+
+        return matchesCat && matchesLevel && matchesPrice && matchesSearch;
       })
       .sort((a, b) => {
         if (sortBy === "rating") return b.rating - a.rating;
@@ -289,41 +300,78 @@ function CoursesContent() {
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 items-start">
             {/* Sidebar Filters */}
-            <aside className="hidden lg:block space-y-8 sticky top-28 self-start">
-              <div>
-                <h3 className="text-slate-900 dark:text-white font-black mb-4 flex items-center gap-2 uppercase tracking-tight text-sm">
-                  <SlidersHorizontal
-                    size={16}
-                    className="text-blue-500 dark:text-blue-400"
-                  />{" "}
-                  Categories
-                </h3>
-                <div className="flex flex-col gap-2">
-                  {categories.map((cat) => (
-                    <button
-                      key={cat}
-                      onClick={() => setCategory(cat)}
-                      className={`text-left px-4 py-2.5 rounded-xl text-sm font-medium transition-all ${category === cat ? "bg-blue-600/10 text-blue-600 dark:text-blue-400 border border-blue-500/30 font-bold" : "text-slate-500 dark:text-gray-500 hover:text-slate-900 dark:hover:text-gray-300 hover:bg-slate-50 dark:hover:bg-white/5"}`}
-                    >
-                      {cat}
-                    </button>
-                  ))}
+              <aside className="hidden lg:block space-y-8 sticky top-28 self-start">
+                {/* Category Facet */}
+                <div>
+                  <h3 className="text-slate-900 dark:text-white font-black mb-4 flex items-center gap-2 uppercase tracking-tight text-sm">
+                    <SlidersHorizontal
+                      size={16}
+                      className="text-blue-500 dark:text-blue-400"
+                    />{" "}
+                    Categories
+                  </h3>
+                  <div className="flex flex-col gap-1.5">
+                    {categories.map((cat) => (
+                      <button
+                        key={cat}
+                        onClick={() => setCategory(cat)}
+                        className={`text-left px-3 py-2 rounded-xl text-sm transition-all ${category === cat ? "bg-blue-600/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 font-bold" : "text-slate-500 dark:text-gray-500 hover:text-slate-900 dark:hover:text-gray-300 hover:bg-slate-50 dark:hover:bg-white/5"}`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              <div className="p-6 rounded-3xl bg-linear-to-br from-blue-600/10 to-indigo-600/5 border border-blue-500/10">
-                <Sparkles
-                  className="text-blue-600 dark:text-blue-400 mb-3"
-                  size={20}
-                />
-                <h4 className="text-slate-900 dark:text-white font-bold mb-1">
-                  Elite Learning
-                </h4>
-                <p className="text-xs text-slate-500 dark:text-gray-500 leading-relaxed">
-                  Join 45,000+ students leveling up their careers with EduNova.
-                </p>
-              </div>
-            </aside>
+                {/* Level Facet */}
+                <div>
+                  <h3 className="text-slate-900 dark:text-white font-black mb-4 uppercase tracking-tight text-sm">
+                    Difficulty Level
+                  </h3>
+                  <div className="flex flex-col gap-1.5">
+                    {["All", "Beginner", "Intermediate", "Advanced"].map((l) => (
+                      <button
+                        key={l}
+                        onClick={() => setLevel(l)}
+                        className={`text-left px-3 py-2 rounded-xl text-sm transition-all ${level === l ? "bg-blue-600/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 font-bold" : "text-slate-500 dark:text-gray-500 hover:text-slate-900 dark:hover:text-gray-300 hover:bg-slate-50 dark:hover:bg-white/5"}`}
+                      >
+                        {l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Price facet */}
+                <div>
+                  <h3 className="text-slate-900 dark:text-white font-black mb-4 uppercase tracking-tight text-sm">
+                    Price Type
+                  </h3>
+                  <div className="flex flex-col gap-1.5">
+                    {["All", "Free", "Premium"].map((p: any) => (
+                      <button
+                        key={p}
+                        onClick={() => setPriceType(p)}
+                        className={`text-left px-3 py-2 rounded-xl text-sm transition-all ${priceType === p ? "bg-blue-600/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 font-bold" : "text-slate-500 dark:text-gray-500 hover:text-slate-900 dark:hover:text-gray-300 hover:bg-slate-50 dark:hover:bg-white/5"}`}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-6 rounded-3xl bg-linear-to-br from-blue-600/10 to-indigo-600/5 border border-blue-500/10">
+                  <Sparkles
+                    className="text-blue-600 dark:text-blue-400 mb-3"
+                    size={20}
+                  />
+                  <h4 className="text-slate-900 dark:text-white font-bold mb-1 leading-tight">
+                    Personalized Path
+                  </h4>
+                  <p className="text-[11px] text-slate-500 dark:text-gray-500 leading-relaxed font-medium">
+                    Our AI evaluates your goals to recommend the perfect learning track.
+                  </p>
+                </div>
+              </aside>
 
             {/* Course Grid */}
             <div className="lg:col-span-3">
@@ -333,7 +381,12 @@ function CoursesContent() {
                     No courses matching your search. Try another keyword!
                   </p>
                   <button
-                    onClick={() => setQuery("")}
+                    onClick={() => {
+                        setQuery("");
+                        setCategory("All");
+                        setLevel("All");
+                        setPriceType("All");
+                    }}
                     className="mt-4 text-[#0056d2] dark:text-blue-400 underline underline-offset-4"
                   >
                     Clear all filters

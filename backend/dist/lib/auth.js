@@ -1,16 +1,27 @@
 import { prisma } from "./prisma.js";
+import { UserRole } from "@prisma/client";
+export { UserRole };
+import { getCachedUser, setCachedUser } from "./userCache.js";
 export async function getUserFromHeader(req, res) {
-    const clerkUserId = req.header("x-clerk-user-id");
+    const clerkUserId = res.locals.clerkUserId;
     if (!clerkUserId) {
         res.status(401).json({
             ok: false,
-            error: "Missing x-clerk-user-id header",
+            error: "User is unauthenticated. Ensure Clerk webhook sync is configured.",
         });
         return null;
     }
-    const user = await prisma.user.findUnique({
-        where: { clerkUserId },
-    });
+    // Try cache first (60 second TTL) — dramatically reduces DB queries
+    let user = getCachedUser(clerkUserId);
+    if (!user) {
+        // Cache miss — query database and then cache it
+        user = await prisma.user.findUnique({
+            where: { clerkUserId },
+        });
+        if (user) {
+            setCachedUser(user);
+        }
+    }
     if (!user) {
         res.status(404).json({
             ok: false,
@@ -19,4 +30,43 @@ export async function getUserFromHeader(req, res) {
         return null;
     }
     return user;
+}
+/**
+ * Ensures user has at least one of the allowed roles.
+ * Super Admin is automatically allowed if Admin is required.
+ */
+export async function requireRole(req, res, roles) {
+    const clerkUserId = res.locals.clerkUserId;
+    if (!clerkUserId) {
+        res.status(401).json({
+            ok: false,
+            error: "Unauthorized: Missing authentication context.",
+        });
+        return null;
+    }
+    // Try cache first (60 second TTL)
+    let user = getCachedUser(clerkUserId);
+    if (!user) {
+        user = await prisma.user.findUnique({
+            where: { clerkUserId },
+        });
+        if (user) {
+            setCachedUser(user);
+        }
+    }
+    if (!user) {
+        res.status(404).json({
+            ok: false,
+            error: "User not found in system.",
+        });
+        return null;
+    }
+    if (user.role === UserRole.SUPER_ADMIN || roles.includes(user.role)) {
+        return user; // ✅ Continues if allowed
+    }
+    res.status(403).json({
+        ok: false,
+        error: `Forbidden: This action requires ${roles.join(" or ")} permissions.`,
+    });
+    return null;
 }

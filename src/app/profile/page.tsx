@@ -25,12 +25,40 @@ import {
   Cpu,
   Monitor,
   Zap,
+  Flame,
+  Star,
+  Clock,
+  Calendar,
+  BookOpen
 } from "lucide-react";
 import { SignIn, useUser } from "@clerk/nextjs";
-import { dark } from "@clerk/ui/themes";
+import { dark } from "@clerk/themes";
+import { useEffect, useState } from "react";
+import { backendRequest } from "@/lib/backend-client";
+
+interface DashboardStats {
+  streak: number;
+  xp: number;
+  certificates: number;
+  activeCourses: number;
+  lastActivity: string | null;
+}
 
 export default function ProfilePage() {
   const { user, isSignedIn, isLoaded } = useUser();
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [certs, setCerts] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (isSignedIn) {
+      backendRequest("/dashboard/stats").then((res: any) => {
+        if (res.ok) setStats(res.stats);
+      });
+      backendRequest("/accomplishments").then((res: any) => {
+        if (res.ok) setCerts(res.certificates.slice(0, 3));
+      });
+    }
+  }, [isSignedIn]);
 
   const desiredRoles = [
     {
@@ -233,6 +261,27 @@ export default function ProfilePage() {
 
           {/* ================= MAIN CONTENT ================= */}
           <div className="lg:col-span-3 space-y-8 lg:space-y-10 w-full overflow-hidden">
+            {/* Stats Dashboard */}
+            <motion.div
+              variants={itemVariants}
+              className="grid grid-cols-2 md:grid-cols-4 gap-4"
+            >
+              {[
+                { label: "Learning Streak", value: `${stats?.streak ?? 0} Days`, icon: Flame, color: "text-orange-500", bg: "bg-orange-500/10" },
+                { label: "Total XP", value: (stats?.xp ?? 0).toLocaleString(), icon: Zap, color: "text-violet-500", bg: "bg-violet-500/10" },
+                { label: "Certificates", value: stats?.certificates ?? 0, icon: Award, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+                { label: "Active Courses", value: stats?.activeCourses ?? 0, icon: BookOpen, color: "text-blue-500", bg: "bg-blue-500/10" },
+              ].map((stat, i) => (
+                <div key={i} className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/5 rounded-3xl p-6 flex flex-col items-center justify-center text-center group hover:border-violet-500/30 transition-all shadow-sm">
+                  <div className={`p-3 rounded-2xl ${stat.bg} ${stat.color} mb-3 group-hover:scale-110 transition-transform`}>
+                    <stat.icon size={20} />
+                  </div>
+                  <span className="text-xl font-black text-slate-900 dark:text-white">{stat.value}</span>
+                  <span className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest mt-1">{stat.label}</span>
+                </div>
+              ))}
+            </motion.div>
+
             {/* HERO - Pioneer Passport */}
             <motion.div
               variants={itemVariants}
@@ -540,6 +589,40 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 </motion.div>
+              </div>
+            </div>
+            {/* Recent Achievements */}
+            <div className="space-y-6">
+              <div className="flex items-center gap-3 px-4 sm:px-6">
+                <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white uppercase tracking-[0.3em]">
+                  Recent Achievements
+                </h3>
+                <div className="h-px flex-1 bg-gradient-to-r from-emerald-500/20 to-transparent" />
+                <Award size={14} className="text-slate-400" />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {certs.length > 0 ? certs.map((cert, i) => (
+                    <motion.div
+                      key={i}
+                      variants={itemVariants}
+                      className="bg-white dark:bg-slate-900/40 border border-slate-200 dark:border-white/5 rounded-3xl p-6 relative overflow-hidden group shadow-sm hover:border-emerald-500/30 transition-all"
+                    >
+                      <div className="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/5 blur-[40px] rounded-full group-hover:bg-emerald-500/10 transition-colors" />
+                      <Award className="text-emerald-500 mb-4" size={24} />
+                      <h4 className="text-xs font-black text-slate-900 dark:text-white uppercase mb-1 truncate">
+                        {cert.course.title}
+                      </h4>
+                      <p className="text-[10px] text-slate-400 dark:text-gray-500 font-bold uppercase tracking-widest">
+                        Issued: {new Date(cert.issuedAt).toLocaleDateString()}
+                      </p>
+                    </motion.div>
+                )) : (
+                    <div className="md:col-span-3 bg-slate-50 dark:bg-white/5 border border-dashed border-slate-200 dark:border-white/10 rounded-[2rem] p-12 text-center">
+                        <p className="text-sm text-slate-400 dark:text-gray-600 font-bold uppercase tracking-widest">No certificates earned yet</p>
+                        <p className="text-xs text-slate-400 dark:text-gray-700 mt-2 italic">Finish a course to unlock your first achievement!</p>
+                    </div>
+                )}
               </div>
             </div>
           </div>

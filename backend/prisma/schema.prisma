@@ -78,6 +78,10 @@ model User {
   timezone             String?
   twoFactorEnabled     Boolean      @default(false)
   newsletterSubscribed Boolean      @default(true)
+
+  // Tracking
+  lastActivityAt       DateTime?
+  streakCount          Int          @default(0)
 }
 
 model Course {

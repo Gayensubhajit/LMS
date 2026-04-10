@@ -33,6 +33,7 @@ import CodePlayground from "@/components/lms/CodePlayground";
 import CourseAssistant from "@/components/lms/CourseAssistant";
 import XpEarnedToast, { XpEarnedToastRef } from "@/components/lms/XpEarnedToast";
 import DiscussionForum from "@/components/lms/DiscussionForum";
+import LiveChat from "@/components/lms/LiveChat";
 import { motion, AnimatePresence } from "framer-motion";
 import { dark } from "@clerk/themes";
 import confetti from "canvas-confetti";
@@ -1124,6 +1125,7 @@ export default function LearnCoursePage() {
         }
       />
       <XpEarnedToast ref={xpToastRef} />
+      <LiveChat courseId={course?.id} courseTitle={course?.title} />
     </main>
   );
 }

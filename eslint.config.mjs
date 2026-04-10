@@ -7,7 +7,7 @@ const compat = new FlatCompat({
  
 const eslintConfig = [
   {
-    ignores: ["backend/dist/**", ".next/**", "dist/**"]
+    ignores: ["backend/**", ".next/**", "dist/**"]
   },
   ...compat.config({
     extends: ['next'],

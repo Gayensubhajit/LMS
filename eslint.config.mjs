@@ -6,6 +6,9 @@ const compat = new FlatCompat({
 })
  
 const eslintConfig = [
+  {
+    ignores: ["backend/dist/**", ".next/**", "dist/**"]
+  },
   ...compat.config({
     extends: ['next'],
     plugins: ['import'],

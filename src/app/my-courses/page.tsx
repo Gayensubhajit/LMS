@@ -583,7 +583,7 @@ export default function MyCoursesPage() {
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-violet-600/5 blur-3xl rounded-full translate-x-10 -translate-y-10 group-hover:bg-violet-600/10 transition-colors" />
                                     <div className="flex gap-6">
                                         <div className="w-24 h-24 rounded-2xl bg-slate-100 dark:bg-white/5 flex items-center justify-center text-4xl shrink-0">
-                                            {course.imageUrl ? <img src={course.imageUrl} className="w-full h-full object-cover rounded-2xl" /> : "📚"}
+                                            {course.imageUrl ? <img src={course.imageUrl} alt={course.title} className="w-full h-full object-cover rounded-2xl" /> : "📚"}
                                         </div>
                                         <div className="flex-1">
                                             <p className="text-[10px] font-black uppercase tracking-widest text-violet-500 mb-1">{course.category}</p>
@@ -786,7 +786,7 @@ export default function MyCoursesPage() {
 
                     <div className="flex justify-between items-center px-2">
                        {[
-                         { icon: <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" className="w-6 h-6" />, label: "LinkedIn" },
+                         { icon: <img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" alt="LinkedIn" className="w-6 h-6" />, label: "LinkedIn" },
                          { icon: <Mail className="text-blue-500" />, label: "Email" },
                          { icon: <MessageCircle className="text-emerald-500" />, label: "WhatsApp" },
                          { icon: <Facebook className="text-blue-600" />, label: "Facebook" },

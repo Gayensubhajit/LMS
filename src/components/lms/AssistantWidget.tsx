@@ -96,12 +96,10 @@ export default function AssistantWidget() {
     }
   }, [sessions, storageKey]);
 
-  // Auto-initiate the first chat
   useEffect(() => {
     if (!activeSessionId && userLoaded && sessions.length === 0) {
       handleNewChat();
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userLoaded, activeSessionId, sessions.length]);
 
   const handleNewChat = () => {

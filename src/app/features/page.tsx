@@ -8,6 +8,7 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
+import Link from "next/link";
 import Navbar from "@/components/lms/Navbar";
 import Footer from "@/components/lms/Footer";
 import CommunityLeaderboard from "@/components/lms/CommunityLeaderboard";
@@ -348,13 +349,13 @@ function FeatureCard({
           <ArrowRight size={16} className="text-violet-500" />
         </div>
       ) : (
-        <a
+        <Link
           href={card.href}
           className={`relative z-10 inline-flex items-center gap-2 text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r ${card.color} opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0`}
         >
           {card.cta}
           <ArrowRight size={16} className="text-violet-500" />
-        </a>
+        </Link>
       )}
 
       {/* Bottom accent glow */}
@@ -410,13 +411,13 @@ function FeatureSection({
             <p className="text-slate-500 dark:text-gray-500 text-base leading-relaxed mb-10">
               {section.description}
             </p>
-            <a
+            <Link
               href="/courses"
               className={`inline-flex items-center gap-2 bg-linear-to-r ${section.iconGradient} text-white font-bold px-7 py-3.5 rounded-2xl hover:opacity-90 transition-all hover:scale-105 active:scale-95 shadow-lg`}
             >
               Get Started
               <ArrowRight size={18} />
-            </a>
+            </Link>
           </motion.div>
 
           {/* Feature cards grid */}
@@ -553,23 +554,29 @@ export default function FeaturesPage() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="flex items-center justify-center gap-4 mb-14 flex-wrap"
           >
-            <motion.a
-              href="/courses"
+            <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.97 }}
-              className="px-8 py-4 rounded-2xl font-bold text-white text-base shadow-[0_0_30px_rgba(37,99,235,0.35)] dark:shadow-[0_0_30px_rgba(124,58,237,0.35)] bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-600 dark:to-purple-500 hover:shadow-[0_0_50px_rgba(37,99,235,0.5)] dark:hover:shadow-[0_0_50px_rgba(167,139,250,0.5)] transition-shadow"
             >
-              Start Exploration
-            </motion.a>
+              <Link
+                href="/courses"
+                className="px-8 py-4 rounded-2xl font-bold text-white text-base shadow-[0_0_30px_rgba(37,99,235,0.35)] dark:shadow-[0_0_30px_rgba(124,58,237,0.35)] bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-600 dark:to-purple-500 hover:shadow-[0_0_50px_rgba(37,99,235,0.5)] dark:hover:shadow-[0_0_50px_rgba(167,139,250,0.5)] transition-shadow block"
+              >
+                Start Exploration
+              </Link>
+            </motion.div>
 
-            <motion.a
-              href="/instructors"
+            <motion.div
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
-              className="px-8 py-4 rounded-2xl font-bold text-slate-700 dark:text-gray-300 text-base border border-slate-200 dark:border-white/10 hover:border-blue-500/50 dark:hover:border-violet-500/50 hover:bg-white dark:hover:bg-transparent bg-slate-50/50 dark:bg-white/5 transition-colors"
             >
-              Schedule Demo
-            </motion.a>
+              <Link
+                href="/instructors"
+                className="px-8 py-4 rounded-2xl font-bold text-slate-700 dark:text-gray-300 text-base border border-slate-200 dark:border-white/10 hover:border-blue-500/50 dark:hover:border-violet-500/50 hover:bg-white dark:hover:bg-transparent bg-slate-50/50 dark:bg-white/5 transition-colors block"
+              >
+                Schedule Demo
+              </Link>
+            </motion.div>
           </motion.div>
 
           {/* Social proof badges */}
@@ -685,22 +692,28 @@ export default function FeaturesPage() {
               education with EduNova's celestial toolset.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <motion.a
-                href="/auth/sign-up"
+              <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.97 }}
-                className="px-10 py-4 rounded-2xl font-black text-[10px] sm:text-xs uppercase tracking-widest text-white shadow-[0_0_30px_rgba(37,99,235,0.4)] dark:shadow-[0_0_30px_rgba(124,58,237,0.4)] bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-600 dark:to-purple-500 transition-all"
               >
-                Start Free Trial
-              </motion.a>
-              <motion.a
-                href="/courses"
+                <Link
+                  href="/auth/sign-up"
+                  className="px-10 py-4 rounded-2xl font-black text-[10px] sm:text-xs uppercase tracking-widest text-white shadow-[0_0_30px_rgba(37,99,235,0.4)] dark:shadow-[0_0_30px_rgba(124,58,237,0.4)] bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-600 dark:to-purple-500 transition-all block text-center"
+                >
+                  Start Free Trial
+                </Link>
+              </motion.div>
+              <motion.div
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
-                className="px-10 py-4 rounded-2xl font-black text-[10px] sm:text-xs uppercase tracking-widest text-slate-700 dark:text-gray-300 border border-slate-200 dark:border-white/10 hover:border-blue-500/50 dark:hover:border-violet-500/50 hover:bg-white dark:hover:bg-transparent bg-slate-50/50 dark:bg-white/5 transition-colors"
-               >
-                Browse Courses
-              </motion.a>
+              >
+                <Link
+                  href="/courses"
+                  className="px-10 py-4 rounded-2xl font-black text-[10px] sm:text-xs uppercase tracking-widest text-slate-700 dark:text-gray-300 border border-slate-200 dark:border-white/10 hover:border-blue-500/50 dark:hover:border-violet-500/50 hover:bg-white dark:hover:bg-transparent bg-slate-50/50 dark:bg-white/5 transition-colors block text-center"
+                 >
+                  Browse Courses
+                </Link>
+              </motion.div>
             </div>
           </div>
         </div>

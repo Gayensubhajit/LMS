@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu,
@@ -341,23 +342,24 @@ export default function Navbar() {
         transition={{ duration: 0.6, ease: "easeOut" }}
       >
         <div className="max-w-7xl w-full mx-auto px-6 flex items-center gap-4 h-18 py-4">
-          <motion.a
-            href="/"
-            className="flex items-center gap-2 group shrink-0 mr-8"
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="w-10 h-10 rounded-xl bg-linear-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:shadow-blue-500/50 transition-all duration-300">
-              <GraduationCap className="text-white" size={22} />
-            </div>
-            <span className="text-2xl font-black tracking-tighter drop-shadow-sm text-black dark:text-white">
-              Edu<span className="text-blue-600 dark:text-blue-400">Nova</span>
-            </span>
-          </motion.a>
+          <Link href="/">
+            <motion.div
+              className="flex items-center gap-2 group shrink-0 mr-8 cursor-pointer"
+              whileHover={{ scale: 1.02 }}
+            >
+              <div className="w-10 h-10 rounded-xl bg-linear-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:shadow-blue-500/50 transition-all duration-300">
+                <GraduationCap className="text-white" size={22} />
+              </div>
+              <span className="text-2xl font-black tracking-tighter drop-shadow-sm text-black dark:text-white">
+                Edu<span className="text-blue-600 dark:text-blue-400">Nova</span>
+              </span>
+            </motion.div>
+          </Link>
 
           <div className="hidden lg:flex items-center gap-8 shrink-0">
             {navLinks.map((link) => (
               <div key={link.label} className="flex items-center gap-8">
-                <motion.a
+                <Link
                   href={link.href}
                   className={`text-sm font-semibold transition-all relative group whitespace-nowrap ${
                     pathname === link.href
@@ -366,9 +368,9 @@ export default function Navbar() {
                   }`}
                 >
                   {link.label}
-                </motion.a>
+                </Link>
                 {link.label === "Courses" && isLoaded && user && (
-                  <motion.a
+                  <Link
                     href="/my-courses"
                     className={`text-sm font-semibold transition-all relative group whitespace-nowrap ${
                       pathname === "/my-courses"
@@ -377,7 +379,7 @@ export default function Navbar() {
                     }`}
                   >
                     My Learning
-                  </motion.a>
+                  </Link>
                 )}
               </div>
             ))}
@@ -601,18 +603,18 @@ export default function Navbar() {
             {isLoaded && !user && (
               <>
                 <ThemeToggle />
-                <a
+                <Link
                   href="/auth/sign-in"
                   className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white transition-colors"
                 >
                   Sign in
-                </a>
-                <a
+                </Link>
+                <Link
                   href="/auth/sign-up?plan=plus"
-                  className="px-5 py-2 bg-black dark:bg-white text-white dark:text-black text-sm font-bold rounded-full hover:opacity-85 transition-opacity"
+                  className="px-5 py-2 bg-black dark:bg-white text-white dark:text-black text-sm font-bold rounded-full hover:opacity-85 transition-opacity text-center"
                 >
                   Get started
-                </a>
+                </Link>
               </>
             )}
             {isLoaded && user && (
@@ -663,16 +665,16 @@ export default function Navbar() {
                       {(userRole === "ADMIN" ||
                         userRole === "INSTRUCTOR" ||
                         userRole === "SUPER_ADMIN") && (
-                        <a
+                        <Link
                           href="/admin"
                           onClick={() => setProfileOpen(false)}
                           className="flex items-center gap-3 px-4 py-2.5 text-sm text-violet-600 dark:text-violet-400 hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-colors border-b border-black/5 dark:border-white/5 bg-violet-600/5 mb-2"
                         >
                           <LayoutDashboard size={15} /> Admin Dashboard
-                        </a>
+                        </Link>
                       )}
                       {profileMenuItems.map((item) => (
-                        <a
+                        <Link
                           key={item.label}
                           href={item.href}
                           onClick={() => setProfileOpen(false)}
@@ -683,7 +685,7 @@ export default function Navbar() {
                             className="text-slate-400 dark:text-gray-500"
                           />{" "}
                           {item.label}
-                        </a>
+                        </Link>
                       ))}
                       <button
                         onClick={() => {
@@ -836,42 +838,45 @@ export default function Navbar() {
 
                 <div className="space-y-1">
                   {/* Main Links */}
-                  <a
+                  <Link
                     href="/courses"
                     className="block py-3.5 text-lg font-black text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/5 flex items-center justify-between group"
+                    onClick={() => setMobilePanel("none")}
                   >
                     Courses{" "}
                     <ChevronRight
                       size={18}
                       className="text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform"
                     />
-                  </a>
+                  </Link>
 
                   {isLoaded && user && (
-                    <a
+                    <Link
                       href="/my-courses"
                       className="block py-3.5 text-lg font-black text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/5 flex items-center justify-between group"
+                      onClick={() => setMobilePanel("none")}
                     >
                       My Learning{" "}
                       <ChevronRight
                         size={18}
                         className="text-emerald-500 group-hover:translate-x-1 transition-transform"
                       />
-                    </a>
+                    </Link>
                   )}
 
                   {navLinks.filter(l => l.label !== "Courses").map((l) => (
-                    <a
+                    <Link
                       key={l.label}
                       href={l.href}
                       className="block py-3.5 text-lg font-black text-slate-900 dark:text-white border-b border-slate-200 dark:border-white/5 flex items-center justify-between group"
+                      onClick={() => setMobilePanel("none")}
                     >
                       {l.label}{" "}
                       <ChevronRight
                         size={18}
                         className="text-blue-600 dark:text-blue-400 group-hover:translate-x-1 transition-transform"
                       />
-                    </a>
+                    </Link>
                   ))}
 
                   {isLoaded &&
@@ -879,16 +884,17 @@ export default function Navbar() {
                     (userRole === "ADMIN" ||
                       userRole === "INSTRUCTOR" ||
                       userRole === "SUPER_ADMIN") && (
-                      <a
+                      <Link
                         href="/admin"
                         className="block py-3.5 text-lg font-black text-amber-600 dark:text-amber-500 border-b border-slate-200 dark:border-white/5 flex items-center justify-between group"
+                        onClick={() => setMobilePanel("none")}
                       >
                         Admin Dashboard{" "}
                         <ChevronRight
                           size={18}
                           className="text-amber-600 dark:text-amber-500 group-hover:translate-x-1 transition-transform"
                         />
-                      </a>
+                      </Link>
                     )}
                 </div>
 
@@ -901,18 +907,20 @@ export default function Navbar() {
                   </button>
                 ) : (
                   <div className="space-y-4 pt-10">
-                    <a
+                    <Link
                       href="/auth/sign-in"
                       className="block w-full py-4 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-widest text-center shadow-lg shadow-blue-500/20"
+                      onClick={() => setMobilePanel("none")}
                     >
                       Sign In
-                    </a>
-                    <a
+                    </Link>
+                    <Link
                       href="/auth/sign-up?plan=plus"
                       className="block w-full py-4 border border-slate-300 dark:border-white/10 text-slate-900 dark:text-white rounded-2xl font-black uppercase tracking-widest text-center"
+                      onClick={() => setMobilePanel("none")}
                     >
                       Create Free Account
-                    </a>
+                    </Link>
                   </div>
                 )}
               </div>
@@ -933,6 +941,7 @@ export default function Navbar() {
                   </span>
                   <ThemeToggle />
                 </div>
+                {/* Account details in mobile menu */}
                 {[
                   { label: "Profile", href: "/profile", icon: User },
                   {
@@ -945,10 +954,11 @@ export default function Navbar() {
                   { label: "Accomplishments", href: "/profile", icon: Award },
                   { label: "Help Center", href: "/support", icon: HelpCircle },
                 ].map((item) => (
-                  <a
+                  <Link
                     key={item.label}
                     href={item.href}
                     className="flex items-center gap-4 py-4 border-b border-slate-200 dark:border-white/5 group"
+                    onClick={() => setMobilePanel("none")}
                   >
                     <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center group-hover:bg-violet-600 transition-colors">
                       <item.icon
@@ -959,7 +969,7 @@ export default function Navbar() {
                     <span className="text-sm font-bold text-slate-700 dark:text-gray-300 group-hover:text-slate-900 dark:group-hover:text-white">
                       {item.label}
                     </span>
-                  </a>
+                  </Link>
                 ))}
               </div>
             )}

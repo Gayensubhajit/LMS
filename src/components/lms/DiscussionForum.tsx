@@ -166,7 +166,7 @@ export default function DiscussionForum({ courseId, lessonId }: Props) {
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-full bg-violet-500/10 flex items-center justify-center border border-violet-500/20 overflow-hidden">
                   {threadDetail.author.avatarUrl ? (
-                    <img src={threadDetail.author.avatarUrl} className="w-full h-full object-cover" />
+                    <img src={threadDetail.author.avatarUrl} alt={threadDetail.author.fullName} className="w-full h-full object-cover" />
                   ) : (
                     <UserIcon size={20} className="text-violet-500" />
                   )}
@@ -192,7 +192,7 @@ export default function DiscussionForum({ courseId, lessonId }: Props) {
                     <div key={comment.id} className="flex gap-4 p-4 rounded-xl bg-slate-50 dark:bg-white/2 border border-slate-100 dark:border-white/5">
                       <div className="w-8 h-8 rounded-full bg-violet-500/10 shrink-0 border border-violet-500/10 overflow-hidden">
                         {comment.author.avatarUrl ? (
-                          <img src={comment.author.avatarUrl} className="w-full h-full object-cover" />
+                          <img src={comment.author.avatarUrl} alt={comment.author.fullName} className="w-full h-full object-cover" />
                         ) : (
                           <UserIcon size={16} className="m-2 text-violet-500" />
                         )}

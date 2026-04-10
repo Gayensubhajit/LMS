@@ -320,6 +320,28 @@ export default function LearnCoursePage() {
     setTimeout(() => setNoteSaved(false), 2000);
   };
 
+  // Helper to convert MM:SS to seconds
+  const timeToSeconds = (timeStr: string) => {
+    if (!timeStr) return 0;
+    const parts = timeStr.split(":").map(Number);
+    if (parts.length === 2) return parts[0] * 60 + parts[1];
+    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    return 0;
+  };
+
+  const transcript = activeLesson?.content?.transcript ?? [];
+  const resources = activeLesson?.content?.resources ?? [];
+  const lessonNote = activeLesson?.content?.notes ?? "";
+
+  const activeTranscriptIndex = useMemo(() => {
+    return transcript.findIndex((entry, i) => {
+      const nextEntry = transcript[i + 1];
+      const entrySec = timeToSeconds(entry.time);
+      const nextSec = nextEntry ? timeToSeconds(nextEntry.time) : Infinity;
+      return activeTime >= entrySec && activeTime < nextSec;
+    });
+  }, [transcript, activeTime]);
+
   // ── Guards ────────────────────────────────────────────────────────────────
 
   // Check if data is loaded
@@ -374,27 +396,6 @@ export default function LearnCoursePage() {
   const totalLessons = lessonItems.length;
   const nextLesson = lessonItems[currentIdx + 1];
 
-  // Helper to convert MM:SS to seconds
-  const timeToSeconds = (timeStr: string) => {
-    if (!timeStr) return 0;
-    const parts = timeStr.split(":").map(Number);
-    if (parts.length === 2) return parts[0] * 60 + parts[1];
-    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
-    return 0;
-  };
-
-  const transcript = activeLesson?.content?.transcript ?? [];
-  const resources = activeLesson?.content?.resources ?? [];
-  const lessonNote = activeLesson?.content?.notes ?? "";
-
-  const activeTranscriptIndex = useMemo(() => {
-    return transcript.findIndex((entry, i) => {
-      const nextEntry = transcript[i + 1];
-      const entrySec = timeToSeconds(entry.time);
-      const nextSec = nextEntry ? timeToSeconds(nextEntry.time) : Infinity;
-      return activeTime >= entrySec && activeTime < nextSec;
-    });
-  }, [transcript, activeTime]);
 
   // ── Loading UI ────────────────────────────────────────────────────────────
   if (!isLoaded || loading) {

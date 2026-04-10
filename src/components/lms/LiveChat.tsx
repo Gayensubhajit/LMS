@@ -155,7 +155,7 @@ export default function LiveChat({ courseId, courseTitle }: Props) {
                       >
                         <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-white/10 shrink-0 overflow-hidden border border-slate-200 dark:border-white/10">
                           {msg.avatar ? (
-                            <img src={msg.avatar} className="w-full h-full object-cover" />
+                            <img src={msg.avatar} alt={msg.author} className="w-full h-full object-cover" />
                           ) : (
                             <span className="text-[10px] flex items-center justify-center h-full font-bold">
                               {msg.author[0]}

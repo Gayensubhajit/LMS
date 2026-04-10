@@ -146,7 +146,7 @@ export default function AdminAnalyticsPage() {
                       <td className="py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full bg-white/5 border border-white/10 overflow-hidden">
-                            {sale.user.avatarUrl ? <img src={sale.user.avatarUrl} className="w-full h-full object-cover" /> : null}
+                            {sale.user.avatarUrl ? <img src={sale.user.avatarUrl} alt={sale.user.fullName} className="w-full h-full object-cover" /> : null}
                           </div>
                           <span className="text-[11px] font-bold text-gray-300">{sale.user.fullName}</span>
                         </div>

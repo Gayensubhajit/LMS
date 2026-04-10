@@ -45,7 +45,6 @@
         "@tsparticles/slim": "^3.9.1",
         "@types/canvas-confetti": "^1.9.0",
         "@types/socket.io": "^3.0.1",
-        "@types/socket.io-client": "^1.4.36",
         "@types/three": "^0.183.1",
         "@vercel/analytics": "^2.0.1",
         "canvas-confetti": "^1.9.4",

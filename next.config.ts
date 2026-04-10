@@ -1,9 +1,18 @@
 import type { NextConfig } from "next";
 
+import withPWA from "next-pwa";
+
 // Loader path from orchids-visual-edits - use direct resolve to get the actual file
 const loaderPath = require.resolve('orchids-visual-edits/loader.js');
 
-const nextConfig: NextConfig = {
+const pwaConfig = withPWA({
+  dest: "public",
+  disable: process.env.NODE_ENV === "development",
+  register: true,
+  skipWaiting: true,
+});
+
+const nextConfig: NextConfig = pwaConfig({
   images: {
     remotePatterns: [
       {
@@ -32,6 +41,6 @@ const nextConfig: NextConfig = {
     }
   },
   allowedDevOrigins: ['*.orchids.page'],
-} as NextConfig;
+}) as NextConfig;
 
 export default nextConfig;

@@ -1,5 +1,9 @@
+import "reflect-metadata";
 import express from "express";
 import cors from "cors";
+import { ApolloServer } from "@apollo/server";
+import { expressMiddleware } from "@apollo/server/express4";
+import { createSchema } from "./graphql/schema.js";
 import { env } from "./config/env.js";
 import { handleClerkWebhook } from "./routes/clerk-webhook.js";
 import { coursesRouter } from "./routes/courses.js";
@@ -23,6 +27,7 @@ import { prisma } from "./lib/prisma.js";
 import { usersRouter } from "./routes/users.js";
 import { clerkMiddleware } from "@clerk/express";
 import { extractClerkUserId } from "./lib/clerkMiddleware.js";
+import { forumsRouter } from "./routes/forums.js";
 import { quizzesRouter } from "./routes/quizzes.js";
 import { notesRouter } from "./routes/notes.js";
 import { aiRouter } from "./routes/ai.js";
@@ -253,13 +258,24 @@ app.use("/admin", adminRouter);
 app.use("/reviews", reviewsRouter);
 app.use("/quizzes", quizzesRouter);
 app.use("/notes", notesRouter);
+app.use("/forums", forumsRouter);
 app.use("/ai", aiRouter);
 app.use("/gamification", gamificationRouter);
 
 autoSeed()
-  .then(() => {
+  .then(async () => {
+    // GraphQL Setup
+    const schema = await createSchema();
+    const apolloServer = new ApolloServer({
+      schema,
+    });
+    await apolloServer.start();
+
+    app.use("/graphql", expressMiddleware(apolloServer) as any);
+
     app.listen(env.PORT, () => {
       console.log(`Backend running on http://localhost:${env.PORT}`);
+      console.log(`GraphQL endpoint: http://localhost:${env.PORT}/graphql`);
     });
   })
   .catch((err) => {

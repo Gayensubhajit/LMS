@@ -3,6 +3,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { getUserFromHeader } from "../lib/auth.js";
 import { prisma } from "../lib/prisma.js";
+import { logActivity } from "../services/activity.js";
 
 export const progressRouter = Router();
 
@@ -128,28 +129,41 @@ progressRouter.post("/lessons/:lessonId", async (req, res) => {
       }
     });
 
+    // Fetch user's display name for activity messages
+    const userData = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { fullName: true, isNameVerified: true, verifiedName: true }
+    });
+    const displayName = userData?.isNameVerified ? userData.verifiedName : (userData?.fullName || "A student");
+
     if (completedCount === allCourseLessons.length) {
       // 100% Complete! Issue certificate.
+      const courseName = await prisma.course.findUnique({ where: { id: courseId }, select: { title: true } });
       await prisma.certificate.upsert({
-        where: {
-          userId_courseId: {
-            userId: user.id,
-            courseId: courseId
-          }
-        },
-        create: {
-          userId: user.id,
-          courseId: courseId
-        },
-        update: {} // already exists, just keep it
+        where: { userId_courseId: { userId: user.id, courseId } },
+        create: { userId: user.id, courseId },
+        update: {}
       });
+      // Log certificate to global feed
+      await logActivity(
+        user.id,
+        "CERTIFICATE",
+        `🎓 ${displayName} just earned a Certificate in "${courseName?.title || "a course"}"!`,
+        { courseId }
+      );
     }
 
-    // Award 50 XP for completing a lesson
+    // Award 50 XP for completing a lesson and log it
     await prisma.user.update({
       where: { id: user.id },
       data: { xp: { increment: 50 } }
     });
+    await logActivity(
+      user.id,
+      "RANK_UP",
+      `⚡ ${displayName} completed a lesson and earned 50 XP!`,
+      { xp: 50 }
+    );
   }
 
   return res.status(200).json({ 

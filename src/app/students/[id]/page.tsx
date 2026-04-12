@@ -13,7 +13,11 @@ import {
   Zap,
   Target,
   Sparkles,
-  Calendar
+  Calendar,
+  Share2,
+  Link2,
+  Check,
+  Linkedin
 } from "lucide-react";
 import Navbar from "@/components/lms/Navbar";
 import { backendRequest } from "@/lib/backend-client";
@@ -26,6 +30,21 @@ export default function StudentProfilePage() {
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleLinkedInShare = () => {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent(
+      `I've earned ${profile?.badges?.length || 0} badges and ${profile?.certificates?.length || 0} certificates on EduNova LMS! Check out my learning portfolio 🚀`
+    );
+    window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}&summary=${text}`, "_blank");
+  };
 
   useEffect(() => {
     async function fetchProfile() {
@@ -124,6 +143,29 @@ export default function StudentProfilePage() {
               </motion.div>
             )}
           </div>
+
+          {/* Share Action Bar */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="flex items-center gap-3 mt-8 flex-wrap"
+          >
+            <button
+              onClick={handleLinkedInShare}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#0077B5] hover:bg-[#006097] text-white font-black text-xs uppercase tracking-widest transition-all shadow-lg shadow-[#0077B5]/30 active:scale-95"
+            >
+              <Linkedin className="w-4 h-4" />
+              Share on LinkedIn
+            </button>
+            <button
+              onClick={handleCopyLink}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:border-indigo-500/40 text-slate-600 dark:text-slate-300 font-black text-xs uppercase tracking-widest transition-all active:scale-95"
+            >
+              {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Link2 className="w-4 h-4" />}
+              {copied ? "Copied!" : "Copy Link"}
+            </button>
+          </motion.div>
         </div>
 
         {/* Global Stats */}

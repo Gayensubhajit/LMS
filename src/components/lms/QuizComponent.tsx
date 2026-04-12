@@ -11,9 +11,12 @@ import {
   RefreshCcw, 
   XCircle, 
   Trophy,
-  Brain
+  Brain,
+  Sparkles,
+  Zap
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLearningContext } from "@/contexts/LearningContext";
 
 interface Option {
   id: string;
@@ -40,6 +43,7 @@ interface Attempt {
 
 interface QuizComponentProps {
   sectionId: string;
+  lessonId?: string; // Optional lessonId for AI context
   onSuccess?: (xpAwarded: number, badgeEarned: any) => void;
 }
 
@@ -53,11 +57,17 @@ export default function QuizComponent({ sectionId, onSuccess }: QuizComponentPro
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const { transcript, lessonId: contextLessonId } = useLearningContext();
+  const [isAiChallenge, setIsAiChallenge] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [aiAnswers, setAiAnswers] = useState<Record<string, string>>({}); // correct answers for AI quizzes
+
   const [result, setResult] = useState<{
     score: number;
     total: number;
     passed: boolean;
     results: { questionId: string; isCorrect: boolean; correctOptionId: string }[];
+    xpAwarded?: number;
   } | null>(null);
 
   useEffect(() => {
@@ -91,38 +101,106 @@ export default function QuizComponent({ sectionId, onSuccess }: QuizComponentPro
     setSelectedOptions(prev => ({ ...prev, [questionId]: optionId }));
   };
 
+  const startAiChallenge = async () => {
+    if (!transcript) return;
+    setIsGenerating(true);
+    setError(null);
+
+    try {
+      const data = await backendRequest<{ ok: boolean; quiz: { questions: any[] } }>("/quizzes/ai-challenge/generate", {
+        method: "POST",
+        body: { transcript, lessonId: contextLessonId }
+      });
+
+      if (data.ok) {
+        // Map correct answers for verification
+        const answers: Record<string, string> = {};
+        const cleanedQuestions = data.quiz.questions.map((q: any) => {
+          answers[q.id] = q.correctOptionId;
+          return {
+            id: q.id,
+            text: q.text,
+            options: q.options
+          };
+        });
+
+        setQuiz({
+          id: "ai-challenge",
+          title: "AI Dynamic Challenge",
+          questions: cleanedQuestions
+        });
+        setAiAnswers(answers);
+        setIsAiChallenge(true);
+        setCurrentQuestionIdx(0);
+        setSelectedOptions({});
+      }
+    } catch (err: any) {
+      setError("AI was unable to generate a quiz for this lesson. Try again in a moment.");
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   const handleSubmit = async () => {
     if (!quiz || submitting) return;
     setSubmitting(true);
     
     try {
-      const answers = Object.entries(selectedOptions).map(([questionId, optionId]) => ({
-        questionId,
-        optionId
-      }));
+      if (isAiChallenge) {
+        // Handle AI submission
+        let score = 0;
+        const results = quiz.questions.map(q => {
+          const isCorrect = selectedOptions[q.id] === aiAnswers[q.id];
+          if (isCorrect) score++;
+          return { questionId: q.id, isCorrect, correctOptionId: aiAnswers[q.id] };
+        });
 
-      const data = await backendRequest<{
-        ok: boolean;
-        item: {
-          score: number;
-          total: number;
-          passed: boolean;
-          results: any[];
-          attempt: Attempt;
-          xpAwarded?: number;
-          badgeEarned?: any;
+        const res = await backendRequest<{ ok: boolean, xpAwarded: number, passed: boolean }>("/quizzes/ai-challenge/submit", {
+          method: "POST",
+          body: { score, total: quiz.questions.length, lessonId: contextLessonId }
+        });
+
+        setResult({
+          score,
+          total: quiz.questions.length,
+          passed: res.passed,
+          results,
+          xpAwarded: res.xpAwarded
+        });
+        
+        if (res.xpAwarded > 0) {
+          onSuccess?.(res.xpAwarded, null);
         }
-      }>(`/quizzes/${quiz.id}/submit`, {
-        method: "POST",
-        clerkUserId: user?.id,
-        body: { answers }
-      });
+      } else {
+        // Standard submission logic
+        const answers = Object.entries(selectedOptions).map(([questionId, optionId]) => ({
+          questionId,
+          optionId
+        }));
 
-      if (data.ok) {
-        setResult(data.item);
-        setLastAttempt(data.item.attempt);
-        if (data.item.xpAwarded || data.item.badgeEarned) {
-          onSuccess?.(data.item.xpAwarded || 0, data.item.badgeEarned);
+        const data = await backendRequest<{
+          ok: boolean;
+          item: {
+            score: number;
+            total: number;
+            passed: boolean;
+            results: any[];
+            attempt: Attempt;
+            xpAwarded?: number;
+            badgeEarned?: any;
+          }
+        }>(`/quizzes/${quiz.id}/submit`, {
+          method: "POST",
+          clerkUserId: user?.id,
+          body: { answers }
+        });
+
+        if (data.ok) {
+          setResult(data.item);
+          setLastAttempt(data.item.attempt);
+          if (data.item.xpAwarded || data.item.badgeEarned) {
+            onSuccess?.(data.item.xpAwarded || 0, data.item.badgeEarned);
+          }
         }
       }
     } catch (err: any) {
@@ -143,11 +221,27 @@ export default function QuizComponent({ sectionId, onSuccess }: QuizComponentPro
 
   if (error || !quiz) {
     return (
-      <div className="p-8 text-center bg-red-50 dark:bg-red-950/10 rounded-2xl border border-red-100 dark:border-red-900/20">
-        <Brain className="w-10 h-10 text-red-500 mx-auto mb-3 opacity-50" />
-        <p className="text-red-600 dark:text-red-400 text-sm font-bold">
-          {error || "No quiz available for this section yet."}
+      <div className="p-8 sm:p-12 text-center bg-slate-50 dark:bg-white/2 rounded-[3rem] border border-slate-200 dark:border-white/5 flex flex-col items-center">
+        <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-500 mb-6">
+          <Brain size={32} />
+        </div>
+        <h4 className="text-xl font-black text-slate-900 dark:text-white mb-2 uppercase tracking-tight">No Assessment Found</h4>
+        <p className="text-sm text-slate-500 dark:text-gray-400 max-w-xs mb-8 font-medium">
+          This lesson doesn't have a structured quiz yet, but we can generate an **AI Challenge** just for you!
         </p>
+        <button
+          onClick={startAiChallenge}
+          disabled={isGenerating || !transcript}
+          className="px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl text-xs font-black uppercase tracking-widest shadow-xl shadow-blue-500/30 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 "
+        >
+          {isGenerating ? <Loader2 size={16} className="animate-spin" /> : <Sparkles size={16} />}
+          {isGenerating ? "Generating..." : "Start AI Challenge (+100 XP)"}
+        </button>
+        {!transcript && (
+          <p className="mt-4 text-[10px] text-rose-500 font-bold uppercase tracking-widest">
+            Please wait for transcript to load...
+          </p>
+        )}
       </div>
     );
   }
@@ -171,10 +265,12 @@ export default function QuizComponent({ sectionId, onSuccess }: QuizComponentPro
             <div className="flex items-center justify-between px-2">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center">
-                  <Brain className="text-violet-500" size={20} />
+                  {isAiChallenge ? <Sparkles className="text-blue-500" size={20} /> : <Brain className="text-violet-500" size={20} />}
                 </div>
                 <div>
-                  <h3 className="text-lg font-black text-slate-900 dark:text-white leading-none">Section Quiz</h3>
+                  <h3 className="text-lg font-black text-slate-900 dark:text-white leading-none">
+                    {isAiChallenge ? "AI Dynamic Challenge" : "Section Quiz"}
+                  </h3>
                   <p className="text-[10px] text-slate-500 dark:text-gray-500 uppercase tracking-widest mt-1.5 font-bold">
                     Question {currentQuestionIdx + 1} of {quiz.questions.length}
                   </p>
@@ -268,9 +364,15 @@ export default function QuizComponent({ sectionId, onSuccess }: QuizComponentPro
             <h2 className="text-4xl font-black text-slate-900 dark:text-white mb-2 leading-tight">
               {result.passed ? "Nicely Done!" : "Almost There!"}
             </h2>
+            {result.xpAwarded && result.xpAwarded > 0 && (
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 font-bold text-[10px] uppercase tracking-widest mb-4">
+                <Zap size={12} fill="currentColor" /> +{result.xpAwarded} XP Earned
+              </div>
+            )}
             <p className="text-slate-500 dark:text-gray-400 font-medium max-w-sm mx-auto mb-10">
               You scored <span className="text-slate-900 dark:text-white font-black">{result.score}</span> out of <span className="text-slate-900 dark:text-white font-black">{result.total}</span>. 
-              {result.passed 
+              {isAiChallenge ? " Your custom AI Challenge results are calculated in real-time." : 
+                result.passed 
                 ? " You've demonstrated a strong understanding of this section's core concepts."
                 : " We recommend reviewing the section material and retrying to hit the 80% passing threshold."}
             </p>

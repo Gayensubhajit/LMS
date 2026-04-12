@@ -242,3 +242,32 @@ gamificationRouter.get("/activity", async (req, res) => {
     return res.status(500).json({ ok: false, error: "Internal server error" });
   }
 });
+// GET /gamification/pulse - Get live platform statistics
+gamificationRouter.get("/pulse", async (req, res) => {
+  try {
+    const fifteenMinsAgo = new Date(Date.now() - 15 * 60 * 1000);
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const [activeCount, todayWins] = await Promise.all([
+      prisma.user.count({
+        where: {
+          lastActivityAt: { gte: fifteenMinsAgo }
+        }
+      }),
+      prisma.activity.count({
+        where: {
+          createdAt: { gte: startOfToday }
+        }
+      })
+    ]);
+
+    return res.json({ 
+      ok: true, 
+      activeStudents: Math.max(activeCount, 1), 
+      todayWins 
+    });
+  } catch (err) {
+    return res.status(500).json({ ok: false, error: "Internal server error" });
+  }
+});

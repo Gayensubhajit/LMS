@@ -154,10 +154,10 @@ export default function EduBot() {
                   `}>
                     {msg.sender === "bot" ? (
                       <div className="prose dark:prose-invert prose-sm max-w-none 
-                        prose-p:leading-relaxed prose-p:mb-2 last:prose-p:mb-0
-                        prose-headings:text-slate-900 dark:prose-headings:text-white prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tight prose-headings:mt-4 prose-headings:mb-2
+                        prose-p:leading-normal prose-p:mb-2 last:prose-p:mb-0
+                        prose-headings:text-slate-900 dark:prose-headings:text-white prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tight prose-headings:mt-2 prose-headings:mb-1 prose-h3:text-sm
                         prose-ul:list-disc prose-ul:pl-4 prose-ul:mb-2
-                        prose-li:mb-1
+                        prose-li:mb-0.5
                         prose-strong:text-indigo-600 dark:prose-strong:text-violet-400 prose-strong:font-black
                       ">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>

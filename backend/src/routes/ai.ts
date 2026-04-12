@@ -52,21 +52,33 @@ Badges on EduNova are more than just icons—they are **Proof of Competence**.
 
 > **Pro Tip:** Sharing your badges on LinkedIn or Twitter increases your Profile Visibility score by 20%!`;
       suggestions = ["Show all badges", "How to get Certified?"];
-    } else if (query.includes("hello") || query.includes("hi") || query.includes("hey")) {
+    } else if (query.includes("who are you") || query.includes("your name") || query.includes("what are you")) {
+      response = `### 👋 I am EduBot!
+
+I am your **Senior Learning Strategist** and personal AI tutor here at **EduNova**. 
+
+My goal is to help you:
+*   **Architect** your career roadmap in AI and Tech.
+*   **Navigate** the course catalog to find the perfect skills.
+*   **Optimize** your gamification strategy to climb the leaderboard.
+
+How can I assist your learning journey today?`;
+      suggestions = ["Show AI Roadmap", "How to earn XP?"];
+    } else if (query.includes("hello") || query.includes("hi") || query.includes("hey") || query.includes("greetings")) {
       response = "Hello! I am **EduBot**, your Senior Learning Strategist. I'm here to help you architect your career in AI and Development. \n\nWhat high-income skill are we mastering today?";
       suggestions = ["AI Roadmap", "UI/UX Path", "How gamification works?"];
     } else {
-      response = `### 🧠 Intelligent Assistant Mode
+      response = `### 🔍 EduNova Learning Assistant
 
-That's a fascinating area to explore! Within the **EduNova Ecosystem**, you have access to industry-vetted materials on that topic.
+I'm not quite sure about that specific topic yet, but I can definitely help you navigate the **EduNova Ecosystem**.
 
-**Next Steps:**
-*   Check the **Course Catalog** for specialized tracks.
-*   Ask me for a **Deep Dive** into specific technical concepts.
-*   Check your **Roadmap** to see how this fits into your career.
+**You might be looking for:**
+*   **The Roadmap:** A structured path to mastering AI Engineering.
+*   **The Leaderboard:** See how you rank against other top students.
+*   **The Portfolio:** Showcase your earned badges and certificates.
 
-How can I help you specialize further?`;
-      suggestions = ["Course Catalog", "Personal Roadmap"];
+What would you like to explore first?`;
+      suggestions = ["View Roadmap", "Check Leaderboard", "My Portfolio"];
     }
 
     // Small delay to simulate "thinking"

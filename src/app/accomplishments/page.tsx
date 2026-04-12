@@ -24,6 +24,7 @@ import { SignIn, useUser } from "@clerk/nextjs";
 import { backendRequest } from "@/lib/backend-client";
 import BadgeCard from "@/components/lms/BadgeCard";
 import { dark } from "@clerk/themes";
+import PortfolioStats from "@/components/lms/PortfolioStats";
 interface Certificate {
   id: string;
   certificateId: string;
@@ -44,6 +45,11 @@ export default function AccomplishmentsPage() {
   const [certificates, setCertificates] = useState<any[]>([]);
   const [badges, setBadges] = useState<any[]>([]);
   const [userBadges, setUserBadges] = useState<any[]>([]);
+  const [stats, setStats] = useState<{ xp: number; level: number; rank: string | number }>({
+    xp: 0,
+    level: 1,
+    rank: "...",
+  });
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isChangingName, setIsChangingName] = useState(false);
@@ -71,10 +77,20 @@ export default function AccomplishmentsPage() {
         const badgesRes = await backendRequest<{ ok: boolean, badges: any[] }>("/gamification/badges");
         if (badgesRes.ok) setBadges(badgesRes.badges);
 
-        const userBadgesRes = await backendRequest<{ ok: boolean, userBadges: any[] }>("/gamification/me", {
+        const userBadgesRes = await backendRequest<{ ok: boolean, item?: any }>("/gamification/me", {
           clerkUserId: user?.id
         });
-        if (userBadgesRes.ok) setUserBadges(userBadgesRes.userBadges || []);
+        if (userBadgesRes.ok && userBadgesRes.item) {
+          setUserBadges(userBadgesRes.item.badges || []);
+          setStats(s => ({ ...s, xp: userBadgesRes.item.xp, level: userBadgesRes.item.level }));
+        }
+
+        // Fetch leaderboard for rank
+        const leaderboardRes = await backendRequest<{ ok: boolean, leaderboard: any[] }>("/gamification/leaderboard");
+        if (leaderboardRes.ok) {
+          const myRank = leaderboardRes.leaderboard.findIndex(u => u.name === (profile?.verifiedName || user?.fullName)) + 1;
+          if (myRank > 0) setStats(s => ({ ...s, rank: myRank }));
+        }
       } catch (err) {
         console.error("Failed to fetch accomplishments:", err);
       } finally {
@@ -122,66 +138,100 @@ export default function AccomplishmentsPage() {
       <Navbar />
       <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-32 pb-24">
         {/* Header Section */}
-        <div className="mb-12">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-3xl md:text-6xl font-black bg-clip-text text-transparent bg-linear-to-r from-slate-900 via-blue-900 to-indigo-900 dark:from-white dark:via-slate-200 dark:to-slate-400 mb-4 uppercase tracking-tighter italic break-words w-full"
+        <div className="mb-12 relative">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-4 mb-6"
           >
-            Accomplishments
-          </motion.h1>
+            <div className="h-px w-12 bg-blue-500/50 dark:bg-violet-500/50" />
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-blue-600 dark:text-violet-400">
+              Student Records
+            </span>
+          </motion.div>
+          
+          <div className="relative inline-block">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-4xl md:text-8xl font-black bg-clip-text text-transparent bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 dark:from-white dark:via-blue-200 dark:to-violet-400 mb-6 uppercase tracking-[-0.04em] leading-none"
+            >
+              Accomplishments
+            </motion.h1>
+            {/* Subtle floating glow behind text */}
+            <div className="absolute -inset-10 bg-blue-500/10 dark:bg-violet-500/10 blur-[100px] -z-10 rounded-full animate-pulse" />
+          </div>
+
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-slate-500 dark:text-slate-400 md:text-lg max-w-2xl font-medium whitespace-break-spaces"
+            className="text-slate-500 dark:text-slate-400 md:text-xl max-w-2xl font-medium leading-relaxed"
           >
-            Track your milestones, view earned credentials, and share your path
-            to mastery with the world.
+            A prestigious gallery of your certificates, badges, and learning milestones.
           </motion.p>
         </div>
-        {/* Name Verification Card */}
+        {/* Portfolio Stats Hero */}
+        <PortfolioStats stats={{
+          totalBadges: (userBadges || []).length,
+          totalCertificates: (certificates || []).length,
+          totalXp: stats.xp,
+          rank: stats.rank
+        }} />
+
+        {/* Name Verification Card - Redesigned */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="relative group mb-16 rounded-[2rem] overflow-hidden"
+          className="relative mb-20 group"
         >
-          <div className="absolute -inset-1 bg-linear-to-r from-blue-500/20 to-indigo-500/20 dark:from-violet-500/10 dark:to-fuchsia-500/10 rounded-[2rem] blur opacity-75 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
-          <div className="relative bg-white dark:bg-slate-900/40 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl shadow-slate-200/50 dark:shadow-none transition-colors duration-700">
-            <div className="flex flex-col sm:flex-row items-start gap-6 min-w-0">
-              <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-blue-500/10 to-indigo-500/10 dark:from-violet-500/20 dark:to-fuchsia-500/20 flex items-center justify-center border border-blue-500/10 dark:border-white/10 shrink-0">
-                <ShieldCheck className="w-8 h-8 text-blue-600 dark:text-violet-400" />
-              </div>
-              <div className="min-w-0">
-                <h2 className="text-xl font-black text-slate-900 dark:text-white mb-2 uppercase tracking-tight">
-                  Identity Verification
-                </h2>
-                {/* FIX: flex-wrap + break-all to prevent long names overflowing */}
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-slate-500 dark:text-slate-300 mb-3 font-medium">
-                  <span>Your name,</span>
-                  <span className="font-black text-blue-600 dark:text-violet-400 break-all">
-                    {profile?.verifiedName || user?.fullName || "Not Verified"}
-                  </span>
-                  <span>
-                    is {profile?.isNameVerified ? "verified" : "not verified"}.
-                  </span>
-                  {profile?.isNameVerified && (
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                  )}
+          {/* Decorative mesh background */}
+          <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-transparent to-violet-500/5 rounded-[3rem] -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+          
+          <div className="relative bg-white/70 dark:bg-slate-900/40 backdrop-blur-2xl border border-slate-200/50 dark:border-white/10 rounded-[2.5rem] p-10 flex flex-col lg:flex-row items-center justify-between gap-10 shadow-2xl shadow-indigo-500/5">
+            <div className="flex flex-col md:flex-row items-center lg:items-start gap-8 text-center md:text-left">
+              <div className="relative shrink-0">
+                <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center border-4 border-white dark:border-slate-800 shadow-xl relative z-10 rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                  <ShieldCheck className="w-12 h-12 text-white" />
                 </div>
-                <p className="text-sm text-slate-400 dark:text-slate-500 max-w-lg font-medium">
-                  This is the name that will appear on your official EduNova
-                  certificates. Ensure it matches your government-issued ID.
-                </p>
+                {/* Orbital Rings */}
+                <div className="absolute inset-0 w-24 h-24 rounded-3xl border-2 border-blue-500/20 scale-125 animate-ping opacity-20" />
+              </div>
+
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-3 justify-center md:justify-start">
+                  <h2 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                    Identity Status
+                  </h2>
+                  <div className={`
+                    px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border
+                    ${profile?.isNameVerified 
+                      ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" 
+                      : "bg-amber-500/10 text-amber-600 border-amber-500/20 animate-pulse"}
+                  `}>
+                    {profile?.isNameVerified ? "Verified" : "Action Required"}
+                  </div>
+                </div>
+
+                <div className="text-slate-600 dark:text-slate-300 mb-4 max-w-xl font-medium text-lg leading-snug">
+                  Currently registered as <span className="text-blue-600 dark:text-violet-400 font-black">{profile?.verifiedName || user?.fullName || "Not Verified"}</span>. 
+                  This name is legally bound to your official learning credentials.
+                </div>
+
+                <div className="flex items-center gap-4 text-xs font-bold text-slate-400 dark:text-slate-500">
+                  <CheckCircle2 className={`w-4 h-4 ${profile?.isNameVerified ? "text-emerald-500" : "text-slate-300"}`} />
+                  Certificate Integrity System Active
+                </div>
               </div>
             </div>
+
             <button
               onClick={() => setIsChangingName(true)}
-              className="px-6 py-3 bg-slate-50 hover:bg-slate-100 dark:bg-white/5 dark:hover:bg-white/10 border border-slate-200 dark:border-white/10 rounded-xl font-black text-[10px] uppercase tracking-widest text-slate-700 dark:text-white transition-all flex items-center gap-2 group/btn shrink-0 shadow-sm"
+              className="px-10 py-5 bg-slate-900 dark:bg-white hover:bg-black dark:hover:bg-slate-100 text-white dark:text-slate-900 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all shadow-xl shadow-slate-900/20 dark:shadow-white/5 flex items-center gap-3 active:scale-95 group/btn shrink-0"
             >
-              <UserCheck className="w-4 h-4 text-blue-500 dark:text-violet-400" />
-              Request Change
+              Update Credentials
+              <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
             </button>
           </div>
         </motion.div>

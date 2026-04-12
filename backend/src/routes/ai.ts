@@ -1,9 +1,19 @@
 import { Router } from "express";
 import { prisma } from "../lib/prisma.js";
 
+import { env } from "../config/env.js";
+
 export const aiRouter = Router();
 
-// POST /ai/chat - Simple context-aware AI tutor
+interface OpenRouterResponse {
+  choices: {
+    message: {
+      content: string;
+    };
+  }[];
+}
+
+// POST /ai/chat - Real-time AI tutor powered by OpenRouter
 aiRouter.post("/chat", async (req, res) => {
   const { message, context } = req.body;
 
@@ -11,86 +21,88 @@ aiRouter.post("/chat", async (req, res) => {
     return res.status(400).json({ ok: false, error: "Message is required" });
   }
 
+  // If no API key, fallback to local expert logic
+  if (!env.OPENROUTER_API_KEY) {
+    return handleMockResponse(message, res);
+  }
+
   try {
-    const query = message.toLowerCase();
-    let response = "";
-    let suggestions: string[] = [];
+    const systemPrompt = `
+      You are EduBot, the Senior Learning Strategist and AI Tutor at EduNova.
+      EduNova is a prestige LMS platform specializing in AI, UI/UX, and Engineering.
+      
+      Your Personality:
+      - Expert, professional, and highly structured.
+      - Uses Markdown (headers, bold, lists) to organize complex information.
+      - Encouraging but "no bakwas" (direct and accurate).
+      - Always provides "Pro Tips" for career growth.
 
-    // Expert Context-Aware Logic
-    if (query.includes("roadmap") || query.includes("road map")) {
-      response = `### 🚀 Expert AI Engineer Roadmap 2026
+      Context of the Platform:
+      - Gamification: Students earn XP (100 per lesson, 500 per quiz) to rank on the Global Leaderboard.
+      - Badges: speed demon, quiz master, note titan.
+      - Portfolio: Users have public profile pages showcasing their achievements.
+      - Current Page Context: The user is currently on ${context || 'the homepage'}.
 
-To master AI Engineering, I recommend follow this high-velocity path:
+      Your Task:
+      - Answer technical questions accurately.
+      - Create structured roadmaps when asked.
+      - Provide strategies to climb the leaderboard if relevant.
+      - Keep responses within a reasonable window size but detailed enough to be expert-level.
+    `;
 
-1. **Foundations (Month 1):** Master Python for Data Science and Deep Learning math. 
-2. **Architecture (Month 2-3):** Deep dive into Transformers, LLM Fine-tuning, and RAG (Retrieval Augmented Generation).
-3. **Deployment (Month 4+):** Focus on AI Ops, Vector Databases (Pinecone/Milvus), and scaling autonomous agents.
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${env.OPENROUTER_API_KEY}`,
+        "Content-Type": "application/json",
+        "HTTP-Referer": "https://edunova-lms.vercel.app",
+        "X-Title": "EduNova LMS"
+      },
+      body: JSON.stringify({
+        model: "openai/gpt-4o-mini", // High-velocity expert model
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: message }
+        ],
+        temperature: 0.7,
+        max_tokens: 1000
+      })
+    });
 
-> **💡 Pro Tip:** Don't just learn theory. Build 3 projects: a RAG-based Chatbot, a Fine-tuned Llama model, and an Autonomous Agent.
+    const data: OpenRouterResponse = await response.json();
+    const aiResponse = data.choices?.[0]?.message?.content || "I'm currently processing that. Could you try rephrasing?";
 
-Would you like me to detail Level 1?`;
-      suggestions = ["Detail Level 1", "Easiest AI projects", "Tools for 2026"];
-    } else if (query.includes("rank") || query.includes("leaderboard")) {
-      response = `### 🏆 Climbing the Global Leaderboard
-
-The leaderboard is a real-time reflection of your **Learning Velocity**. Here is how to dominate:
-
-*   **Consistency:** Completing one lesson daily gives you a 1.5x Streak Multiplier.
-*   **Quiz Mastery:** Perfect scores grant a **Legendary Badge** and 500 bonus XP.
-*   **Active Engagement:** Participating in forums and taking high-quality notes also boosts your visibility.
-
-**Current Strategy:** Focus on the 'AI Engineering' course—it has the highest XP yield per lesson.`;
-      suggestions = ["Check my rank", "Best XP courses"];
-    } else if (query.includes("badge") || query.includes("achievement")) {
-      response = `### 🎖️ The Achievement System
-
-Badges on EduNova are more than just icons—they are **Proof of Competence**. 
-
-*   **Speed Demon:** Complete 5 lessons in 24 hours. (Provides +5% XP boost).
-*   **Note Titan:** Create 50 high-quality timestamped notes.
-*   **Certification:** Completing a course unlocks a **Publicly Shareable Certificate**.
-
-> **Pro Tip:** Sharing your badges on LinkedIn or Twitter increases your Profile Visibility score by 20%!`;
-      suggestions = ["Show all badges", "How to get Certified?"];
-    } else if (query.includes("who are you") || query.includes("your name") || query.includes("what are you")) {
-      response = `### 👋 I am EduBot!
-
-I am your **Senior Learning Strategist** and personal AI tutor here at **EduNova**. 
-
-My goal is to help you:
-*   **Architect** your career roadmap in AI and Tech.
-*   **Navigate** the course catalog to find the perfect skills.
-*   **Optimize** your gamification strategy to climb the leaderboard.
-
-How can I assist your learning journey today?`;
-      suggestions = ["Show AI Roadmap", "How to earn XP?"];
-    } else if (query.includes("hello") || query.includes("hi") || query.includes("hey") || query.includes("greetings")) {
-      response = "Hello! I am **EduBot**, your Senior Learning Strategist. I'm here to help you architect your career in AI and Development. \n\nWhat high-income skill are we mastering today?";
-      suggestions = ["AI Roadmap", "UI/UX Path", "How gamification works?"];
-    } else {
-      response = `### 🔍 EduNova Learning Assistant
-
-I'm not quite sure about that specific topic yet, but I can definitely help you navigate the **EduNova Ecosystem**.
-
-**You might be looking for:**
-*   **The Roadmap:** A structured path to mastering AI Engineering.
-*   **The Leaderboard:** See how you rank against other top students.
-*   **The Portfolio:** Showcase your earned badges and certificates.
-
-What would you like to explore first?`;
-      suggestions = ["View Roadmap", "Check Leaderboard", "My Portfolio"];
-    }
-
-    // Small delay to simulate "thinking"
-    await new Promise(resolve => setTimeout(resolve, 800));
+    // Extract potential suggestions (simple regex or AI could do this better, but for now we'll imply them)
+    // For now, we'll return dynamic suggestions if the AI returns them in a specific format, 
+    // or just return the default high-value ones.
+    const suggestions = [
+      "Detail Level 1",
+      "How to get XP?",
+      "View AI Roadmap"
+    ];
 
     return res.json({
       ok: true,
-      response,
+      response: aiResponse,
       suggestions
     });
   } catch (err) {
-    console.error("AI Chat error:", err);
-    return res.status(500).json({ ok: false, error: "Internal server error" });
+    console.error("OpenRouter API error:", err);
+    return handleMockResponse(message, res);
   }
 });
+
+// Fallback logic for when API is down or Key is missing
+function handleMockResponse(message: string, res: any) {
+  const query = message.toLowerCase();
+  let response = "";
+  let suggestions: string[] = ["AI Roadmap", "How to earn XP?"];
+
+  if (query.includes("roadmap")) {
+    response = "### 🚀 Expert AI Engineer Roadmap\n\n1. Foundations\n2. Architecture\n3. Deployment\n\n(Note: AI Service is currently in offline mode)";
+  } else {
+    response = "I'm currently in high-stability mode. Please ask about the AI Roadmap or Leaderboard rankings for traditional guidance!";
+  }
+
+  return res.json({ ok: true, response, suggestions });
+}

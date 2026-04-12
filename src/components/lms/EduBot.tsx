@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { backendRequest } from "@/lib/backend-client";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface Message {
   id: string;
@@ -150,7 +152,21 @@ export default function EduBot() {
                       ? "bg-indigo-600 text-white rounded-tr-none" 
                       : "bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 rounded-tl-none shadow-sm"}
                   `}>
-                    {msg.text}
+                    {msg.sender === "bot" ? (
+                      <div className="prose dark:prose-invert prose-sm max-w-none 
+                        prose-p:leading-relaxed prose-p:mb-2 last:prose-p:mb-0
+                        prose-headings:text-slate-900 dark:prose-headings:text-white prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tight prose-headings:mt-4 prose-headings:mb-2
+                        prose-ul:list-disc prose-ul:pl-4 prose-ul:mb-2
+                        prose-li:mb-1
+                        prose-strong:text-indigo-600 dark:prose-strong:text-violet-400 prose-strong:font-black
+                      ">
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {msg.text}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      msg.text
+                    )}
                   </div>
                 </motion.div>
               ))}

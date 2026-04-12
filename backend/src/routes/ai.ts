@@ -16,26 +16,57 @@ aiRouter.post("/chat", async (req, res) => {
     let response = "";
     let suggestions: string[] = [];
 
-    // Context-aware logic
-    if (query.includes("rank") || query.includes("leaderboard") || query.includes("leader board")) {
-      response = "To climb the Global Leaderboard, you need to earn XP by completing lessons, passing quizzes, and earning badges. The more active you are, the higher you'll rank!";
-      suggestions = ["How do I earn badges?", "What is XP?"];
-    } else if (query.includes("badge") || query.includes("achievement") || query.includes("medal")) {
-      response = "Badges are earned by reaching milestones! For example, the 'Speed Demon' badge is for completing 5 lessons in one day. You can view all your medals on your Accomplishments page.";
-      suggestions = ["Show my medals", "How to get Legendary badges?"];
-    } else if (query.includes("xp") || query.includes("points")) {
-      response = "XP (Experience Points) is the currency of mastery on EduNova. Every lesson completed grants 100 XP, and a perfect quiz score can give you up to 500 XP!";
-      suggestions = ["Check my rank", "Easiest way to get XP"];
-    } else if (query.includes("profile") || query.includes("public")) {
-      response = "Your public profile is your portfolio! Anyone on the leaderboard can click your name to see your certificates and medals. It's a great way to showcase your skills.";
-      suggestions = ["View my profile", "How to hide my profile?"];
+    // Expert Context-Aware Logic
+    if (query.includes("roadmap") || query.includes("road map")) {
+      response = `### 🚀 Expert AI Engineer Roadmap 2026
+
+To master AI Engineering, I recommend follow this high-velocity path:
+
+1. **Foundations (Month 1):** Master Python for Data Science and Deep Learning math. 
+2. **Architecture (Month 2-3):** Deep dive into Transformers, LLM Fine-tuning, and RAG (Retrieval Augmented Generation).
+3. **Deployment (Month 4+):** Focus on AI Ops, Vector Databases (Pinecone/Milvus), and scaling autonomous agents.
+
+> **💡 Pro Tip:** Don't just learn theory. Build 3 projects: a RAG-based Chatbot, a Fine-tuned Llama model, and an Autonomous Agent.
+
+Would you like me to detail Level 1?`;
+      suggestions = ["Detail Level 1", "Easiest AI projects", "Tools for 2026"];
+    } else if (query.includes("rank") || query.includes("leaderboard")) {
+      response = `### 🏆 Climbing the Global Leaderboard
+
+The leaderboard is a real-time reflection of your **Learning Velocity**. Here is how to dominate:
+
+*   **Consistency:** Completing one lesson daily gives you a 1.5x Streak Multiplier.
+*   **Quiz Mastery:** Perfect scores grant a **Legendary Badge** and 500 bonus XP.
+*   **Active Engagement:** Participating in forums and taking high-quality notes also boosts your visibility.
+
+**Current Strategy:** Focus on the 'AI Engineering' course—it has the highest XP yield per lesson.`;
+      suggestions = ["Check my rank", "Best XP courses"];
+    } else if (query.includes("badge") || query.includes("achievement")) {
+      response = `### 🎖️ The Achievement System
+
+Badges on EduNova are more than just icons—they are **Proof of Competence**. 
+
+*   **Speed Demon:** Complete 5 lessons in 24 hours. (Provides +5% XP boost).
+*   **Note Titan:** Create 50 high-quality timestamped notes.
+*   **Certification:** Completing a course unlocks a **Publicly Shareable Certificate**.
+
+> **Pro Tip:** Sharing your badges on LinkedIn or Twitter increases your Profile Visibility score by 20%!`;
+      suggestions = ["Show all badges", "How to get Certified?"];
     } else if (query.includes("hello") || query.includes("hi") || query.includes("hey")) {
-      response = "Hello student! I am EduBot, your personal AI tutor. I can help you find courses, explain gamification, or give you study tips. What's on your mind?";
-      suggestions = ["How to start learning?", "Tell me about badges"];
+      response = "Hello! I am **EduBot**, your Senior Learning Strategist. I'm here to help you architect your career in AI and Development. \n\nWhat high-income skill are we mastering today?";
+      suggestions = ["AI Roadmap", "UI/UX Path", "How gamification works?"];
     } else {
-      // Simulation of a general AI response
-      response = "That's a great question! EduNova is designed to help you master AI and Engineering. Based on your current progress, I recommend focusing on your next lesson to unlock more features.";
-      suggestions = ["Tell me about AI roadmap", "How does this platform work?"];
+      response = `### 🧠 Intelligent Assistant Mode
+
+That's a fascinating area to explore! Within the **EduNova Ecosystem**, you have access to industry-vetted materials on that topic.
+
+**Next Steps:**
+*   Check the **Course Catalog** for specialized tracks.
+*   Ask me for a **Deep Dive** into specific technical concepts.
+*   Check your **Roadmap** to see how this fits into your career.
+
+How can I help you specialize further?`;
+      suggestions = ["Course Catalog", "Personal Roadmap"];
     }
 
     // Small delay to simulate "thinking"

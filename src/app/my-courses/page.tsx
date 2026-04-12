@@ -28,7 +28,15 @@ import {
   Copy,
   AlertTriangle,
   Loader2,
+  Flame,
+  Award,
+  Zap,
+  TrendingUp,
+  Trophy,
+  Download
 } from "lucide-react";
+import Footer from "@/components/lms/Footer";
+import CertificateModal from "@/components/lms/CertificateModal";
 
 import { Montserrat } from "next/font/google";
 
@@ -46,18 +54,30 @@ type DashboardCourseItem = {
     category: string;
     previewVideoUrl: string | null;
   };
-  progress: {
-    completedLessons: number;
-    totalLessons: number;
-    progressPercent: number;
-    nextLesson: {
-      id: string;
-      title: string;
-      isPreview: boolean;
-      sectionTitle: string;
-    } | null;
+    progress: {
+      completedLessons: number;
+      totalLessons: number;
+      progressPercent: number;
+      nextLesson: {
+        id: string;
+        title: string;
+        isPreview: boolean;
+        sectionTitle: string;
+      } | null;
+      certificate?: {
+        certificateId: string;
+        issuedAt: string;
+      } | null;
+    };
   };
-};
+
+  type DashboardStats = {
+    xp: number;
+    streak: number;
+    certificates: number;
+    activeCourses: number;
+    lastActivity: string | null;
+  };
 
 type TabType = "in-progress" | "completed";
 
@@ -107,6 +127,12 @@ export default function MyCoursesPage() {
   const [rating, setRating] = useState(0);
   const [reviewComment, setReviewComment] = useState("");
   const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [certificateToShow, setCertificateToShow] = useState<{
+    courseTitle: string;
+    certificateId: string;
+    issuedAt: string;
+  } | null>(null);
 
   const now = new Date();
   const todayDate = now.getDate();
@@ -167,8 +193,20 @@ export default function MyCoursesPage() {
         }
     };
 
+    const fetchStats = async () => {
+        try {
+            const res = await backendRequest<{ ok: boolean; stats: DashboardStats }>("/dashboard/stats", { clerkUserId: user?.id });
+            if (res.ok) setStats(res.stats);
+        } catch (err) {
+            console.error("Failed to fetch dashboard stats", err);
+        }
+    };
+
     void run();
-    if (user?.id) fetchRecommendations();
+    if (user?.id) {
+        fetchRecommendations();
+        fetchStats();
+    }
   }, [isLoaded, user?.id]);
 
   const greeting = useMemo(() => {
@@ -220,19 +258,87 @@ export default function MyCoursesPage() {
         <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8">
           {/* ── LEFT SIDEBAR ── */}
           {/* ── MOBILE: GREETING ── */}
-          <div className={`${montserrat.className} lg:hidden mb-2`}>
+          <div className={`${montserrat.className} lg:hidden mb-6`}>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
               {greeting}, <span className="text-4xl font-black">{displayName}</span>
             </h1>
-            <p className="text-sm text-slate-500 dark:text-gray-400 mt-2">
-              {enrollments.length === 0
-                ? "Start your learning journey"
-                : `${enrollments.length} course${enrollments.length !== 1 ? "s" : ""} enrolled`}
-            </p>
+            
+            {/* Mobile Stats Row */}
+            <div className="flex gap-4 mt-6">
+                <div className="flex-1 bg-white dark:bg-white/5 rounded-2xl p-4 border border-slate-200 dark:border-white/5 shadow-sm">
+                    <div className="flex items-center gap-2 mb-1">
+                        <Flame size={14} className="text-orange-500" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Streak</span>
+                    </div>
+                    <p className="text-xl font-black text-slate-900 dark:text-white">{stats?.streak || 0}</p>
+                </div>
+                <div className="flex-1 bg-white dark:bg-white/5 rounded-2xl p-4 border border-slate-200 dark:border-white/5 shadow-sm">
+                    <div className="flex items-center gap-2 mb-1">
+                        <Zap size={14} className="text-yellow-500" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total XP</span>
+                    </div>
+                    <p className="text-xl font-black text-slate-900 dark:text-white">{stats?.xp.toLocaleString() || 0}</p>
+                </div>
+            </div>
           </div>
 
           {/* ── RIGHT: COURSES (SHOW FIRST ON MOBILE) ── */}
           <section className="order-1 lg:order-2">
+            {/* Achievement Bar */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-linear-to-br from-indigo-600 to-blue-700 rounded-3xl p-6 text-white shadow-xl shadow-indigo-600/20 relative overflow-hidden group"
+                >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 blur-3xl rounded-full translate-x-10 -translate-y-10" />
+                    <div className="relative z-10">
+                        <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center mb-4 backdrop-blur-md">
+                            <TrendingUp size={24} className="text-white" />
+                        </div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-white/60 mb-1">Learning Status</p>
+                        <h4 className="text-xl font-black">{activeTab === "completed" ? "Masters Circle" : "Rising Star"}</h4>
+                        <p className="text-xs font-bold text-white/80 mt-1">Keep crushing your goals!</p>
+                    </div>
+                </motion.div>
+
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                    className="bg-white dark:bg-white/[0.04] rounded-3xl p-6 border border-slate-200 dark:border-white/5 shadow-sm"
+                >
+                    <div className="w-12 h-12 rounded-2xl bg-orange-600/10 flex items-center justify-center mb-4">
+                        <Flame size={24} className="text-orange-500" />
+                    </div>
+                    <div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 mb-1">Daily Streak</p>
+                        <div className="flex items-baseline gap-2">
+                            <h4 className="text-3xl font-black text-slate-900 dark:text-white">{stats?.streak || 0}</h4>
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Days</span>
+                        </div>
+                    </div>
+                </motion.div>
+
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-white dark:bg-white/[0.04] rounded-3xl p-6 border border-slate-200 dark:border-white/5 shadow-sm"
+                >
+                    <div className="w-12 h-12 rounded-2xl bg-indigo-600/10 flex items-center justify-center mb-4">
+                        <Trophy size={24} className="text-indigo-500" />
+                    </div>
+                    <div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-500 mb-1">Total Accomplishments</p>
+                        <div className="flex items-baseline gap-2">
+                            <h4 className="text-3xl font-black text-slate-900 dark:text-white">{stats?.certificates || 0}</h4>
+                            <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Certificates</span>
+                        </div>
+                    </div>
+                </motion.div>
+            </div>
+
             {/* Tabs */}
             <div className="flex gap-1 mb-6 border-b border-slate-200 dark:border-white/5 overflow-x-auto no-scrollbar">
               {(["in-progress", "completed"] as TabType[]).map((tab) => (
@@ -489,13 +595,21 @@ export default function MyCoursesPage() {
                                     <span>Course Certification Ready</span>
                                   </div>
                                   <div className="flex items-center gap-3 shrink-0">
-                                    <Link
-                                      href={`/learn/${enrollment.course.slug}`}
-                                      className="flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-bold border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/10 transition-all"
+                                    <button
+                                      onClick={() => {
+                                        if (enrollment.progress.certificate) {
+                                            setCertificateToShow({
+                                                courseTitle: enrollment.course.title,
+                                                certificateId: enrollment.progress.certificate.certificateId,
+                                                issuedAt: enrollment.progress.certificate.issuedAt
+                                            });
+                                        }
+                                      }}
+                                      className="flex items-center gap-2 px-6 py-2 rounded-xl text-sm font-bold bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 hover:translate-y-[-1px] transition-all"
                                     >
-                                      <FileText size={14} />
-                                      Review Course
-                                    </Link>
+                                      <Download size={14} />
+                                      Get Certificate
+                                    </button>
                                     <div className="relative">
                                       <button 
                                         onClick={() => setActiveMenuId(activeMenuId === enrollment.enrollmentId ? null : enrollment.enrollmentId)}
@@ -933,6 +1047,18 @@ export default function MyCoursesPage() {
           </div>
         )}
       </AnimatePresence>
+      <Footer />
+
+      {certificateToShow && (
+          <CertificateModal 
+            isOpen={true}
+            onClose={() => setCertificateToShow(null)}
+            courseTitle={certificateToShow.courseTitle}
+            studentName={user?.fullName || displayName}
+            issueDate={new Date(certificateToShow.issuedAt)}
+            certificateId={certificateToShow.certificateId}
+          />
+      )}
     </div>
   );
 }

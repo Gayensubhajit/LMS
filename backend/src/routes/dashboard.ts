@@ -103,7 +103,19 @@ dashboardRouter.get("/my-courses", async (req, res) => {
           completedLessons,
           totalLessons,
           progressPercent,
-          nextLesson
+          nextLesson,
+          certificate: await prisma.certificate.findUnique({
+            where: {
+              userId_courseId: {
+                userId: user.id,
+                courseId: enrollment.course.id
+              }
+            },
+            select: {
+              certificateId: true,
+              issuedAt: true
+            }
+          })
         }
       };
     })

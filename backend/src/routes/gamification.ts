@@ -56,3 +56,37 @@ gamificationRouter.get("/badges", async (req, res) => {
     return res.status(500).json({ ok: false, error: "Internal server error" });
   }
 });
+
+// GET /gamification/leaderboard - Get top users by XP
+gamificationRouter.get("/leaderboard", async (req, res) => {
+  try {
+    const topUsers = await prisma.user.findMany({
+      orderBy: { xp: "desc" },
+      take: 50,
+      select: {
+        id: true,
+        fullName: true,
+        avatarUrl: true,
+        xp: true,
+        clerkUserId: true
+      }
+    });
+
+    const leaderboard = topUsers.map((user, index) => ({
+      rank: index + 1,
+      name: user.fullName || "Student",
+      avatar: user.avatarUrl,
+      xp: user.xp,
+      level: Math.floor(user.xp / 1000) + 1,
+      isCurrent: false // Will be determined by frontend based on session
+    }));
+
+    return res.json({
+      ok: true,
+      leaderboard
+    });
+  } catch (err) {
+    console.error("Leaderboard fetch error:", err);
+    return res.status(500).json({ ok: false, error: "Internal server error" });
+  }
+});

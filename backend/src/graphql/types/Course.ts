@@ -6,25 +6,25 @@ export class CourseType {
   @Field(() => ID)
   id!: string;
 
-  @Field()
+  @Field(() => String)
   slug!: string;
 
-  @Field()
+  @Field(() => String)
   title!: string;
 
-  @Field()
+  @Field(() => String)
   shortDescription!: string;
 
-  @Field()
+  @Field(() => String)
   longDescription!: string;
 
-  @Field()
+  @Field(() => String)
   category!: string;
 
   @Field(() => String)
   level!: CourseLevel;
 
-  @Field()
+  @Field(() => String)
   instructorName!: string;
 
   @Field(() => String, { nullable: true })
@@ -42,15 +42,15 @@ export class CourseType {
   @Field(() => String, { nullable: true })
   imageUrl?: string | null;
 
-  @Field()
+  @Field(() => Boolean)
   isFree!: boolean;
 
-  @Field()
+  @Field(() => Boolean)
   isPublished!: boolean;
 
-  @Field()
+  @Field(() => Date)
   createdAt!: Date;
 
-  @Field()
+  @Field(() => Date)
   updatedAt!: Date;
 }

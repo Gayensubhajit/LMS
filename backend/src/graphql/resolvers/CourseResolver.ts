@@ -13,7 +13,7 @@ export class CourseResolver {
   }
 
   @Query(() => CourseType, { nullable: true })
-  async course(@Arg("slug") slug: string): Promise<CourseType | null> {
+  async course(@Arg("slug", () => String) slug: string): Promise<CourseType | null> {
     const course = await prisma.course.findUnique({
       where: { slug },
     });

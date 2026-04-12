@@ -74,7 +74,7 @@ export default function AccomplishmentsPage() {
         const userBadgesRes = await backendRequest<{ ok: boolean, userBadges: any[] }>("/gamification/me", {
           clerkUserId: user?.id
         });
-        if (userBadgesRes.ok) setUserBadges(userBadgesRes.userBadges);
+        if (userBadgesRes.ok) setUserBadges(userBadgesRes.userBadges || []);
       } catch (err) {
         console.error("Failed to fetch accomplishments:", err);
       } finally {
@@ -193,14 +193,15 @@ export default function AccomplishmentsPage() {
               <Trophy className="w-6 h-6 text-amber-500 shrink-0" />
               Achievements
               <span className="text-sm font-black text-slate-500 ml-2 bg-slate-100 dark:bg-slate-800/50 px-3 py-1 rounded-full border border-slate-200 dark:border-white/5">
-                {userBadges.length} / {badges.length}
+                {(userBadges || []).length} / {(badges || []).length}
               </span>
             </h3>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
             {Array.isArray(badges) && badges.map((badge) => {
-              const userBadge = Array.isArray(userBadges) ? userBadges.find(ub => ub.badgeId === badge.id) : null;
+              if (!badge) return null;
+              const userBadge = Array.isArray(userBadges) ? userBadges.find(ub => ub && ub.badgeId === badge.id) : null;
               return (
                 <BadgeCard 
                   key={badge.id}
@@ -288,7 +289,7 @@ export default function AccomplishmentsPage() {
                         </span>
                       </div>
                       <h4 className="text-xl font-black text-slate-900 dark:text-white mb-1 group-hover:text-blue-600 dark:group-hover:text-violet-400 transition-colors line-clamp-2 leading-tight uppercase tracking-tight break-words">
-                        {cert.course.title}
+                        {cert.course?.title || "Unknown Course"}
                       </h4>
                       <p className="text-sm text-slate-400 dark:text-gray-500 font-bold italic truncate">
                         {cert.course.instructorName} • EduNova

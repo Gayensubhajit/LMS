@@ -1,8 +1,58 @@
 import { Router } from "express";
 import { prisma } from "../lib/prisma.js";
 import { getUserFromHeader } from "../lib/auth.js";
+import { logActivity } from "../services/activity.js";
 
 export const gamificationRouter = Router();
+
+// POST /gamification/award-xp - Award XP and optionally a badge, logging activity
+gamificationRouter.post("/award-xp", async (req, res) => {
+  const user = await getUserFromHeader(req, res);
+  if (!user) return;
+
+  const { amount, reason, badgeName } = req.body as { amount: number; reason: string; badgeName?: string };
+  if (!amount || !reason) {
+    return res.status(400).json({ ok: false, error: "amount and reason are required" });
+  }
+
+  try {
+    const updated = await prisma.user.update({
+      where: { id: user.id },
+      data: { xp: { increment: amount } },
+      select: { xp: true, fullName: true, isNameVerified: true, verifiedName: true }
+    });
+
+    const displayName = updated.isNameVerified ? updated.verifiedName : (updated.fullName || "A student");
+    const prevLevel = Math.floor((updated.xp - amount) / 1000) + 1;
+    const newLevel  = Math.floor(updated.xp / 1000) + 1;
+
+    // Log XP gain
+    await logActivity(user.id, "RANK_UP", `${displayName} earned ${amount} XP for: ${reason}`, { xp: amount });
+
+    // Level-up notification
+    if (newLevel > prevLevel) {
+      await logActivity(user.id, "RANK_UP", `🎉 ${displayName} levelled up to Level ${newLevel}!`, { level: newLevel });
+    }
+
+    // Badge award
+    if (badgeName) {
+      const badge = await prisma.badge.findUnique({ where: { name: badgeName } });
+      if (badge) {
+        await prisma.userBadge.upsert({
+          where: { userId_badgeId: { userId: user.id, badgeId: badge.id } },
+          create: { userId: user.id, badgeId: badge.id },
+          update: {}
+        });
+        await logActivity(user.id, "BADGE", `🏅 ${displayName} earned the "${badge.name}" badge!`, { badgeIcon: badge.icon });
+      }
+    }
+
+    return res.json({ ok: true, xp: updated.xp });
+  } catch (err) {
+    console.error("Award XP error:", err);
+    return res.status(500).json({ ok: false, error: "Internal server error" });
+  }
+});
 
 // GET /gamification/me - Get current user's XP and badges
 gamificationRouter.get("/me", async (req, res) => {

@@ -6,7 +6,7 @@ import ErrorReporter from "@/components/ErrorReporter";
 import Script from "next/script";
 import { ThemeProviderWrapper } from "@/components/theme/ThemeProviderWrapper";
 import ClerkProviderWrapper from "@/components/auth/ClerkProviderWrapper";
-import AssistantWidget from "@/components/lms/AssistantWidget";
+import EduBot from "@/components/lms/EduBot";
 import { Analytics } from "@vercel/analytics/react";
 
 const geistSans = Geist({
@@ -84,7 +84,7 @@ export default function RootLayout({
               data-custom-data='{"appName": "YourApp", "version": "1.0.0", "greeting": "hi"}'
             />
             {children}
-            <AssistantWidget />
+            <EduBot />
             <VisualEditsMessenger />
             <Analytics />
           </ClerkProviderWrapper>

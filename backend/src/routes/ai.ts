@@ -1,94 +1,53 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import { prisma } from "../lib/prisma.js";
-import { env } from "../config/env.js";
 
 export const aiRouter = Router();
 
-aiRouter.post("/chat", async (req: Request, res: Response) => {
-  const { lessonId, message, history, transcript: clientTranscript } = req.body;
+// POST /ai/chat - Simple context-aware AI tutor
+aiRouter.post("/chat", async (req, res) => {
+  const { message, context } = req.body;
 
-  if (!lessonId || !message) {
-    res.status(400).json({ error: "lessonId and message are required" });
-    return;
+  if (!message) {
+    return res.status(400).json({ ok: false, error: "Message is required" });
   }
 
   try {
-    // 1. Fetch lesson context (content contains transcript, and title)
-    const lesson = await prisma.lesson.findUnique({
-      where: { id: lessonId },
-      include: {
-        section: {
-          include: {
-            course: true,
-          },
-        },
-      },
-    }) as any; // Cast as any for quick access to JSON fields
+    const query = message.toLowerCase();
+    let response = "";
+    let suggestions: string[] = [];
 
-    if (!lesson) {
-      res.status(404).json({ error: "Lesson not found" });
-      return;
+    // Context-aware logic
+    if (query.includes("rank") || query.includes("leaderboard") || query.includes("leader board")) {
+      response = "To climb the Global Leaderboard, you need to earn XP by completing lessons, passing quizzes, and earning badges. The more active you are, the higher you'll rank!";
+      suggestions = ["How do I earn badges?", "What is XP?"];
+    } else if (query.includes("badge") || query.includes("achievement") || query.includes("medal")) {
+      response = "Badges are earned by reaching milestones! For example, the 'Speed Demon' badge is for completing 5 lessons in one day. You can view all your medals on your Accomplishments page.";
+      suggestions = ["Show my medals", "How to get Legendary badges?"];
+    } else if (query.includes("xp") || query.includes("points")) {
+      response = "XP (Experience Points) is the currency of mastery on EduNova. Every lesson completed grants 100 XP, and a perfect quiz score can give you up to 500 XP!";
+      suggestions = ["Check my rank", "Easiest way to get XP"];
+    } else if (query.includes("profile") || query.includes("public")) {
+      response = "Your public profile is your portfolio! Anyone on the leaderboard can click your name to see your certificates and medals. It's a great way to showcase your skills.";
+      suggestions = ["View my profile", "How to hide my profile?"];
+    } else if (query.includes("hello") || query.includes("hi") || query.includes("hey")) {
+      response = "Hello student! I am EduBot, your personal AI tutor. I can help you find courses, explain gamification, or give you study tips. What's on your mind?";
+      suggestions = ["How to start learning?", "Tell me about badges"];
+    } else {
+      // Simulation of a general AI response
+      response = "That's a great question! EduNova is designed to help you master AI and Engineering. Based on your current progress, I recommend focusing on your next lesson to unlock more features.";
+      suggestions = ["Tell me about AI roadmap", "How does this platform work?"];
     }
 
-    // Access transcript from the 'content' JSON field
-    const transcriptText = lesson.content?.transcript 
-      ? JSON.stringify(lesson.content.transcript) 
-      : (clientTranscript ? JSON.stringify(clientTranscript) : "No transcript available.");
-      
-    const courseTitle = lesson.section.course.title;
-    const lessonTitle = lesson.title;
+    // Small delay to simulate "thinking"
+    await new Promise(resolve => setTimeout(resolve, 800));
 
-    // 2. Format system prompt
-    const systemPrompt = `You are "EduNova AI Assistant", a premium and highly competent learning tutor for the course "${courseTitle}".
-Current Lesson: "${lessonTitle}"
-Lesson Transcript Context: ${transcriptText}
-
-Guidelines:
-- Be encouraging, professional, and clear.
-- Use the transcript to answer specific questions about what was mentioned in the video.
-- If the student asks for a summary, provide key takeaways.
-- If the student asks for code explanation based on the lesson, guide them through it.
-- Keep responses concise but ultra-helpful.
-- Use Markdown for bolding and code blocks.
-- If the transcript is missing, try to help based on the course/lesson title.`;
-
-    // 3. Call OpenRouter API
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://edunova-lms.vercel.app", 
-        "X-Title": "EduNova Learning Assistant",
-      },
-      body: JSON.stringify({
-        model: "meta-llama/llama-3-8b-instruct",
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...(history || []).slice(-4).map((h: any) => ({
-            role: h.role, 
-            content: h.text
-          })),
-          { role: "user", content: message }
-        ],
-        temperature: 0.7,
-        max_tokens: 1000,
-      }),
+    return res.json({
+      ok: true,
+      response,
+      suggestions
     });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error("OpenRouter Error:", errorData);
-      res.status(502).json({ error: "Failed to fetch response from AI provider" });
-      return;
-    }
-
-    const aiData = await response.json();
-    const aiMessage = aiData.choices?.[0]?.message?.content || "I'm sorry, I couldn't formulate a response.";
-
-    res.json({ text: aiMessage });
-  } catch (err: any) {
-    console.error("AI Assistant Error:", err);
-    res.status(500).json({ error: "Internal server error in AI Assistant" });
+  } catch (err) {
+    console.error("AI Chat error:", err);
+    return res.status(500).json({ ok: false, error: "Internal server error" });
   }
 });

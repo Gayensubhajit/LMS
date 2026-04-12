@@ -23,13 +23,13 @@ import Navbar from "@/components/lms/Navbar";
 import { SignIn, useUser } from "@clerk/nextjs";
 import { backendRequest } from "@/lib/backend-client";
 import BadgeCard from "@/components/lms/BadgeCard";
-import { dark } from "@clerk/ui/themes";
+import { dark } from "@clerk/themes";
 interface Certificate {
   id: string;
   certificateId: string;
   issuedAt: string;
   course: {
-    title: true;
+    title: string;
     slug: string;
     instructorName: string;
     category: string;
@@ -72,7 +72,7 @@ export default function AccomplishmentsPage() {
         if (badgesRes.ok) setBadges(badgesRes.badges);
 
         const userBadgesRes = await backendRequest<{ ok: boolean, userBadges: any[] }>("/gamification/me", {
-          clerkUserId: user.id
+          clerkUserId: user?.id
         });
         if (userBadgesRes.ok) setUserBadges(userBadgesRes.userBadges);
       } catch (err) {
@@ -199,8 +199,8 @@ export default function AccomplishmentsPage() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-            {badges.map((badge) => {
-              const userBadge = userBadges.find(ub => ub.badgeId === badge.id);
+            {Array.isArray(badges) && badges.map((badge) => {
+              const userBadge = Array.isArray(userBadges) ? userBadges.find(ub => ub.badgeId === badge.id) : null;
               return (
                 <BadgeCard 
                   key={badge.id}
@@ -253,7 +253,7 @@ export default function AccomplishmentsPage() {
           </motion.div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {certificates.map((cert, idx) => (
+            {Array.isArray(certificates) && certificates.map((cert, idx) => (
               <motion.div
                 key={cert.id}
                 initial={{ opacity: 0, scale: 0.9 }}

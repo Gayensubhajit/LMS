@@ -33,6 +33,8 @@ const BADGE_COLORS: Record<string, string> = {
 };
 
 export default function BadgeCard({ badge, earnedAt, isUnlocked }: BadgeCardProps) {
+  if (!badge || !badge.name) return null;
+  
   const Icon = BADGE_ICONS[badge.name] || BADGE_ICONS.default;
   const colorScale = BADGE_COLORS[badge.name] || BADGE_COLORS.default;
 

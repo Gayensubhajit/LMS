@@ -220,12 +220,26 @@ const io = new Server(httpServer, {
 });
 
 // Socket.io logic
+const roomPresence = new Map<string, Map<string, { name: string, avatar?: string }>>();
+
 io.on("connection", (socket) => {
   console.log("A user connected:", socket.id);
 
-  socket.on("join_room", (room) => {
+  socket.on("join_room", (data: { room: string, user: { name: string, avatar?: string, id: string } }) => {
+    const { room, user } = data;
     socket.join(room);
-    console.log(`User ${socket.id} joined room: ${room}`);
+    
+    // Store presence
+    if (!roomPresence.has(room)) {
+      roomPresence.set(room, new Map());
+    }
+    roomPresence.get(room)?.set(socket.id, { name: user.name, avatar: user.avatar });
+    
+    // Broadcast updated presence to the room
+    const members = Array.from(roomPresence.get(room)!.values());
+    io.to(room).emit("presence_update", { room, members });
+    
+    console.log(`User ${user.name} joined room: ${room}`);
   });
 
   socket.on("send_message", (data) => {
@@ -234,6 +248,16 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
+    // Clean up presence
+    for (const [room, members] of roomPresence.entries()) {
+      if (members.has(socket.id)) {
+        members.delete(socket.id);
+        io.to(room).emit("presence_update", { 
+          room, 
+          members: Array.from(members.values()) 
+        });
+      }
+    }
     console.log("User disconnected:", socket.id);
   });
 });

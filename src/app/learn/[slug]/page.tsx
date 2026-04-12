@@ -24,6 +24,7 @@ import {
   HelpCircle,
   ArrowUpRight,
   MessageCircle,
+  Users,
 } from "lucide-react";
 import CourseVideoPlayer, { CourseVideoPlayerRef } from "@/components/lms/CourseVideoPlayer";
 import CertificateModal from "@/components/lms/CertificateModal";
@@ -33,7 +34,7 @@ import CodePlayground from "@/components/lms/CodePlayground";
 import CourseAssistant from "@/components/lms/CourseAssistant";
 import XpEarnedToast, { XpEarnedToastRef } from "@/components/lms/XpEarnedToast";
 import DiscussionForum from "@/components/lms/DiscussionForum";
-import LiveChat from "@/components/lms/LiveChat";
+import GroupStudyChat from "@/components/lms/GroupStudyChat";
 import { useLearningContext } from "@/contexts/LearningContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { dark } from "@clerk/themes";
@@ -948,11 +949,33 @@ export default function LearnCoursePage() {
 
                 {/* TAB: Discussion */}
                 {activeTab === "discussion" && (
-                  <div className="pb-10">
-                    <DiscussionForum 
-                      courseId={course?.id} 
-                      lessonId={activeLesson?.id} 
-                    />
+                  <div className="pb-10 min-h-[600px] flex flex-col gap-8">
+                    <div className="space-y-4">
+                      <div className="flex items-center gap-3 px-2">
+                        <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                           <Users size={16} />
+                        </div>
+                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">Live Study Room</h4>
+                      </div>
+                      <GroupStudyChat 
+                        lessonId={activeLesson.id} 
+                        courseTitle={course?.title || ""} 
+                        lessonTitle={activeLesson.title} 
+                      />
+                    </div>
+                    
+                    <div className="space-y-4 pt-10 border-t border-slate-200 dark:border-white/5">
+                       <div className="flex items-center gap-3 px-2">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-500">
+                           <MessageCircle size={16} />
+                        </div>
+                        <h4 className="text-sm font-black uppercase tracking-widest text-slate-900 dark:text-white">Lesson Forum</h4>
+                      </div>
+                      <DiscussionForum 
+                        courseId={course?.id} 
+                        lessonId={activeLesson?.id} 
+                      />
+                    </div>
                   </div>
                 )}
 
@@ -1086,7 +1109,6 @@ export default function LearnCoursePage() {
         }
       />
       <XpEarnedToast ref={xpToastRef} />
-      <LiveChat courseId={course?.id} courseTitle={course?.title} />
     </main>
   );
 }

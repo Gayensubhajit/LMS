@@ -80,7 +80,7 @@ export default function EduBot() {
     try {
       const res = await backendRequest<{ ok: boolean, response: string, suggestions?: string[] }>("/ai/chat", {
         method: "POST",
-        body: JSON.stringify({ message: text, context: pathname })
+        body: { message: text, context: pathname }
       });
 
       if (res.ok) {
@@ -108,7 +108,7 @@ export default function EduBot() {
             initial={{ opacity: 0, y: 100, scale: 0.8, rotate: -5 }}
             animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
             exit={{ opacity: 0, y: 100, scale: 0.8, rotate: 5 }}
-            className="absolute bottom-20 right-0 w-[350px] md:w-[400px] h-[550px] bg-white dark:bg-slate-900 rounded-[2.5rem] shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden flex flex-col"
+            className="absolute bottom-24 right-0 w-[420px] md:w-[480px] h-[650px] bg-white dark:bg-slate-900 rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-white/10 overflow-hidden flex flex-col"
           >
             {/* Header */}
             <div className="p-6 bg-gradient-to-r from-blue-600 to-indigo-700 text-white relative">
@@ -145,7 +145,7 @@ export default function EduBot() {
                   className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div className={`
-                    max-w-[85%] p-4 rounded-2xl text-sm font-medium leading-relaxed
+                    max-w-[85%] p-5 rounded-2xl text-base font-semibold leading-relaxed
                     ${msg.sender === "user" 
                       ? "bg-indigo-600 text-white rounded-tr-none" 
                       : "bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 rounded-tl-none shadow-sm"}
@@ -185,7 +185,7 @@ export default function EduBot() {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSendMessage(input)}
                   placeholder="Ask your tutor anything..."
-                  className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl py-4 pl-6 pr-14 text-sm font-bold text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all"
+                  className="w-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl py-5 pl-8 pr-16 text-base font-bold text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all shadow-inner"
                 />
                 <button 
                   onClick={() => handleSendMessage(input)}

@@ -82,6 +82,7 @@ model User {
   // Tracking
   lastActivityAt       DateTime?
   streakCount          Int          @default(0)
+  activities           Activity[]
 }
 
 model Course {
@@ -408,3 +409,16 @@ model UserBadge {
   @@unique([userId, badgeId])
 }
 
+model Activity {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // ENROLLMENT, BADGE, CERTIFICATE, RANK_UP
+  content   String   // Text description for the feed
+  metadata  Json?    // Optional extra data (e.g. course slug, badge icon)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([userId])
+}

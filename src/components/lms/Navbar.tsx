@@ -25,6 +25,7 @@ import {
   Star,
   LayoutDashboard,
   Loader2,
+  Trophy,
 } from "lucide-react";
 import { coursesData } from "@/lib/courses-data";
 import { useRouter, usePathname } from "next/navigation";
@@ -35,6 +36,7 @@ import ThemeToggle from "@/components/lms/ThemeToggle";
 
 const navLinks = [
   { label: "Courses", href: "/courses" },
+  { label: "Leaderboard", href: "/leaderboard" },
   { label: "Roadmap", href: "/roadmap" },
   { label: "Instructors", href: "/instructors" },
   { label: "Pricing", href: "/pricing" },
@@ -82,6 +84,7 @@ const categoryColors: Record<string, { bg: string; text: string }> = {
 
 const profileMenuItems = [
   { label: "Profile", href: "/profile", icon: User },
+  { label: "Leaderboard", href: "/leaderboard", icon: Trophy },
   { label: "My Learning", href: "/my-courses", icon: GraduationCap },
   { label: "My Purchases", href: "/purchases", icon: ShoppingBag },
   { label: "Settings", href: "/settings", icon: Settings },

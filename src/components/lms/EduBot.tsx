@@ -153,13 +153,7 @@ export default function EduBot() {
                       : "bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-200 rounded-tl-none shadow-sm"}
                   `}>
                     {msg.sender === "bot" ? (
-                      <div className="prose dark:prose-invert prose-sm max-w-none 
-                        prose-p:leading-normal prose-p:mb-2 last:prose-p:mb-0
-                        prose-headings:text-slate-900 dark:prose-headings:text-white prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tight prose-headings:mt-2 prose-headings:mb-1 prose-h3:text-sm
-                        prose-ul:list-disc prose-ul:pl-4 prose-ul:mb-2
-                        prose-li:mb-0.5
-                        prose-strong:text-indigo-600 dark:prose-strong:text-violet-400 prose-strong:font-black
-                      ">
+                      <div className="edubot-prose">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                           {msg.text}
                         </ReactMarkdown>

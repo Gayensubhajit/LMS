@@ -157,3 +157,38 @@ gamificationRouter.get("/profiles/:id", async (req, res) => {
     return res.status(500).json({ ok: false, error: "Internal server error" });
   }
 });
+// GET /gamification/activity - Get recent global activity
+gamificationRouter.get("/activity", async (req, res) => {
+  try {
+    const activities = await prisma.activity.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 20,
+      include: {
+        user: {
+          select: {
+            fullName: true,
+            avatarUrl: true,
+            isNameVerified: true,
+            verifiedName: true
+          }
+        }
+      }
+    });
+
+    const feed = activities.map(act => ({
+      id: act.id,
+      userId: act.userId,
+      userName: act.user.isNameVerified ? act.user.verifiedName : (act.user.fullName || "Student"),
+      userAvatar: act.user.avatarUrl,
+      type: act.type,
+      text: act.content,
+      metadata: act.metadata,
+      createdAt: act.createdAt
+    }));
+
+    return res.json({ ok: true, feed });
+  } catch (err) {
+    console.error("Activity feed error:", err);
+    return res.status(500).json({ ok: false, error: "Internal server error" });
+  }
+});

@@ -15,7 +15,7 @@ interface OpenRouterResponse {
 
 // POST /ai/chat - Real-time AI tutor powered by OpenRouter
 aiRouter.post("/chat", async (req, res) => {
-  const { message, context } = req.body;
+  const { message, context, lessonTitle, courseTitle, transcript } = req.body;
 
   if (!message) {
     return res.status(400).json({ ok: false, error: "Message is required" });
@@ -37,16 +37,16 @@ aiRouter.post("/chat", async (req, res) => {
       - Encouraging but "no bakwas" (direct and accurate).
       - Always provides "Pro Tips" for career growth.
 
-      Context of the Platform:
-      - Gamification: Students earn XP (100 per lesson, 500 per quiz) to rank on the Global Leaderboard.
-      - Badges: speed demon, quiz master, note titan.
-      - Portfolio: Users have public profile pages showcasing their achievements.
-      - Current Page Context: The user is currently on ${context || 'the homepage'}.
-
+      ACTIVE LEARNING CONTEXT:
+      - Course: ${courseTitle || 'General Platform'}
+      - Lesson: ${lessonTitle || 'N/A'}
+      - Transcript Snippet: ${transcript || 'No transcript available for this context.'}
+      
       Your Task:
-      - Answer technical questions accurately.
-      - Create structured roadmaps when asked.
-      - Provide strategies to climb the leaderboard if relevant.
+      - If the user is on a lesson, prioritize the TRANSCRIPT above to answer questions.
+      - Answer technical questions with extreme precision.
+      - If the user asks for a summary, use the transcript to provide a high-value recap.
+      - Encourage earning XP and climbing the Global Leaderboard.
       - Keep responses within a reasonable window size but detailed enough to be expert-level.
     `;
 

@@ -18,6 +18,7 @@ import { usePathname } from "next/navigation";
 import { backendRequest } from "@/lib/backend-client";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { useLearningContext } from "@/contexts/LearningContext";
 
 interface Message {
   id: string;
@@ -46,6 +47,7 @@ export default function EduBot() {
   
   const pathname = usePathname();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { courseTitle, lessonTitle, transcript, lessonId } = useLearningContext();
 
   // Auto-scroll to bottom of chat
   useEffect(() => {
@@ -54,16 +56,23 @@ export default function EduBot() {
     }
   }, [messages, isTyping]);
 
-  // Context-aware suggestions based on URL
+  // Context-aware suggestions based on URL and Learning Context
   useEffect(() => {
-    if (pathname.includes("leaderboard")) {
+    if (lessonTitle) {
+      setSuggestions([
+        `Summarize ${lessonTitle}`,
+        `Explain the core concept`,
+        "Quiz me on this",
+        "Key takeaways"
+      ]);
+    } else if (pathname.includes("leaderboard")) {
       setSuggestions(["How do I rank up?", "Who is the top student?", "What is level 10?"]);
     } else if (pathname.includes("accomplishments") || pathname.includes("students")) {
       setSuggestions(["Show my badges", "How to get certified?", "What is Mastery?"]);
     } else {
       setSuggestions(["Latest courses", "How to earn XP?", "Tell me about badges"]);
     }
-  }, [pathname]);
+  }, [pathname, lessonTitle]);
 
   const handleSendMessage = async (text: string) => {
     if (!text.trim()) return;
@@ -82,7 +91,14 @@ export default function EduBot() {
     try {
       const res = await backendRequest<{ ok: boolean, response: string, suggestions?: string[] }>("/ai/chat", {
         method: "POST",
-        body: { message: text, context: pathname }
+        body: { 
+          message: text, 
+          context: pathname,
+          lessonId,
+          lessonTitle,
+          courseTitle,
+          transcript: transcript // Send transcript to AI
+        }
       });
 
       if (res.ok) {
@@ -122,7 +138,9 @@ export default function EduBot() {
                   <h3 className="font-black text-lg uppercase tracking-wider leading-none">EduBot</h3>
                   <div className="flex items-center gap-2 mt-1">
                     <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">Online Tutor</span>
+                    <span className="text-[10px] font-bold uppercase tracking-widest opacity-80">
+                      {lessonTitle ? `Tutoring: ${lessonTitle}` : "Online Tutor"}
+                    </span>
                   </div>
                 </div>
               </div>

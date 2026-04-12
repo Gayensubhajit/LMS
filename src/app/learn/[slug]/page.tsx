@@ -34,6 +34,7 @@ import CourseAssistant from "@/components/lms/CourseAssistant";
 import XpEarnedToast, { XpEarnedToastRef } from "@/components/lms/XpEarnedToast";
 import DiscussionForum from "@/components/lms/DiscussionForum";
 import LiveChat from "@/components/lms/LiveChat";
+import { useLearningContext } from "@/contexts/LearningContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { dark } from "@clerk/themes";
 import confetti from "canvas-confetti";
@@ -130,6 +131,7 @@ export default function LearnCoursePage() {
   const xpToastRef = useRef<XpEarnedToastRef>(null);
   const transcriptScrollRef = useRef<HTMLDivElement>(null);
   const activeLineRef = useRef<HTMLDivElement>(null);
+  const { setContext: setLearningContext, clearContext: clearLearningContext } = useLearningContext();
 
   // flat lesson list
   const lessonItems = useMemo(
@@ -240,10 +242,33 @@ export default function LearnCoursePage() {
     }
   }, [progressPercent]);
 
-  // Reset tab when lesson changes
+  // Reset tab when lesson changes AND broadcast to AI Context
   useEffect(() => {
     setActiveTab("transcript");
-  }, [activeLessonId]);
+    
+    if (activeLesson && course) {
+      const transcriptText = activeLesson.content?.transcript
+        ?.map((t: any) => t.text)
+        .join(" ") || "";
+        
+      setLearningContext({
+        courseTitle: course.title,
+        lessonTitle: activeLesson.title,
+        transcript: transcriptText.slice(0, 15000), // Max context length for stability
+        lessonId: activeLesson.id
+      });
+    }
+
+    return () => {
+      // Should we clear it? Probably not immediately on every lesson change, 
+      // but maybe on page unmount.
+    };
+  }, [activeLessonId, courseLoaded]);
+
+  // Clear learning context on page unmount
+  useEffect(() => {
+    return () => clearLearningContext();
+  }, []);
 
   // ── Actions ───────────────────────────────────────────────────────────────
   const activeLesson =
@@ -779,72 +804,7 @@ export default function LearnCoursePage() {
                   </div>
                 </div>
 
-                {/* ── AI COACH BLOCK ──────────────────────────────────── */}
-                <div
-                  className="rounded-2xl mb-6 overflow-hidden bg-indigo-50/50 dark:bg-slate-900/80 border border-indigo-100 dark:border-violet-500/20 shadow-sm dark:shadow-none"
-                >
-                  <div className="hidden sm:flex items-center gap-3 px-4 py-3 border-b border-indigo-100 dark:border-white/5">
-                    <div className="w-7 h-7 rounded-lg bg-blue-600/10 dark:bg-violet-600/20 border border-blue-600/20 dark:border-violet-500/30 flex items-center justify-center shrink-0">
-                      <Sparkles size={13} className="text-blue-600 dark:text-violet-400" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-slate-900 dark:text-white">
-                        EduNova Coach
-                      </p>
-                      <p className="text-[10px] text-slate-500 dark:text-gray-600">
-                        AI-powered learning assistant • Powered by GPT-4
-                      </p>
-                    </div>
-                    <div className="ml-auto flex items-center gap-1.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className="text-[10px] text-emerald-500">
-                        Online
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="p-3 sm:p-4">
-                    <p className="text-[10px] sm:text-xs text-slate-500 dark:text-gray-400 mb-2 sm:mb-3 font-medium">
-                      Ask the AI Coach anything about this lesson:
-                    </p>
-                    <div className="flex flex-wrap gap-1.5 sm:gap-2 mb-3">
-                      {AI_SUGGESTIONS.map((s) => (
-                        <button
-                          key={s}
-                          onClick={() => setCoachInput(s)}
-                          className="text-[9px] sm:text-[11px] px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg border transition-all flex items-center gap-1.5 bg-blue-50 dark:bg-violet-500/5 border-blue-100 dark:border-violet-500/15 text-blue-700 dark:text-violet-300 font-bold"
-                        >
-                          <Sparkles size={9} className="sm:size-[10px]" />
-                          {s}
-                        </button>
-                      ))}
-                    </div>
-                    {coachInput && (
-                      <div className="flex gap-2 items-center">
-                        <input
-                          value={coachInput}
-                          onChange={(e) => setCoachInput(e.target.value)}
-                          className="flex-1 text-xs bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-lg px-3 py-2 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-gray-600 focus:outline-none focus:border-blue-500/50 dark:focus:border-violet-500/50 transition-colors shadow-inner"
-                          placeholder="Ask the coach anything..."
-                          onKeyDown={(e) =>
-                            e.key === "Escape" && setCoachInput("")
-                          }
-                        />
-                        <button
-                          onClick={() => setCoachInput("")}
-                          className="p-2 rounded-lg text-gray-600 hover:text-white hover:bg-white/5"
-                        >
-                          <X size={14} />
-                        </button>
-                        <button
-                          className="px-3 py-2 rounded-lg text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-600 dark:to-purple-500 shadow-md shadow-blue-500/20 dark:shadow-violet-500/20"
-                        >
-                          Ask →
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
+                {/* EduBot has taken over as the primary tutor - Block Removed for Clean UX */}
 
                 {/* ── TABS ────────────────────────────────────────────── */}
                 <div className="mb-5 border-b border-slate-200 dark:border-violet-500/15">

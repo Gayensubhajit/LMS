@@ -8,6 +8,7 @@ import { ThemeProviderWrapper } from "@/components/theme/ThemeProviderWrapper";
 import ClerkProviderWrapper from "@/components/auth/ClerkProviderWrapper";
 import EduBot from "@/components/lms/EduBot";
 import { Analytics } from "@vercel/analytics/react";
+import { LearningProvider } from "@/contexts/LearningContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -72,21 +73,23 @@ export default function RootLayout({
       >
         <ThemeProviderWrapper>
           <ClerkProviderWrapper>
-            <ErrorReporter />
-            <Script
-              src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/scripts//route-messenger.js"
-              strategy="afterInteractive"
-              data-target-origin="*"
-              data-message-type="ROUTE_CHANGE"
-              data-include-search-params="true"
-              data-only-in-iframe="true"
-              data-debug="true"
-              data-custom-data='{"appName": "YourApp", "version": "1.0.0", "greeting": "hi"}'
-            />
-            {children}
-            <EduBot />
-            <VisualEditsMessenger />
-            <Analytics />
+            <LearningProvider>
+              <ErrorReporter />
+              <Script
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/scripts//route-messenger.js"
+                strategy="afterInteractive"
+                data-target-origin="*"
+                data-message-type="ROUTE_CHANGE"
+                data-include-search-params="true"
+                data-only-in-iframe="true"
+                data-debug="true"
+                data-custom-data='{"appName": "YourApp", "version": "1.0.0", "greeting": "hi"}'
+              />
+              {children}
+              <EduBot />
+              <VisualEditsMessenger />
+              <Analytics />
+            </LearningProvider>
           </ClerkProviderWrapper>
         </ThemeProviderWrapper>
       </body>

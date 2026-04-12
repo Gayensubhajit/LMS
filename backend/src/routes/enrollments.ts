@@ -3,6 +3,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma.js";
 import { getUserFromHeader } from "../lib/auth.js";
+import { logActivity } from "../services/activity.js";
 
 export const enrollmentsRouter = Router();
 
@@ -140,6 +141,18 @@ enrollmentsRouter.post("/", async (req, res) => {
       expiresAt: true
     }
   });
+
+  // Log the enrollment activity to the global feed
+  const displayName = user.fullName || "A student";
+  const isNewEnrollment = enrollment.status === EnrollmentStatus.ACTIVE;
+  if (isNewEnrollment && course.slug !== "plus-membership") {
+    await logActivity(
+      user.id,
+      "ENROLLMENT",
+      `📚 ${displayName} just enrolled in "${course.title}"!`,
+      { courseSlug: course.slug, courseTitle: course.title }
+    );
+  }
 
   return res.status(200).json({
     ok: true,

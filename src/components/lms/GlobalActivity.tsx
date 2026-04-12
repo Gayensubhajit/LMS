@@ -23,8 +23,14 @@ interface Activity {
   createdAt: string;
 }
 
+interface PulseData {
+  activeStudents: number;
+  todayWins: number;
+}
+
 export default function GlobalActivity() {
   const [activities, setActivities] = useState<Activity[]>([]);
+  const [pulse, setPulse] = useState<PulseData>({ activeStudents: 1, todayWins: 0 });
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,8 +47,23 @@ export default function GlobalActivity() {
       }
     };
 
+    const fetchPulse = async () => {
+      try {
+        const res = await backendRequest<{ ok: boolean } & PulseData>("/gamification/pulse");
+        if (res.ok) {
+          setPulse({ activeStudents: res.activeStudents, todayWins: res.todayWins });
+        }
+      } catch (err) {
+        console.error("Failed to fetch pulse:", err);
+      }
+    };
+
     fetchActivity();
-    const interval = setInterval(fetchActivity, 30000); // Poll every 30s
+    fetchPulse();
+    const interval = setInterval(() => {
+      fetchActivity();
+      fetchPulse();
+    }, 30000); // Poll every 30s
     return () => clearInterval(interval);
   }, []);
 
@@ -76,9 +97,11 @@ export default function GlobalActivity() {
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Real-time Activity</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 shadow-sm">
           <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-          <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">Live Now</span>
+          <span className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em]">
+            {pulse.activeStudents} {pulse.activeStudents === 1 ? "Student" : "Students"} Live
+          </span>
         </div>
       </div>
 

@@ -15,10 +15,14 @@ import {
   ShieldCheck,
   Star,
   Zap,
+  Trophy,
+  Target,
+  Sparkles,
 } from "lucide-react";
 import Navbar from "@/components/lms/Navbar";
 import { SignIn, useUser } from "@clerk/nextjs";
 import { backendRequest } from "@/lib/backend-client";
+import BadgeCard from "@/components/lms/BadgeCard";
 import { dark } from "@clerk/ui/themes";
 interface Certificate {
   id: string;
@@ -38,6 +42,8 @@ interface Profile {
 export default function AccomplishmentsPage() {
   const { user, isLoaded, isSignedIn } = useUser();
   const [certificates, setCertificates] = useState<any[]>([]);
+  const [badges, setBadges] = useState<any[]>([]);
+  const [userBadges, setUserBadges] = useState<any[]>([]);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isChangingName, setIsChangingName] = useState(false);
@@ -60,6 +66,15 @@ export default function AccomplishmentsPage() {
           setCertificates(data.certificates);
           setProfile(data.profile);
         }
+
+        // Fetch badges
+        const badgesRes = await backendRequest<{ ok: boolean, badges: any[] }>("/gamification/badges");
+        if (badgesRes.ok) setBadges(badgesRes.badges);
+
+        const userBadgesRes = await backendRequest<{ ok: boolean, userBadges: any[] }>("/gamification/me", {
+          clerkUserId: user.id
+        });
+        if (userBadgesRes.ok) setUserBadges(userBadgesRes.userBadges);
       } catch (err) {
         console.error("Failed to fetch accomplishments:", err);
       } finally {
@@ -170,6 +185,33 @@ export default function AccomplishmentsPage() {
             </button>
           </div>
         </motion.div>
+
+        {/* Badges & Achievements Section */}
+        <div className="mb-20">
+          <div className="flex flex-row items-center justify-between gap-4 mb-8">
+            <h3 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3 uppercase tracking-tight">
+              <Trophy className="w-6 h-6 text-amber-500 shrink-0" />
+              Achievements
+              <span className="text-sm font-black text-slate-500 ml-2 bg-slate-100 dark:bg-slate-800/50 px-3 py-1 rounded-full border border-slate-200 dark:border-white/5">
+                {userBadges.length} / {badges.length}
+              </span>
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {badges.map((badge) => {
+              const userBadge = userBadges.find(ub => ub.badgeId === badge.id);
+              return (
+                <BadgeCard 
+                  key={badge.id}
+                  badge={badge}
+                  earnedAt={userBadge?.earnedAt}
+                  isUnlocked={!!userBadge}
+                />
+              );
+            })}
+          </div>
+        </div>
         {/* Certificates Section */}
         <div className="flex flex-row items-center md:justify-between gap-4 mb-8">
           <h3 className="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3 uppercase tracking-tight">

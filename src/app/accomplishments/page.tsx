@@ -154,7 +154,7 @@ export default function AccomplishmentsPage() {
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-4xl md:text-8xl font-black bg-clip-text text-transparent bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 dark:from-white dark:via-blue-200 dark:to-violet-400 mb-6 uppercase tracking-[-0.04em] leading-none"
+              className="text-4xl md:text-6xl font-black bg-clip-text text-transparent bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 dark:from-white dark:via-blue-200 dark:to-violet-400 mb-4 uppercase tracking-tight leading-none"
             >
               Accomplishments
             </motion.h1>
@@ -166,7 +166,7 @@ export default function AccomplishmentsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-slate-500 dark:text-slate-400 md:text-xl max-w-2xl font-medium leading-relaxed"
+            className="text-slate-500 dark:text-slate-400 md:text-base max-w-2xl font-medium leading-relaxed"
           >
             A prestigious gallery of your certificates, badges, and learning milestones.
           </motion.p>
@@ -179,56 +179,53 @@ export default function AccomplishmentsPage() {
           rank: stats.rank
         }} />
 
-        {/* Name Verification Card - Redesigned */}
+        {/* Name Verification Card - Redesigned - Spacing Reduced */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="relative mb-20 group"
+          className="relative mb-12 group"
         >
           {/* Decorative mesh background */}
-          <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-transparent to-violet-500/5 rounded-[3rem] -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
+          <div className="absolute inset-0 bg-gradient-to-tr from-blue-500/5 via-transparent to-violet-500/5 rounded-[2.5rem] -z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
           
-          <div className="relative bg-white/70 dark:bg-slate-900/40 backdrop-blur-2xl border border-slate-200/50 dark:border-white/10 rounded-[2.5rem] p-10 flex flex-col lg:flex-row items-center justify-between gap-10 shadow-2xl shadow-indigo-500/5">
-            <div className="flex flex-col md:flex-row items-center lg:items-start gap-8 text-center md:text-left">
+          <div className="relative bg-white/70 dark:bg-slate-900/40 backdrop-blur-2xl border border-slate-200/50 dark:border-white/10 rounded-[2rem] p-6 flex flex-col lg:flex-row items-center justify-between gap-8 shadow-2xl shadow-indigo-500/5">
+            <div className="flex flex-col md:flex-row items-center lg:items-start gap-6 text-center md:text-left">
               <div className="relative shrink-0">
-                <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center border-4 border-white dark:border-slate-800 shadow-xl relative z-10 rotate-3 group-hover:rotate-0 transition-transform duration-500">
-                  <ShieldCheck className="w-12 h-12 text-white" />
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center border-4 border-white dark:border-slate-800 shadow-xl relative z-10 group-hover:rotate-0 transition-transform duration-500">
+                  <ShieldCheck className="w-8 h-8 text-white" />
                 </div>
-                {/* Orbital Rings */}
-                <div className="absolute inset-0 w-24 h-24 rounded-3xl border-2 border-blue-500/20 scale-125 animate-ping opacity-20" />
               </div>
 
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-3 justify-center md:justify-start">
-                  <h2 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+                <div className="flex items-center gap-3 mb-2 justify-center md:justify-start">
+                  <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
                     Identity Status
                   </h2>
                   <div className={`
-                    px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border
+                    px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border
                     ${profile?.isNameVerified 
                       ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" 
-                      : "bg-amber-500/10 text-amber-600 border-amber-500/20 animate-pulse"}
+                      : "bg-amber-500/10 text-amber-600 border-amber-500/20"}
                   `}>
                     {profile?.isNameVerified ? "Verified" : "Action Required"}
                   </div>
                 </div>
 
-                <div className="text-slate-600 dark:text-slate-300 mb-4 max-w-xl font-medium text-lg leading-snug">
-                  Currently registered as <span className="text-blue-600 dark:text-violet-400 font-black">{profile?.verifiedName || user?.fullName || "Not Verified"}</span>. 
-                  This name is legally bound to your official learning credentials.
+                <div className="text-slate-600 dark:text-slate-300 mb-2 max-w-xl font-medium text-base leading-snug">
+                  Currently registered as <span className="text-blue-600 dark:text-violet-400 font-black">{profile?.verifiedName || user?.fullName || "Not Verified"}</span>.
                 </div>
 
-                <div className="flex items-center gap-4 text-xs font-bold text-slate-400 dark:text-slate-500">
-                  <CheckCircle2 className={`w-4 h-4 ${profile?.isNameVerified ? "text-emerald-500" : "text-slate-300"}`} />
-                  Certificate Integrity System Active
+                <div className="flex items-center gap-4 text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+                  <CheckCircle2 className={`w-3 h-3 ${profile?.isNameVerified ? "text-emerald-500" : "text-slate-300"}`} />
+                  Integrity Verified
                 </div>
               </div>
             </div>
 
             <button
               onClick={() => setIsChangingName(true)}
-              className="px-10 py-5 bg-slate-900 dark:bg-white hover:bg-black dark:hover:bg-slate-100 text-white dark:text-slate-900 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all shadow-xl shadow-slate-900/20 dark:shadow-white/5 flex items-center gap-3 active:scale-95 group/btn shrink-0"
+              className="px-8 py-4 bg-slate-900 dark:bg-white hover:bg-black dark:hover:bg-slate-100 text-white dark:text-slate-900 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all shadow-xl shadow-slate-900/10 dark:shadow-white/5 flex items-center gap-3 active:scale-95 group/btn shrink-0"
             >
               Update Credentials
               <ChevronRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />

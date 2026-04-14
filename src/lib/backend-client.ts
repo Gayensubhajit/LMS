@@ -23,6 +23,26 @@ type RequestOptions = {
 
 export async function backendRequest<T>(path: string, options: RequestOptions = {}) {
   const { method = "GET", body, clerkUserId } = options;
+
+  // If in the browser, use the Vercel Proxy to bypass carrier blocking of Railway
+  if (typeof window !== "undefined") {
+    const proxyResponse = await fetch("/api/backend-proxy", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path, options }),
+    });
+
+    const data = await proxyResponse.json().catch(() => ({}));
+    if (!proxyResponse.ok) {
+      const errorMessage =
+        (data && typeof data === "object" && "error" in data && String(data.error)) ||
+        `Proxy request failed with status ${proxyResponse.status} at ${path}`;
+      throw new Error(errorMessage);
+    }
+    return data as T;
+  }
+
+  // Server-side: Call the backend directly (faster, no carrier blocking on server)
   const headers: Record<string, string> = {
     "Content-Type": "application/json"
   };
@@ -35,14 +55,13 @@ export async function backendRequest<T>(path: string, options: RequestOptions = 
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
-    keepalive: true,
   });
 
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
     const errorMessage =
       (data && typeof data === "object" && "error" in data && String(data.error)) ||
-      `Request failed with status ${response.status} at ${BACKEND_URL}${path}`;
+      `Backend request failed with status ${response.status} at ${BACKEND_URL}${path}`;
     throw new Error(errorMessage);
   }
 

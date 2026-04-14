@@ -15,6 +15,7 @@ import { Montserrat } from "next/font/google";
 const montserrat = Montserrat({ subsets: ["latin"] });
 
 interface LeaderboardUser {
+  id: string;
   rank: number;
   name: string;
   avatar?: string | null;
@@ -111,12 +112,7 @@ export default function LeaderboardPage() {
                   >
                     <Info size={48} className="mx-auto mb-4 text-red-400" />
                     <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Something went wrong</h3>
-                    <p className="text-slate-500 dark:text-gray-400 mb-6">
-                      {error}<br/>
-                      <span className="text-[10px] opacity-50 font-mono mt-2 block">
-                        API URL: {process.env.NEXT_PUBLIC_API_URL || "Fallback to Localhost"}
-                      </span>
-                    </p>
+                    <p className="text-slate-500 dark:text-gray-400 mb-6">{error}</p>
                     <button 
                        onClick={() => window.location.reload()}
                        className="px-8 py-3 rounded-xl bg-red-500/10 text-red-500 font-bold text-sm hover:bg-red-500/20 transition-all"

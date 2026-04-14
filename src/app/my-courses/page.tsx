@@ -390,8 +390,15 @@ export default function MyCoursesPage() {
                     <p className="text-sm text-gray-400 leading-relaxed max-w-lg">
                       {error}
                     </p>
-                    <div className="mt-4 flex items-center gap-2 font-mono text-xs bg-black/40 px-3 py-2 rounded border border-white/5 text-violet-400">
-                      cd backend && npm run dev
+                    <div className="mt-4 flex flex-col gap-2">
+                      <div className="flex items-center gap-2 font-mono text-[10px] bg-black/40 px-3 py-2 rounded border border-white/5 text-violet-400">
+                        <span className="text-gray-500 shrink-0">URL:</span>
+                        <span className="truncate">{process.env.NEXT_PUBLIC_API_URL || "Fallback to Localhost"}</span>
+                      </div>
+                      <div className="flex items-center gap-2 font-mono text-[10px] bg-black/40 px-3 py-2 rounded border border-white/5 text-violet-400">
+                        <span className="text-gray-500 shrink-0">Resolution:</span>
+                        <span>cd backend && npm run dev</span>
+                      </div>
                     </div>
                   </div>
                 </motion.div>

@@ -5,12 +5,13 @@
 const IS_PROD = typeof window !== "undefined" && (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1");
 const DEFAULT_URL = "http://localhost:4000";
 
-export const BACKEND_URL =
-  process.env.NEXT_PUBLIC_API_URL ??
-  process.env.NEXT_PUBLIC_BACKEND_URL ??
-  DEFAULT_URL;
+export const BACKEND_URL = (() => {
+  let url = process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_BACKEND_URL || DEFAULT_URL;
+  // Strip trailing slashes to avoid double slashes in fetch
+  return url.replace(/\/+$/, "");
+})();
 
-if (typeof window !== "undefined" && IS_PROD && BACKEND_URL === DEFAULT_URL) {
+if (typeof window !== "undefined" && IS_PROD && (BACKEND_URL.includes("localhost") || BACKEND_URL.includes("127.0.0.1"))) {
   console.warn("⚠️ [LMS] API is falling back to localhost in production! Ensure NEXT_PUBLIC_API_URL is set in Vercel.");
 }
 
@@ -41,7 +42,7 @@ export async function backendRequest<T>(path: string, options: RequestOptions = 
   if (!response.ok) {
     const errorMessage =
       (data && typeof data === "object" && "error" in data && String(data.error)) ||
-      `Request failed with status ${response.status}`;
+      `Request failed with status ${response.status} at ${BACKEND_URL}${path}`;
     throw new Error(errorMessage);
   }
 

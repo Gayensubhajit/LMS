@@ -33,6 +33,7 @@ import { useUser, useClerk } from "@clerk/nextjs";
 import { backendRequest } from "@/lib/backend-client";
 import { syncCourseView } from "@/lib/history-api";
 import ThemeToggle from "@/components/lms/ThemeToggle";
+import { Kbd } from "@/components/ui/kbd";
 
 const navLinks = [
   { label: "Courses", href: "/courses" },
@@ -141,6 +142,19 @@ export default function Navbar() {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        inputRef.current?.focus();
+        setSearchFocused(true);
+      }
+    };
+
+    document.addEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
   }, []);
 
   useEffect(() => {
@@ -407,6 +421,11 @@ export default function Navbar() {
                     placeholder="What do you want to learn?"
                     className="flex-1 bg-transparent text-sm font-medium text-slate-800 dark:text-white placeholder-slate-500 dark:placeholder-gray-500 px-6 py-3 outline-none"
                   />
+                  <div className="hidden xl:flex items-center gap-1 pr-4">
+                    <Kbd className="bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-gray-400 border-none shadow-none">
+                      <span className="text-[10px]">⌘</span>K
+                    </Kbd>
+                  </div>
                   <button
                     type="submit"
                     className="mr-1.5 w-10 h-10 rounded-full bg-blue-600 dark:bg-blue-600 flex items-center justify-center shrink-0 hover:bg-blue-700 transition-colors shadow-lg shadow-blue-500/20"

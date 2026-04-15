@@ -272,7 +272,7 @@ dashboardRouter.get("/roadmap", async (req, res) => {
     stages: results
   });
 });
-dashboardRouter.get("/stats", async (req, res) => {
+dashboardRouter.get("/stats", async (req, res, next) => {
   const user = await getUserFromHeader(req, res);
   if (!user) return;
 
@@ -305,7 +305,6 @@ dashboardRouter.get("/stats", async (req, res) => {
       }
     });
   } catch (err) {
-    console.error("Dashboard stats error:", err);
-    return res.status(500).json({ ok: false, error: "Internal server error" });
+    next(err);
   }
 });

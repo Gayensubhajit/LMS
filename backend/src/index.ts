@@ -36,9 +36,11 @@ import { quizzesRouter } from "./routes/quizzes.js";
 import { notesRouter } from "./routes/notes.js";
 import { aiRouter } from "./routes/ai.js";
 import { gamificationRouter } from "./routes/gamification.js";
+import { logger } from "./lib/logger.js";
+import { errorHandler } from "./lib/error-handler.js";
 
 async function autoSeed() {
-  console.log("Starting self-healing database sync...");
+  logger.info("Starting self-healing database sync...");
   try {
     // Force push the schema to ensure tables exist
     console.log("Executing prisma db push...");
@@ -318,6 +320,9 @@ app.use("/forums", forumsRouter);
 app.use("/ai", aiRouter);
 app.use("/gamification", gamificationRouter);
 
+// Centralized Error Handling Middleware
+app.use(errorHandler);
+
 autoSeed()
   .then(async () => {
     // GraphQL Setup
@@ -330,9 +335,9 @@ autoSeed()
     app.use("/graphql", expressMiddleware(apolloServer) as any);
 
     httpServer.listen(env.PORT, () => {
-      console.log(`Backend running on http://localhost:${env.PORT}`);
-      console.log(`GraphQL endpoint: http://localhost:${env.PORT}/graphql`);
-      console.log(`Socket.io is enabled`);
+      logger.info(`Backend running on http://localhost:${env.PORT}`);
+      logger.info(`GraphQL endpoint: http://localhost:${env.PORT}/graphql`);
+      logger.info(`Socket.io is enabled`);
     });
   })
   .catch((err) => {

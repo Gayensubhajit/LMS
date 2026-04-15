@@ -1,5 +1,8 @@
 # LMS Platform (Next.js + Node + Prisma)
 
+![LMS CI](https://github.com/Gayensubhajit/LMS/actions/workflows/ci.yml/badge.svg)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+
 Welcome to the LMS project — a modern online learning platform implementation built with Next.js (App Router), Clerk auth, Stripe checkout, and a backend powered by Node + Express-like routes and Prisma + PostgreSQL.
 
 ## 🚀 Why this project is awesome

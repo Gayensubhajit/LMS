@@ -7,6 +7,7 @@ import Script from "next/script";
 import { ThemeProviderWrapper } from "@/components/theme/ThemeProviderWrapper";
 import ClerkProviderWrapper from "@/components/auth/ClerkProviderWrapper";
 import EduBot from "@/components/lms/EduBot";
+import { ScrollToTop } from "@/components/ui/ScrollToTop";
 import { Analytics } from "@vercel/analytics/react";
 import { LearningProvider } from "@/contexts/LearningContext";
 
@@ -58,6 +59,15 @@ export const metadata: Metadata = {
     title: "EduNova — AI-Powered Learning",
     description: "Master high-income skills with AI-guided roadmaps.",
     images: ["/og-image.png?v=1"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/icon.png",
   },
 };
 

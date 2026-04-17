@@ -3,8 +3,9 @@
 ![LMS CI](https://github.com/Gayensubhajit/LMS/actions/workflows/ci.yml/badge.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-Welcome to the LMS project — a modern online learning platform implementation built with Next.js (App Router), Clerk auth, Stripe checkout, and a backend powered by Node + Express-like routes and Prisma + PostgreSQL.(Done by Subhajit Gayen,Chirantan Biswas)
+Welcome to the LMS project — a modern online learning platform implementation built with Next.js (App Router), Clerk auth, Stripe checkout, and a backend powered by Node + Express-like routes and Prisma + PostgreSQL.
 
+Author - Subhajit Gayen , Chirantan Biswas
 ## 🚀 Why this project is awesome
 
 - Complete full-stack LMS from marketing pages to student dashboards, instructor tools, and admin controls

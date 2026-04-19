@@ -15,31 +15,49 @@ if (typeof window !== "undefined" && IS_PROD && (BACKEND_URL.includes("localhost
   console.warn("⚠️ [LMS] API is falling back to localhost in production! Ensure NEXT_PUBLIC_API_URL is set in Vercel.");
 }
 
+import { toast } from "sonner";
+
 type RequestOptions = {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   body?: unknown;
   clerkUserId?: string;
+  silent?: boolean; // Don't show toast on error
 };
 
 export async function backendRequest<T>(path: string, options: RequestOptions = {}) {
-  const { method = "GET", body, clerkUserId } = options;
+  const { method = "GET", body, clerkUserId, silent = false } = options;
 
   // If in the browser, use the Vercel Proxy to bypass carrier blocking of Railway
   if (typeof window !== "undefined") {
-    const proxyResponse = await fetch("/api/backend-proxy", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ path, options }),
-    });
+    try {
+      const proxyResponse = await fetch("/api/backend-proxy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path, options }),
+      });
 
-    const data = await proxyResponse.json().catch(() => ({}));
-    if (!proxyResponse.ok) {
-      const errorMessage =
-        (data && typeof data === "object" && "error" in data && String(data.error)) ||
-        `Proxy request failed with status ${proxyResponse.status} at ${path}`;
-      throw new Error(errorMessage);
+      const data = await proxyResponse.json().catch(() => ({}));
+      if (!proxyResponse.ok) {
+        const errorMessage =
+          (data && typeof data === "object" && "error" in data && String(data.error)) ||
+          `Proxy request failed with status ${proxyResponse.status}`;
+          
+        if (!silent) {
+          toast.error("Request Failed", {
+            description: errorMessage
+          });
+        }
+        throw new Error(errorMessage);
+      }
+      return data as T;
+    } catch (err) {
+      if (!silent) {
+        toast.error("Network Error", {
+          description: "Cannot connect to the backend server. Please check your connection."
+        });
+      }
+      throw err;
     }
-    return data as T;
   }
 
   // Server-side: Call the backend directly (faster, no carrier blocking on server)

@@ -10,6 +10,7 @@ import EduBot from "@/components/lms/EduBot";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
 import { Analytics } from "@vercel/analytics/react";
 import { LearningProvider } from "@/contexts/LearningContext";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -96,6 +97,7 @@ export default function RootLayout({
                 data-custom-data='{"appName": "YourApp", "version": "1.0.0", "greeting": "hi"}'
               />
               {children}
+              <Toaster />
               <EduBot />
               <VisualEditsMessenger />
               <Analytics />

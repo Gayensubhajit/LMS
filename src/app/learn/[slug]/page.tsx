@@ -39,6 +39,7 @@ import { useLearningContext } from "@/contexts/LearningContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { dark } from "@clerk/themes";
 import confetti from "canvas-confetti";
+import { LessonPageSkeleton } from "@/components/lms/Skeletons";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type TranscriptEntry = { time: string; text: string };
@@ -425,14 +426,7 @@ export default function LearnCoursePage() {
 
   // ── Loading UI ────────────────────────────────────────────────────────────
   if (!isLoaded || loading) {
-    return (
-      <main className="min-h-screen bg-[#f6f8ff] dark:bg-background flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-14 h-14 border-2 border-violet-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-slate-500 dark:text-gray-500 text-sm">Loading your lessons…</p>
-        </div>
-      </main>
-    );
+    return <LessonPageSkeleton />;
   }
 
   // ── Error UI ──────────────────────────────────────────────────────────────

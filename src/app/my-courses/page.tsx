@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import Footer from "@/components/lms/Footer";
 import CertificateModal from "@/components/lms/CertificateModal";
+import { DashboardStatsSkeleton, EnrollmentCardSkeleton } from "@/components/lms/Skeletons";
 
 import { Montserrat } from "next/font/google";
 
@@ -363,12 +364,12 @@ export default function MyCoursesPage() {
               {/* Loading */}
               {(!isLoaded || loading) && (
                 <motion.div key="skeleton" className="space-y-4">
-                  {[1, 2, 3].map((i) => (
-                    <div
-                      key={i}
-                      className="h-40 rounded-2xl animate-pulse bg-slate-200 dark:bg-white/2 border border-slate-300 dark:border-white/5"
-                    />
-                  ))}
+                  <DashboardStatsSkeleton />
+                  <div className="space-y-4">
+                    {[1, 2, 3].map((i) => (
+                      <EnrollmentCardSkeleton key={i} />
+                    ))}
+                  </div>
                 </motion.div>
               )}
 

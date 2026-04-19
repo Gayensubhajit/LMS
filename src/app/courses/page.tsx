@@ -25,6 +25,7 @@ import { formatLocalPrice } from "@/lib/utils/currency";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 import { backendRequest } from "@/lib/backend-client";
+import { CourseCardSkeleton } from "@/components/lms/Skeletons";
 
 const categories = [
   "All",
@@ -375,9 +376,15 @@ function CoursesContent() {
 
             {/* Course Grid */}
             <div className="lg:col-span-3">
-              {filtered.length === 0 ? (
+              {!backendLoaded ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <CourseCardSkeleton key={i} />
+                  ))}
+                </div>
+              ) : filtered.length === 0 ? (
                 <div className="text-center py-20 rounded-3xl border border-dashed border-slate-200 dark:border-blue-500/20 bg-white dark:bg-white/5 shadow-sm">
-                  <p className="text-slate-500 dark:text-gray-500">
+                  <p className="text-slate-500 dark:text-gray-400">
                     No courses matching your search. Try another keyword!
                   </p>
                   <button
@@ -537,8 +544,16 @@ export default function CoursesPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-background text-white flex items-center justify-center pt-20">
-          Loading EduNova Library...
+        <div className="min-h-screen bg-[#f6f8ff] dark:bg-background pt-20 px-6">
+           <div className="max-w-7xl mx-auto py-10 space-y-12">
+              <div className="flex flex-col items-center gap-4">
+                <div className="h-6 w-48 bg-slate-200 dark:bg-white/5 animate-pulse rounded-lg" />
+                <div className="h-16 w-3/4 bg-slate-200 dark:bg-white/5 animate-pulse rounded-2xl" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {[1, 2, 3, 4, 5, 6].map(i => <CourseCardSkeleton key={i} />)}
+              </div>
+           </div>
         </div>
       }
     >

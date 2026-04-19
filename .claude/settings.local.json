@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find . -name \"*.ts\" ! -path \"./node_modules/*\" ! -path \"./.git/*\" ! -path \"./.next/*\" ! -path \"./dist/*\" ! -path \"*/node_modules/*\" -exec cat {} \\\\;)",
+      "Bash(echo \"TypeScript \\(.ts\\): $\\(find . -name \"*.ts\" ! -path \"./node_modules/*\" ! -path \"./.git/*\" ! -path \"./.next/*\" ! -path \"./dist/*\" ! -path \"*/node_modules/*\" -exec cat {} \\\\;)"
+    ]
+  }
+}

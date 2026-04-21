@@ -91,23 +91,77 @@ npm run dev
 
 ## 🧪 Testing
 
-No tests are included by default in this starter. Add test setup with Jest/Playwright/Cypress as needed.
+This project uses [Vitest](https://vitest.dev/) with `@testing-library/react` for unit and component tests.
+
+```bash
+# Run all tests once
+npm run test
+
+# Run in watch mode (re-runs on save)
+npm run test:watch
+```
+
+Test files live alongside the source code in `__tests__/` directories:
+- `src/lib/__tests__/course-utils.test.ts` — course merge/union logic
+- `src/lib/__tests__/backend-client.test.ts` — URL resolution + error extraction
+- `src/lib/__tests__/format.test.ts` — currency, date, and text formatting utils
+
+Add new tests in the same `__tests__/` folder next to the module being tested.
 
 ## 📦 Scripts
 
-- `npm run dev` - start Next.js local server
+- `npm run dev` - start Next.js local server (Turbopack)
 - `npm run build` - build production app
 - `npm run start` - run production server
-- `npm run lint` - run eslint
-- `npm run format` - run prettier if configured
+- `npm run lint` - run ESLint
+- `npm run test` - run Vitest unit tests
+- `npm run test:watch` - run Vitest in watch mode
+- `npm run format` - run Prettier if configured
+
+## 🌍 Environment Validation
+
+The app validates required environment variables at startup using Zod (`src/lib/env.ts`).
+If a required variable is missing in production, the app will throw and fail to start.
+In development, a warning is printed so local workflows are not blocked.
+
+Required variables:
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` — Clerk frontend API key
+
+Optional variables:
+- `NEXT_PUBLIC_API_URL` — Backend base URL (defaults to `http://localhost:4000`)
+- `NEXT_PUBLIC_APP_URL` — Canonical app URL
+
+## 🛡️ Error Boundaries
+
+Use `<ErrorBoundary>` from `@/components/ui/error-boundary` to isolate UI sections
+that might fail (e.g. API-driven widgets):
+
+```tsx
+import { ErrorBoundary } from "@/components/ui/error-boundary";
+
+<ErrorBoundary>
+  <CoursePlayer />
+</ErrorBoundary>
+```
+
+Or use the HOC:
+
+```tsx
+import { withErrorBoundary } from "@/components/ui/error-boundary";
+
+const SafeCoursePlayer = withErrorBoundary(CoursePlayer);
+```
 
 ## 📚 Architecture notes
 
 - `src/app` for routes and layouts
 - `components/*` for presentational and container components
-- `backend/src/routes/` for authenticated APIs
+- `backend/src/routes/` for authenticated APIs — see [`backend/ROUTES.md`](./backend/ROUTES.md) for full API docs
 - `prisma/schema.prisma` for data models
 - `backend/src/lib/prisma.ts` for Prisma client singleton
+- `backend/src/lib/logger.ts` for structured backend logging (JSON in prod, coloured in dev)
+- `src/lib/env.ts` for typed, validated environment variables
+- `src/lib/utils/format.ts` for shared formatting utilities (currency, dates, counts)
 - `students` and `instructors` roles controlled via Clerk custom claims
 
 ## Project Structure

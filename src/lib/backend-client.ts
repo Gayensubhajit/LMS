@@ -25,7 +25,7 @@ type RequestOptions = {
 };
 
 export async function backendRequest<T>(path: string, options: RequestOptions = {}) {
-  const { method = "GET", body, clerkUserId, silent = false } = options;
+  const { method = "GET", body, clerkUserId, silent = true } = options;
 
   // If in the browser, use the Vercel Proxy to bypass carrier blocking of Railway
   if (typeof window !== "undefined") {

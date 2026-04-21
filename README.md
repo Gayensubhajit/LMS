@@ -12,7 +12,7 @@ Author - Subhajit Gayen , Chirantan Biswas
 - Supports video courses, progress tracking, achievements, certifications, and enrollment logic
 - Built with best-in-class dev stack:
   - Frontend: Next.js 14+, TypeScript, Tailwind CSS, React Server Components
-  - Backend: Node, TypeScript, Prisma ORM, REST-like routes
+  - Backend: Node, TypeScript, Prisma ORM, REST-like routes 
   - Auth: Clerk (users, roles, sessions)
   - Payments: Razorpay checkout/success flows
 - Included team features: admin UI, reporting, community leaderboard, AI assistant integration

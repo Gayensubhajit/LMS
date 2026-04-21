@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma.js";
+import { logger } from "../lib/logger.js";
+
 
 export const coursesRouter = Router();
 
@@ -98,7 +100,8 @@ coursesRouter.get("/:slug", async (req, res) => {
   });
 
   if (!course) {
-    console.log(`[Courses] Auto-creating missing course: ${parsed.data.slug}`);
+    logger.warn(`[Courses] Auto-creating missing course`, { slug: parsed.data.slug });
+
     
     const slug = parsed.data.slug;
     const humanTitle = slug

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "../lib/prisma.js";
 import { getUserFromHeader } from "../lib/auth.js";
 import { logActivity } from "../services/activity.js";
+import { logger } from "../lib/logger.js";
 
 export const enrollmentsRouter = Router();
 
@@ -63,7 +64,7 @@ enrollmentsRouter.post("/", async (req, res) => {
   });
 
   if (!course) {
-    console.log(`[Enrollments] Course ${courseSlug} not in DB. Auto-creating from request...`);
+    logger.warn(`[Enrollments] Course not in DB — auto-creating placeholder`, { courseSlug });
     // Create a simplified placeholder from the slug to allow enrollment to proceed without 404
     const humanTitle = courseSlug
       .split("-")

@@ -198,16 +198,19 @@ export default function Navbar() {
     backendRequest<{ ok: boolean; synced: boolean }>("/users/sync", {
       method: "POST",
       clerkUserId: user.id,
+      silent: true,
     }).catch(() => {});
 
     backendRequest<{ ok: boolean; items: any[] }>("/dashboard/my-courses", {
       clerkUserId: user.id,
+      silent: true,
     })
       .then((res) => setHasEnrollments(res.items.length > 0))
       .catch(() => setHasEnrollments(false));
 
     backendRequest<{ ok: boolean; item: { role: string } }>("/users/me", {
       clerkUserId: user.id,
+      silent: true,
     })
       .then((res) => {
         if (res.ok) setUserRole(res.item.role);
@@ -224,6 +227,7 @@ export default function Navbar() {
           isPlusMember?: boolean;
         }>("/enrollments/check/plus-membership", {
           clerkUserId: user.id,
+          silent: true,
         });
         
         if (res.ok) {

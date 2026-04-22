@@ -35,6 +35,7 @@ import { forumsRouter } from "./routes/forums.js";
 import { quizzesRouter } from "./routes/quizzes.js";
 import { notesRouter } from "./routes/notes.js";
 import { aiRouter } from "./routes/ai.js";
+import { roadmapsRouter } from "./routes/roadmaps.js";
 import { gamificationRouter } from "./routes/gamification.js";
 import { logger } from "./lib/logger.js";
 import { errorHandler } from "./lib/error-handler.js";
@@ -318,6 +319,7 @@ app.use("/quizzes", quizzesRouter);
 app.use("/notes", notesRouter);
 app.use("/forums", forumsRouter);
 app.use("/ai", aiRouter);
+app.use("/roadmaps", roadmapsRouter);
 app.use("/gamification", gamificationRouter);
 
 // Centralized Error Handling Middleware

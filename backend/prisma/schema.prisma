@@ -83,6 +83,7 @@ model User {
   lastActivityAt       DateTime?
   streakCount          Int          @default(0)
   activities           Activity[]
+  roadmaps             UserRoadmap[]
 }
 
 model Course {
@@ -420,5 +421,20 @@ model Activity {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([createdAt])
+  @@index([userId])
+}
+
+model UserRoadmap {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  description String?
+  prompt      String   @db.Text
+  roadmap     Json     // Generated roadmap structure
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
 }

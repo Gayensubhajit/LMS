@@ -7,8 +7,21 @@ import { backendRequest } from "@/lib/backend-client";
 import { useUser } from "@clerk/nextjs";
 import RoadmapStep from "./RoadmapStep";
 import { Loader2, Sparkles } from "lucide-react";
+import { RoadmapPhase } from "@/lib/roadmap-types";
 
-export default function RoadmapTimeline() {
+interface RoadmapTimelineProps {
+  customData?: RoadmapPhase[];
+  title?: string;
+  description?: string;
+  subtitle?: string;
+}
+
+export default function RoadmapTimeline({ 
+  customData, 
+  title = "Master the Frontier", 
+  description = "From foundational Python to building autonomous multi-agent systems. Follow this world-class curriculum designed to turn you into a production-ready AI Engineer.",
+  subtitle = "Your AI Career Blueprint"
+}: RoadmapTimelineProps) {
   const { user, isLoaded: userLoaded } = useUser();
   const [progress, setProgress] = useState<{ progressPercent: number } | null>(null);
   const [loading, setLoading] = useState(true);
@@ -51,7 +64,8 @@ export default function RoadmapTimeline() {
     fetchProgress();
   }, [user?.id, userLoaded]);
 
-  const totalSteps = aiRoadmapData.length;
+  const roadmapData = customData || aiRoadmapData;
+  const totalSteps = roadmapData.length;
   const currentStepIndex = progress ? Math.floor((progress.progressPercent / 100) * totalSteps) : 0;
 
   if (loading) {
@@ -86,21 +100,21 @@ export default function RoadmapTimeline() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600/10 rounded-full mb-6"
+             className="flex items-center gap-2 px-4 py-2 bg-indigo-600/10 rounded-full mb-6"
           >
             <Sparkles size={14} className="text-indigo-600 dark:text-indigo-400" />
-            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600 dark:text-indigo-400">Your AI Career Blueprint</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-indigo-600 dark:text-indigo-400">{subtitle}</span>
           </motion.div>
-          <h2 className="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tighter mb-4">
-            Master the <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Frontier</span>
+          <h2 className="text-4xl sm:text-6xl font-black text-slate-900 dark:text-white tracking-tighter mb-4 text-balance">
+            {title}
           </h2>
           <p className="text-slate-500 dark:text-gray-400 max-w-2xl font-medium leading-relaxed">
-            From foundational Python to building autonomous multi-agent systems. Follow this world-class curriculum designed to turn you into a production-ready AI Engineer.
+            {description}
           </p>
         </div>
 
         <div className="space-y-32">
-          {aiRoadmapData.map((phase, idx) => (
+          {roadmapData.map((phase, idx) => (
             <RoadmapStep 
               key={phase.month}
               phase={phase}

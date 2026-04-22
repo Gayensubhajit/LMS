@@ -2,20 +2,19 @@
 
 import { motion } from "framer-motion";
 import { Clock, CheckCircle2, ChevronRight, GraduationCap } from "lucide-react";
-import { aiRoadmapData } from "@/lib/roadmap-data";
 import Link from "next/link";
-
-type Phase = (typeof aiRoadmapData)[0];
+import { RoadmapPhase, RoadmapIconMap } from "@/lib/roadmap-types";
 
 interface RoadmapStepProps {
-  phase: Phase;
+  phase: RoadmapPhase;
   index: number;
   isCompleted?: boolean;
   isActive?: boolean;
 }
 
 export default function RoadmapStep({ phase, index, isCompleted, isActive }: RoadmapStepProps) {
-  const Icon = phase.icon;
+  // Handle both component icons (static data) and string icons (AI data)
+  const Icon = typeof phase.icon === 'string' ? (RoadmapIconMap[phase.icon] || RoadmapIconMap.Code2) : phase.icon;
 
   return (
     <motion.div 

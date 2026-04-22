@@ -476,6 +476,7 @@ export default function RoadmapPage() {
   const [completedTopics, setCompletedTopics] = useState<Set<string>>(
     new Set(),
   );
+  const [savedRoadmaps, setSavedRoadmaps] = useState<any[]>([]);
 
   const fetchStatus = useCallback(async () => {
     if (!isLoaded || !user?.id) {
@@ -512,6 +513,23 @@ export default function RoadmapPage() {
   useEffect(() => {
     fetchStatus();
   }, [fetchStatus]);
+
+  const fetchSavedRoadmaps = useCallback(async () => {
+    if (!user?.id) return;
+    try {
+      const res = await backendRequest<{ ok: boolean; items: any[] }>(
+        "/roadmaps/my-roadmaps",
+        { clerkUserId: user.id }
+      );
+      if (res.ok) setSavedRoadmaps(res.items);
+    } catch (e) {
+      console.error("Failed to fetch saved roadmaps:", e);
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (isLoaded && user) fetchSavedRoadmaps();
+  }, [isLoaded, user, fetchSavedRoadmaps]);
 
   const pathContent = active ? PATHS.find((p) => p.id === active) : null;
 
@@ -625,7 +643,7 @@ export default function RoadmapPage() {
               {!active ? (
                 <div className="space-y-12">
                   {/* Special AI Roadmap Banner */}
-                  <Link href="/ai-roadmap" className="block relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-600 p-8 sm:p-10 shadow-2xl group shadow-indigo-500/20 mb-12 cursor-pointer transition-transform hover:-translate-y-1">
+                  <div className="block relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-600 p-8 sm:p-10 shadow-2xl group shadow-indigo-500/20 mb-12 transition-all">
                     <div className="absolute -top-10 -right-10 p-8 opacity-20 group-hover:opacity-40 group-hover:rotate-12 group-hover:scale-110 transition-all duration-700 pointer-events-none">
                       <Sparkles size={200} className="text-white" />
                     </div>
@@ -639,11 +657,49 @@ export default function RoadmapPage() {
                       <p className="text-white/80 text-base sm:text-lg max-w-xl mb-8 font-medium leading-relaxed">
                         Master the skills to build autonomous, production-ready AI systems with our comprehensive 7-month curriculum.
                       </p>
-                      <div className="flex items-center gap-2 text-indigo-950 font-black bg-white w-fit px-6 py-3 rounded-xl shadow-xl transition-all group-hover:bg-indigo-50">
-                        View Curriculum <ArrowRight size={18} className="text-indigo-600 group-hover:translate-x-1 transition-transform" />
+                      <div className="flex flex-wrap items-center gap-4">
+                        <Link href="/ai-roadmap" className="flex items-center gap-2 text-indigo-950 font-black bg-white w-fit px-6 py-3 rounded-xl shadow-xl transition-all hover:bg-indigo-50 hover:scale-105 active:scale-95">
+                          View Curriculum <ArrowRight size={18} className="text-indigo-600" />
+                        </Link>
+                        <Link href="/ai-roadmap/builder" className="flex items-center gap-2 text-white font-black bg-white/10 backdrop-blur-md border border-white/20 w-fit px-6 py-3 rounded-xl shadow-xl transition-all hover:bg-white/20 hover:scale-105 active:scale-95">
+                          Build with AI <Sparkles size={18} className="text-white animate-pulse" />
+                        </Link>
                       </div>
                     </div>
-                  </Link>
+                  </div>
+
+                  {/* My Saved RoadmapsSection */}
+                  {savedRoadmaps.length > 0 && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="mb-12"
+                    >
+                      <h2 className="text-xs font-black tracking-widest text-slate-400 dark:text-gray-500 uppercase mb-5 flex items-center gap-4">
+                        My Custom Architected Paths
+                        <div className="h-px bg-slate-200 dark:bg-white/5 flex-1" />
+                      </h2>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {savedRoadmaps.map((r) => (
+                           <Link 
+                            key={r.id} 
+                            href={`/ai-roadmap/builder?id=${r.id}`}
+                            className="group flex flex-col p-6 rounded-2xl border bg-white dark:bg-white/[0.02] border-slate-200 dark:border-white/[0.06] hover:border-violet-500/30 hover:bg-violet-500/5 transition-all shadow-sm hover:shadow-md"
+                           >
+                              <div className="flex items-center gap-2 mb-3">
+                                 <div className="w-8 h-8 rounded-lg bg-violet-600/10 flex items-center justify-center">
+                                    <Sparkles size={14} className="text-violet-600" />
+                                 </div>
+                                 <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{new Date(r.createdAt).toLocaleDateString()}</span>
+                              </div>
+                              <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-violet-600 transition-colors">
+                                {r.title}
+                              </h3>
+                           </Link>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
 
                   {/* ── Dashboard Grid ── */}
                   {ROADMAP_CATEGORIES.filter(

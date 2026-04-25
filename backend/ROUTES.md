@@ -4,7 +4,7 @@ All routes are prefixed by the backend base URL (e.g. `http://localhost:4000`).
 
 Authentication is handled via Clerk. Protected routes require the `x-clerk-user-id` header to be set to a valid Clerk user ID.
 
----
+--
 
 ## Auth / Role Legend
 

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Send, Loader2, RefreshCw, ChevronLeft, Bookmark, History } from "lucide-react";
+import { Sparkles, Send, Loader2, RefreshCw, Bookmark, History } from "lucide-react";
 import Navbar from "@/components/lms/Navbar";
 import Footer from "@/components/lms/Footer";
 import RoadmapTimeline from "@/components/lms/RoadmapTimeline";
@@ -14,7 +14,7 @@ import { Montserrat } from "next/font/google";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 
-export default function AIRoadmapBuilderPage() {
+function AIRoadmapBuilder() {
   const { user, isLoaded } = useUser();
   const searchParams = useSearchParams();
   const [prompt, setPrompt] = useState("");
@@ -101,12 +101,9 @@ export default function AIRoadmapBuilderPage() {
       <Navbar />
 
       <main className="flex-1 pt-32 pb-40 relative z-10">
-        {/* Decorative elements */}
         <div className="absolute top-0 left-0 w-full h-[600px] bg-gradient-to-b from-blue-600/5 via-transparent to-transparent pointer-events-none" />
         
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          {/* Header */}
           <div className="text-center mb-16">
             <motion.div 
               initial={{ opacity: 0, scale: 0.8 }}
@@ -124,7 +121,6 @@ export default function AIRoadmapBuilderPage() {
             </p>
           </div>
 
-          {/* Builder Section */}
           <div className="relative mb-20">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
@@ -177,12 +173,9 @@ export default function AIRoadmapBuilderPage() {
                 </button>
               </div>
             </motion.div>
-
-            {/* Background Glow */}
             <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-4/5 h-40 bg-indigo-600/20 blur-[100px] rounded-full -z-10" />
           </div>
 
-          {/* Past Roadmaps Quick Access */}
           {myRoadmaps.length > 0 && !roadmap && (
              <motion.div 
                initial={{ opacity: 0 }}
@@ -211,7 +204,6 @@ export default function AIRoadmapBuilderPage() {
              </motion.div>
           )}
 
-          {/* Results Section */}
           <div id="result">
             <AnimatePresence mode="wait">
               {loading && (
@@ -256,7 +248,6 @@ export default function AIRoadmapBuilderPage() {
                     description="This roadmap was specifically architected based on your unique goals and background."
                   />
                   
-                  {/* Share/Save CTA */}
                   <div className="mt-20 p-12 rounded-[3rem] bg-indigo-600 flex flex-col items-center text-center text-white relative overflow-hidden shadow-2xl">
                     <div className="absolute top-0 right-0 p-12 opacity-10 rotate-12">
                       <Sparkles size={200} />
@@ -286,11 +277,21 @@ export default function AIRoadmapBuilderPage() {
               )}
             </AnimatePresence>
           </div>
-
         </div>
       </main>
-
       <Footer />
     </div>
+  );
+}
+
+export default function AIRoadmapBuilderPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-[#030712]">
+        <Loader2 className="animate-spin text-indigo-600" size={48} />
+      </div>
+    }>
+      <AIRoadmapBuilder />
+    </Suspense>
   );
 }

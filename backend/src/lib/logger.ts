@@ -1,7 +1,7 @@
 /**
  * Structured logger for the LMS backend.
  *
- * - JSON output in production  (easy to ingest by Railway / Datadog / Logtail)
+ * - JSON output in production  (easy to ingest by Render / Datadog / Logtail)
  * - ANSI-coloured output in development for readability
  *
  * Usage:

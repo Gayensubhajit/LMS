@@ -3,7 +3,7 @@ import { BACKEND_URL } from "@/lib/backend-client";
 
 /**
  * API Proxy Route
- * Relays requests to the Railway backend to bypass carrier blocking of the .up.railway.app domain.
+ * Relays requests to the Render backend.
  */
 export async function POST(req: NextRequest) {
   try {

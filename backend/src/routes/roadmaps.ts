@@ -17,8 +17,8 @@ interface OpenRouterResponse {
 roadmapsRouter.post("/generate", async (req, res) => {
   const { prompt, title } = req.body;
   const user = await getUserFromHeader(req, res);
-  // It's fine if user is null, we can generate a roadmap for guest but won't persist.
-  // Actually, requested persistence, so we should probably encourage login.
+  // Keep going only if we haven't already sent a response (getUserFromHeader sends 401/404 if it fails)
+  if (res.headersSent) return;
 
   if (!prompt) {
     return res.status(400).json({ ok: false, error: "Prompt is required" });

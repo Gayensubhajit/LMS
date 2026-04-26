@@ -17,14 +17,17 @@ interface OpenRouterResponse {
 roadmapsRouter.post("/generate", async (req, res) => {
   const { prompt, title } = req.body;
   const user = await getUserFromHeader(req, res);
-  // Keep going only if we haven't already sent a response (getUserFromHeader sends 401/404 if it fails)
+  
   if (res.headersSent) return;
 
   if (!prompt) {
     return res.status(400).json({ ok: false, error: "Prompt is required" });
   }
 
+  console.log("🚀 Starting roadmap generation for prompt:", prompt);
+
   if (!env.OPENROUTER_API_KEY) {
+    console.error("❌ CRITICAL: OPENROUTER_API_KEY is missing from environment variables!");
     return res.status(500).json({ ok: false, error: "AI Service configuration missing" });
   }
 
@@ -56,6 +59,7 @@ roadmapsRouter.post("/generate", async (req, res) => {
       - Ensure the roadmap covers 6-12 months if appropriate for the goal.
     `;
 
+    console.log("🛰️ Sending request to OpenRouter...");
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -71,14 +75,21 @@ roadmapsRouter.post("/generate", async (req, res) => {
           { role: "user", content: prompt }
         ],
         temperature: 0.7,
-        response_format: { type: "json_object" } // Using JSON mode if supported
+        response_format: { type: "json_object" }
       })
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("❌ OpenRouter API Error:", response.status, errorText);
+      throw new Error(`OpenRouter failed: ${response.status} ${errorText}`);
+    }
+
     const data: OpenRouterResponse = await response.json();
+    console.log("✅ AI Response received.");
+
     let aiContent = data.choices?.[0]?.message?.content || "[]";
     
-    // Sometimes models wrap JSON in markdown blocks
     if (aiContent.includes("```json")) {
       aiContent = aiContent.split("```json")[1].split("```")[0].trim();
     } else if (aiContent.includes("```")) {
@@ -86,11 +97,11 @@ roadmapsRouter.post("/generate", async (req, res) => {
     }
 
     const roadmapJson = JSON.parse(aiContent);
-    // If the model returned an object with a key like "roadmap", extract it
     const finalRoadmap = Array.isArray(roadmapJson) ? roadmapJson : (roadmapJson.roadmap || roadmapJson.steps || []);
 
     let savedId = null;
     if (user && finalRoadmap.length > 0) {
+      console.log("💾 Persisting roadmap to database for user:", user.id);
       const saved = await prisma.userRoadmap.create({
         data: {
           userId: user.id,
@@ -102,13 +113,14 @@ roadmapsRouter.post("/generate", async (req, res) => {
       savedId = saved.id;
     }
 
+    console.log("🏁 Roadmap generation successful.");
     return res.json({
       ok: true,
       roadmap: finalRoadmap,
       id: savedId
     });
   } catch (err) {
-    console.error("Roadmap generation failed:", err);
+    console.error("❌ Roadmap generation failed with fatal error:", err);
     return res.status(500).json({ ok: false, error: "Failed to generate roadmap" });
   }
 });
@@ -116,7 +128,7 @@ roadmapsRouter.post("/generate", async (req, res) => {
 // GET /roadmaps/my-roadmaps
 roadmapsRouter.get("/my-roadmaps", async (req, res) => {
   const user = await getUserFromHeader(req, res);
-  if (!user) return; // Already handled
+  if (!user) return; 
 
   const items = await prisma.userRoadmap.findMany({
     where: { userId: user.id },

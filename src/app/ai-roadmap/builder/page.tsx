@@ -2,6 +2,9 @@ import { Suspense } from "react";
 import { Loader2 } from "lucide-react";
 import AIRoadmapBuilder from "./BuilderClient";
 
+// Force dynamic rendering — this page uses useSearchParams() and must never be statically generated
+export const dynamic = "force-dynamic";
+
 export default function AIRoadmapBuilderPage() {
   return (
     <Suspense fallback={

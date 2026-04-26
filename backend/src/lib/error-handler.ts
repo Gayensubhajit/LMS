@@ -25,10 +25,9 @@ export const errorHandler = (
     message = "Internal Server Error";
   }
 
-  logger.error(`${statusCode} - ${message} - ${req.method} ${req.originalUrl} - ${req.ip}`);
-  
-  if (err.stack && process.env.NODE_ENV !== "production") {
-    logger.debug(err.stack);
+  logger.error(`${statusCode} - ${err.message} - ${req.method} ${req.originalUrl} - ${req.ip}`);
+  if (err.stack) {
+    console.error("FULL ERROR STACK:", err.stack);
   }
 
   res.status(statusCode).json({

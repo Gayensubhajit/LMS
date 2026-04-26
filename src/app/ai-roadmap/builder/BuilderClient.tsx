@@ -70,7 +70,7 @@ export default function AIRoadmapBuilder() {
         "/roadmaps/generate",
         {
           method: "POST",
-          body: JSON.stringify({ prompt, title: prompt.slice(0, 40) + "..." }),
+          body: { prompt, title: prompt.slice(0, 40) + "..." },
           clerkUserId: user?.id
         }
       );

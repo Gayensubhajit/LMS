@@ -4,6 +4,7 @@ import { z } from "zod";
 import { getUserFromHeader } from "../lib/auth.js";
 import { prisma } from "../lib/prisma.js";
 import { logActivity } from "../services/activity.js";
+import { logger } from "../lib/logger.js";
 
 export const progressRouter = Router();
 
@@ -139,6 +140,7 @@ progressRouter.post("/lessons/:lessonId", async (req, res) => {
     if (completedCount === allCourseLessons.length) {
       // 100% Complete! Issue certificate.
       const courseName = await prisma.course.findUnique({ where: { id: courseId }, select: { title: true } });
+      logger.info("[Progress] Course completed, issuing certificate", { userId: user.id, courseId, courseTitle: courseName?.title });
       await prisma.certificate.upsert({
         where: { userId_courseId: { userId: user.id, courseId } },
         create: { userId: user.id, courseId },

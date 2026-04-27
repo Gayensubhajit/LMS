@@ -44,35 +44,35 @@ async function autoSeed() {
   logger.info("Starting self-healing database sync...");
   try {
     // Force push the schema to ensure tables exist
-    console.log("Executing prisma db push...");
+    logger.info("Executing prisma db push...");
     // Use a short timeout and pipe output to avoid hanging
     execSync("npx prisma db push --accept-data-loss", {
       stdio: "pipe",
       timeout: 30000, // 30s timeout
     });
-    console.log("Database schema synced successfully.");
+    logger.info("Database schema synced successfully.");
   } catch (err) {
-    console.warn(
+    logger.warn(
       "Prisma db push encountered an issue (it might already be synced):",
-      err instanceof Error ? err.message : String(err),
+      { error: err instanceof Error ? err.message : String(err) },
     );
   }
 
   try {
     const count = await prisma.course.count();
     if (count > 0) {
-      console.log("Database already has courses. Skipping seed.");
+      logger.info("Database already has courses. Skipping seed.");
       return;
     }
   } catch (err) {
-    console.error(
+    logger.error(
       "Could not count courses. Database might not be ready yet.",
-      err,
+      { error: err instanceof Error ? err.message : String(err) },
     );
     return;
   }
 
-  console.log("Seeding initial courses into the database...");
+  logger.info("Seeding initial courses into the database...");
   const courses = [
     {
       slug: "complete-ui-ux-design-bootcamp",
@@ -175,12 +175,12 @@ async function autoSeed() {
           issuedAt: new Date(),
         },
       });
-      console.log("Seeded a sample certificate for the first user.");
+      logger.info("Seeded a sample certificate for the first user.");
     }
   }
 
   // Seed default badges if they don't exist
-  console.log("Seeding default badges...");
+  logger.info("Seeding default badges...");
   const defaultBadges = [
     {
       name: "Quiz Master",
@@ -210,7 +210,7 @@ async function autoSeed() {
     });
   }
 
-  console.log("Auto-seed complete.");
+  logger.info("Auto-seed complete.");
 }
 
 const app = express();
@@ -226,7 +226,7 @@ const io = new Server(httpServer, {
 const roomPresence = new Map<string, Map<string, { name: string, avatar?: string }>>();
 
 io.on("connection", (socket) => {
-  console.log("A user connected:", socket.id);
+  logger.debug("A user connected:", { socketId: socket.id });
 
   socket.on("join_room", (data: { room: string, user: { name: string, avatar?: string, id: string } }) => {
     const { room, user } = data;
@@ -242,7 +242,7 @@ io.on("connection", (socket) => {
     const members = Array.from(roomPresence.get(room)!.values());
     io.to(room).emit("presence_update", { room, members });
     
-    console.log(`User ${user.name} joined room: ${room}`);
+    logger.info(`User ${user.name} joined room: ${room}`);
   });
 
   socket.on("send_message", (data) => {
@@ -261,7 +261,7 @@ io.on("connection", (socket) => {
         });
       }
     }
-    console.log("User disconnected:", socket.id);
+    logger.debug("User disconnected:", { socketId: socket.id });
   });
 });
 
@@ -343,8 +343,8 @@ autoSeed()
     });
   })
   .catch((err) => {
-    console.error("Auto-seed failed, starting anyway:", err);
+    logger.error("Auto-seed failed, starting anyway:", { error: err instanceof Error ? err.message : String(err) });
     httpServer.listen(env.PORT, () => {
-      console.log(`Backend running on http://localhost:${env.PORT}`);
+      logger.info(`Backend running on http://localhost:${env.PORT}`);
     });
   });

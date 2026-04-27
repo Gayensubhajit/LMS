@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { prisma } from "../lib/prisma.js";
-
+import { logger } from "../lib/logger.js";
 import { env } from "../config/env.js";
 
 export const aiRouter = Router();
@@ -87,7 +87,7 @@ aiRouter.post("/chat", async (req, res) => {
       suggestions
     });
   } catch (err) {
-    console.error("OpenRouter API error:", err);
+    logger.error("[AI] OpenRouter API error", { error: err instanceof Error ? err.message : String(err) });
     return handleMockResponse(message, res);
   }
 });

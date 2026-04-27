@@ -2,6 +2,7 @@ import { Router } from "express";
 import { prisma } from "../lib/prisma.js";
 import { getUserFromHeader } from "../lib/auth.js";
 import { z } from "zod";
+import { logger } from "../lib/logger.js";
 
 export const notesRouter = Router();
 
@@ -29,7 +30,7 @@ notesRouter.get("/lesson/:lessonId", async (req, res) => {
 
     return res.json({ ok: true, items: notes });
   } catch (err) {
-    console.error("Notes fetch error:", err);
+    logger.error("[Notes] Failed to fetch notes", { lessonId, error: err instanceof Error ? err.message : String(err) });
     return res.status(500).json({ ok: false, error: "Internal server error" });
   }
 });
@@ -55,7 +56,7 @@ notesRouter.post("/", async (req, res) => {
 
     return res.json({ ok: true, item: note });
   } catch (err) {
-    console.error("Note creation error:", err);
+    logger.error("[Notes] Failed to create note", { error: err instanceof Error ? err.message : String(err) });
     return res.status(500).json({ ok: false, error: "Internal server error" });
   }
 });
@@ -86,7 +87,7 @@ notesRouter.delete("/:id", async (req, res) => {
 
     return res.json({ ok: true, message: "Note deleted successfully" });
   } catch (err) {
-    console.error("Note deletion error:", err);
+    logger.error("[Notes] Failed to delete note", { id, error: err instanceof Error ? err.message : String(err) });
     return res.status(500).json({ ok: false, error: "Internal server error" });
   }
 });

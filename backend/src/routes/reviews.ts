@@ -2,6 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 import { prisma } from "../lib/prisma.js";
 import { getUserFromHeader } from "../lib/auth.js";
+import { logger } from "../lib/logger.js";
 
 export const reviewsRouter = Router();
 
@@ -56,6 +57,8 @@ reviewsRouter.post("/", async (req, res) => {
       comment,
     },
   });
+ 
+  logger.info("[Reviews] Review submitted", { userId: user.id, courseId: course.id, rating });
 
 
   return res.status(200).json({

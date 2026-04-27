@@ -49,7 +49,7 @@ export default function XpBar() {
 
   return (
     <div className="p-5 rounded-[2.5rem] bg-white/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-xl shadow-sm relative overflow-hidden group">
-      <div className="absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 opacity-20 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-blue-600 via-teal-500 to-cyan-600 opacity-20 group-hover:opacity-100 transition-opacity" />
       
       <div className="flex items-center justify-between mb-4 px-1">
         <div className="flex items-center gap-3">
@@ -75,7 +75,7 @@ export default function XpBar() {
           initial={{ width: 0 }}
           animate={{ width: `${data.progressPercent}%` }}
           transition={{ duration: 1.5, ease: [0.34, 1.56, 0.64, 1] }} 
-          className="relative h-full bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 rounded-full shadow-[0_0_15px_-3px_rgba(37,99,235,0.4)]"
+          className="relative h-full bg-gradient-to-r from-blue-600 via-teal-500 to-cyan-600 rounded-full shadow-[0_0_15px_-3px_rgba(37,99,235,0.4)]"
         >
           <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent_0%,rgba(255,255,255,0.4)_50%,transparent_100%)] animate-[shimmer_2s_infinite] w-full" />
         </motion.div>

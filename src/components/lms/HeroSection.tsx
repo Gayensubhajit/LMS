@@ -61,7 +61,7 @@ const pages = [
       <div className="flex flex-col h-full bg-white dark:bg-[#030712] relative overflow-hidden">
         {/* Mini Navbar */}
         <div className="h-8 bg-white dark:bg-[#111827] border-b border-black/5 dark:border-white/5 flex items-center px-4 gap-3 shrink-0">
-          <div className="w-5 h-5 rounded-md bg-linear-to-br from-blue-600 to-indigo-700 flex items-center justify-center">
+          <div className="w-5 h-5 rounded-md bg-linear-to-br from-blue-600 to-blue-800 flex items-center justify-center">
             <GraduationCap size={10} className="text-white" />
           </div>
           <span className="text-[8px] font-black tracking-tight text-black dark:text-white">
@@ -145,7 +145,7 @@ const pages = [
     content: () => (
       <div className="flex flex-col h-full bg-gray-50 dark:bg-[#030712]">
         <div className="h-8 bg-white dark:bg-[#111827] border-b border-black/5 dark:border-white/5 flex items-center px-4 gap-3 shrink-0">
-          <div className="w-5 h-5 rounded-md bg-linear-to-br from-blue-600 to-indigo-700 flex items-center justify-center">
+          <div className="w-5 h-5 rounded-md bg-linear-to-br from-blue-600 to-blue-800 flex items-center justify-center">
             <GraduationCap size={10} className="text-white" />
           </div>
           <span className="text-[8px] font-black text-black dark:text-white">
@@ -227,7 +227,7 @@ const pages = [
         <div className="hidden lg:flex w-1/4 border-r border-black/5 dark:border-white/5 flex flex-col py-3 shrink-0">
           <div className="px-3 mb-4">
             <div className="flex items-center gap-2 p-1.5 rounded-lg bg-gray-50 dark:bg-white/5 border border-black/5 dark:border-white/5">
-              <div className="w-5 h-5 rounded-full bg-linear-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-[8px] font-bold text-white uppercase">
+              <div className="w-5 h-5 rounded-full bg-linear-to-br from-blue-500 to-blue-700 flex items-center justify-center text-[8px] font-bold text-white uppercase">
                 SG
               </div>
               <span className="text-[9px] font-bold text-black dark:text-white truncate">
@@ -562,8 +562,8 @@ export default function HeroSection() {
                   transition={{ duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
                   className={`${bricolage.className} block text-5xl md:text-8xl font-black italic text-transparent bg-clip-text  ${
                     isDark
-                      ? "bg-linear-to-r from-indigo-500 via-purple-500 to-pink-500"
-                      : "bg-linear-to-r from-cyan-700 via-blue-500 to-indigo-600"
+                      ? "bg-linear-to-r from-blue-500 via-teal-400 to-cyan-500"
+                      : "bg-linear-to-r from-blue-800 via-blue-600 to-blue-900"
                   }`}
                 >
                   {words[activeWord]}

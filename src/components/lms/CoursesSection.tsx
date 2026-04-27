@@ -22,18 +22,18 @@ const categories = [
 ];
 
 const gradientMap: Record<string, string> = {
-  Design: "from-blue-900/50 to-indigo-900/30",
+  Design: "from-blue-900/50 to-blue-800/30",
   Development: "from-blue-900/50 to-cyan-900/30",
   "AI/ML": "from-emerald-900/50 to-teal-900/30",
-  Business: "from-indigo-900/50 to-blue-900/30",
-  Marketing: "from-blue-900/50 to-indigo-900/30",
+  Business: "from-blue-900/50 to-blue-800/30",
+  Marketing: "from-blue-900/50 to-blue-800/30",
 };
 
 const accentMap: Record<string, string> = {
   Design: "rgba(59,130,246,0.5)",
   Development: "rgba(59,130,246,0.5)",
   "AI/ML": "rgba(16,185,129,0.5)",
-  Business: "rgba(79,70,229,0.5)",
+  Business: "rgba(59,130,246,0.5)",
   Marketing: "rgba(59,130,246,0.5)",
 };
 
@@ -60,7 +60,7 @@ const badgeMap: Record<string, { label: string; color: string }> = {
   },
   "product-management-fundamentals": {
     label: "Trending",
-    color: "bg-indigo-500/20 text-indigo-400 border-indigo-500/30",
+    color: "bg-blue-500/20 text-blue-400 border-blue-500/30",
   },
 };
 
@@ -149,7 +149,7 @@ export default function CoursesSection() {
           className="text-center mb-12"
         >
           <span
-            className={`${montserrat.className} inline-flex items-center gap-2 px-2 py-1 border border-gray-900/50 dark:border-violet-500/50 rounded-lg text-xs font-black tracking-[0.25em] text-black dark:text-violet-400 uppercase mb-4`}
+            className={`${montserrat.className} inline-flex items-center gap-2 px-2 py-1 border border-gray-900/50 dark:border-blue-500/50 rounded-lg text-xs font-black tracking-[0.25em] text-black dark:text-blue-400 uppercase mb-4`}
           >
             Top Rated Courses
           </span>
@@ -157,7 +157,7 @@ export default function CoursesSection() {
             Level Up with Our
             <br />
             <span
-              className={`${montserrat.className} text-transparent bg-clip-text bg-linear-to-r from-blue-600 via-zinc-800 to-indigo-600 dark:from-blue-400 dark:via-white dark:to-indigo-400 dark:gradient-text`}
+              className={`${montserrat.className} text-transparent bg-clip-text bg-linear-to-r from-blue-600 via-zinc-800 to-blue-700 dark:from-blue-400 dark:via-white dark:to-blue-500 dark:gradient-text`}
             >
               Most Popular Courses
             </span>
@@ -183,7 +183,7 @@ export default function CoursesSection() {
               onClick={() => setActiveCategory(cat)}
               className={`${montserrat.className} px-5 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${
                 activeCategory === cat
-                  ? "bg-black dark:bg-linear-to-r dark:from-blue-600 dark:to-indigo-600 text-white shadow-md dark:shadow-[0_0_20px_rgba(59,130,246,0.4)]"
+                  ? "bg-black dark:bg-linear-to-r dark:from-blue-600 dark:to-blue-800 text-white shadow-md dark:shadow-[0_0_20px_rgba(59,130,246,0.4)]"
                   : "bg-white dark:bg-white/5 border border-black/10 dark:border-white/10 text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white hover:border-black/20 dark:hover:border-blue-500/40"
               }`}
             >
@@ -200,7 +200,7 @@ export default function CoursesSection() {
             const accent = accentMap[course.category] ?? "rgba(59,130,246,0.5)";
             const gradient =
               gradientMap[course.category] ??
-              "from-blue-900/50 to-indigo-900/30";
+              "from-blue-900/50 to-blue-800/30";
             const badge = badgeMap[course.slug] ?? {
               label: "Featured",
               color: "bg-blue-500/20 text-blue-400 border-blue-500/30",
@@ -339,7 +339,7 @@ export default function CoursesSection() {
                     {enrolledSlugs.has(course.slug) ? (
                       <Link
                         href={`/learn/${course.slug}`}
-                        className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-black dark:bg-violet-600 hover:bg-zinc-800 dark:hover:bg-violet-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-md dark:shadow-violet-500/20 font-sans"
+                        className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-black dark:bg-blue-600 hover:bg-zinc-800 dark:hover:bg-blue-500 text-white text-[11px] font-bold rounded-xl transition-all shadow-md dark:shadow-blue-500/20 font-sans"
                       >
                         Go to Course
                       </Link>
@@ -360,7 +360,7 @@ export default function CoursesSection() {
                     ) : (
                       <Link
                         href={`/checkout?slug=${course.slug}&plan=1month`}
-                        className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-black dark:bg-linear-to-r dark:from-blue-600 dark:to-indigo-600 text-white text-[11px] font-bold rounded-xl hover:opacity-90 transition-all shadow-md dark:shadow-blue-500/20 font-sans"
+                        className="flex-1 flex items-center justify-center gap-1.5 h-10 bg-black dark:bg-linear-to-r dark:from-blue-600 dark:to-blue-800 text-white text-[11px] font-bold rounded-xl hover:opacity-90 transition-all shadow-md dark:shadow-blue-500/20 font-sans"
                       >
                         Enroll <ArrowRight size={12} />
                       </Link>

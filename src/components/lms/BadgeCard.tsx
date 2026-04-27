@@ -26,9 +26,9 @@ const BADGE_ICONS: Record<string, any> = {
 const BADGE_COLORS: Record<string, string> = {
   "Quick Starter": "from-amber-400 to-orange-600",
   "Quiz Master": "from-emerald-400 to-teal-600",
-  "Course Finisher": "from-blue-400 to-indigo-600",
+  "Course Finisher": "from-blue-400 to-blue-600",
   "Streaker": "from-pink-400 to-rose-600",
-  "Roadmap Voyager": "from-violet-400 to-purple-600",
+  "Roadmap Voyager": "from-blue-400 to-teal-500",
   "default": "from-slate-400 to-slate-600"
 };
 

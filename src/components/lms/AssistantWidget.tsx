@@ -38,7 +38,7 @@ function AiLogo({ size = 22 }: { size?: number }) {
       style={{
         width: size,
         height: size,
-        background: "linear-gradient(135deg, #0d9488, #6366f1)",
+        background: "linear-gradient(135deg, #0d9488, #3b82f6)",
         boxShadow: "0 4px 14px rgba(13,148,136,0.4)",
       }}
     >
@@ -251,7 +251,7 @@ export default function AssistantWidget() {
           aria-label="Open AI Assistant"
         >
           <div className="relative">
-            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-[0_8px_30px_rgba(13,148,136,0.35)] bg-gradient-to-br from-teal-500 via-teal-600 to-indigo-600 border border-white/15 overflow-hidden transition-all group-hover:shadow-[0_12px_40px_rgba(13,148,136,0.55)]">
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center shadow-[0_8px_30px_rgba(13,148,136,0.35)] bg-gradient-to-br from-teal-500 via-teal-600 to-blue-600 border border-white/15 overflow-hidden transition-all group-hover:shadow-[0_12px_40px_rgba(13,148,136,0.55)]">
               <BrainCircuit size={20} className="text-white" strokeWidth={1.8} />
               <div className="absolute top-0.5 right-0.5">
                 <Sparkles size={7} className="text-white/60" />

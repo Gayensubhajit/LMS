@@ -14,6 +14,7 @@ import Footer from "@/components/lms/Footer";
 import ShaderBackground from "@/components/ui/shader-background";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import { PageTransition } from "@/components/ui/PageTransition";
 
 export default function Home() {
   const { resolvedTheme } = useTheme();
@@ -28,20 +29,22 @@ export default function Home() {
     <main className="relative min-h-screen bg-background overflow-x-hidden">
       {mounted && resolvedTheme === "dark" && <ShaderBackground />}
       {/* Content */}
-      <div className="relative z-10">
-        <Navbar />
-        <HeroSection />
-        <TrustedBySectionPremium />
-        <WhyChooseUs />
-        <RoadmapSection />
-        <CoursesSection />
-        <TestimonialsSection />
-        <InstructorsSection />
-        <PricingSection />
-        <FAQSection />
-        <CTASection />
-        <Footer />
-      </div>
+      <PageTransition>
+        <div className="relative z-10">
+          <Navbar />
+          <HeroSection />
+          <TrustedBySectionPremium />
+          <WhyChooseUs />
+          <RoadmapSection />
+          <CoursesSection />
+          <TestimonialsSection />
+          <InstructorsSection />
+          <PricingSection />
+          <FAQSection />
+          <CTASection />
+          <Footer />
+        </div>
+      </PageTransition>
     </main>
   );
 }

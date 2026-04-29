@@ -1,4 +1,5 @@
 "use client";
+import { PageTransition } from "@/components/ui/PageTransition";
 
 import Link from "next/link";
 import { useMemo, useState, useEffect, useCallback } from "react";
@@ -192,6 +193,7 @@ export default function CoursesClient() {
   return (
     <>
       <Navbar />
+      <PageTransition>
       <main
         className={`${montserrat.className} mb-16 min-h-screen bg-[#f6f8ff] dark:bg-background text-foreground pt-20 px-6`}
       >
@@ -535,6 +537,7 @@ export default function CoursesClient() {
           </div>
         </div>
       </main>
+      </PageTransition>
     </>
   );
 }

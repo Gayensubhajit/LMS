@@ -177,6 +177,33 @@ const FAQS = [
   },
 ];
 
+function PricingSkeleton() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24 w-full">
+      {[1, 2, 3].map((i) => (
+        <div
+          key={i}
+          className="h-[600px] rounded-3xl border border-slate-200 dark:border-white/10 bg-white/50 dark:bg-white/5 p-8 animate-pulse"
+        >
+          <div className="w-24 h-6 bg-slate-200 dark:bg-white/10 rounded-lg mb-4" />
+          <div className="w-full h-4 bg-slate-200 dark:bg-white/10 rounded-lg mb-2" />
+          <div className="w-2/3 h-4 bg-slate-200 dark:bg-white/10 rounded-lg mb-8" />
+          <div className="w-32 h-10 bg-slate-200 dark:bg-white/10 rounded-lg mb-8" />
+          <div className="w-full h-12 bg-slate-200 dark:bg-white/10 rounded-xl mb-12" />
+          <div className="space-y-4">
+            {[1, 2, 3, 4].map((j) => (
+              <div key={j} className="flex items-center gap-3">
+                <div className="w-4 h-4 bg-slate-200 dark:bg-white/10 rounded-full" />
+                <div className="w-1/2 h-3 bg-slate-200 dark:bg-white/10 rounded-lg" />
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ── Sub-components ──────────────────────────────────────────────────────────
 
 function PlanCard({
@@ -347,7 +374,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
     <div className="border-b border-slate-100 dark:border-white/[0.05] last:border-0">
       <button
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between py-5 text-left group"
+        className={`w-full flex items-center justify-between py-5 px-4 text-left group transition-all duration-300 rounded-2xl hover:bg-blue-600/5 dark:hover:bg-violet-600/5 ${open ? "bg-blue-600/5 dark:bg-violet-600/5" : ""}`}
       >
         <span className="text-base font-bold text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-violet-400 transition-colors pr-4">
           {q}
@@ -365,7 +392,7 @@ function FAQItem({ q, a }: { q: string; a: string }) {
             exit={{ height: 0, opacity: 0 }}
             className="overflow-hidden"
           >
-            <p className="text-slate-500 dark:text-gray-400 text-sm pb-6 leading-relaxed max-w-3xl font-medium">
+            <p className="text-slate-500 dark:text-gray-400 text-sm py-2 px-4 pb-6 leading-relaxed max-w-3xl font-medium">
               {a}
             </p>
           </motion.div>
@@ -500,22 +527,38 @@ export default function PricingPage() {
 
           {/* ── Plan Cards ── */}
           <AnimatePresence mode="wait">
-            <motion.div
-              key={tab}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.22 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24"
-            >
-              {plans.map((plan, i) => (
-                <PlanCard key={plan.name} plan={plan} i={i} isMember={isMember} memberPlan={memberPlan} />
-              ))}
-            </motion.div>
+            {memberLoading ? (
+              <motion.div
+                key="skeleton"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <PricingSkeleton />
+              </motion.div>
+            ) : (
+              <motion.div
+                key={tab}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.22 }}
+                className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-24"
+              >
+                {plans.map((plan, i) => (
+                  <PlanCard key={plan.name} plan={plan} i={i} isMember={isMember} memberPlan={memberPlan} />
+                ))}
+              </motion.div>
+            )}
           </AnimatePresence>
 
           {/* ── Comparison Table ── */}
-          <div className="mb-24">
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            className="mb-24"
+          >
             <div className="text-center mb-12">
               <p className="text-xs font-black tracking-[0.2em] uppercase text-slate-400 dark:text-gray-500 mb-3">
                 Compare Plans
@@ -577,10 +620,15 @@ export default function PricingPage() {
                 </table>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* ── FAQ ── */}
-          <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-16 mb-24">
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-16 mb-24"
+          >
             <div>
               <div className="flex items-center gap-2 text-blue-600 dark:text-violet-400 mb-4">
                 <HelpCircle size={18} />
@@ -611,10 +659,15 @@ export default function PricingPage() {
                 <FAQItem key={faq.q} {...faq} />
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* ── CTA Banner ── */}
-          <div className="relative rounded-[3rem] overflow-hidden p-12 lg:p-20 text-center border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-gradient-to-br dark:from-[#0c0c1a] dark:via-[#0a0a14] dark:to-[#060610] shadow-2xl shadow-slate-200/50 dark:shadow-none">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true, margin: "-100px" }}
+            className="relative rounded-[3rem] overflow-hidden p-12 lg:p-20 text-center border border-slate-200 dark:border-white/[0.06] bg-white dark:bg-gradient-to-br dark:from-[#0c0c1a] dark:via-[#0a0a14] dark:to-[#060610] shadow-2xl shadow-slate-200/50 dark:shadow-none"
+          >
             <div className="absolute top-0 right-0 w-72 h-72 bg-blue-600/5 dark:bg-violet-600/8 rounded-full blur-[100px]" />
             <div className="absolute bottom-0 left-0 w-72 h-72 bg-indigo-600/5 dark:bg-blue-600/8 rounded-full blur-[100px]" />
             <div className="relative z-10">
@@ -643,7 +696,7 @@ export default function PricingPage() {
                 </Link>
               </div>
             </div>
-          </div>
+          </motion.div>
         </main>
       </div>
       <Footer />

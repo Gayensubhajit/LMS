@@ -1,6 +1,6 @@
 # LMS Backend (Step 1 Foundation)
 
-This folder contains the initial backend scaffold and database schema.
+This folder contains the initial backend scaffold and database schema. 
 
 ## What is ready now
 - TypeScript Express server with `/health` endpoint

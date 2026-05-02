@@ -35,6 +35,8 @@ import { SignIn, useUser } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { useEffect, useState } from "react";
 import { backendRequest } from "@/lib/backend-client";
+import SkillRadarChart from "@/components/lms/SkillRadarChart";
+import ActivityHeatmap from "@/components/lms/ActivityHeatmap";
 
 interface DashboardStats {
   streak: number;
@@ -321,6 +323,14 @@ export default function ProfilePage() {
               </div>
             </motion.div>
 
+            {/* Learning Consistency (Heatmap) */}
+            <motion.div
+              variants={itemVariants}
+              className="bg-white dark:bg-slate-900/40 p-8 sm:p-10 rounded-[2.5rem] border border-slate-200 dark:border-white/5 shadow-sm"
+            >
+              <ActivityHeatmap />
+            </motion.div>
+
             {/* Experience Section */}
             <div className="space-y-6">
               <div className="flex items-center gap-3 px-4 sm:px-6">
@@ -392,20 +402,20 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* Intelligence Insights (Radar Chart Integration) */}
+            {/* Intelligence Insights (Interactive Radar Chart) */}
             <motion.div
               variants={itemVariants}
               whileInView={{ scale: 1, opacity: 1 }}
               viewport={{ once: true }}
-              className="bg-white dark:bg-slate-950 p-8 sm:p-10 md:p-16 rounded-[2.5rem] sm:rounded-[3.5rem] border border-slate-200 dark:border-white/5 relative overflow-hidden group shadow-sm dark:shadow-2xl"
+              className="bg-white dark:bg-slate-950 p-8 sm:p-10 lg:p-12 rounded-[2.5rem] sm:rounded-[3.5rem] border border-slate-200 dark:border-white/5 relative overflow-hidden group shadow-sm dark:shadow-2xl"
             >
               <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-violet-600/5 blur-[120px] rounded-full pointer-events-none group-hover:bg-violet-600/10 transition-all duration-1000" />
-              <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-10 lg:gap-16 items-center">
-                <div className="text-center md:text-left">
+              <div className="relative z-10 grid grid-cols-1 md:grid-cols-5 gap-10 items-center">
+                <div className="md:col-span-2 text-center md:text-left">
                   <span className="text-[9px] sm:text-[10px] font-black text-blue-600 dark:text-violet-400 uppercase tracking-[0.5em] mb-4 block">
                     Intelligence Profile
                   </span>
-                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mb-4 sm:mb-6 leading-none">
+                  <h3 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white uppercase tracking-tighter mb-4 sm:mb-6 leading-none">
                     Learning{" "}
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-sky-400">
                       DNA
@@ -413,7 +423,7 @@ export default function ProfilePage() {
                   </h3>
                   <p className="text-slate-500 dark:text-gray-400 text-xs sm:text-sm leading-relaxed mb-6 lg:mb-8 font-medium">
                     Theoretical mastery meets practical execution in a unified
-                    visualization.
+                    visualization of your 2026 skills.
                   </p>
                   <div className="flex flex-row justify-center md:justify-start gap-4">
                     <div className="p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 group-hover:border-violet-500/20 transition-all shadow-inner flex flex-col items-center sm:items-start">
@@ -426,92 +436,18 @@ export default function ProfilePage() {
                     </div>
                     <div className="p-4 sm:p-5 rounded-2xl sm:rounded-[2rem] bg-slate-50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 group-hover:border-sky-500/20 transition-all shadow-inner flex flex-col items-center sm:items-start">
                       <span className="text-[8px] sm:text-[10px] font-black text-gray-500 uppercase block mb-1">
-                        99th Percentile
+                        Percentile
                       </span>
                       <span className="text-lg sm:text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-violet-400 dark:to-sky-400">
-                        148.2
+                        98.2%
                       </span>
                     </div>
                   </div>
                 </div>
 
-                {/* Skill Radar SVG Animation */}
-                <div className="relative aspect-square max-w-[240px] sm:max-w-[340px] mx-auto group-hover:scale-110 transition-transform duration-1000 ease-out">
-                  <div className="absolute inset-0 bg-violet-500/10 blur-[60px] rounded-full animate-pulse" />
-                  <svg
-                    viewBox="0 0 100 100"
-                    className="w-full h-full transform -rotate-90 overflow-visible relative z-10"
-                  >
-                    <defs>
-                      <radialGradient
-                        id="dataGlow"
-                        cx="50%"
-                        cy="50%"
-                        r="50%"
-                        fx="50%"
-                        fy="50%"
-                      >
-                        <stop
-                          offset="0%"
-                          stopColor="#a78bfa"
-                          stopOpacity="0.4"
-                        />
-                        <stop
-                          offset="100%"
-                          stopColor="#a78bfa"
-                          stopOpacity="0"
-                        />
-                      </radialGradient>
-                    </defs>
-                    {[20, 40, 60, 80, 100].map((r) => (
-                      <circle
-                        key={r}
-                        cx="50"
-                        cy="50"
-                        r={r / 2}
-                        fill="none"
-                        stroke="rgba(100,116,139,0.2)"
-                        strokeWidth="0.5"
-                        strokeDasharray="1 2"
-                      />
-                    ))}
-                    {[0, 120, 240].map((angle) => (
-                      <line
-                        key={angle}
-                        x1="50"
-                        y1="50"
-                        x2={50 + 50 * Math.cos((angle * Math.PI) / 180)}
-                        y2={50 + 50 * Math.sin((angle * Math.PI) / 180)}
-                        stroke="rgba(100,116,139,0.2)"
-                        strokeWidth="0.5"
-                      />
-                    ))}
-                    <polygon
-                      points="50,15 85,75 15,75"
-                      fill="url(#dataGlow)"
-                      stroke="#a78bfa"
-                      strokeWidth="2"
-                      className="animate-[pulse_4s_infinite]"
-                    />
-                    <circle
-                      cx="50"
-                      cy="15"
-                      r="2.5"
-                      fill="#a78bfa"
-                      className="shadow-violet-500 shadow-lg"
-                    />
-                    <circle cx="85" cy="75" r="2.5" fill="#ec4899" />
-                    <circle cx="15" cy="75" r="2.5" fill="#38bdf8" />
-                  </svg>
-                  <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-6 sm:-translate-y-10 text-[9px] sm:text-[11px] font-black text-blue-600 dark:text-violet-400 uppercase tracking-[0.3em]">
-                    Theoretical
-                  </div>
-                  <div className="absolute bottom-2 right-0 translate-x-10 text-[9px] sm:text-[11px] font-black text-pink-400 uppercase tracking-[0.3em]">
-                    Execution
-                  </div>
-                  <div className="absolute bottom-2 left-0 -translate-x-10 text-[9px] sm:text-[11px] font-black text-indigo-500 dark:text-sky-400 uppercase tracking-[0.3em]">
-                    Interface
-                  </div>
+                {/* Skill Radar Component */}
+                <div className="md:col-span-3 relative h-[300px] sm:h-[400px] w-full">
+                  <SkillRadarChart />
                 </div>
               </div>
             </motion.div>

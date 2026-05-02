@@ -12,6 +12,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { LearningProvider } from "@/contexts/LearningContext";
 import { Toaster } from "@/components/ui/sonner";
 import NextTopLoader from "nextjs-toploader";
+import { CommandPalette } from "@/components/ui/CommandPalette";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -109,6 +110,7 @@ export default function RootLayout({
                 data-custom-data='{"appName": "YourApp", "version": "1.0.0", "greeting": "hi"}'
               />
               {children}
+              <CommandPalette />
               <ScrollToTop />
               <Toaster />
               <EduBot />

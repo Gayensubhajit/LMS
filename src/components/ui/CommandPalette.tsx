@@ -15,11 +15,9 @@ import {
 import {
   Book,
   LayoutDashboard,
-  Search,
   Settings,
   Trophy,
   User,
-  Zap,
   Sparkles,
   Home,
   CreditCard,

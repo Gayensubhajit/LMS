@@ -15,12 +15,9 @@ import {
   Plus,
   Info,
   ChevronRight,
-  ExternalLink,
   Award,
   BarChart3,
-  TrendingUp,
   CheckCircle2,
-  Box,
   BrainCircuit,
   Cpu,
   Monitor,
@@ -28,11 +25,9 @@ import {
   Flame,
   Star,
   Clock,
-  Calendar,
   BookOpen
 } from "lucide-react";
 import { SignIn, useUser } from "@clerk/nextjs";
-import { dark } from "@clerk/themes";
 import { useEffect, useState } from "react";
 import { backendRequest } from "@/lib/backend-client";
 import SkillRadarChart from "@/components/lms/SkillRadarChart";

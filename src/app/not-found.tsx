@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Sparkles, Home, ArrowLeft, Search, Bot } from "lucide-react";
+import { Sparkles, Home, Search, Bot } from "lucide-react";
 import { Montserrat } from "next/font/google";
 
 const montserrat = Montserrat({ subsets: ["latin"] });

@@ -18,29 +18,29 @@ export default function RoadmapStep({ phase, index, isCompleted, isActive }: Roa
 
   return (
     <motion.div 
-      initial={{ opacity: 0, x: index % 2 === 0 ? -20 : 20 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.7, delay: index * 0.1, ease: "easeOut" }}
+      initial={{ opacity: 0, y: 50, filter: "blur(10px)" }}
+      whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.8, delay: index * 0.1, ease: [0.21, 0.45, 0.32, 0.9] }}
       className="relative flex items-start gap-6 sm:gap-12 group"
     >
       {/* Node on the line */}
       <div className="absolute left-6 sm:left-12 transform -translate-x-1/2 z-20">
         <motion.div 
-          whileHover={{ scale: 1.2 }}
-          className={`relative flex items-center justify-center w-12 h-12 rounded-2xl border-4 transition-all duration-500 shadow-xl ${
+          whileHover={{ scale: 1.3, rotate: 5 }}
+          className={`relative flex items-center justify-center w-14 h-14 rounded-2xl border-4 transition-all duration-500 shadow-2xl ${
             isCompleted 
               ? "bg-emerald-500 border-emerald-100 dark:border-emerald-500/30 text-white" 
               : isActive 
                 ? "bg-indigo-600 border-indigo-100 dark:border-indigo-600/30 text-white animate-pulse" 
-                : "bg-white dark:bg-[#0f172a] border-slate-100 dark:border-slate-800 text-slate-400 dark:text-gray-600"
+                : "bg-white dark:bg-[#0f172a] border-slate-100 dark:border-slate-800 text-slate-400 dark:text-gray-600 group-hover:border-indigo-500/50"
           }`}
         >
-          {isCompleted ? <CheckCircle2 size={18} /> : <Icon size={18} />}
+          {isCompleted ? <CheckCircle2 size={20} /> : <Icon size={20} />}
           
           {/* Active Glow */}
-          {isActive && (
-            <div className="absolute inset-0 rounded-2xl bg-indigo-600/20 blur-xl animate-pulse" />
+          {(isActive || isCompleted) && (
+            <div className={`absolute inset-0 rounded-2xl ${isCompleted ? "bg-emerald-500/20" : "bg-indigo-600/20"} blur-xl animate-pulse`} />
           )}
         </motion.div>
       </div>

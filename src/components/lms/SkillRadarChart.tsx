@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 import {
   Radar,
   RadarChart,
@@ -29,7 +30,12 @@ export default function SkillRadarChart({ data = defaultData }: SkillRadarChartP
   const isDark = resolvedTheme === "dark";
 
   return (
-    <div className="w-full h-full min-h-[300px]">
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
+      animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+      transition={{ duration: 0.7, ease: [0.21, 0.45, 0.32, 0.9] }}
+      className="w-full h-full min-h-[300px]"
+    >
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
           <PolarGrid 
@@ -53,6 +59,8 @@ export default function SkillRadarChart({ data = defaultData }: SkillRadarChartP
             strokeWidth={2}
             fill="url(#radarGradient)"
             fillOpacity={0.6}
+            animationDuration={1500}
+            animationEasing="ease-out"
           />
           <defs>
             <linearGradient id="radarGradient" x1="0" y1="0" x2="0" y2="1">
@@ -62,6 +70,6 @@ export default function SkillRadarChart({ data = defaultData }: SkillRadarChartP
           </defs>
         </RadarChart>
       </ResponsiveContainer>
-    </div>
+    </motion.div>
   );
 }

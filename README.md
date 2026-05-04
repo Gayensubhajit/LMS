@@ -1,6 +1,5 @@
 # LMS Platform (Next.js + Node + Prisma)
 
-
 ![LMS CI](https://github.com/Gayensubhajit/LMS/actions/workflows/ci.yml/badge.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 

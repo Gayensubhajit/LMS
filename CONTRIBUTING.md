@@ -2,6 +2,7 @@
 
 Welcome! We are excited that you are interested in contributing to the LMS project. This document provides guidelines for contributing and explains our development workflow.
 
+
 ## 📜 Code of Conduct
 
 Help us keep this project open and inclusive. Please be respectful and professional in all interactions.

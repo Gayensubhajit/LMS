@@ -1,6 +1,5 @@
 # LMS Platform (Next.js + Node + Prisma)
 
-
 ![LMS CI](https://github.com/Gayensubhajit/LMS/actions/workflows/ci.yml/badge.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 
@@ -31,6 +30,7 @@ Author - Subhajit Gayen , Chirantan Biswas
 - full-stack API with backend routes and frontend client libs
 
 ## 📁 Repo overview
+
 
 - `app/` website routes, static/dynamic pages, auth flows
 - `components/` reusable UI primitives, LMS modules, admin widgets

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { 
   Sparkles, 
   X, 
@@ -118,6 +118,26 @@ export default function EduBot() {
     }
   };
 
+  // Magnetic trigger logic
+  const mX = useMotionValue(0);
+  const mY = useMotionValue(0);
+  const sX = useSpring(mX, { stiffness: 200, damping: 20 });
+  const sY = useSpring(mY, { stiffness: 200, damping: 20 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const { clientX, clientY, currentTarget } = e;
+    const { left, top, width, height } = currentTarget.getBoundingClientRect();
+    const centerX = left + width / 2;
+    const centerY = top + height / 2;
+    mX.set(clientX - centerX);
+    mY.set(clientY - centerY);
+  };
+
+  const handleMouseLeave = () => {
+    mX.set(0);
+    mY.set(0);
+  };
+
   return (
     <div className="fixed bottom-6 right-6 z-[9999]">
       <AnimatePresence>
@@ -126,7 +146,7 @@ export default function EduBot() {
             initial={{ opacity: 0, y: 100, scale: 0.8, rotate: -5 }}
             animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
             exit={{ opacity: 0, y: 100, scale: 0.8, rotate: 5 }}
-            className="absolute bottom-24 right-0 w-[420px] md:w-[480px] h-[650px] bg-white dark:bg-slate-900 rounded-[3rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-white/10 overflow-hidden flex flex-col"
+            className="absolute bottom-24 right-0 w-[420px] md:w-[480px] h-[650px] bg-white/90 dark:bg-slate-900/90 backdrop-blur-3xl rounded-[3rem] shadow-[0_32px_96px_-16px_rgba(0,0,0,0.4)] border border-white/20 dark:border-white/10 overflow-hidden flex flex-col"
           >
             {/* Header */}
             <div className="p-6 bg-gradient-to-r from-blue-600 to-indigo-700 text-white relative">
@@ -160,8 +180,9 @@ export default function EduBot() {
               {messages.map((msg) => (
                 <motion.div
                   key={msg.id}
-                  initial={{ opacity: 0, x: msg.sender === "user" ? 20 : -20 }}
-                  animate={{ opacity: 1, x: 0 }}
+                  initial={{ opacity: 0, x: msg.sender === "user" ? 20 : -20, y: 10 }}
+                  animate={{ opacity: 1, x: 0, y: 0 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 20 }}
                   className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <div className={`
@@ -229,6 +250,9 @@ export default function EduBot() {
 
       {/* Main Pulse Button */}
       <motion.button
+        style={{ x: sX, y: sY }}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(!isOpen)}

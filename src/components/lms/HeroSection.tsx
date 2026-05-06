@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from "framer-motion";
 import {
   ArrowRight,
   Play,
@@ -26,6 +26,9 @@ import {
   Forward,
   Clock,
   ChevronDown,
+  Code2,
+  Palette,
+  Cpu,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useState, useEffect, useRef } from "react";
@@ -485,6 +488,32 @@ export default function HeroSection() {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === "dark";
 
+  // 3D Parallax logic
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
+  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["8deg", "-8deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-8deg", "8deg"]);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
   // Check Plus membership
   useEffect(() => {
     if (!isLoaded || !userId) return;
@@ -536,6 +565,28 @@ export default function HeroSection() {
 
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-32 pb-20 aurora-bg transition-colors duration-700">
+      {/* Animated Aurora Blobs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          animate={{
+            x: [0, 40, 0],
+            y: [0, 60, 0],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] rounded-full bg-blue-400/20 dark:bg-blue-600/10 blur-[120px]"
+        />
+        <motion.div
+          animate={{
+            x: [0, -60, 0],
+            y: [0, -40, 0],
+            scale: [1, 1.1, 1],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-indigo-400/20 dark:bg-indigo-600/10 blur-[120px]"
+        />
+      </div>
+
       {/* Bottom white fade */}
       <div className="absolute inset-x-0 bottom-0 h-[60vh] bg-linear-to-t from-white via-white/70 to-transparent pointer-events-none dark:from-[#030712] dark:via-[#030712]/60" />
 
@@ -610,6 +661,8 @@ export default function HeroSection() {
         {/* 3D Browser Showcase */}
         <motion.div
           ref={containerRef}
+          onMouseMove={handleMouseMove}
+          onMouseLeave={handleMouseLeave}
           initial={{ opacity: 0, y: 80 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
@@ -623,11 +676,36 @@ export default function HeroSection() {
           <motion.div
             style={{
               transformStyle: "preserve-3d",
+              rotateX,
+              rotateY,
             }}
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
             className="relative"
           >
+            {/* Floating Tokens */}
+            <motion.div
+              animate={{ y: [0, -20, 0], rotate: [0, 10, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute -top-10 -left-10 md:-top-12 md:-left-12 w-16 h-16 md:w-20 md:h-20 rounded-2xl md:rounded-3xl bg-white dark:bg-[#111827] border border-black/5 dark:border-white/10 shadow-2xl flex items-center justify-center backdrop-blur-xl z-20"
+            >
+              <Code2 size={28} className="text-blue-500 md:size-8" />
+            </motion.div>
+            <motion.div
+              animate={{ y: [0, 20, 0], rotate: [0, -10, 0] }}
+              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+              className="absolute top-1/2 -right-8 md:-right-12 w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl bg-white dark:bg-[#111827] border border-black/5 dark:border-white/10 shadow-2xl flex items-center justify-center backdrop-blur-xl z-20"
+            >
+              <Palette size={20} className="text-purple-500 md:size-6" />
+            </motion.div>
+            <motion.div
+              animate={{ y: [0, -15, 0], x: [0, 10, 0] }}
+              transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+              className="absolute -bottom-6 left-1/4 md:-bottom-8 w-10 h-10 md:w-14 md:h-14 rounded-lg md:rounded-2xl bg-white dark:bg-[#111827] border border-black/5 dark:border-white/10 shadow-2xl flex items-center justify-center backdrop-blur-xl z-20"
+            >
+              <Cpu size={16} className="text-emerald-500 md:size-5" />
+            </motion.div>
+
             {/* Browser chrome */}
             <div className="relative z-10 rounded-[24px] overflow-hidden border border-black/8 bg-white dark:bg-[#030712] shadow-[0_60px_120px_rgba(0,0,0,0.15)] dark:shadow-[0_60px_120px_rgba(0,0,0,0.6)]">
               {/* Browser top bar */}

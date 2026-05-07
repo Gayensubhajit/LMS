@@ -17,7 +17,6 @@ const isPublicRoute = createRouteMatcher([
   "/pricing",
 ]);
 
-
 export default clerkMiddleware(async (auth, req) => {
   // 2. If it's NOT a public route, require authentication
   if (!isPublicRoute(req)) {

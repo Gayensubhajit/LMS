@@ -34,8 +34,11 @@ export default function SkillRadarChart({ data = defaultData }: SkillRadarChartP
       initial={{ opacity: 0, scale: 0.9, filter: "blur(4px)" }}
       animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
       transition={{ duration: 0.7, ease: [0.21, 0.45, 0.32, 0.9] }}
-      className="w-full h-full min-h-[300px]"
+      className="w-full h-full min-h-[300px] relative"
     >
+      {/* Background Glow */}
+      <div className="absolute inset-0 bg-indigo-500/5 blur-[80px] rounded-full pointer-events-none" />
+      
       <ResponsiveContainer width="100%" height="100%">
         <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
           <PolarGrid 
@@ -56,17 +59,25 @@ export default function SkillRadarChart({ data = defaultData }: SkillRadarChartP
             name="Skills"
             dataKey="A"
             stroke="#6366f1"
-            strokeWidth={2}
+            strokeWidth={3}
             fill="url(#radarGradient)"
             fillOpacity={0.6}
             animationDuration={1500}
             animationEasing="ease-out"
+            dot={{ r: 4, fill: "#6366f1", strokeWidth: 2, stroke: "#fff" }}
           />
           <defs>
             <linearGradient id="radarGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#6366f1" stopOpacity={0.8} />
               <stop offset="95%" stopColor="#a855f7" stopOpacity={0.2} />
             </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+              <feMerge>
+                <feMergeNode in="coloredBlur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
           </defs>
         </RadarChart>
       </ResponsiveContainer>

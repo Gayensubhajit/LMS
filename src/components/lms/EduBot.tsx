@@ -29,6 +29,7 @@ interface Message {
 
 export default function EduBot() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
@@ -141,7 +142,7 @@ export default function EduBot() {
   return (
     <div className="fixed bottom-6 right-6 z-[9999]">
       <AnimatePresence>
-        {isOpen && (
+        {isOpen && !isMinimized && (
           <motion.div
             initial={{ opacity: 0, y: 100, scale: 0.8, rotate: -5 }}
             animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
@@ -164,12 +165,25 @@ export default function EduBot() {
                   </div>
                 </div>
               </div>
-              <button 
-                onClick={() => setIsOpen(false)}
-                className="absolute top-6 right-6 w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
+              <div className="absolute top-6 right-6 flex gap-2">
+                <button 
+                  onClick={() => setIsMinimized(true)}
+                  className="w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition-colors"
+                  title="Minimize"
+                >
+                  <ChevronRight className="w-4 h-4 rotate-90" />
+                </button>
+                <button 
+                  onClick={() => {
+                    setIsOpen(false);
+                    setIsMinimized(false);
+                  }}
+                  className="w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition-colors"
+                  title="Close"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
             {/* Chat Area */}
@@ -205,10 +219,25 @@ export default function EduBot() {
               ))}
               {isTyping && (
                 <div className="flex justify-start">
-                  <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-2xl rounded-tl-none flex gap-1">
-                    <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce" />
-                    <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:0.2s]" />
-                    <div className="w-1.5 h-1.5 bg-slate-400 rounded-full animate-bounce [animation-delay:0.4s]" />
+                  <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 p-4 rounded-2xl rounded-tl-none flex items-center gap-2">
+                    <div className="flex gap-1">
+                      <motion.div 
+                        animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                        transition={{ repeat: Infinity, duration: 1 }}
+                        className="w-1.5 h-1.5 bg-indigo-500 rounded-full" 
+                      />
+                      <motion.div 
+                        animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                        transition={{ repeat: Infinity, duration: 1, delay: 0.2 }}
+                        className="w-1.5 h-1.5 bg-indigo-500 rounded-full" 
+                      />
+                      <motion.div 
+                        animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
+                        transition={{ repeat: Infinity, duration: 1, delay: 0.4 }}
+                        className="w-1.5 h-1.5 bg-indigo-500 rounded-full" 
+                      />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">EduBot is thinking...</span>
                   </div>
                 </div>
               )}
@@ -255,14 +284,20 @@ export default function EduBot() {
         onMouseLeave={handleMouseLeave}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          if (isMinimized) {
+            setIsMinimized(false);
+          } else {
+            setIsOpen(!isOpen);
+          }
+        }}
         className={`
           relative w-16 h-16 rounded-[1.5rem] flex items-center justify-center shadow-2xl transition-all duration-500
-          ${isOpen ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 rotate-90" : "bg-gradient-to-br from-blue-600 to-indigo-700 text-white"}
+          ${isOpen && !isMinimized ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 rotate-90" : "bg-gradient-to-br from-blue-600 to-indigo-700 text-white"}
         `}
       >
         <AnimatePresence mode="wait">
-          {isOpen ? (
+          {isOpen && !isMinimized ? (
             <motion.div key="close" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
               <X className="w-8 h-8" />
             </motion.div>

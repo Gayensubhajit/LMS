@@ -585,6 +585,45 @@ export default function HeroSection() {
           transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
           className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] rounded-full bg-indigo-400/20 dark:bg-indigo-600/10 blur-[120px]"
         />
+
+        {/* Floating Achievement Cards */}
+        <motion.div
+          animate={{ 
+            y: [0, -20, 0],
+            rotate: [5, -5, 5]
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/4 right-[10%] p-4 bg-white/40 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-white/10 shadow-2xl z-0 hidden lg:block"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-yellow-400/20 flex items-center justify-center">
+              <Trophy className="w-6 h-6 text-yellow-500" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">New Achievement</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-white">Quick Learner</p>
+            </div>
+          </div>
+        </motion.div>
+
+        <motion.div
+          animate={{ 
+            y: [0, 20, 0],
+            rotate: [-5, 5, -5]
+          }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          className="absolute bottom-1/4 left-[10%] p-4 bg-white/40 dark:bg-white/5 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-white/10 shadow-2xl z-0 hidden lg:block"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-blue-400/20 flex items-center justify-center">
+              <Star className="w-6 h-6 text-blue-500" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Course Completed</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-white">Next.js Mastery</p>
+            </div>
+          </div>
+        </motion.div>
       </div>
 
       {/* Bottom white fade */}
@@ -637,24 +676,34 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="flex flex-wrap justify-center items-center gap-4"
+            className="flex flex-col items-center gap-6"
           >
-            <a
-              href={isMember ? "/courses" : "/auth/sign-up?plan=plus"}
-              className="group flex items-center gap-3 bg-black dark:bg-white text-white dark:text-black px-8 py-4 rounded-full text-base font-bold hover:scale-105 active:scale-95 transition-all shadow-[0_20px_40px_rgba(0,0,0,0.15)]"
-            >
-              <span>{isMember ? "Continue Learning" : "Start Learning Free"}</span>
-              <ArrowRight
-                size={18}
-                className="group-hover:translate-x-1 transition-transform"
-              />
-            </a>
-            <button className="flex items-center gap-3 bg-white/60 dark:bg-white/10 backdrop-blur-md border border-black/5 dark:border-white/10 text-black dark:text-white px-8 py-4 rounded-full text-base font-bold hover:bg-white/90 dark:hover:bg-white/20 transition-all group">
-              <div className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center group-hover:bg-black/10 transition-colors">
-                <Play size={14} className="fill-current ml-0.5" />
-              </div>
-              <span>Watch Demo</span>
-            </button>
+            <div className="flex flex-wrap justify-center items-center gap-4">
+              <a
+                href={isMember ? "/courses" : "/auth/sign-up?plan=plus"}
+                className="group flex items-center gap-3 bg-black dark:bg-white text-white dark:text-black px-8 py-4 rounded-full text-base font-bold hover:scale-105 active:scale-95 transition-all shadow-[0_20px_40px_rgba(0,0,0,0.15)]"
+              >
+                <span>{isMember ? "Continue Learning" : "Start Learning Free"}</span>
+                <ArrowRight
+                  size={18}
+                  className="group-hover:translate-x-1 transition-transform"
+                />
+              </a>
+              <button className="flex items-center gap-3 bg-white/60 dark:bg-white/10 backdrop-blur-md border border-black/5 dark:border-white/10 text-black dark:text-white px-8 py-4 rounded-full text-base font-bold hover:bg-white/90 dark:hover:bg-white/20 transition-all group">
+                <div className="w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center group-hover:bg-black/10 transition-colors">
+                  <Play size={14} className="fill-current ml-0.5" />
+                </div>
+                <span>Watch Demo</span>
+              </button>
+            </div>
+
+            {/* Live Activity Ticker */}
+            <div className="flex items-center gap-3 bg-white/40 dark:bg-white/5 backdrop-blur-md px-4 py-2 rounded-full border border-white/20 dark:border-white/10">
+              <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">
+                <span className="text-slate-900 dark:text-white">1,248</span> students learning right now
+              </p>
+            </div>
           </motion.div>
         </div>
 

@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Zap } from "lucide-react";
 
 export default function ActivityHeatmap() {
   // Generate mock data for the last 12 months (roughly 52 weeks)
@@ -16,7 +17,17 @@ export default function ActivityHeatmap() {
     return data;
   };
 
+  const calculateStreak = (data: number[]) => {
+    let streak = 0;
+    for (let i = data.length - 1; i >= 0; i--) {
+      if (data[i] > 0) streak++;
+      else break;
+    }
+    return streak;
+  };
+
   const activityData = generateMockData();
+  const currentStreak = calculateStreak(activityData);
   
   const getLevelColor = (level: number) => {
     switch (level) {
@@ -32,9 +43,15 @@ export default function ActivityHeatmap() {
   return (
     <div className="w-full">
       <div className="flex items-center justify-between mb-4">
-        <h4 className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-[0.2em]">
-          Learning Consistency
-        </h4>
+        <div className="flex items-center gap-3">
+          <h4 className="text-[10px] font-black text-slate-400 dark:text-gray-500 uppercase tracking-[0.2em]">
+            Learning Consistency
+          </h4>
+          <div className="flex items-center gap-1 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+            <Zap className="w-3 h-3 text-emerald-500 fill-emerald-500" />
+            <span className="text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">{currentStreak} Day Streak</span>
+          </div>
+        </div>
         <div className="flex items-center gap-1.5">
           <span className="text-[9px] font-bold text-gray-500 uppercase">Less</span>
           {[0, 1, 2, 3, 4].map((l) => (

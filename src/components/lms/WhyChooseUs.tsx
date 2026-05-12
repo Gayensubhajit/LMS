@@ -173,6 +173,29 @@ export default function WhyChooseUs() {
           ))}
         </div>
 
+        {/* Stats Row */}
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.65 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-14 mb-0"
+        >
+          {[
+            { value: "25K+", label: "Active Learners", color: "text-blue-600 dark:text-blue-400" },
+            { value: "180+", label: "Expert Courses", color: "text-violet-600 dark:text-violet-400" },
+            { value: "4.9★", label: "Average Rating", color: "text-amber-500 dark:text-amber-400" },
+            { value: "94%", label: "Job Placement", color: "text-emerald-600 dark:text-emerald-400" },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="flex flex-col items-center justify-center p-5 rounded-2xl bg-white dark:bg-[#111827] border border-black/[0.06] dark:border-white/[0.06] shadow-sm"
+            >
+              <span className={`text-3xl font-black tracking-tight ${stat.color}`}>{stat.value}</span>
+              <span className="text-xs font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest mt-1">{stat.label}</span>
+            </div>
+          ))}
+        </motion.div>
+
         {/* Bottom CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

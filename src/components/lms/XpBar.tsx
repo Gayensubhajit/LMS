@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "@clerk/nextjs";
-import { Sparkles, Trophy, Zap } from "lucide-react";
+import { Sparkles, Zap, ArrowUpCircle } from "lucide-react";
 import { backendRequest } from "@/lib/backend-client";
 
 interface GamificationData {
@@ -47,6 +47,10 @@ export default function XpBar() {
     <div className="h-16 w-full bg-slate-100 dark:bg-white/5 animate-pulse rounded-2xl" />
   );
 
+  const xpInCurrentLevel = data.xp % 1000;
+  const xpToNextLevel = 1000 - xpInCurrentLevel;
+  const isNearLevelUp = xpToNextLevel <= 100;
+
   return (
     <div className="p-5 rounded-[2.5rem] bg-white/50 dark:bg-white/5 border border-slate-200 dark:border-white/10 backdrop-blur-xl shadow-sm relative overflow-hidden group">
       <div className="absolute inset-x-0 bottom-0 h-[2px] bg-gradient-to-r from-blue-600 via-teal-500 to-cyan-600 opacity-20 group-hover:opacity-100 transition-opacity" />
@@ -81,16 +85,39 @@ export default function XpBar() {
         </motion.div>
       </div>
       
-      <div className="flex justify-between mt-3 px-1">
+      <div className="flex justify-between mt-3 px-1 items-center">
         <span className="text-[10px] font-black text-slate-400 dark:text-gray-600 uppercase tracking-widest leading-none">
-          {data.xp % 1000} / 1000 XP
+          {xpInCurrentLevel} / 1000 XP
         </span>
-        <div className="flex items-center gap-1">
-           <span className="text-[10px] font-black text-slate-400 dark:text-gray-600 uppercase tracking-widest leading-none">
-            Next Milestone
-          </span>
-          <ChevronRight size={10} className="text-slate-300 dark:text-gray-700" />
-        </div>
+        <AnimatePresence>
+          {isNearLevelUp ? (
+            <motion.div
+              key="near-levelup"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20"
+            >
+              <ArrowUpCircle size={10} className="text-emerald-500" />
+              <span className="text-[9px] font-black uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+                {xpToNextLevel} XP to Level {data.level + 1}!
+              </span>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="next-level"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="flex items-center gap-1"
+            >
+              <span className="text-[10px] font-black text-slate-400 dark:text-gray-600 uppercase tracking-widest leading-none">
+                {xpToNextLevel} XP to Lv.{data.level + 1}
+              </span>
+              <ChevronRight size={10} className="text-slate-300 dark:text-gray-700" />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );

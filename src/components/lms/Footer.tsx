@@ -192,10 +192,20 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="border-t border-black/5 dark:border-violet-500/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs md:text-sm">
-          <div className="text-sm text-gray-600">
-            © 2026 EduNova, Inc. All rights reserved.
+          <div className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="text-sm text-gray-600">
+              © 2026 EduNova, Inc. All rights reserved.
+            </div>
+            <span className="hidden sm:inline text-gray-300 dark:text-gray-700">·</span>
+            <span className="text-xs text-gray-400 dark:text-gray-600">
+              Built with <span className="text-rose-500">♥</span> in India
+            </span>
           </div>
           <div className="flex items-center gap-6 text-xs text-gray-600">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20">
+              <span className="text-amber-500">🏆</span>
+              <span className="text-[10px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400">Product of the Year 2026</span>
+            </div>
             <Link
               href="/legal/privacy"
               className="hover:text-gray-400 transition-colors"
